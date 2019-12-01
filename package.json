@@ -1,0 +1,17 @@
+{
+  "name": "dungeonlife",
+  "version": "1.0.0",
+  "description": "Dungeon Life, the action RPG where the monsters are you! ",
+  "dependencies": {
+    "@rbxts/types": "1.0.235",
+    "@rbxts/services": "1.0.23"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamieFristrom/dungeonlife.git"
+  },
+  "author": "Jamie Fristrom",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "homepage": "https://github.com/JamieFristrom/dungeonlife#readme"
+}
