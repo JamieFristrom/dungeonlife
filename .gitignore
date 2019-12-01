@@ -1,0 +1,8 @@
+# ignore the out directory
+/out/*
+include/RuntimeLib.lua
+*.map
+*.lock
+backend/node_modules/*
+backend/out/*
+node_modules/*

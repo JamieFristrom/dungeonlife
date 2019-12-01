@@ -1,0 +1,156 @@
+{
+  "name": "roblox-ts-game",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Lua": {
+        "$path": "out/ServerScriptService/Lua"
+      },
+      "TS": {
+        "$path": "out/ServerScriptService/TS"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "rbxts_include": {
+        "$path": "include"
+      },
+      "TS": {
+        "$path": "out/ReplicatedStorage/TS"
+      },
+      "Standard": {
+        "$path": "out/ReplicatedStorage/Standard"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Lua": {
+          "$path": "out/StarterPlayer/StarterPlayerScripts/Lua"
+        },
+        "TS": {
+          "$path": "out/StarterPlayer/StarterPlayerScripts/TS"
+        }
+      }
+    },
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "TS": {
+        "$path": "out/ReplicatedFirst/TS"
+      }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "Standard": {
+        "$path": "out/ServerStorage/Standard"
+      },
+      "TS": {
+        "$path": "out/ServerStorage/TS"
+      }
+    },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "AwardGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/AwardGui/Lua"
+        }
+      },
+      "CharacterSheetGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/CharacterSheetGui/Lua"
+        }
+      },
+      "NoResetGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/NoResetGui/Lua"
+        },
+        "TS": {
+          "$path": "out/StarterGui/NoResetGui/TS"
+        },
+        "FeedbackPanel": {
+          "$className": "Frame",
+          "TS": {
+            "$path": "out/StarterGui/NoResetGui/FeedbackPanel/TS"
+          }
+        }
+      },
+      "FurnishGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/FurnishGui/Lua"
+        }
+      },
+      "HeroGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/HeroGui/Lua"
+        },
+        "TS": {
+          "$path": "out/StarterGui/HeroGui/TS"
+        }
+      },
+      "MapGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/MapGui/Lua"
+        }
+      },
+      "MessageGuiConfiguration": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/MessageGuiConfiguration/Lua"
+        },
+        "StarFeedbackFrameTemplate": {
+          "$className": "Frame",
+          "TS": {
+            "$path": "out/StarterGui/MessageGuiConfiguration/StarFeedbackFrameTemplate/TS"
+          }
+        }
+      },
+      "PlayerListGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/PlayerListGui/Lua"
+        }
+      },
+      "PossessionsGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/PossessionsGui/Lua"
+        },
+        "TS": {
+          "$path": "out/StarterGui/PossessionsGui/TS"
+        }
+      },
+      "StoreGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/StoreGui/Lua"
+        },
+        "TS": {
+          "$path": "out/StarterGui/StoreGui/TS"
+        }
+      },
+      "TopGui": {
+        "$className": "ScreenGui",
+        "Lua": {
+          "$path": "out/StarterGui/TopGui/Lua"
+        }
+      },
+      "HUDGui": {
+        "$className": "ScreenGui",
+        "TS": {
+          "$path": "out/StarterGui/HUDGui/TS"
+        },
+        "Lua": {
+          "$path": "out/StarterGui/HUDGui/Lua"
+        }
+      }
+    }
+  }
+}
