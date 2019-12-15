@@ -1,6 +1,8 @@
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
+local AssetManifest = require( game.ReplicatedStorage.TS.AssetManifest ).AssetManifest
+
 local FloorData = require( game.ReplicatedStorage.FloorData )
 
 local MapTileData = {
@@ -9,16 +11,16 @@ local MapTileData = {
 	masterDataA = {
 	-- openings start counting from North AKA Front AKA NegativeZ and go COUNTER CLOCKWISE because a positive roblox 
 	-- rotation around Y goes counter clockwise and we choose to match
-		{ modelName = "HallNoWalls",    openingsA = { 1, 2, 3, 4 }, replaceableB = true },
-		{ modelName = "HallOneWall",    openingsA = { 1, 3, 4 }, replaceableB = true },
-		{ modelName = "HallStraight",   openingsA = { 1, 3 }, replaceableB = true },
-		{ modelName = "HallCorner",     openingsA = { 3, 4 }, replaceableB = true },
-		{ modelName = "HallThreeWalls", openingsA = { 2 }, replaceableB = true },
-		{ modelName = "BlockWall",      openingsA = { }, replaceableB = true },     
+		{ modelName = "HallNoWalls", minimapImage = AssetManifest.ImageMapHallNoWalls, openingsA = { 1, 2, 3, 4 }, replaceableB = true },
+		{ modelName = "HallOneWall", minimapImage = AssetManifest.ImageMapHallOneWall, openingsA = { 1, 3, 4 }, replaceableB = true },
+		{ modelName = "HallStraight", minimapImage = AssetManifest.ImageMapHallStraight,  openingsA = { 1, 3 }, replaceableB = true },
+		{ modelName = "HallCorner",  minimapImage = AssetManifest.ImageMapHallCorner, openingsA = { 3, 4 }, replaceableB = true },
+		{ modelName = "HallThreeWalls",  minimapImage = AssetManifest.ImageMapHallThreeWalls, openingsA = { 2 }, replaceableB = true },
+		{ modelName = "BlockWall", minimapImage = AssetManifest.ImageMapBlockWall, openingsA = { }, replaceableB = true },     		
 		-- staircase must be last in the array
-		{ modelName = "DownStaircase",  openingsA = { 1, 2, 3, 4 }, replaceableB = true },
+		{ modelName = "DownStaircase", minimapImage = AssetManifest.ImageMapDownStaircase, openingsA = { 1, 2, 3, 4 }, replaceableB = true },
 		-- specials
-		{ modelName = "HallOneWallGate", openingsA = { 1, 3, 4 }, replaceableB = false } 
+		{ modelName = "HallOneWallGate", minimapImage = AssetManifest.ImageHallOneWallGate, openingsA = { 1, 3, 4 }, replaceableB = false } 
 	},
 	
 	masterDataT = {},
