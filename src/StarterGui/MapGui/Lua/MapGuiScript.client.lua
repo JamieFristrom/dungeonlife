@@ -1,14 +1,15 @@
 local CheatUtilityXL = require( game.ReplicatedStorage.TS.CheatUtility )
 
-local DebugXL        = require( game.ReplicatedStorage.Standard.DebugXL )
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local CharacterClientI = require( game.ReplicatedStorage.Standard.CharacterClientI )
-local DungeonClient  = require( game.ReplicatedStorage.Standard.DungeonClient )
+local DungeonClient = require( game.ReplicatedStorage.Standard.DungeonClient )
 
-local FloorData      = require( game.ReplicatedStorage.FloorData )
-local MapTileData    = require( game.ReplicatedStorage.MapTileDataModule )
+local FloorData  = require( game.ReplicatedStorage.FloorData )
+local MapTileData = require( game.ReplicatedStorage.MapTileDataModule )
 
 local MonsterUtility = require( game.ReplicatedStorage.MonsterUtility )
 
+local AssetManifest = require( game.ReplicatedStorage.TS.AssetManifest ).AssetManifest
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 
 local playerGui = script.Parent.Parent.Parent
@@ -64,7 +65,6 @@ end
 local function MapPointToUDim2( x, z )
 end
 
-
 local mapGui = script.Parent.Parent
 local mapFrame = mapGui:WaitForChild("MapFrame")
 local mapCharacters = mapGui:WaitForChild("Characters")
@@ -72,7 +72,6 @@ local mapCharacters = mapGui:WaitForChild("Characters")
 mapFrame.Visible = true
 
 local mapRenderEvent = game["Run Service"].RenderStepped:Connect( function()
---game["Run Service"]:BindToRenderStep( "whatever", 1, function()
 	local _, eulerY, _ = workspace.CurrentCamera.CFrame:toEulerAnglesYXZ()
 	mapFrame.Rotation = eulerY / math.pi * 180
 	mapCharacters.Rotation = eulerY / math.pi * 180
@@ -85,6 +84,7 @@ mapGui.Event.Event:Connect( function( funcName )
 		end		
 	end
 end)
+
 
 
 local lastTeam = game.Players.LocalPlayer.Team
@@ -116,7 +116,7 @@ while wait(0.1) do
 					local tile = MapTileData.masterDataT[ tileName ]				
 					local modelName = tile.modelName
 					--if modelName ~= "HallNoWalls" then
-						newTileImage.Image = "rbxgameasset://Images/Map"..modelName
+						newTileImage.Image = tile.minimapImage
 						-- while in the world, rotating around y rotates counter clockwise when viewed from above
 						-- in the gui, rotating rotates clockwise
 						newTileImage.Position = UDim2.new( ( x - .5 ) / GetGridWidth(), 0, ( y - .5 ) / GetGridWidth(), 0 )
@@ -143,7 +143,7 @@ while wait(0.1) do
 	-- cy = cy / cellWidth           
 	-- cy = cy + gridWidthN / 2  
 	-- cy = cy / gridWidthN
-	startIcon.Image = "rbxassetid://2655024327"
+	startIcon.Image = AssetManifest.ImageStarWhite
 	local cx = FloorData:CurrentFloor().startX + GetGridWidth() / 2    -- 0 to 6
 	cx = cx / GetGridWidth()        -- 0 to 1
 	local cy = FloorData:CurrentFloor().startY + GetGridWidth() / 2  
