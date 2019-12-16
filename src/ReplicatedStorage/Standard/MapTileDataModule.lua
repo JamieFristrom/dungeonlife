@@ -20,7 +20,7 @@ local MapTileData = {
 		-- staircase must be last in the array
 		{ modelName = "DownStaircase", minimapImage = AssetManifest.ImageMapDownStaircase, openingsA = { 1, 2, 3, 4 }, replaceableB = true },
 		-- specials
-		{ modelName = "HallOneWallGate", minimapImage = AssetManifest.ImageHallOneWallGate, openingsA = { 1, 3, 4 }, replaceableB = false } 
+		{ modelName = "HallOneWallGate", minimapImage = AssetManifest.ImageMapHallOneWallGate, openingsA = { 1, 3, 4 }, replaceableB = false } 
 	},
 	
 	masterDataT = {},

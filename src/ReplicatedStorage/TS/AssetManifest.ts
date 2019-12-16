@@ -1,3 +1,4 @@
+ 
 export namespace AssetManifest
 {
     export const ImageMapHallNoWalls = 'rbxassetid://2570999231'
