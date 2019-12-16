@@ -71,7 +71,7 @@ function WeaponUtility:GetTargetPoint( targetCharacter )
 end
 
 
--- returns targetcharacter, range
+-- returns { targetcharacter, range }
 function WeaponUtility:FindClosestTargetInCone( attackingCharacter, coneDot ) 
 	local enemyCharacters = TableXL:FindAllInAWhere( game.CollectionService:GetTagged("Character"),
 		function( v ) return CharacterClientI:ValidTarget( attackingCharacter, v ) end )
@@ -92,7 +92,7 @@ function WeaponUtility:FindClosestTargetInCone( attackingCharacter, coneDot )
 		deltaV3 = Vector3.new( deltaV3.X, 0, deltaV3.Z )
 	return deltaV3.Magnitude end )
 	
-	return bestTarget, bestFitN
+	return { bestTarget, bestFitN }
 end
 
 

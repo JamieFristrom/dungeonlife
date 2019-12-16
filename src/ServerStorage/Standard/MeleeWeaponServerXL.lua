@@ -13,8 +13,9 @@ local WeaponServer  = require( game.ServerStorage.Standard.WeaponServerModule )
 
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local MeleeClientXL    = require( game.ReplicatedStorage.Standard.MeleeClientXL )
 local WeaponUtility    = require( game.ReplicatedStorage.Standard.WeaponUtility )
+
+local MeleeWeaponClient    = require( game.ReplicatedStorage.TS.MeleeWeaponClient ).MeleeWeaponClient
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
@@ -70,7 +71,7 @@ function MeleeWeaponServerXL.new( Tool )
 		Tool.Enabled = false
 --		
 		PlayerServer.markAttack( Player, "Melee" )
-		local bestTarget, bestFitN = WeaponUtility:FindClosestTargetInCone( Character, MeleeClientXL.swordSweepDot )
+		local bestTarget, bestFitN = unpack( WeaponUtility:FindClosestTargetInCone( Character, MeleeWeaponClient.swordSweepDot ) )
 		if bestTarget then
 --			--print( Character.Name.." found target "..bestTarget.Name )
 			if bestFitN <= FlexibleTools:GetToolRangeN( Tool ) then
