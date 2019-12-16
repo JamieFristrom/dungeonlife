@@ -4,7 +4,9 @@ Let me get this out of the way: I'm embarrassed to let people look at this code.
 
 The second most embarrassing part is that I switched to typescript partway through, learning typescript as I went, and the project is part lua, part n00b typescript.
 
-That said, there's more here I'm proud of than embarrassed of--for the most part it is data driven, and it doesn't do stateful things when not necessary, and those are usually my two priorities when architecting--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
+But! I want to give back to the community, I want people to be able to do what they want with Dungeon Life, and I'm hoping that just maybe someone will make some cool stuff that they'll share back. So here goes.
+
+And that said, there's more here I'm proud of than embarrassed of--for the most part it is data driven, and it doesn't do stateful things when not necessary, and those are usually my two priorities when architecting--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
 
 And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know!
 
@@ -56,7 +58,7 @@ If you have problems let me know but I can't promise speedy answers!
 
 # it's not you it's me
 
-Some current known problems: no custom animations are working, the localization is missing, and some of the images are missing (the minimap tiles in particular are a game-breaker.) The in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the id's in order to let people buy things in yours.
+Some current known problems: no custom animations are working, the localization is missing, and some of the images are missing. The in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the ids in order to let people buy things in yours.
 
 If you spot other problems, it's probably because there are other issues running the code in a standalone place. You can check my test place https://www.roblox.com/games/4476008779: if the bug happens there too, it's not you, it's me. :)
 
