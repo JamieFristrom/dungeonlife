@@ -1,6 +1,6 @@
 MIT License plus Attribution
 
-Copyright (c) 2019 Jamie Fristrom
+Copyright (c) 2019 James Fristrom
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
