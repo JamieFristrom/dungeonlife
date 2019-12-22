@@ -8,7 +8,7 @@ But! I want to give back to the community, I want people to be able to do what t
 
 And that said, there's more here I'm proud of than embarrassed of--for the most part it is data driven, and it doesn't do stateful things when not necessary, and those are usually my two priorities when architecting--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
 
-And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know!
+And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know! A good place to ask would be on the Discord: https://discord.gg/7BQNSu
 
 # building
 
