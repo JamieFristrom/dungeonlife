@@ -98,6 +98,7 @@ let CommandList: {[k:string]:unknown} =
     },
 
     // for cut and paste -
+    // !equip {"baseDataS":"DaggersDual","levelN":1}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"cold","levelN":2}]}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}
     // !equip {"baseDataS":"MagicHealing","levelN":2}
@@ -248,8 +249,9 @@ let CommandList: {[k:string]:unknown} =
 
 function playerAdded( player: Player )
   {
-    // specifically made it a lower rank so I could deputize mods
-    if( PlayerUtility.getRank( player ) >= 210 || ( player.UserId >= -8 && player.UserId <= -1 ))
+    // kind of want this at a lower rank than full on cheats so I could deputize mods, but rn there's not enough
+    // work for mods to do anyway, so I'll just use the cheat whitelist here for now
+    if( CheatUtility.PlayerWhitelisted( player ))
     {
       player.Chatted.Connect( function( message:string, recipientI: Instance )
       {
