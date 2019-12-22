@@ -153,11 +153,11 @@ export class MeleeWeaponClient
                 }
                 for( let i = 0; i < fullBodyAttackAnimNames.size(); i++ )
                 {
-                    const attackAnim = AnimationManifest.getAnimInstance('AttackOneHand'+(i+1))
+                    const attackAnim = AnimationManifest.getAnimInstance( fullBodyAttackAnimNames[i] )
                     attackAnimTracks[i] = humanoid.LoadAnimation( attackAnim )
                     attackAnimTracks[i].Looped = false
                     // just assuming you provide the upper body version. do it
-                    const attackUpperBodyAnim = AnimationManifest.getAnimInstance('AttackOneHandUpperBody'+(i+1))
+                    const attackUpperBodyAnim = AnimationManifest.getAnimInstance( upperBodyAttackAnimNames[i] )
                     attackUpperBodyAnimTracks[i] = humanoid.LoadAnimation( attackUpperBodyAnim )
                     attackUpperBodyAnimTracks[i].Looped = false 
                 }
