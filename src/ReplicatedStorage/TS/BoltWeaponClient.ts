@@ -13,13 +13,13 @@ function messageFunc( key: string )
 
 export class BoltWeaponClient
 {
-    constructor( tool: Tool )
+    constructor( tool: Tool, animName: string | undefined )
     {
         let flexTool = FlexToolClient.getFlexTool( tool )
         DebugXL.Assert( flexTool !== undefined )
         if( flexTool )
         {
-            BoltWeaponUtility.Create( tool, messageFunc, flexTool )
+            BoltWeaponUtility.Create( tool, messageFunc, flexTool, animName )
         }
     }
 }
