@@ -56,6 +56,26 @@ Then you should be able to use Rojo to transfer the source to the Place you've b
 
 If you have problems let me know but I can't promise speedy answers!
 
+# importing the animations
+
+Ok this is a pain because unlike other assets Roblox doesn't let you share them. If that ever changes let me know!
+
+To get the animations into your place you'll need the Animation Editor plug-in.
+
+In your place, right click Workspace and **Insert from file**; choose rbxm/DungeonLifeAnimations.rbxm. That will insert an AnimationDummy into your place.
+
+Open the Animation Editor, go to File -> Load -> AttackBothHands1.
+
+Then File -> Export -> (Create New) and save it under the name AttackBothHands1.
+
+Repeat the process for every animation in the Load menu. 
+
+Now you have to teach the game the asset ids of those animations. You can find the animation ids by going to Create on the Roblox Website and choosing Animations. (If your place is under a group you'll also have to look under the Group Creations tab.) For each animation, click on it and copy the URL. Then go into your place Explorer and go to ReplicatedStorage -> AnimationManifest and paste that URL into the AnimationId of the animation with the same name. Again, do this for every animation.
+
+And now the animations should work! Your avatars should now swing their swords and fire their bows deliciously.
+
+Sorry it's so much work! That's honestly the easiest way I've found for getting the animations up-and-running the first time, if anybody can think of a better way let me know.
+
 # it's not you it's me
 
 Some current known problems: no custom animations are working, the localization is missing, and some of the images are missing. The in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the ids in order to let people buy things in yours.
