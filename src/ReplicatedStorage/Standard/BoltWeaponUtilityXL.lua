@@ -9,6 +9,7 @@ local FlexEquipUtility     = require( game.ReplicatedStorage.Standard.FlexEquipU
 
 local HeroUtility          = require( game.ReplicatedStorage.Standard.HeroUtility )
 
+local AnimationManifest = require( game.ReplicatedStorage.TS.AnimationManifest ).AnimationManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local BoltWeaponUtilityXL = {}
@@ -37,12 +38,6 @@ function BoltWeaponUtilityXL:Fire( tool, boltTemplate, targetV3, speedN )
 	local force = Instance.new("BodyForce")
 	force.force = Vector3.new( 0, bolt:GetMass() * workspace.Gravity, 0 )
 	force.Parent = bolt
-	
-	-- I don't think we need the gyro because the bolt is destroyed when it hits something anyway
---	local BodyGyro = Instance.new("BodyGyro")
---	BodyGyro.maxTorque = Vector3.new(math.huge,  math.huge, math.huge)
---	BodyGyro.cframe = bolt.CFrame
---	BodyGyro.Parent = bolt
 
 	-- why both?  Don't worry, the wrong script won't run on the wrong server/client
 	bolt:WaitForChild("BoltServerScript").Disabled = false
@@ -56,7 +51,7 @@ function BoltWeaponUtilityXL:Fire( tool, boltTemplate, targetV3, speedN )
 	return bolt
 end	
 
-function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool )
+function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 	local BoltToBeCloned = Tool:WaitForChild("Bolt")
 	local childTest = BoltToBeCloned:WaitForChild("BoltClientScript",5)
 	DebugXL:Assert( childTest )
@@ -82,7 +77,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool )
 	local Character
 	local Player
 
-	local aimAndFireAnimObj = Tool:FindFirstChild("AimAndFire")
+	local aimAndFireAnimObj = animName and AnimationManifest.getAnimInstance( animName ) or nil
 	local animTrack 
 
 	local function CheckIfAlive()
@@ -132,15 +127,17 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool )
 					if game["Run Service"]:IsClient() and not game["Run Service"]:IsServer() then
 						--print( "Spawning boltwatch function" )
 						spawn( function()
-							--print( "Waiting for bolt" )
+							----print( "Waiting for bolt" )
 							local serverBolt = workspace.ActiveServerProjectiles:WaitForChild( serverBoltCodeName )
 							serverBolt:Destroy()
-							--print( "Destroyed server bolt" )
+							--print "Destroyed server bolt" )
 						end)
 					end
 				end
-				local cooldownN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
-				WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, cooldownN )
+				local walkSpeedMulN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
+				--print "Beginning cooldown" )
+				WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, walkSpeedMulN )
+				--print "Cooldown finished" )
 				if animTrack then
 					animTrack:Play()
 					animTrack:AdjustSpeed( 0 )

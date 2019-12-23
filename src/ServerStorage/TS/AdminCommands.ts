@@ -99,10 +99,12 @@ let CommandList: {[k:string]:unknown} =
 
     // for cut and paste -
     // !equip {"baseDataS":"DaggersDual","levelN":1}
+    // !equip {"baseDataS":"DaggersDual","levelN":1}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"cold","levelN":2}]}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}
     // !equip {"baseDataS":"MagicHealing","levelN":2}
     // !equip {"baseDataS":"Bomb","levelN":2}
+    // !equip {"baseDataS":"Longbow","levelN":1}
     equip: function( sender: Player, args: string[] )
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
