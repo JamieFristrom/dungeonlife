@@ -56,6 +56,11 @@ Then you should be able to use Rojo to transfer the source to the Place you've b
 
 If you have problems let me know but I can't promise speedy answers!
 
+# adding localization
+
+If you play the game now it'll seem weird because it's showing you localization key entries instead of the actual translations. To fix, use the Localization Tools plug in in Studio; choose 'Click hereo to configure your cloud localization table' and on the website choose English as the source language. 
+Then Replace the entire cloud table with CSV and choose loc/GameLocalizationTablePublic.csv. That should upload all the translations. 
+
 # importing the animations
 
 Ok this is a pain because unlike other assets Roblox doesn't let you share them. If that ever changes let me know!
