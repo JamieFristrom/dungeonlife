@@ -75,7 +75,7 @@ Then File -> Export -> (Create New) and save it under the name AttackBothHands1.
 
 Repeat the process for every animation in the Load menu. 
 
-Now you have to teach the game the asset ids of those animations. You can find the animation ids by going to Create on the Roblox Website and choosing Animations. (If your place is under a group you'll also have to look under the Group Creations tab.) For each animation, click on it and copy the URL. Then go into your place Explorer and go to ReplicatedStorage -> AnimationManifest and paste that URL into the AnimationId of the animation with the same name. Again, do this for every animation.
+Now you have to teach the game the asset ids of those animations. You can find the animation ids by going to Create on the Roblox Website and choosing Animations. (If your place is under a group you'll also have to look under the Group Creations tab.) For each animation, click on it and copy the URL. Then go into your place Explorer and go to ReplicatedFirst -> AnimationManifest and paste that URL into the AnimationId of the animation with the same name. Again, do this for every animation.
 
 And now the animations should work! Your avatars should now swing their swords and fire their bows deliciously.
 

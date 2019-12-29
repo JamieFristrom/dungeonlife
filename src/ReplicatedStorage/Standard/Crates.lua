@@ -2,12 +2,14 @@ local DebugXL        = require( game.ReplicatedStorage.Standard.DebugXL )
 
 local PossessionData = require( game.ReplicatedStorage.PossessionData )
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local Crates = --[[Table of tables]] 
 {
 	{ --[[Table for crate 1 data]]  -- rewards must be slot 1
         ['Name']    = "Rewards",
 		inStoreB    = false,
-        ['Icon']    = "rbxgameasset://Images/locked-chest",
+        ['Icon']    = AssetManifest.ImageLockedChest,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		['Cost']    = 200,  -- currently higher than Assassin price because there are no repeats and you can get good stuff 
         ['Items'] = 
@@ -127,7 +129,7 @@ local Crates = --[[Table of tables]]
     },	
     { --[[Table for crate 2 data]]  -- blueprints must be slot 2
         ['Name'] = "Blueprints",
-        ['Icon'] = "rbxgameasset://Images/locked-chest",
+        ['Icon'] = AssetManifest.ImageLockedChest,
 		inStoreB = true,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		['Cost'] = 200,  -- currently higher than Assassin price because there are no repeats and you can get good stuff 
@@ -212,7 +214,7 @@ local Crates = --[[Table of tables]]
 	},
 	{ --[[Table for crate 3 data]]
         ['Name'] = "Skins",
-        ['Icon'] = "rbxgameasset://Images/locked-chest",
+        ['Icon'] = AssetManifest.ImageLockedChest,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inStoreB = true,		
 		['Cost'] = 175,  -- currently higher than Assassin price because there are no repeats and you can get good stuff 
@@ -297,7 +299,7 @@ local Crates = --[[Table of tables]]
 	},
 	{ --[[Table for crate 4 data]]
         ['Name'] = "Premium",
-        ['Icon'] = "rbxgameasset://Images/locked-chest",
+        ['Icon'] = AssetManifest.ImageLockedChest,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inStoreB = true,		
 		['Cost'] = 800,  
@@ -366,7 +368,7 @@ local Crates = --[[Table of tables]]
 	},
 	{ --[[Table for crate 5 data]]
         ['Name'] = "Subdweller Colony",
-        ['Icon'] = "rbxgameasset://Images/locked-chest",
+        ['Icon'] = AssetManifest.ImageLockedChest,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inStoreB = true,		
 		['Cost'] = 150,  -- currently higher than Assassin price because there are no repeats and you can get good stuff 
@@ -432,7 +434,7 @@ local Crates = --[[Table of tables]]
 	},
 	{ --[[Table for crate 5 data]]
         ['Name'] = "Winter's Crypt",
-        ['Icon'] = "rbxgameasset://Images/locked-chest",
+        ['Icon'] = AssetManifest.ImageLockedChest,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inStoreB = true,		
 		['Cost'] = 150,  -- currently higher than Assassin price because there are no repeats and you can get good stuff 

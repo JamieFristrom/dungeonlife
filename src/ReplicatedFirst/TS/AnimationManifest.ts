@@ -1,5 +1,5 @@
-import { ReplicatedStorage } from "@rbxts/services"
-import { DebugXL } from "./DebugXLTS"
+import { ReplicatedStorage, ReplicatedFirst } from "@rbxts/services"
+import { DebugXL } from "../../ReplicatedStorage/TS/DebugXLTS"
 
 /**
     \brief Wrapper around data about what the animation id's are for this particular place or group.
@@ -9,7 +9,7 @@ import { DebugXL } from "./DebugXLTS"
 */
 export namespace AnimationManifest
 {
-    const animationManifest = ReplicatedStorage.WaitForChild( 'AnimationManifest', 5 )
+    const animationManifest = ReplicatedFirst.WaitForChild( 'AnimationManifest', 5 )
     DebugXL.Assert( animationManifest !== undefined )
 
     export function getAnimInstance( animName: string ) : Animation

@@ -7,7 +7,7 @@ import { DebugXL } from './DebugXLTS'
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
 
-import { AnimationManifest } from 'ReplicatedStorage/TS/AnimationManifest'
+import { AnimationManifest } from 'ReplicatedFirst/TS/AnimationManifest'
 
 
 
