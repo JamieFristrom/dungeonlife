@@ -8,6 +8,8 @@ local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtili
 local HeroUtility = require( game.ReplicatedStorage.Standard.HeroUtility )
 local InventoryClient  = require( game.ReplicatedStorage.InventoryClient )
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local FlexToolClient = require( game.ReplicatedStorage.TS.FlexToolClient ).FlexToolClient
 local PCClient = require( game.ReplicatedStorage.TS.PCClient ).PCClient
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
@@ -84,11 +86,11 @@ function GearUI.PopulateGearFrame( gearFrame, gearTemplate, itemInfoFrame, gearP
 			if CharacterClientI:GetEquipped( item ) then
 				local equipSlot = ToolData.dataT[ item.baseDataS ].equipSlot
 				if equipSlot == ToolData.EquipSlotEnum.Torso then
-					newItem.EquipSlot.Image = "rbxgameasset://Images/EquipSlotTorso"
+					newItem.EquipSlot.Image = AssetManifest.ImageEquipSlotTorso
 				elseif equipSlot == ToolData.EquipSlotEnum.Head then
-					newItem.EquipSlot.Image = "rbxgameasset://Images/EquipSlotHead"					
+					newItem.EquipSlot.Image = AssetManifest.ImageEquipSlotHead
 				elseif equipSlot == ToolData.EquipSlotEnum.Legs then
-					newItem.EquipSlot.Image = "rbxgameasset://Images/EquipSlotLegs"
+					newItem.EquipSlot.Image = AssetManifest.ImageEquipSlotLegs
 				else
 					DebugXL:Error( "Equip slot image unsupported: "..item.baseDataS )					
 				end

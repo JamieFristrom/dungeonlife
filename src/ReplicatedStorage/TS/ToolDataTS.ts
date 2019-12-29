@@ -1,5 +1,7 @@
 import { SkinTypeEnum } from "./SkinTypes"
 
+import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
+
 export namespace ToolData
 {
     // wishlist, we could have "Held" and "Power" as parts of this and make the sort easier
@@ -370,7 +372,7 @@ export namespace ToolData
             walkSpeedMulN   : 1,
             rangeN         : 6,			
             priceMulN: 1,
-            imageId : "rbxgameasset://Images/ToolClaws",
+            imageId : AssetManifest.ImageToolClaws,
         },	
         {   
             idS            : "DaggersDual",
@@ -416,7 +418,7 @@ export namespace ToolData
             priceMulN: 1.5,
 
             rangeN         : 6,			
-            imageId : "rbxgameasset://Images/ToolClaws",
+            imageId : AssetManifest.ImageToolClaws,
         },			
         {   
             idS            : "ClawsDragon",
@@ -438,7 +440,7 @@ export namespace ToolData
             priceMulN: 1.5,
 
             rangeN         : 10,			
-            imageId : "rbxgameasset://Images/ToolClaws",			
+            imageId : AssetManifest.ImageToolClaws,			
         },				
         {
             idS            : "Crossbow", 

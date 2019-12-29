@@ -30,16 +30,6 @@ export interface DeveloperProductI
     flavor: DeveloperProducts.FlavorEnum
     Price: string
 }
-//     Name = "Hero Express",
-// 		Icon = "rbxgameasset://Images/CrossedSwords",
-// 		imageColor3 = Color3.new( 1, 1, 1 ),
-// 		inventoryKeyS = "HeroExpress",
-// 		amountN = 1,
-// 		infoType = Enum.InfoType.Product,
-// 		ID = 355786697,
-// 		Price = "25 R$",
-// 		flavor = DeveloperProducts.FlavorEnum.HeroExpress,		
-// }
 
 
 export namespace Localize

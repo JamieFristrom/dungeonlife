@@ -1,11 +1,12 @@
 import { FlexToolI } from ".\\FlexToolTS"
 import { PCI } from ".\\PCTS"
+import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
-import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
-import { InventoryI } from "./InventoryI";
-//-------------------------------------------------------------------------------------------------------------------------
-//-- heroes
-//-------------------------------------------------------------------------------------------------------------------------
+//import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
+
+//
+// heroes
+//
 
 
 export interface HeroStatBlockI
@@ -178,7 +179,7 @@ export namespace HeroClasses {
 			idS           : "Barbarian",
 			readableNameS : "Barbarian",
 	//		descriptionS  : "Does more close combat damage than any other hero class",
-			imageId       : "rbxgameasset://Images/HeroBarbarian",
+			imageId       : AssetManifest.ImageHeroBarbarian,
 			itemsT :
 			{ 
 				item1   : { baseDataS : "Axe",      levelN : 2, enhancementsA : [ { flavorS : "explosive", levelN : 1 } ], slotN : 1 },
@@ -207,7 +208,7 @@ export namespace HeroClasses {
 			idS           : "Priest",
 			readableNameS : "Priest",
 	//		descriptionS  : "Can magically heal and is extra strong against creatures of darkness",
-			imageId       : "rbxgameasset://Images/HeroPriest",
+			imageId       : AssetManifest.ImageHeroPriest,
 			itemsT :
 			{ 
 				item1   : { baseDataS : "Mace",         levelN : 1, enhancementsA: [ { flavorS : "radiant", levelN : 1 } ], slotN : 1 }, 

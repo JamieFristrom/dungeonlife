@@ -3,6 +3,8 @@ local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local PossessionData = 
 {
 	-- wishlist; find a way to do subclassable enums so we could say IsA("Tool") IsA("melee") IsA("Furnishing") IsA("Spawn") etc
@@ -65,179 +67,7 @@ PossessionData.furnishingTypesT =
 }
 
 
--- migrated to typescript
 PossessionData.skinTypesT = require( game.ReplicatedStorage.TS.SkinTypes ).SkinTypes
---[[
-{
-	Sword1H      = 
-	{
-		idS           = "Sword1H",
-		readableNameS = "One Handed Sword",
-		imageId       = "http://www.roblox.com/asset/?id=124987047",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Sword2H      = 
-	{
-		idS           = "Sword2H",
-		readableNameS = "Two Handed Sword",
-		imageId       = "rbxgameasset://Images/ToolGreatsword",		
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Axe1H        = 
-	{
-		idS           = "Axe1H",
-		readableNameS = "One Handed Axe",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2266973230&width=420&height=420&format=png",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Axe2H        = 
-	{
-		idS           = "Axe2H",
-		readableNameS = "Two Handed Axe",
-		imageId       = "rbxassetid://12768177",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Claws =
-	{
-		idS           = "Claws",
-		readableNameS = "Claws",
-		imageId       = "rbxgameasset://Images/ToolClaws",
-		tagsT = { monster = true, held = true },
-	},
-	Bow     = 
-	{
-		idS           = "Bow",
-		readableNameS = "Bow",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2574560933&width=420&height=420&format=png",
-		tagsT = { monster = true, hero = true, held = true },
-	},	
-	Crossbow     = 
-	{
-		idS           = "Crossbow",
-		readableNameS = "Crossbow",
-		imageId       = "rbxassetid://16215840",
-		tagsT = { monster = true, hero = true, held = true },
-	},	
-	Bomb         = 
-	{
-		idS           = "Bomb",
-		readableNameS = "Bomb",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2347448422&width=420&height=420&format=png",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Maul         = 
-	{
-		idS           = "Maul",  -- includes hammer and mace.  always one handed for now
-		readableNameS = "Maul",
-		imageId       = "rbxassetid://18409033",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	Staff        = 
-	{
-		idS           = "Staff",  -- includes hammer and mace.  always one handed for now
-		readableNameS = "Staff",
-		imageId       = "http://www.roblox.com/asset/?id=49367564",
-		tagsT = { monster = true, hero = true, held = true },
-	},	
-	MagicBolt         = 
-	{
-		idS           = "MagicBolt",
-		readableNameS = "Magic Bolt",
-		imageId       = "rbxassetid://1495371626",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	MagicBarrier = 
-	{
-		idS           = "MagicBarrier",
-		readableNameS = "Magic Barrier",
-		imageId       = "rbxassetid://1498812207",
-		tagsT = { monster = true, hero = true, held = true },
-	},
-	ClothTorso =
-	{
-		idS           = "ClothTorso",
-		readableNameS = "Cloth Shirt",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2486671858&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	ClothLegs =
-	{
-		idS           = "ClothLegs",
-		readableNameS = "Cloth Pants",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2486800832&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},	
-	LeatherTorso =
-	{
-		idS           = "LeatherTorso",
-		readableNameS = "Leather Shirt",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2477615338&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	LeatherLegs =
-	{
-		idS           = "LeatherLegs",
-		readableNameS = "Leather Pants",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2477475862&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	ArmorLightTorso =
-	{
-		idS           = "ArmorLightTorso",
-		readableNameS = "Light Chest Armor",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2477662190&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	ArmorLightLegs =
-	{
-		idS           = "ArmorLightLegs",
-		readableNameS = "Light Leg Armor",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2486666881&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	ArmorHeavyTorso =
-	{
-		idS           = "ArmorHeavyTorso",
-		readableNameS = "Heavy Chest Armor",
-		imageId       = "https://www.roblox.com/asset-thumbnail/image?assetId=2486613528&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	ArmorHeavyLegs =
-	{
-		idS           = "ArmorHeavyLegs",
-		readableNameS = "Heavy Leg Armor",
-		imageId = "https://www.roblox.com/asset-thumbnail/image?assetId=2486619131&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},	
-	Hat =
-	{
-		idS           = "Hat",
-		readableNameS = "Hat",
-		imageId = "https://www.roblox.com/asset-thumbnail/image?assetId=2486682345&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},
-	Helmet =
-	{
-		idS           = "Helmet",
-		readableNameS = "Helmet",
-		imageId = "https://www.roblox.com/asset-thumbnail/image?assetId=2486677488&width=420&height=420&format=png",
-		tagsT = { hero = true, worn = true },
-	},			
---	MagicBeam =
---	{ 
---		idS           = "MagicBeam",
---		readableNameS = "Magic Beam",
---		imageId       = "",
---	}
-	Unskinnable =
-	{
-		idS           = "Unskinnable",
-		readableNameS = "",
-		imageId       = "",
-		tagsT = {}
-	}
-}
---]]
 
 for _, thing in pairs( PossessionData.skinTypesT ) do
 	DebugXL:Assert( thing.idS )
@@ -725,7 +555,7 @@ PossessionData.dataA =
 			idS            = "AxeBarbarian",
 			baseToolS      = "Axe",
 			readableNameS  = "Barbarian Axe",
-			textureSwapId  = "rbxgameasset://Images/AxeClean",
+			textureSwapId  = AssetManifest.ImageAxeClean,
 			skinType       = PossessionData.skinTypesT.Axe2H,
 			flavor         = PossessionData.FlavorEnum.Skin,
 --			imageId        = "http://www.roblox.com/asset/?id=18409033",  -- tarnished axe skin
@@ -785,7 +615,7 @@ PossessionData.dataA =
 			readableNameS  = "Steel Claws",
 			skinType       = PossessionData.skinTypesT.Claws,
 			flavor         = PossessionData.FlavorEnum.Skin,
-			imageId        = "rbxgameasset://Images/ToolClawsSteel",
+			imageId        = AssetManifest.ImageToolClawsSteel,
 			rarityN        = 1,	
 			purchaseCapN   = 1,
 			startingCountN = 0,			
@@ -796,7 +626,7 @@ PossessionData.dataA =
 			readableNameS  = "Sun Claws",
 			skinType       = PossessionData.skinTypesT.Claws,
 			flavor         = PossessionData.FlavorEnum.Skin,
-			imageId        = "rbxgameasset://Images/ToolClawsSun",			
+			imageId        = AssetManifest.ImageToolClawsSun,			
 			rarityN        = 3,	
 			purchaseCapN   = 1,
 			startingCountN = 0,			
@@ -851,7 +681,7 @@ PossessionData.dataA =
 			idS            = "MaceClean",
 			baseToolS      = "Mace",
 			readableNameS  = "Immaculate Mace",
-			textureSwapId  = "rbxgameasset://Images/MaceClean",
+			textureSwapId  = AssetManifest.ImageMaceClean,
 --			textureSwapId  = "rbxassetid://18407865",  -- tarnished
 			skinType       = PossessionData.skinTypesT.Maul,
 			flavor         = PossessionData.FlavorEnum.Skin,
@@ -966,7 +796,7 @@ PossessionData.dataA =
 		},
 		{
 			idS           = "Barbarian",
-			imageId       = "rbxgameasset://Images/HeroBarbarian", -- needs to match HeroClasses
+			imageId       = AssetManifest.ImageHeroBarbarian, -- needs to match HeroClasses
 			rarityN = 0, -- for pretty unlock message
 			startingCountN = 0,					  
 			tagsT = {},
@@ -977,7 +807,7 @@ PossessionData.dataA =
 		},		
 		{
 			idS           = "Priest",
-			imageId       = "rbxgameasset://Images/HeroPriest", -- needs to match HeroClasses
+			imageId       = AssetManifest.ImageHeroPriest, -- needs to match HeroClasses
 			rarityN = 0, -- for pretty unlock message
 			startingCountN = 0,					  
 			tagsT = {},
