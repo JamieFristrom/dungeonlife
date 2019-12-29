@@ -1,42 +1,44 @@
 print( script:GetFullName().." executed" )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
-print( "ChooseHeroScript: CharacterClientI required" )
+--print( "ChooseHeroScript: CharacterClientI required" )
 local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
-print( "ChooseHeroScript: HeroUtility required" )
+--print( "ChooseHeroScript: HeroUtility required" )
 local InventoryClient   = require( game.ReplicatedStorage.InventoryClient )
-print( "ChooseHeroScript: InventoryClient required" )
+--print( "ChooseHeroScript: InventoryClient required" )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
-print( "ChooseHeroScript: DeveloperProducts required" )
+--print( "ChooseHeroScript: DeveloperProducts required" )
 
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
-print( "ChooseHeroScript: CheatUtilityXL required" )
+--print( "ChooseHeroScript: CheatUtilityXL required" )
 local InputXL           = require( game.ReplicatedStorage.Standard.InputXL )
-print( "ChooseHeroScript: InputXL required" )
+--print( "ChooseHeroScript: InputXL required" )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
-print( "ChooseHeroScript: InstanceXL required" )
+--print( "ChooseHeroScript: InstanceXL required" )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
-print( "ChooseHeroScript: TableXL required" )
+--print( "ChooseHeroScript: TableXL required" )
 
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
-print( "ChooseHeroScript: PossessionData required" )
+--print( "ChooseHeroScript: PossessionData required" )
+
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 
 local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
-print( "ChooseHeroScript: GuiXL required" )
+--print( "ChooseHeroScript: GuiXL required" )
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
-print( "ChooseHeroScript: Hero required" )
+--print( "ChooseHeroScript: Hero required" )
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
-print( "ChooseHeroScript: Localize required" )
+--print( "ChooseHeroScript: Localize required" )
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
 
 
 
 local heroGuiFrame    = script.Parent.Parent:WaitForChild("HeroGui")
-print( "ChooseHeroScript: HeroGui available" )
+--print( "ChooseHeroScript: HeroGui available" )
 local chooseHeroFrame = heroGuiFrame:WaitForChild("ChooseHero")
-print( "ChooseHeroScript: ChooseHero available" )
+--print( "ChooseHeroScript: ChooseHero available" )
 local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-print( "ChooseHeroScript: PlayerGui available" )
+--print( "ChooseHeroScript: PlayerGui available" )
 
 
 local function ChooseHero( slotN )
@@ -132,7 +134,7 @@ local function DisplayChoices()
 		newHeroButton.Parent = chooseHeroFrame.Grid
 		newHeroButton.Visible = true
 		if heroSlot > InventoryClient:GetCount( "HeroSlots" )then
-			newHeroButton.Image.Image = "rbxgameasset://Images/padlocklocked"
+			newHeroButton.Image.Image = AssetManifest.ImagePadlockLocked
 			newHeroButton.NewHero.Text = "Unlock hero slot"
 			newHeroButton.NewHero.MouseButton1Click:Connect( function()
 				UnlockHeroSlot( #savedPlayerCharacters.heroesA + 1 )

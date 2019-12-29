@@ -3,13 +3,13 @@ print( script:GetFullName().." executed" )
 local InputXL       = require( game.ReplicatedStorage.Standard.InputXL )
 local WeaponUtility = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local UserInputService = game:GetService("UserInputService")
 
 local localPlayer = game.Players.LocalPlayer
 
 local defaultMouseIconId = localPlayer:GetMouse().Icon
-
-local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 
 local mouseIconCooldownIdA =
 {
@@ -64,7 +64,7 @@ game["Run Service"].RenderStepped:Connect( function()
 		else
 			local tool = character:FindFirstChildWhichIsA( "Tool" ) 
 			if tool then
-				localPlayer:GetMouse().Icon = "rbxgameasset://Images/CrosshairCursor"
+				localPlayer:GetMouse().Icon = AssetManifest.ImageCrosshairCursor
 			else
 				localPlayer:GetMouse().Icon = defaultMouseIconId
 			end

@@ -1,5 +1,7 @@
 local DebugXL     = require( game.ReplicatedStorage.Standard.DebugXL )
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local DeveloperProducts = {}
 
 DeveloperProducts.FlavorEnum = 
@@ -19,7 +21,7 @@ DeveloperProducts.productsA =
 	-- hero express assumed to be #1
 	{
 		Name = "Hero Express",
-		Icon = "rbxgameasset://Images/CrossedSwords",
+		Icon = AssetManifest.ImageCrossedSwords, 
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inventoryKeyS = "HeroExpress",
 		amountN = 1,
@@ -31,7 +33,7 @@ DeveloperProducts.productsA =
 	-- rubies
 	{
 		Name = "100\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 100,
@@ -42,7 +44,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "250\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 250,
@@ -53,7 +55,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "750\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 750,
@@ -64,7 +66,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "1500\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 1500,
@@ -75,7 +77,7 @@ DeveloperProducts.productsA =
 	},	
 	{
 		Name = "3000\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 3000,
@@ -86,7 +88,7 @@ DeveloperProducts.productsA =
 	},		
 	{
 		Name = "6000\nRubies",
-		Icon = "rbxgameasset://Images/CutGem",
+		Icon = AssetManifest.ImageCutGem,
 		imageColor3 = Color3.new( 1, 0, 0 ),
 		inventoryKeyS = "Rubies",
 		amountN = 6000,
@@ -213,7 +215,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "Five Gear Slots",
-		Icon = "rbxgameasset://Images/Pack",
+		Icon = AssetManifest.ImagePack,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inventoryKeyS = "GearSlots",
 		amountN = 5,
@@ -224,7 +226,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "Fifteen Gear Slots",
-		Icon = "rbxgameasset://Images/Pack",
+		Icon = AssetManifest.ImagePack,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inventoryKeyS = "GearSlots",
 		amountN = 15,
@@ -235,7 +237,7 @@ DeveloperProducts.productsA =
 	},
 	{
 		Name = "Hero Slot",
-		Icon = "rbxgameasset://Images/Pack",
+		Icon = AssetManifest.ImagePack,
 		imageColor3 = Color3.new( 1, 1, 1 ),
 		inventoryKeyS = "HeroSlots",
 		amountN = 1,

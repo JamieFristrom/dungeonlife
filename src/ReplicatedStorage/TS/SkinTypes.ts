@@ -1,3 +1,5 @@
+import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest";
+
 export interface ActiveSkinSetI { [k:string]: SkinTypeEnum }
 
 export declare interface SkinInfoI
@@ -47,9 +49,9 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 	},
 	Sword2H     :
 	{
-		idS          :"Sword2H",
-		readableNameS:"Two Handed Sword",
-		imageId      :"rbxgameasset://Images/ToolGreatsword",		
+		idS          : "Sword2H",
+		readableNameS: "Two Handed Sword",
+		imageId      : AssetManifest.ImageToolGreatsword,
 		tagsT:{ monster:true, hero:true, held:true },
 	},
 	Axe1H       :
@@ -70,7 +72,7 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 	{
 		idS          : "Claws",
 		readableNameS: "Dual Weapon",
-		imageId      : "rbxgameasset://Images/ToolClaws",
+		imageId      : AssetManifest.ImageToolClaws,
 		tagsT: { monster: true, hero: true, held: true },
 	},
 	Bow    : 
