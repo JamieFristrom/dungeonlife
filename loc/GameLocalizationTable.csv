@@ -1,0 +1,1152 @@
+﻿Key,Context,Example,Source,de,es,fr,ja,ko,pt,zh-hans,zh-hant
+UnderhavenDesc,UnderhavenDesc,,"(Under Construction) Welcome to peaceful Underhaven, where monsters and heroes get along and you can set up your characters, shop, and build in peace.","(In Vorbereitung) Willkommen im ruhigen Underhaven, wo Monster und Helden miteinander gut auskommen und du deine Charaktere erstellen, einkaufen und in Ruhe bauen kannst.",,"(En construction) Bienvenue dans la tranquille Underhaven, un endroit où les monstres et les héros sont en paix. Tu peux assembler ton personnage, acheter des équipements et construire tes objets en toute tranquillité.",（工事中）モンスターとヒーローが仲良くいられて、キャラクターの設定をしたり、買い物をしたり、平和的に作成ができる平和なアンダーヘイヴンへようこそ。,"(공사 중) 안전한 지하 은신처에 온 걸 환영해요. 몬스터와 영웅들은 이곳에서 함께 어울리며 캐릭터를 꾸미거나 쇼핑을 할 수 있고, 평화로운 시간을 보낼 수 있죠.","(Em Construção) Seja Bem-Vindo ao Pacífico Refúgio Subterrãneo, onde Monstros e Heróis se encontram juntos para arrumar seus equipamentos, Comprar coisas e construir em paz",（建设中）欢迎来到和平的庇护所，在这里怪物与英雄们和平相处，你可以不受打扰地设置角色、商店以及建造。,（施工中）歡迎來到和平的地下聖所。怪物和英雄都在這裡共處，你也可以自由地設定角色、購物和建造。
+MagicSprintDescription,MagicSprintDescription, +30% run speed for 1.30 seconds,+{1:int}% run speed for {2:fixed} seconds,+{1:int} % Lauftempo für {2:fixed} Sek.,+{1:int}% run speed for {2:fixed} seconds,+{1:int} % de vitesse de course pendant {2:fixed} secondes,{2:fixed}秒の間、走るスピードが{1:int}%アップ,+ {2:fixed}초 동안 달리기 속도 {1:int}% 향상, +{1:int}% Velocidade de Corrida por {2:fixed} segundos ,{2:fixed}秒内奔跑速度+{1:int}%,+{1:int}% 奔跑速度，持續 {2:fixed} 秒
+willDescription,willDescription,+2 Arcane,+{amount:int} Arcane,+{amount:int} Arkan,+{amount:int} Arcane,+{amount:int} Arcane,特殊性+{amount:int},+ 불가사의 {amount:int} 추가, +{amount:int} Arcano,奥术+{amount:int},+{amount:int} 奧術
+dexDescription,dexDescription,+2 Sharp,+{amount:int} Sharp,+{amount:int} Scharfsichtig,+{amount:int} Sharp,+{amount:int} Précision,鋭さ+{amount:int},+ 예리함 {amount:int} 추가, +{amount:int} Afiado,伤害+{amount:int},+{amount:int} 銳眼
+strDescription,strDescription,+2 Strong,+{amount:int} Strong,+{amount:int} Stark,+{amount:int} Strong,+{amount:int} Force,強さ+{amount:int},+ 힘 {amount:int} 추가, +{amount:int} Forte,力量+{amount:int},+{amount:int} 力量
+conDescription,conDescription,+2 Tough,+{amount:int} Tough,+{amount:int} Zäh,+{amount:int} Tough,+{amount:int} Robustesse,丈夫さ+{amount:int},+ 끈기 {amount:int} 추가, +{amount:int} Resistente,坚韧+{amount:int},+{amount:int} 堅韌
+StoreInfoBoost,StoreInfoBoost,,2x Experience Points! 3x Rubies! 2x Loot Drop Chance (doesn't include potions)! 50% Chance Loot Higher Level! 50% Chance Higher Loot Tier (unless already Legendary)!,"2x Erfahrungspunkte! 3x Rubine! 2x Beutefund-Chance (exklusive Tränke)! 50 % Chance auf Beute höherer Stufe! 50 % Chance auf Beute höheren Rangs (es sei denn, sie ist schon legendär)!",2x Experience Points! 3x Rubies! 2x Loot Drop Chance (doesn't include potions)! 50% Chance Loot Higher Level! 50% Chance Higher Loot Tier (unless already Legendary)!,Points d'expérience x2! Rubis x3! Chance de butin x2 (potions non incluses)! 50 % de chance d'avoir du butin de niveau supérieur! 50 % de chance d'avoir du butin de catégorie supérieure (sauf si déjà légendaire)!,経験値2倍、ルビー3倍！宝物（ポーションを除く）のドロップチャンスも2倍になるぞ！おまけに50%の確率で、宝物レベルとレアリティ（レジェンドを除く）がアップだ！,경험치 2배! 루비 3배! 약탈품 드롭 확률 2배(물약 미포함)! 상위 레벨 약탈품 획득 확률 50 %! 상위 약탈품 획득 확률 50 %(전설 등급에는 적용되지 않음)!,2x Pontos de Experiência! 3x Rubis! 2x Chance de Looting (Não inclui poções)! 50% Chance de Loot em Nível Maior! 50% Chance de Maior Classificação de Loot (Ao menos que já seja Lendário)!,经验值获取x2！红宝石掉落x3！战利品掉落概率（药水除外）x2！50%概率获得更高等级的战利品！50%概率获得更高品质的战利品（除非已达传奇级）！,2 倍經驗點數！3 倍紅寶石！2 倍戰利品掉落機率 (不包含藥水)！有 50% 機率獲得更高等級的戰利品！有 50% 機率獲得更高稀有度的戰利品 (除非已是傳奇物品)！
+StatueAvatarDescription,StatueAvatarDescription,,"A statue of your own avatar, because Very Important People have statues honoring them. (Requires VIP pass)","Eine Statue deines Avatars, denn VIPs bekommen zu ihren Ehren stets eine Statue. (VIP-Pass erforderlich)","A statue of your own avatar, because Very Important People have statues honoring them. (Requires VIP pass)","Statue de ton propre avatar, car les VIP ont droit à une statue en leur honneur. (Requiert le passe VIP.)",君のアバターの像。自分の像を持っているのは、名誉の証なのだ（VIPパスが必要です）。,"내 아바타의 동상, 위대한 사람은 그들을 기념하는 동상이 있는 법입니다(VIP 패스 필요).","Uma estátua do seu próprio avatar, por que Pessoas Muito Importantes tem estátuas honrando-as. (Requer passe VIP)",一个你的虚拟形象的雕塑，VIP玩家总得有个雕塑来铭记他们（需要VIP通行证）,以你的虛擬人偶為造型的雕像，因為重量級人物都會建雕像來榮耀自己。(需要 VIP 通行證)
+fireAdjectiveFP3,fireAdjectiveFP3,female plural,Ablaze,Lodernder,Ablaze,enflammé,燃える,불길의,Em chamas,闪耀,烈火
+fireAdjectiveFS3,fireAdjectiveFS3,female singular,Ablaze,Lodernder,Ablaze,enflammé,燃える,불길의,Em chamas,闪耀,烈火
+fireAdjectiveMP3,fireAdjectiveMP3,male plural,Ablaze,Lodernde,Ablaze,enflammés,燃える,불길의,Em chamas,闪耀,烈火
+fireAdjectiveMS3,fireAdjectiveMS3,male singular,Ablaze,Lodernder,Ablaze,enflammé,燃える,불길의,Em chamas,闪耀,烈火
+dexNoun2,dexNoun2,,Accuracy,Genauigkeit,Precisión,Précision,正確さ,정확도,Precisão,精确度,準確度
+dexAdjectiveFP2,dexAdjectiveFP2,female plural,Accurate,Genauer,Accurate,précis,正確な,정확한,Preciso,精确,精準
+dexAdjectiveFS2,dexAdjectiveFS2,female singular,Accurate,Genauer,Accurate,précis,正確な,정확한,Preciso,精确,精準
+dexAdjectiveMP2,dexAdjectiveMP2,male plural,Accurate,Genaue,Accurate,précis,正確な,정확한,Precisos,精确,精準
+dexAdjectiveMS2,dexAdjectiveMS2,male singular,Accurate,Genauer,Accurate,précis,正確な,정확한,Preciso,精确,精準
+,,use 'hero express' feature,Activate Hero Express,Heldenexpress aktivieren,Activate Hero Express,Activer Héros express,ヒーローエクスプレスを使う,영웅 이용권 활성화하기,Ativar Expresso de Herói,激活英雄速递,使用英雄變身券
+ClothPirateLegs,ClothPirateLegs,,Adventurer Garb Legs,Abenteurertracht - Beine,Adventurer Garb Legs,Jambières d'aventurier,冒険者のズボン,모험가 의복 하의,Vestimenta do Aventureiro Pernas,冒险者装束下装,冒險者服裝護腿
+ClothPirateTorso,ClothPirateTorso,,Adventurer Garb Top,Abenteurertracht-Oberteil,Adventurer Garb Top,Haut d'aventurier,冒険者のシャツ,모험가 의복 상의,Vestimenta do Aventureiro Corpo,冒险者装束上装,冒險者服裝上衣
+explosiveAdjectiveFP4,explosiveAdjectiveFP4,"like an earthquake, but instead it's air",Airquake,Luftbebende,Airquake,sismiques,空気を震わせる,공중지진,Armoto,气震,大氣震盪
+explosiveAdjectiveFS4,explosiveAdjectiveFS4,"like an earthquake, but instead it's air",Airquake,Luftbebender,Airquake,sismique,空気を震わせる,공중지진,Armoto,气震,大氣震盪
+explosiveAdjectiveMP4,explosiveAdjectiveMP4,"like an earthquake, but instead it's air",Airquake,Luftbebende,Airquake,sismiques,空気を震わせる,공중지진,Armoto,气震,大氣震盪
+explosiveAdjectiveMS4,explosiveAdjectiveMS4,"like an earthquake, but instead it's air",Airquake,Luftbebender,Airquake,sismique,空気を震わせる,공중지진,Armoto,气震,大氣震盪
+HeavyAlarLegs,HeavyAlarLegs,,Alar Knight Legs,Alar-Ritter - Beine,Alar Knight Legs,Jambières chevalier Alar,翼の生えた騎士のブーツ,날개 기사 하의,Cavaleiro Alado Pernas,飞翼骑士下装,雙翼騎士護腿
+HeavyAlarTorso,HeavyAlarTorso,,Alar Knight Torso,Alar-Ritter-Torso,Alar Knight Torso,Torse chevalier Alar,翼の生えた騎士の鎧,날개 기사 상의,Cavaleiro Alado Corpo,飞翼骑士躯干,雙翼騎士上半身
+LightAlphaMailTorso,LightAlphaMailTorso,Rare item that alpha testers got,Alpha Mail,Alpha-Kettenpanzer,Alpha Mail,Maille Alpha,アルファメール,알파 갑옷,Cota de Malha Alfa,阿尔法套装,Alpha 鎖子甲
+Altar,Altar,,Altar,Altar,Altar,Autel,祭壇,제단,Altar,祭坛,祭壇
+radiantAdjectiveFP3,radiantAdjectiveFP3,female plural,Angelic,Engelsgleicher,Angelic,angélique,天使の,천사의,Angélico,天使般,天使一般
+radiantAdjectiveFS3,radiantAdjectiveFS3,female singular,Angelic,Engelsgleicher,Angelic,angélique,天使の,천사의,Angélico,天使般,天使一般
+radiantAdjectiveMP3,radiantAdjectiveMP3,male plural,Angelic,Engelsgleiche,Angelic,angéliques,天使の,천사의,Angélicos,天使般,天使一般
+radiantAdjectiveMS3,radiantAdjectiveMS3,male singular,Angelic,Engelsgleicher,Angelic,angélique,天使の,천사의,Angélico,天使般,天使一般
+Apprentice,Apprentice,player rank,Apprentice,Lehrling,Apprentice,Apprenti,見習い,견습,Aprendiz,学徒,見習生
+willAdjectiveFP2,willAdjectiveFP2,female plural,Arcane,Arkane,Arcane,arcaniques,特殊な,불가사의한,Arcanas,奥术,奧術
+willAdjectiveFS2,willAdjectiveFS2,female singular,Arcane,Arkan,Arcane,Arcane,特殊な,불가사의한,Arcano,奥术,奧術
+willAdjectiveMP2,willAdjectiveMP2,male plural,Arcane,Arkane,Arcane,arcaniques,特殊な,불가사의한,Arcanos,奥术,奧術
+willAdjectiveMS2,willAdjectiveMS2,male singular,Arcane,Arkaner,Arcane,arcanique,特殊な,불가사의한,Arcano,奥术,奧術
+willN,willN,"stat: how magical you are, how good you are with spells",Arcane,Arkan,Arcane,Arcane,特殊な,불가사의한,Arcano,奥术,奧術
+Archon,Archon,player rank (Archon means 'king' in Greek),Archon,Archon,Archon,Archon,キング,집정관,Arconte,执政官,統治者
+coldAdjectiveFP4,coldAdjectiveFP4,female plural,Arctic,Arktischer,Arctic,arctique,北極の,북극,Ártico,极寒,寒冰
+coldAdjectiveFS4,coldAdjectiveFS4,female singular,Arctic,Arktischer,Arctic,arctique,北極の,북극,Ártico,极寒,寒冰
+coldAdjectiveMP4,coldAdjectiveMP4,male plural,Arctic,Arktische,Arctic,arctiques,北極の,북극,Árticos,极寒,寒冰
+coldAdjectiveMS4,coldAdjectiveMS4,male singular,Arctic,Arktischer,Arctic,arctique,北極の,북극,Ártico,极寒,寒冰
+EquipTypearmor,EquipTypearmor,,Armor,Rüstung,Armor,Armure,アーマー,갑옷,Armadura,盔甲,護甲
+,,,Assigned To,O que acha de Dungeon Life até agora?,Asignado a,,担当：,다음에 배정,,已分配至,指派到
+FurnishingAvailable,FurnishingAvailable,space after period essential,Available this floor.,Auf dieser Ebene verfügbar. ,Available this floor.,Disponible ici.,このフロアで使えます。,사용 가능한 층입니다.,Andar Disponível,启用这一层,可用於本關卡。
+StatueAvatar,StatueAvatar,,Avatar Statue,Avatar-Statue,Avatar Statue,Statue avatar,アバターの像,아바타 동상,Statua de Avatar,头像雕塑,虛擬人偶雕像
+SwordGemPommel,SwordGemPommel,Cool sounding sword name,Avowal,Bekenntnis,,Révélation,アヴォワル,맹세,,誓约,誓約
+Axe,Axe,,Axe,Axt,Axe,Hache,オノ,도끼,Machado,斧子,斧頭
+,,,Back,Zurück,Atrás,Retour,戻る,뒤로,Voltar,返回,返回
+Barbarian,Barbarian,,Barbarian,Barbar,Barbarian,Barbare,バーバリアン,바바리안,Bárbaro,野蛮人,野蠻人
+AxeBarbarian,AxeBarbarian,,Barbarian Axe,Barbarenaxt,Barbarian Axe,Hache de barbare,バーバリアンのオノ,바바리안 도끼,Machado Bárbaro,野蛮人之斧,野蠻人斧頭
+Barrel,Barrel,,Barrel,Tonne,,Tonneau,たる,통,Barríl,木桶,桶子
+Barrier,Barrier,"category of furniture includes fences, gates, doors",Barrier,Barriere,Barrera,Barrière,フェンスやドア,장벽,Barreira,障碍物,障礙物
+ToolInfoBaseDamage,ToolInfoBaseDamage,Base damage: 10-20,Base damage: {1:int}-{2:int},Grundschaden: {1:int}-{2:int},Base damage: {1:int}-{2:int},Dégâts base: {1:int}-{2:int},基本ダメージ: {1:int}-{2:int},기본 공격력: {1:int}~{2:int},Dano Base: {1:int}-{2:int},基础伤害：{1:int}-{2:int},基礎殺傷力：{1:int}-{2:int}
+Bastard Sword,Bastard Sword,,Bastard Sword,Bastardschwert,Bastard Sword,Épée bâtarde,バスターソード,바스타드 검,Espada Bastarda,巨剑,大劍
+Battle Axe,Battle Axe,,Battle Axe,Kampfaxt,Battle Axe,Hache de guerre,バトルアックス,전투 도끼,Machado de Batalha,战斧,戰斧
+conAdjectiveFP4,conAdjectiveFP4,female plural,Bear,Bäriger,Bear,Ours,耐久,곰,Urso,承受,熊
+conAdjectiveFS4,conAdjectiveFS4,female singular,Bear,Bäriger,Bear,Ours,耐久,곰,Urso,承受,熊
+conAdjectiveMP4,conAdjectiveMP4,male plural,Bear,Bärige,Bear,Ours,耐久,곰,Ursos,承受,熊
+conAdjectiveMS4,conAdjectiveMS4,male singular,Bear,Bäriger,Bear,Ours,耐久,곰,Urso,承受,熊
+StoreInfoHeroExpress,StoreInfoHeroExpress,,Become a hero right away! Could be dangerous if there are already higher level heroes or monsters than you about.,"Werde direkt zum Helden! Könnte gefährlich sein, wenn Helden oder Monster höherer Stufe in der Nähe sind.",Become a hero right away! Could be dangerous if there are already higher level heroes or monsters than you about.,Deviens un héros tout de suite! Ça peut être dangereux s'il y a déjà des héros ou des monstres d'un niveau supérieur au tien.,周りにもっとレベルの高いヒーローやモンスターがいたら危ない！今すぐヒーローになろう！,지금 바로 영웅이 되세요! 나보다 높은 레벨의 영웅이나 몬스터가 있다면 위험할 수도 있습니다.,Seja um herói logo de cara! Pode ser perigoso se já tem heróis ou monstros com nível maior que o seu.,立即成为英雄！如果你身边有等级更高的英雄或怪物，这会是相当危险的操作！,立刻成為英雄！不過如果已經有等級比你高的英雄或怪物，那情況會非常危險。
+BeginnerServer,BeginnerServer,,Beginner Server,Anfänger-Server,,Démarrer serveur,ビギナーサーバー,초보자 서버,Servidor Iniciante,新手服务器,低端伺服器
+DevPlaceDesc,DevPlaceDesc,Debug only,Blah blah blah,Bla bla bla,,,何とかかんとか,Blah blah blah,Blah blah blah,吧啦吧啦吧啦,Blah blah blah
+SoloPlaceDesc,SoloPlaceDesc,Debug only,Blah blah blah,Bla bla bla,,,何とかかんとか,Blah blah blah,Blah blah blah,吧啦吧啦吧啦,Blah blah blah
+BlueheadDragon,BlueheadDragon,,Bluehead Dragon,Blaukopfdrache,Bluehead Dragon,Dragon bleu,ブルーヘッドドラゴン,파란머리 용,Dragão de Cabeça Azul,蓝头龙,藍首魔龍
+BlueprintNotOwned,BlueprintNotOwned,,Blueprint not owned,Entwurf nicht im Besitz,Blueprint not owned,Plan non possédé,持っていない設計図,설계도 없음,Diagrama não adquirido,未获得的图纸,未擁有設計圖
+Blueprints,Blueprints,,Blueprints,Entwürfe,Blueprints,Plans,設計図,설계도,Diagramas,图纸,設計圖
+Bolt,Bolt,"magical energy bolt, as in 'fire bolt' or 'ice bolt'",Bolt,Blitz,Bolt,Éclair,ボルト,번개,Raio,能量球,彈
+Bomb,Bomb,,Bomb,Bombe,Bomb,Bombe,爆弾,폭탄,Bomba,炸弹,炸彈
+SkinTypeBomb,SkinTypeBomb,,Bomb,Bombe,Bomb,Bombe,爆弾,폭탄,Bomba,炸弹,炸彈
+explosiveAdjectiveFP3,explosiveAdjectiveFP3,female plural,Boom,Explosiver,Boom,détonant,爆発する,쿵,Boom,隆隆隆,爆發
+explosiveAdjectiveFS3,explosiveAdjectiveFS3,female singular,Boom,Explosive,Boom,détonante,爆発する,쿵,Boom,隆隆隆,爆發
+explosiveAdjectiveMP3,explosiveAdjectiveMP3,male plural,Boom,Explosiver,Boom,détonant,爆発する,쿵,Boom,隆隆隆,爆發
+explosiveAdjectiveMS3,explosiveAdjectiveMS3,male singular,Boom,Explosiver,Boom,détonant,爆発する,쿵,Boom,隆隆隆,爆發
+Boost,Boost,,Boost,Boost,Boost,Boost,ブースト,부스트,Boost,强化,強化
+,,"minutes of purchaseable 'boost' power which gives you more xp and better drops, goes with a plus icon",Boost:,Boost:,Boost:,Boost:,ブースト:,부스트:,Boost:,强化：,強化時間：
+BossSpawn,BossSpawn,category of furniture spawn boss monsters,Boss Spawn,Boss-Spawn,Boss Spawn,Générateurs de boss,ボスの隠れ家,보스 생성,Invocador de Chefe,Boss出现,魔王重生點
+MsgSuperboss,MsgSuperboss,,Bottom floor! Defeat the superboss!,Unterste Ebene! Besiege den Superboss!,Bottom floor! Defeat the superboss!,Rez-de-chaussée! Élimine le superboss!,ダンジョンの奥までたどり着いたぞ！スーパーボスを倒そう！,바닥층입니다! 슈퍼 보스를 격파하세요!,Andar Profundo! Derrote o super chefe!,在楼下！击败超级Boss！,最底層關卡！擊敗超級魔王！
+SkinTypeBow,SkinTypeBow,,Bow,Bogen,Bow,Arc,弓,활,Flecha,弓,弓
+Brazier,Brazier,,Brazier,Feuerschale,Brazier,Brasier,燭台,화로,Braseiro,火盆,火盆
+Broad Sword,Broad Sword,,Broad Sword,Breitschwert,Broad Sword,Grande épée,ブロードソード,브로드 소드,Espada Grande,阔剑,闊劍
+,,,Build,Bauen,Construir,Construire,建設,제작,Construir,建造,建造
+,PlayerGui.FurnishGui.Currencies.BuildPoints.CurrencyNameAndCount,,Build Points:,Baupunkte:,Build Points:,Points de construction:,ビルドポイント:,제작 포인트:,Pontos de Construção:,建造点数：,建造點數：
+fireAdjectiveFP1,fireAdjectiveFP1,female plural,Burning,Brennender,Burning,brûlant,燃え盛る,불타는,Queimando,熊熊燃烧,燃燒
+fireAdjectiveFS1,fireAdjectiveFS1,female singular,Burning,Brennender,Burning,brûlant,燃え盛る,불타는,Queimando,熊熊燃烧,燃燒
+fireAdjectiveMP1,fireAdjectiveMP1,male plural,Burning,Brennende,Burning,brûlants,燃え盛る,불타는,Queimando,熊熊燃烧,燃燒
+fireAdjectiveMS1,fireAdjectiveMS1,male singular,Burning,Brennender,Burning,brûlant,燃え盛る,불타는,Queimando,熊熊燃烧,燃燒
+SwordButcher,SwordButcher,Cool sounding sword name,Butcher,Metzger,,Boucherie,ブッチャー,정육점 칼,,屠刀,屠刀
+,,,Buy,Kaufen, Comprar ,Acheter,購入,구매,Comprar,购买,購買
+,,,Buy Gold,Comprar Ouro,Compra oro,,ゴールドを購入,금 구매,Comprar Ouro,购买金币,購買黃金
+BuyFor,BuyFor,Buy for 300 gold,Buy for {1:int} gold,Kaufe für {1:int} Gold,,Acheter pour {1:int} or,{1:int} ゴールドで購入,금 {1:int}개로 구매하기,Comprar por {1:int} Ouros,以 {1:int} 金币购买,以 {1:int} 黃金購買
+StoreInfoGold,StoreInfoGold,Buy gold for your level 4 Rogue. They can use it to buy gear in the gear shop.,Buy gold for your Level {level:int} {class}. They can use it to buy gear in the gear shop.,"Kaufe Gold für dein Level {level:int} {class}. Sie können es nutzen, um im Shop Ausrüstung zu kaufen.",,Achète de l'or pour ton niveau {level:int} {class}. Il peut l'utiliser pour acheter des équipement.,レベル{level:int} {class}のゴールドを購入。ギアショップでギアを買うのに使えます。,내 레벨 {level:int} {class}에서 금을 구매하세요. 상점에서 장비들을 구입할 수 있어요.,Comprar Ouro para seu {class} Nível {level:int}. ele poderá usar para comprar equipamentos na loja de Itens,为你的等级 {level:int} {class}购买黄金，他可以在道具商店购买道具。,為你的等級 {level:int} {class}購買黃金，他可以在道具商店購買道具。
+BuyToRandomlyUnlock,BuyToRandomlyUnlock,Buy to randomly unlock one of these items for 200 Rubies,Buy to randomly unlock one of these items for {1:int} Rubies,"Kaufen, um eines dieser Items für {1:int} Rubine freizuschalten",Buy to randomly unlock one of these items for {1:int} Rubies,Achète ceci pour débloquer un des objets aléatoirement pour {1:int} rubis,{1:int}ルビーを払って、この中から1つ、ランダムにアンロックする,루비 {1:int}개로 이 아이템 중 하나 무작위로 구매하여 열기,Compre para aleatóriamente desbloquear um desses items por {1:int} Rubis,购买{1:int}红宝石以随机解锁其中一个物品,花費 {1:int} 個紅寶石購買，即可隨機解除其中一個物品的鎖定
+critical,,As in 'critical hit!',CRITICAL!,,,,クリティカル！,치명타!,CRÍTICO!,,命中要害！
+Campgrounds,Campgrounds,,Campgrounds,Lagerplätze,Campgrounds,Campements,キャンプ場,캠프,Acampamento,营地,營地
+StoreInfoRubies,StoreInfoRubies,,Can be used to buy crates.,Damit kann man Kisten kaufen.,Can be used to buy crates.,Peuvent être utilisés pour acheter des coffres.,箱を買うために使うよ。,궤짝 구매에 사용할 수 있습니다.,Pode ser usado para comprar caixas.,可用于购买箱子,可用來購買木箱。
+PriestDescription,PriestDescription,,Can magically heal and is extra strong against creatures of darkness,Kann magisch heilen und ist besonders stark gegen Kreaturen der Dunkelheit,Can magically heal and is extra strong against creatures of darkness,Peut guérir par la magie. Très fort contre les créatures des ténèbres.,回復魔法を使える。闇の生き物に対して特に強い。,마력을 이용하여 치료합니다. 어둠 종족에 특히 강합니다,Pode magicamente curar e é extra forte contra criaturas da escuridão,具备优秀的治疗能力并能对黑暗属性的怪物造成高额伤害,可施展治療法術，對抗黑暗生物時會更加強大
+ForbiddenBlueprint,ForbiddenBlueprint,Treasure chest can't be built on this floor.,Can't be built on this floor,Kann auf diesem Boden nicht gebaut werden,,Impossible de construire sur cet étage,このフロアには作成できません,이 층에 제작할 수 없음,Não pode ser Construido neste Andar,无法建在这层,無法在此關卡建造
+ToolInfoCantJump,ToolInfoCantJump,,Can't jump,Kann nicht springen,Can't jump,Impossible de sauter,ジャンプできません,점프 불가,Não pode pular,不能跳跃,無法跳躍
+PlayerThere,PlayerThere,,Can't place while player is there,"Kann nicht platziert werden, wenn Spiele da ist",Can't place while player is there,Impossible de placer si le joueur est ici,プレイヤーがいるので置けません,플레이어가 거기 있을 때는 배치할 수 없습니다,Não pode colocar enquanto jogador está aqui,玩家还在那里，无法放置,無法放置在玩家所處的位置上
+,,,Cancel,Abbrechen,Cancelar,Annuler,キャンセル,취소,Cancelar,取消,取消
+,,Categories of furniture,Categories,Kategorien,Categorías,Catégories,カテゴリー,카테고리,Categorias de mobília,类别,類別
+radiantAdjectiveFP4,radiantAdjectiveFP4,female plural,Celestial,Himmlische,Celestial,célestes,天空の,천상의,Celestiais,天神的,天空
+radiantAdjectiveFS4,radiantAdjectiveFS4,female singular,Celestial,Himmlischer,Celestial,céleste,天空の,천상의,Celestiais,天神的,天空
+radiantAdjectiveMP4,radiantAdjectiveMP4,male plural,Celestial,Himmlische,Celestial,célestes,天空の,천상의,Celestiais,天神的,天空
+radiantAdjectiveMS4,radiantAdjectiveMS4,male singular,Celestial,Himmlischer,Celestial,céleste,天空の,천상의,Celestiais,天神的,天空
+Chain Mail Leggings,Chain Mail Leggings,,Chain Mail Leggings,Kettenpanzer-Beinkleid,Chain Mail Leggings,Jambières en maille,チェインメイルの足,사슬 갑옷 각반,Cota de Malha Calça,锁子甲下装,鎖子甲護腿
+Chain Mail Shirt,Chain Mail Shirt,,Chain Mail Shirt,Kettenpanzer-Hemd,Chain Mail Shirt,Haut en maille,チェインメイルの体,사슬 갑옷 상의,Cota de Malha Roupa,锁子甲上装,鎖子甲上衣
+,,button used on both Choose Hero and Choose Class windows,Choose,Auswählen,Choose,Choisir,選択,선택,Escolher,选择,選擇
+,,choose which of the heroes you've created you want to bring on this adventure,Choose Hero,Held auswählen,Choose Hero,Choisis ton héros,ヒーローを選ぶ,영웅 선택,Escolha seu Herói,选择英雄,選擇英雄
+Choose Place,Choose Place,choose Roblox place,Choose Place,Platz auswählen,,Choisir emplacement,プレースを選択,장소 선택,Escolha o Local,选择地点,選擇地點
+,,choose fighter / mage / rogue / priest / barbarian,Choose Your Class,Klasse auswählen,Choose Your Class,Choisis ta classe,クラスを選ぶ,직업을 선택하세요,Escolha Sua Classe,选择你的职阶,選擇職業
+,CoreGui,,Class,Klasse,Class,Classe,クラス,직업,Classe,职阶,職業
+Claws,Claws,,Claws,Klauen,Claws,Griffes,爪,발톱,Garras,利爪,利爪
+ClawsWerewolf,ClawsWerewolf,,Claws,Klauen,Claws,Griffes,爪,발톱,Garras,利爪,利爪
+,,,Click to open,Zum Öffnen anklicken,Click to open,Cliquer pour ouvrir,クリックして開く,클릭하여 열기,Aperte para abrir,点击以打开,按下開啟
+EquipTypemelee,EquipTypemelee,as in 'close attack',Close,Schließen,Cerrar,Corps à corps,閉める,닫기,Curto,近身,近身
+,,,Close Damage,Nah-Schaden,Close Damage,Dégâts au corps à corps,直接ダメージ,근접 공격력,Dano Curto,近战伤害,近身殺傷力
+,,,Close Defense,Nah-Verteidigung,Close Defense,Défense au corps à corps,直接防御力,근접 방어력,Defesa Curta,近战防御,近身防禦力
+HoodCloth,HoodCloth,,Cloth Hood,Stoffkapuze,Cloth Hood,Capuchon en tissu,布のフード,천 후드,Capuz de Tecido,棉布头巾,布製兜帽
+SkinTypeClothLegs,SkinTypeClothLegs,,Cloth Pants,Stoffhose,Cloth Pants,Pantalon en tissu,布のパンツ,천 바지,Calça de Tecido,棉布长裤,布製褲子
+SkinTypeClothTorso,SkinTypeClothTorso,,Cloth Shirt,Stoffhemd,Cloth Shirt,Chemise en tissu,布のシャツ,천 상의,Camisa de Tecido,棉布上装,布製上衣
+Club,Club,,Club,Keule,Club,Gourdin,クラブ,클럽,Clava,棍棒,木棒
+CodeAlreadyRedeemed,CodeAlreadyRedeemed,,Code already redeemed,Code bereits eingelöst,Code already redeemed,Code déjà utilisé,すでに使われたコードです,이미 교환한 코드입니다,Código já usado,已使用过的兑换码,代碼已兌換
+CodeRedeemed,CodeRedeemed,,Code redeemed!,Code eingelöst!,Code redeemed!,Code utilisé!,コードを使いました！,코드 교환 완료!,Código usado!,兑换码已使用！,代碼已兌換！
+,,place to type in promotional codes,Codes,Codes,Códigos,Codes,コード,코드,Códigos,兑换码,代碼
+coldAdjectiveFP1,coldAdjectiveFP1,,Cold,Kalte,Cold,froides,コールド,냉기의,Frias,寒冷,寒冷
+coldAdjectiveFS1,coldAdjectiveFS1,,Cold,Kälte,Cold,Froid,コールド,냉기의,Frio,寒冷,寒冷
+coldAdjectiveMP1,coldAdjectiveMP1,male plural,Cold,Kalte,Cold,froids,コールド,냉기의,Frios,寒冷,寒冷
+coldAdjectiveMS1,coldAdjectiveMS1,male singular,Cold,Kalter,Cold,froid,コールド,냉기의,Frio,寒冷,寒冷
+coldNoun1,coldNoun1,,Cold,Kälte,Cold,Froid,コールド,냉기의,Frio,寒冷,寒冷
+,,,Come closer to open,Komm näher zum Öffnen,Come closer to open,Approche pour ouvrir,近づいて開く,가까이 가서 열기,Chegue mais perto para abrir,靠近以打开,接近以開啟
+Rarity1,Rarity1,,Common,Gewöhnlich,Común,Ordinaire,コモン,일반,Comum,普通,普通
+explosiveNoun1,explosiveNoun1,,Concussion,Erschütterung,Concussion,Commotion,衝撃,뇌진탕,Concussão,冲击,衝擊
+TutorialUnderhaven,TutorialUnderhaven,,Congratulations on your first hero run. You got some loot. Now might be a good time to go to Underhaven and outfit your hero. It's in the Places.,"Herzlichen Glückwunsch zum ersten Heldenlauf. Du hast etwas Beute. Vielleicht ist es ein guter Zeitpunkt, um nach Underhaven zu gehen und deinen Helden auszustatten. Es ist an den Orten.",,Félicitations héros ! Tu as ramassé un butin. C'est le moment parfait pour équiper ton héros. Rends-toi à Underhaven que tu trouveras dans Places.,ヒーローとして最初のラウンド完了、おめでとうございます。お宝をいくつかゲットしました。アンダーヘイヴンへ行って、ヒーローの装備をするのに最適な時間かもしれません。プレースの中にあります。,영웅으로서의 첫 성공을 축하해요. 약탈품을 좀 획득했군요. 지하 은신처로 가서 영웅을 꾸며 보세요. '장소' 메뉴에 있습니다.,,恭喜，你完成了第一次英雄冒险。你获得了一些战利品。现在也许是前往地下庇护所和装备英雄的好机会。它就在圣地中。,恭喜你成功以英雄身分進行一次遊戲。你獲得了一些寶藏，可以到「地點」底下的地下聖所穿上裝備。
+MaximumLevel,MaximumLevel,,"Congratulations!
+Your hero has reached the maximum level!","Glückwunsch!
+Dein Held hat die Höchststufe erreicht!","Congratulations!
+Your hero has reached the maximum level!","Félicitations!
+Ton héros a atteint le niveau maximum!","おめでとう！
+ヒーローが最大レベルになったよ！","축하합니다!
+내 영웅이 최고 레벨에 도달했습니다!","Parabéns!
+Seu Herói atingiu o nivel Máximo!","恭喜你！
+你的英雄已经升值满级！","恭喜！
+你的英雄已達到最高等級！"
+HighestLevel,HighestLevel,,"Congratulations! You have gotten to the highest level on this server.
+You won't be able to earn XP here anymore. Switch to a higher level server?","Glückwunsch! Du hast die Höchststufe auf diesem Server erreicht.
+Hier kannst du keine EP mehr verdienen. Zu einem höherstufigen Server wechseln?","Congratulations! You have gotten to the highest level on this server.
+You won't be able to earn XP here anymore. Switch to a higher level server?","Félicitations! Tu as atteint le niveau le plus haut sur ce serveur.
+Tu ne pourras plus gagner d'EXP ici. Veux-tu passer à un serveur supérieur?","おめでとう！このサーバーで一番レベルが高いプレイヤーになったよ。
+これ以上の経験値はもらえないから、もっとレベルの高いサーバーに移る？","축하합니다! 이 서버에서 가장 높은 레벨이 되었습니다.
+이 서버에서는 더는 XP를 획득할 수 없습니다. 더 높은 레벨의 서버로 갈까요?","Parabéns! você atingiu o maior nível deste servidor.
+você não podera ganhar mais XP aqui. Gostaria de mudar para um servidor de maior nível?","恭喜你！你的等级已经达到了本服务器的最高级。
+你将无法获得更多经验值。需要跳转到更高级的服务器吗？","恭喜！你已達到本伺服器的最高等級。
+你將不會再獲得經驗值。要切換到更高等級的伺服器嗎？"
+conNoun1,conNoun1,,Constitution,Konstitution,Constitution,Constitution,健康,기질,Constituição,构造,結構
+TutorialBecomeMonster,TutorialBecomeMonster,,Cool! Let's fight some heroes. (They're the ones with the BLUE nametags.) We need to stop being a Dungeon Lord and become a monster.,Cool! Lass uns gegen ein paar Helden kämpfen. (Das sind die mit den BLAUEN Nametags.) Sag dem Dasein als Dungeon Lord ade und werde zum Monster.,Cool! Let's fight some heroes. (They're the ones with the BLUE nametags.) We need to stop being a Dungeon Lord and become a monster.,Génial! Affrontons des héros (ceux dont les noms sont en BLEU). Nous devons arrêter d'être un seigneur de donjon et devenir un monstre.,いいねいいね！つぎはヒーローと戦ってみよう。名前が「青色」で表示されているのがヒーローだよ。それじゃあダンジョンマスターから変身して、モンスターになってみよう...,잘했어요! 이제 영웅과 싸워봅시다. (영웅은 파란 이름표를 달고 있습니다) 이제 던전 군주는 그만두고 몬스터가 되어야 합니다.,Legal! vamos lutar com alguns Heróis (eles são os com os nomes em AZUL) nos precisamos mudar de Lorde da Dungeon para nos tornar Monstros,太棒了！让我们去和一些英雄对战。（他们的名为显示为蓝色）地下城领主已经当够了，是时候化身为怪物了,很好！一起擊敗英雄吧。(英雄的名牌會以藍色顯示。) 我們不能再當地城領主了，得趕快成為怪物。
+TutorialBlueprintCount,TutorialBlueprintCount,,"Cool! You don't use up blueprints when you build things; they're yours to keep.
+Having more of the same blueprint means you can build more on a given floor, but there are limits.","Cool! Du verbrauchst keine Entwürfe, wenn du Dinge baust, die gehören dir. Wenn du mehr von demselben Entwurf hast, kannst du mehr auf einer ausgewählten Etage bauen haben, aber es gibt Grenzen.",,"Cool ! Tes blueprints ne disparaissent pas quand tu construis des choses; ils sont à toi pour toujours. Si tu as plusieurs copies d'un blueprint, tu peux dupliquer certains éléments mais ce n'est pas infini.","よし！何かを作成するときに設計図を使い切ってしまうということはないよ。君がキープするのものだよ。
+同じような設計図をもっと持っているということは、その階でもっと作成できるという意味だけど制限があるよ。","좋아요! 제작 시 설계도를 모두 써버리지 마세요. 그건 모두 내 것이죠. 같은 설계도를 더 많이 보유하면 해당 층에 더 많은 것들을 제작할 수 있지만, 한도는 분명 있답니다.","Legal! Você não gasta seus Diagramas quando você constrói coisas; eles são seus para manter.
+Tendo mais do mesmo Diagrama Significa que você poderá construir mais do mesmo item no mesmo andar, mas ainda há limites","酷啊！你在建造的时候没有用完图纸；你可以留着了。
+同一种图纸的数量越多，你可以在指定一层中建造越多，不过有限制。",哇！蓋東西的時候不會消耗藍圖，藍圖永遠是你的。擁有重複藍圖代表可以在同一關卡建造更多建築物，不過會有上限。
+ToolInfoCooldown,ToolInfoCooldown,Cooldown: 1.50,Cooldown: {1:fixed},Abklingzeit: {1:fixed},Cooldown: {1:fixed},Récupération: {1:fixed},クールダウン: {1:fixed},쿨다운: {1:fixed},Recarga: {1:fixed},冷却时间：{1:fixed},冷卻時間：{1:fixed}
+Cosmetic,Cosmetic,category of furniture includes statues and tables and chairs,Cosmetic,Kosmetisch,Cosmetic,Décor,飾り,장식품,Cosmético,装饰品,裝飾品
+BlueprintCost,BlueprintCost,Cost: 200,Cost: {1:int},Kosten: {1:int},Cost: {1:int},Coût: {1:int},コスト: {1:int},비용: {1:int},Custo: {1:int},耗费：{1:int},費用：{1:int}
+,,metagame loot boxes,Crates,Kisten,Crates,Coffres,木箱,궤짝,Caixas,箱子,寶箱
+,,button for creating a new hero character,Create New Hero,Neuen Held erstellen,Create New Hero,Créer nouveau héros,新しいヒーローを作る,새 영웅 생성,Criar Novo Herói,创建新英雄,建立新英雄
+SkinTypeCrossbow,SkinTypeCrossbow,,Crossbow,Armbrust,Crossbow,Arbalète,クロスボウ,석궁,Besta,十字弓,十字弓
+Crumbling Mausoleum,Crumbling Mausoleum,,Crumbling Mausoleum,Zerbröckelndes Mausoleum,,Mausolée croulant,霊廟を登っています,무너진 묘지,,崩塌陵墓,崩塌陵墓
+CrystalDaemon,CrystalDaemon,,Crystal Demon,Kristalldämon,Crystal Demon,Démon de cristal,クリスタルデーモン,크리스탈 데몬,Demônio de Cristal,水晶恶魔,水晶惡魔
+SpawnDaemon,SpawnDaemon,,Crystal Portal,Kristallportal,Crystal Portal,Portail de cristal,クリスタルポータル,크리스탈 포탈,Portal de Cristal,水晶门,水晶召喚門
+Curse Wisp,Curse Wisp,,Curse Wisp,Zauber-Irrlicht,,Malédiction,呪いのウィスプ,저주의 정령,,诅咒精灵,詛咒精靈
+Cyclops,Cyclops,,Cyclops,Zyklop,Cyclops,Cyclope,サイクロプス,외눈박이,Ciclope,独眼巨人,獨眼巨人
+SpawnCyclops,SpawnCyclops,,Cyclops Prison,Zyklopengefängnis,Cyclops Prison,Prison de cyclope,サイクロプスの牢屋,외눈박이 감옥,Prisão de Ciclope,独眼巨人监狱,獨眼巨人牢籠
+KillsCyclopsSuper,KillsCyclopsSuper,,Cyclops Queen Kills,Zyklopenkönigin-Kills,Cyclops Queen Kills,Victimes reine des cyclopes,倒したサイクロプスクイーン,잡은 외눈박이 여왕,Mortes da Rainha Ciclope,独眼女皇猎杀数,獨眼巨人女王擊殺數
+Daily Award,Daily Award,,Daily Award,Tägliche Auszeichnung,Daily Award,Récompense quotidienne,デイリーアワード,일일 보상,Prêmio Diário,日常奖励,每日獎勵
+HoodClothDark,HoodClothDark,,Dark Cloth Hood,Dunkle Stoffhaube,,Capuche foncée,ダーククロス（フード）,어두운 색 천 후드,,黑袍帽子,黑暗頭套
+ClothRobeDarkLegs,ClothRobeDarkLegs,,Dark Robe Legs,Dunkle Robe - Beine,,Robe foncée (bas),ダークローブ（足）,어두운 색 다리 의상,,黑袍护腿,黑暗袍護腿
+ClothRobeDarkTorso,ClothRobeDarkTorso,,Dark Robe Torso,Dunkle Robe - Oberkörper,,Robe foncée (haut),ダークローブ（胴体）,어두운 색 몸통 의상,,黑袍上半身,黑暗袍上半身
+BowDarkage,BowDarkage,,Darkage Ninja Bow,Mittelalter-Ninjabogen,Darkage Ninja Bow,Arc ninja ténébreux,暗黒のニンジャの弓矢,암흑시대 닌자 활,Arco Ninja da Era das Trevas,忍者弓,黑暗時代忍者弓
+DeepestFloor,DeepestFloor,Deepest floor visited: 7,Deepest floor visited: {1},Tiefste besuchte Ebene: {1},Deepest floor visited: {1},Niveau le plus bas visité: {1},たどり着いたダンジョンの奥: {1},도달한 가장 깊은 층: {1},O Mais Fundo Andar Visitado: {1},已探索的最深层：{1},所達最深關卡：{1}
+,,as in 'default weapon skin',Default,Standard,Por Omisión,Par défaut,デフォルト,기본,Padrão,默认,預設
+Deity,Deity,player rank,Deity,Gottheit,Deity,Divinité,ゴッド,신,Divindade,真神,神
+DeleteThing,DeleteThing,Delete Level 5 Warrior,Delete {1}?,{1} löschen?,Delete {1}?,Supprimer {1}?,{1}を消しますか？,{1}을(를) 삭제할까요?,Deletar {1}?,删除{1}？,要刪除{1}嗎？
+Demigod,Demigod,player rank,Demigod,Halbgott,Demigod,Demi-dieu,デミゴッド,반신반인,Semideus,半神,半神
+CrystalDaemonSuper,CrystalDaemonSuper,,Demon Lord Winter,Dämonenlord von Winter,,Démon Lord Winter,デーモンマスター・ウィンター,겨울 군주 데몬,Lord Demônio do Inverno,寒冰霸主,寒冰霸主
+Demon King Winter,Demon King Winter,,Demon Lord Winter,Dämonenlord von Winter,,Démon Lord Winter,デーモンマスター・ウィンター,겨울 군주 데몬,Lord Demônio do Inverno,寒冰霸主,寒冰霸主
+DevPlace,DevPlace,Debug only,Dev Place,Dev-Ort,,,Devプレース,Dev Place,Lugar de Desenvolvedores,开发者地点,Dev Place
+TutorialStore,TutorialStore,,"Different Blueprints are available on different floors, but if you *own* Blueprints you can build them almost anywhere. You can get Blueprints from buying Crates in the store.
+","Du kannst nur etwas bauen, wenn es auf der Ebene verfügbar ist ... oder wenn du den entsprechenden Entwurf hast! Entwürfe erhältst du, wenn du im Shop Kisten kaufst.
+","You can only build something if it's available on the floor...or if you have its Blueprint! You can get Blueprints from buying Crates in the store.
+","Tu ne peux construire un élément que si celui-ci est disponible dans ce niveau... ou si tu as son plan! Obtiens des plans en achetant des coffres dans la boutique.
+",階によって違う設計図が使えますが、設計図を*所有*している場合は、ほとんどどの場所でもそれを建設できます。設計図は、ショップで木箱を買うと取得できます。,"층에서 허용되거나 설계도를 갖고 있는 것만 제작할 수 있습니다... 상점에서 궤짝을 구매하면 설계도를 얻을 수 있습니다.
+",Você pode apenas construir se estievr disponível no andar... ou se voce tem seu Diagrama! Você consegue diagramas comprando Caixas na loja.,"你可以建造该层允许建造的建筑或你所拥有图纸上的建筑！你可以通过在商店中购买箱子获得图纸
+","只能建造可於關卡中使用的項目... 或是你擁有其設計圖的項目！你可以在商店購買「木箱」來取得設計圖。
+"
+fireDescription,fireDescription,Does 50% fire damage for 2.10 seconds,Does {amount:int}% fire damage for {duration:fixed} seconds,Bewirkt für {duration:fixed} Sek. {amount:int} % Feuerschaden,Does {amount:int}% fire damage for {duration:fixed} seconds,Fait {amount:int} % de dégâts de feu pendant {duration:fixed} secondes,{duration:fixed}秒の間、{amount:int}%のファイアーダメージが続く,{duration:fixed}초 동안 {amount:int}% 화염 공격,Causa {amount:int}% dano de fogo por {duration:fixed} segundos,在{duration:fixed}秒内造成{amount:int}%火焰伤害 ,造成 {amount:int}% 火焰傷害，持續{duration:fixed} 秒
+radiantDescription,radiantDescription,Does 50% more damage to Dark creatures,Does {amount:int}% more damage to Dark creatures,Bewirkt {amount:int} % mehr Schaden bei Dunkelkreaturen,Does {amount:int}% more damage to Dark creatures,Fait {amount:int} % de dégâts en plus sur les créatures des ténèbres,闇の生き物に対して、ダメージが{amount:int}%増える,어둠 종족에 공격력 {amount:int}% 추가,Causa {amount:int}% mais dano para creaturas Escuras,对黑暗属性生物造成额外{amount:int}%伤害,對黑暗生物造成 {amount:int}% 額外傷害
+,,"done reading, ok",Done,Erledigt,Done,Terminé,完了,완료,Feito,已完成,完成
+Door,Door,,Door,Tür,,Porte,ドア,문,Porta,门,門
+SpawnDragon,SpawnDragon,,Dragon Lair,Drachenversteck,Dragon Lair,Tanière de dragon,ドラゴンの巣,용의 동굴,Lar do Dragão,龙穴,魔龍巢穴
+PitTrapSpikedDescription,PitTrapSpikedDescription,,Drops the heroes into a hole filled with spikes. Ouch,Lässt die Helden in eine Stachelgrube fallen. Autsch,Drops the heroes into a hole filled with spikes. Ouch,Fait tomber les héros dans une fosse pleine de piques. Aïe!,トゲの生えた穴に、ヒーローを落とします。いてて。,대못으로 가득찬 구멍으로 영웅을 빠트립니다. 아야,Joga os Heróis em um buraco cheio de espinhos. ouch!,将英雄扔进插满长矛的深坑。想想都疼,讓英雄掉進布滿尖刺的洞裡。一定很痛
+PitTrapDescription,PitTrapDescription,,"Drops the heroes into a hole. They're tough, it won't hurt them, but maybe then you can fill them with arrows","Lässt die Helden in ein Loch fallen. Das wird denen nicht wehtun, die sind hart im Nehmen. Vielleicht aber ein guter Zeitpunkt für einen Pfeilhagel","Drops the heroes into a hole. They're tough, it won't hurt them, but maybe then you can fill them with arrows","Fait tomber les héros dans un trou. Ils sont costauds, ça ne leur fera rien, mais tu pourras leur balancer des flèches.",穴にヒーローを落とします。ヒーローは丈夫なので、そんなにダメージはありませんが、弓矢で連続攻撃するチャンスかも,영웅을 구멍에 빠트립니다. 다치지는 않아요. 하지만 구멍에 화살을 쏜다면 어떨까요,"Joga os Heróis num buraco. Eles são fortes, não vai machuca-los, mas você poderá encher-los de flechas",将英雄扔进坑中。他们皮糙肉厚，这肯定伤不到他们，不过或许你可以给他们补上几箭。,讓英雄掉進洞裡。他們很強壯，這沒辦法對他們造成傷害，不過你可以再補個幾箭
+Dual Daggers,Dual Daggers,,Dual Daggers,Doppeldolche,Dual Daggers,Deux dagues,デュアルダガー,쌍날 단도,Adagas Duplas,双持匕首,雙匕首
+SkinTypeClaws,SkinTypeClaws,,Dual Weapon,Doppelwaffe,Dual Weapon,Arme deux mains,デュアルウェポン,양날 무기,Arma Dupla,双手武器,雙手武器
+IntroMessage,IntroMessage,,"Dungeon Life News:
+
+Cross-teaming isn't cool. If you're on a server where even just one person wants to play the game as intended, do not help the heroes when you're a monster. You could be banned!","Dungeon Life News:
+
+Cross-teaming-Rollenwechsel sind nicht cool. Wenn du auf einem Server bist, auf dem wenigstens eine Person das Spiel wie gedacht spielen möchte, solltest du nicht den Helden helfen, wenn du ein Monster bist. Du könntest gesperrt werden!","Dungeon Life News:
+
+Cross-teaming isn't cool. If you're on a server where even just one person wants to play the game as intended, do not help the heroes when you're a monster. You could be banned!","Nouveautés Dungeon Life:
+
+trahir ton équipe, c'est pas cool. Si tu es sur un serveur où seule une personne joue au jeu selon les règles, n'aide pas les héros si tu es un monstre. Tu pourrais être banni!","Dungeon Lifeからのお知らせ:
+
+ヒーローはヒーロー、モンスターはモンスター同士で助け合うのがルールです。もし、あなたがモンスターの時、自分の思い通りにゲームを進めたいヒーローが1人でもいたら、そんな人には協力しないでください。あなたまでゲームから追い出されてしまいます！","Dungeon Life 뉴스:
+
+적끼리 팀을 맺지 마세요. 서버에 게임을 즐기고 싶어하는 사람이 한 명이라도 있다면 규칙을 따르세요. 몬스터는 영웅을 도우면 안 됩니다. 이를 어기면 이용이 금지될 수 있습니다!","Dungeon Life News:
+
+Cross-teaming isn't cool. If you're on a server where even just one person wants to play the game as intended, do not help the heroes when you're a monster. You could be banned!","《Dungeon Life》新闻：
+
+交叉组队可没意思！即便服务器中只有哪怕一人想要这么玩，当你是怪物时也请不要帮助英雄，否则你的账号可能会被封禁！","《Dungeon Life》快報：
+
+當雙面間諜一點都不帥。就算你所在的伺服器中只有一個人想進行遊戲，擔任怪物時也千萬不要幫助英雄，否則有可能遭到停權！"
+DungeonLord,DungeonLord,,Dungeon Lord,Dungeon Lord,Dungeon Lord,Seigneur de donjon,ダンジョンマスター,던전 군주,Lorde da Dungeon,地下城领主,地城領主
+,,Dungeon Points: 200,Dungeon Points: {1:int},Dungeon-Punkte: {1:int},Dungeon Points: {1:int},Points de donjon: {1:int},ダンジョンポイント: {1:int},던전 포인트: {1:int},Pontos Dungeon: {1:int},地下城积分：{1:int},地城點數：{1:int}
+MsgWelcomeMonster,MsgWelcomeMonster,,During Preparation monsters can build stuff in the dungeon before the heroes arrive!,"Du kannst im Dungeon Sachen bauen, bevor die Helden eintreffen!",You can build stuff in the dungeon before the heroes arrive!,Tu peux construire des éléments du donjon avant l'arrivée des héros!,準備の間、モンスターはヒーローが到着する前にダンジョンで物を作れます！,영웅이 도착하기 전에 던전에 뭔가 제작하세요!,Você pode construir coisas no calabouço antes que os heróis cheguem!,在英雄到来之前，你可以在地下城进行建造！,在英雄出現前，你可以在地城中進行建造！
+dexAdjectiveFP4,dexAdjectiveFP4,female plural,Eagle Eye,Adleräugiger,Eagle Eye,Œil d'aigle,イーグルアイ,독수리의 눈,Olho de Águia,鹰眼,鷹眼
+dexAdjectiveFS4,dexAdjectiveFS4,female singular,Eagle Eye,Adleräugiger,Eagle Eye,Œil d'aigle,イーグルアイ,독수리의 눈,Olho de Águia,鹰眼,鷹眼
+dexAdjectiveMP4,dexAdjectiveMP4,male plural,Eagle Eye,Adleräugige,Eagle Eye,Œil d'aigle,イーグルアイ,독수리의 눈,Olho de Águia,鹰眼,鷹眼
+dexAdjectiveMS4,dexAdjectiveMS4,male singular,Eagle Eye,Adleräugiger,Eagle Eye,Œil d'aigle,イーグルアイ,독수리의 눈,Olho de Águia,鹰眼,鷹眼
+BlueprintEarn,BlueprintEarn,Earn 10,Earn {1:int},{1:int} verdienen,Earn {1:int},Gagne {1:int},{1:int}獲得,{1:int} 획득,Ganha {1:int},获得{1:int},可獲得 {1:int} 張
+SwordKatana,SwordKatana,,Eastland Sword,Ostlandschwert,Eastland Sword,Épée orientale,刀,이스트랜드 검,Espada de Eastland,武士刀,東洋劍
+Empty,Empty,treasure chest empty,Empty,Leer,Vacío,Vide,空っぽ,비어있음,Vázio,空的,空
+,,,Enter Code:,Code eingeben:,Enter Code:,Saisir code:,コードを入力:,코드 입력:,Inserir Código:,输入兑换码：,輸入代碼：
+,PlayerGui.NoResetGui.FeedbackPanel.Main.Message,,Enter your feedback here!,Gib hier dein Feedback ein!,Enter your feedback here!,Saisis ton avis ici!,感想を書いてね！,여기에 피드백을 입력하세요!,Coloque seu feedback aqui!,在此输入你的反馈！,請在此填寫你的意見反應！
+Rarity4,Rarity4,,Epic,Episch,Épico,Épique,エピック,영웅,Épico,史诗,史詩
+TrapDoors,TrapDoors,,Exit trap door,Falltür-Ausgang,Exit trap door,Trappe de sortie,トラップつきの出口,바닥 문 나가기,Alçapão de Saída,从天窗出去,離開暗門
+,,button gives you the option to expand your number of inventory slots,Expand,Erweitern,Expand,Agrandir,大きくする,확장,Expandir,扩展,擴充
+Expert,Expert,player rank,Expert,Experte,Expert,Expert,エキスパート,전문가,Perito,专家,專家
+TrappedChestDescription,TrappedChestDescription,,"Explodes when a hero opens it
+
+Take that, 'hero!'","Explodiert beim Öffnen durch einen Helden
+
+Nimm das, du „Held“!","Explodes when a hero opens it
+
+Take that, 'hero!'","Explose quand un héros l'ouvre.
+
+Prends ça, héros!","ヒーローが開けると爆発します。
+
+くらえー！","영웅이 열면 폭발합니다
+
+받아라, '영웅아!'","Explode quando um Herói abre
+
+Tome isso, 'Herói!'","当英雄打开它时会发生爆炸
+
+看看我的厉害，“英雄！”","英雄打開它就會爆炸。
+
+「英雄」，受死吧！"
+explosiveAdjectiveFP2,explosiveAdjectiveFP2,female plural,Exploding,Explodierender,Exploding,explosif,爆発する,폭발하는,Explosivo,爆炸,爆炸
+explosiveAdjectiveFS2,explosiveAdjectiveFS2,female singular,Exploding,Explodierender,Exploding,explosif,爆発する,폭발하는,Explosivo,爆炸,爆炸
+explosiveAdjectiveMP2,explosiveAdjectiveMP2,male plural,Exploding,Explodierende,Exploding,explosifs,爆発する,폭발하는,Explosivos,爆炸,爆炸
+explosiveAdjectiveMS2,explosiveAdjectiveMS2,male singular,Exploding,Explodierender,Exploding,explosif,爆発する,폭발하는,Explosivo,爆炸,爆炸
+Fence,Fence,,Fence,Zaun,Valla,Clôture,フェンス,울타리,Cerca,栅栏,柵欄
+MsgWelcomeHero,MsgWelcomeHero,,Find the trapdoors leading downstairs and smash your way through to escape...before the monsters get too strong!,"Finde die Falltüren, die nach unten führen, und zerschmettere sie, um zu entkommen ... bevor die Monster zu stark werden!",Find the trapdoors leading downstairs and smash your way through to escape...before the monsters get too strong!,Trouve les trappes qui mènent au niveau inférieur et fuis... avant que les monstres ne soient trop forts!,トラップドアを見つけて、下のフロアへ行こう。モンスターが力をつける前に、どんどん進むんだ！,아래층으로 향하는 바닥 문을 찾아 부순 뒤 탈출하세요... 몬스터가 강력해지기 전에 서두르세요!,Encontre os alçapões descendo nos andares de baixo e destrua-o para escapar... antes que os monstros fiquem muito fortes!,趁着怪物们还没变得太过强大，找到通往下层的天窗并杀出一条生路！,找到通往下一層關卡的暗門，並在怪物變得更強大前，使出渾身解數逃出去！
+fireNoun3,fireNoun3,,Fire,Feuer,Fuego,Feu,ファイアー,불,Fogo,火,火
+,,,First Trip Downstairs,Erster Trip nach unten,First Trip Downstairs,1er voyage en bas,初めて階段を下りた,첫 지하 모험,Primeira Viagem no Andar de Baixo,初次探索,首次過關
+fireNoun2,fireNoun2,,Flame,Flamme,Flame,Flammes,フレイム,화염,Chama,火焰,火焰
+fireAdjectiveFP2,fireAdjectiveFP2,female plural,Flaming,Flammende,Flaming,flamboyantes,ごうごうと燃える,화염의,Flamejantes,燃烧,燃燒
+fireAdjectiveFS2,fireAdjectiveFS2,female singular,Flaming,Flammender,Flaming,flamboyant,ごうごうと燃える,화염의,Flamejante,燃烧,燃燒
+fireAdjectiveMP2,fireAdjectiveMP2,male plural,Flaming,Flammende,Flaming,flamboyants,ごうごうと燃える,화염의,Flamejantes,燃烧,燃燒
+fireAdjectiveMS2,fireAdjectiveMS2,male singular,Flaming,Flammender,Flaming,flamboyant,ごうごうと燃える,화염의,Flamejante,燃烧,燃燒
+willNoun1,willNoun1,,Focus,Fokus,Focus,Concentration,集中,집중,Foco,专注,專注力
+HighLevelServerDesc,HighLevelServerDesc,,"For experienced Dungeon Lifers, levels {minlevel:int} to {maxlevel:int}.","Für erfahrene Dungeon-Life-Spieler, Levels {minlevel:int} bis {maxlevel:int}",,"Pour les joueurs pro de Dungeon Life, niveaux {minlevel:int} à {maxlevel:int}.",Dungeon Lifeのベテランは、レベル {minlevel:int} から {maxlevel:int}です。,Dungeon Life를 어느 정도 플레이한 이들을 위한 레벨 {minlevel:int}부터 {maxlevel:int}.,"Para Jogadores Experiêntes em Dungeon Life, do Nível {minlevel:int} até {maxlevel:int}",给熟悉《Dungeon Life》的玩家，等级 {minlevel:int} 到 {maxlevel:int}。,給熟悉 Dungeon Life 的玩家，等級 {minlevel:int} 到 {maxlevel:int}。
+BeginnerServerDesc,BeginnerServerDesc,,"For players new to Dungeon Life, levels {minlevel:int} to {maxlevel:int}.","Für neue Spieler im Dungeon Life, Levels {minlevel:int} bis {maxlevel:int}.",,"Pour les nouveaux joueurs de Dungeon Life, niveau {minlevel:int} à {maxlevel:int}.",Dungeon Life初心者プレイヤー向けは、レベル {minlevel:int} から {maxlevel:int}です。,Dungeon Life가 처음인 플레이어를 위한 레벨 {minlevel:int}에서 {maxlevel:int}.,"Para jogadores novos ao Dungeon Life, do Nível {minlevel:int} até {maxlevel:int}",给刚开始玩《Dungeon Life》的玩家，等级为 {minlevel:int} 到 {maxlevel:int}。,給剛開始玩 Dungeon Life 的玩家，等級 {minlevel:int} 到 {maxlevel:int}。
+Fountain,Fountain,,Fountain,Brunnen,Fuente,Fontaine,噴水,분수,Fonte,喷泉,噴水池
+coldAdjectiveFP3,coldAdjectiveFP3,female plural,Freezing,Gefrierender,Freezing,gelé,凍りつく,차디찬,Congelante,冷冻,寒冰
+coldAdjectiveFS3,coldAdjectiveFS3,female singular,Freezing,Gefrierender,Freezing,gelé,凍りつく,차디찬,Congelante,冷冻,寒冰
+coldAdjectiveMP3,coldAdjectiveMP3,male plural,Freezing,Gefrierende,Freezing,gelés,凍りつく,차디찬,Congelantes,冷冻,寒冰
+coldAdjectiveMS3,coldAdjectiveMS3,male singular,Freezing,Gefrierender,Freezing,gelé,凍りつく,차디찬,Congelante,冷冻,寒冰
+coldNoun2,coldNoun2,,Frost,Frost,Frost,Gel,フロスト,서리,Congelado,冰霜,冰霜
+GargoyleFountain,GargoyleFountain,,Gargoyle Fountain,Gargoyle-Brunnen,Gargoyle Fountain,Fontaine gargouille,ガーゴイルの泉,가고일 분수,Fonte de Gárgula,石像鬼喷泉,石像鬼噴水池
+Gate,Gate,,Gate,Tor,Gate,Grille,ゲート,문,Portão,大门,閘門
+,,As in armor and weapons,Gear,Ausrüstung,Equipamiento,Équipement,ギア,장비,Equipamento,装备,裝備
+,,,Gear Shop,,Tienda de equipo,,ギアショップ,장비 상점,,装备商店,裝備商店
+GearSlots,GearSlots,Spaces in a hero's inventory for gear,Gear Slots,Ausrüstungsplätze,Gear Slots,Emplacements équipement,ギアスロット,장비 슬롯,Espaço de Equipamentos,装备槽,裝備欄位
+Ghost,Ghost,,Ghost,Geist,Ghost,Fantôme,ゴースト,유령,Fantasma,鬼魂,鬼魂
+SpawnGhost,SpawnGhost,,Ghost's Coffin,Geistersarg,Ghost's Coffin,Cercueil de fantôme,ゴーストの棺桶,유령의 관,Caixão de Fantasma,幽冥之棺,聚魂棺
+HammerWooden,HammerWooden,,Giant Mallet,Riesenschlägel,,Marteau géant,巨大な木槌,거대한 망치,,巨槌,大槌
+strNoun4,strNoun4,,Giant Strength,Riesenstärke,Giant Strength,Force du géant,巨大な力,괴력,Força Gigante,巨人之力,巨人之力
+AltarDescription,AltarDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+BarrelDescription,BarrelDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+FountainDescription,FountainDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+GargoyleFountainDescription,GargoyleFountainDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+PedestalDescription,PedestalDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du es baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+StatueDescription,StatueDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du sie baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+WoodChairDescription,WoodChairDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+WoodTableDescription,WoodTableDescription,,Gives you Dungeon Points when you build it,"Verleiht Dungeon-Punkte, wenn du ihn baust",Gives you Dungeon Points when you build it,Sa construction t'apporte des points de donjon,作るとダンジョンポイントがもらえるよ,제작하면 던전 포인트를 받을 수 있습니다,Te dá Pontos de Dungeon quando construído,建造完成后可获得地下城积分,建造後可獲得地城點數
+BrazierDescription,BrazierDescription,,"Gives you Dungeon Points when you build it
+
+Sheds light","Verleiht Dungeon-Punkte, wenn du ihn baust
+
+Spendet Licht","Gives you Dungeon Points when you build it
+
+Sheds light","Sa construction t'apporte des points de donjon
+
+Éclaire","作るとダンジョンポイントがもらえるよ
+
+周りを明るくする","제작하면 던전 포인트를 받을 수 있습니다
+
+빛을 비춥니다","Te dará Pontos de Dungeon quando você Constrói
+
+Candelabros de Luz","建造完成后可获得地下城积分
+
+点亮","建造後可獲得地城點數
+
+照明"
+ChandelierIronDescription,ChandelierIronDescription,,"Gives you Dungeon Points when you build it
+
+Sheds light","Verleiht Dungeon-Punkte, wenn du ihn baust
+
+Spendet Licht","Gives you Dungeon Points when you build it
+
+Sheds light","Sa construction t'apporte des points de donjon
+
+Éclaire","作るとダンジョンポイントがもらえるよ
+
+周りを明るくする","제작하면 던전 포인트를 받을 수 있습니다
+
+빛을 비춥니다","Te dará Pontos de Dungeon quando você Constrói
+
+Candelabros de Luz","建造完成后可获得地下城积分
+
+点亮","建造後可獲得地城點數
+
+照明"
+ChestDescription,ChestDescription,,Gives you a lot of Dungeon Points when you build it but when a hero finds it they'll get loot,"Verleiht eine Menge Dungeon-Punkte, wenn du sie baust. Aber wenn Helden sie finden, erhalten sie Beute",Gives you a lot of Dungeon Points when you build it but when a hero finds it they'll get loot,"Sa construction t'apporte de nombreux points de donjon, mais si un héros le trouve, il le pillera!",ビルドするとダンジョンポイントがたくさん手に入る。けれどヒーローが見つけると、中身を取られてしまう。,제작하면 많은 던전 포인트를 받을 수 있습니다. 하지만 영웅이 찾아내 약탈할 수 있습니다,"Te dará um monte de Pontos de Dungeon quando você construir, mas quando os Heróis acharem eles irão pegar Itens",建造完成后可获得大量地下城积分，但当有英雄找到它之后，可获得战利品。,建造後可獲得大量地城點數，但如果被英雄找到，他們將獲得戰利品
+Gloom,Gloom,as in dark and hard to see,Gloom,Düster,Gloom,Lugubre,暗闇,암흑,Escuro,幽暗,幽暗
+TutorialTreasureChests,TutorialTreasureChests,,"Good work! Although if a hero opens a Treasure Chest they'll get loot, building them gets you Rubies and Dungeon Points which you can use to make traps, monster spawns, and bosses - so it's worth it.","Gut gemacht! Auch wenn ein Held beim Öffnen einer Schatztruhe Beute erhält, bekommst du fürs Bauen Rubine und Dungeon-Punkte. Damit kannst Fallen, Monster-Spawns und Bosse erstellen. Es zahlt sich also aus.","Good work! Although if a hero opens a Treasure Chest they'll get loot, building them gets you Rubies and Dungeon Points which you can use to make traps, monster spawns, and bosses - so it's worth it.","Bien joué! Même si un héros ouvre un coffre au trésor pour le piller, le fait d'en créer t'apporte des rubis et des points de donjon que tu peux utiliser pour placer des pièges et faire apparaître des monstres et des boss. Ça vaut donc le coup!",オッケー！宝箱は、ヒーローが開けると中身を取られてしまう。だけど宝箱をビルドすると、ルビーやダンジョンポイントをもらえるんだ。ルビーやダンジョンポイントがあれば、他のトラップや、モンスターのスポーン場所やボスを作れるようになる。だから宝箱をビルドするのも、ちゃんと意味があるんだ。,"잘했어요! 영웅이 보물상자를 열면 약탈당할 수도 있지만요. 제작하면 루비와 던전 포인트를 받을 수 있어요. 던전 포인트는 덫, 몬스터 생성 지점, 보스를 만드는데 사용할 수 있습니다. 아주 쓸모가 많죠.","Bom Trabalho! Porém, se um Herói abrir um Baú de Tesouro eles irão pegar os itens construir estes te dará Rubis e Pontos de Dungeon dos quais podem ser usados pra fazer armadilhas, invocadores de monstros e chefões - então vale a pena",干得漂亮！虽然英雄打开一个宝箱时可获得战利品，但是建造他们时你也可以获得红宝石和地下城积分，你可以将之用于制造陷阱、怪物巢穴和各种Boss——也是物有所值,做得好！雖然英雄若開啟寶箱將能獲得戰利品，但建造寶箱你也能獲得紅寶石和地城點數，可用來購買陷阱、怪物重生點和魔王，因此建造寶箱是值得的。
+Great Axe,Great Axe,,Great Axe,Großaxt,Great Axe,Grande hache,グレートアックス,거대 도끼,Machado Grande,巨斧,巨斧
+Great Sword,Great Sword,,Great Sword,Großschwert,Great Sword,Glaive,グレートソード,대검,Espada Grande,大剑,巨劍
+Gremlin,Gremlin,,Gremlin,Gremlin,Gremlin,Diablotin,グレムリン,그렘린,Gremlin,小精灵,小魔怪
+SpawnGremlin,SpawnGremlin,,Gremlin Faerie Circle,Gremlin-Feen-Zirkel,Gremlin Faerie Circle,Cercle féerique gremlin,グレムリンフェアリーサークル,그렘린 요정계,Círculo de Fadas de Gremlins,精灵圆环,小魔怪妖精環
+HealthLow,HealthLow,,HEALTH LOW,LEBEN NIEDRIG,HEALTH LOW,SANTÉ BASSE,HPが減ってきた！,체력 낮음,Vida Baixa,生命值过低,生命值過低
+conAdjectiveFP1,conAdjectiveFP1," 'hale' as in hardy, healthy - female plural",Hale,Gesunder,Hale,robuste,元気な,왕성한,Robusto,健壮的,強健
+conAdjectiveFS1,conAdjectiveFS1," 'hale' as in hardy, healthy - female singular",Hale,Gesunder,Hale,robuste,元気な,왕성한,Robusto,健壮的,強健
+conAdjectiveMP1,conAdjectiveMP1," 'hale' as in hardy, healthy -male plural",Hale,Gesunde,Hale,robustes,元気な,왕성한,Robustos,健壮的,強健
+conAdjectiveMS1,conAdjectiveMS1," 'hale' as in hardy, healthy - male singular",Hale,Gesunder,Hale,robuste,元気な,왕성한,Robusto,健壮的,強健
+Half Helm,Half Helm,,Half Helm,Halbhelm,Half Helm,Casque léger,ハーフヘルメット,반 투구,Meio Leme,半盔,半罩頭盔
+Ice Halls,Ice Halls,,Halls of Ice,Eishallen,,Couloir de glace,氷の間,아이스 홀,,寒冰大厅,寒冰殿堂
+MageDescription,MageDescription,,Hard to play! Uses powerful spells...until their magic runs out,Schwer zu spielen! Wirkt mächtige Zauber ... bis die Zauberkraft zur Neige geht,Hard to play! Uses powerful spells...until their magic runs out,Difficile à incarner! Utilise des sorts puissants... jusqu'à ce que sa magie s'épuise.,最初は使いにくいかも！呪文の効力が切れるまでは、すごい魔法を使えるよ。,플레이가 어렵습니다! 강력한 주문을 사용합니다...마력이 떨어지기 전까지는요,Dificil de jogar! Use fortes Encantos...até que sua Magia acabe,觉得很难通关！那就是试试强力的法术……直到他们把魔力耗尽,太困難了！使用強力的法術，讓他們的魔力耗盡
+Haste Wisp,Haste Wisp,,Haste Wisp,Eile-Irrlicht,,Sort de vitesse,急ぎのウィスプ,스피드 정령,,神速精灵,神速精靈
+SkinTypeHat,SkinTypeHat,,Hat,Hut,Hat,Chapeau,ハット,모자,Chapéu,帽子,帽子
+Hatchet,Hatchet,,Hatchet,Beil,Hatchet,Hachette,まさかり,손도끼,Machadinha,短柄斧,手斧
+dexAdjectiveFP3,dexAdjectiveFP3,female plural,Hawk Eye,Scharfsichtiger,Hawk Eye,Œil de lynx,ホークアイ,매의 눈,Olho de Falcão,雕眼,隼目
+dexAdjectiveFS3,dexAdjectiveFS3,female singular,Hawk Eye,Scharfsichtiger,Hawk Eye,Œil de lynx,ホークアイ,매의 눈,Olho de Falcão,雕眼,隼目
+dexAdjectiveMP3,dexAdjectiveMP3,male plural,Hawk Eye,Scharfsichtige,Hawk Eye,Œil de lynx,ホークアイ,매의 눈,Olho de Falcão,雕眼,隼目
+dexAdjectiveMS3,dexAdjectiveMS3,male singular,Hawk Eye,Scharfsichtiger,Hawk Eye,Œil de lynx,ホークアイ,매의 눈,Olho de Falcão,雕眼,隼目
+Heal Spell,Heal Spell,,Heal Spell,Heilzauber,Heal Spell,Sort de soin,回復の呪文,치료 주문,Encanto de Cura,治疗法术,治療法術
+Healing Potion,Healing Potion,,Healing Potion,Heiltrank,Healing Potion,Potion de soin,回復ポーション,치료 물약,Poção de Regeneração,治疗药水,治療藥水
+Healing Wisp,Healing Wisp,,Healing Wisp,Heilendes Irrlicht,,Sort de guérison,癒しのウィスプ,치유의 정령,,治愈精灵,治癒精靈
+HealingDescription,HealingDescription,Heals 40,Heals {1:int},Heilt {1:int},Heals {1:int},Soigne {1:int},{1:int}回復,{1:int} 치료,Regenera {1:int},回复{1:int},治療 {1:int} 生命值
+,,,Health,Leben,Salud,Santé,体力,체력,Saúde,生命值,生命值
+SkinTypeArmorHeavyTorso,SkinTypeArmorHeavyTorso,,Heavy Chest Armor,Schwere Brustrüstung,Heavy Chest Armor,Plastron lourd,チェストアーマー（ヘビー）,중량 가슴 갑옷,Armadura de Peitoral Pesada,重型胸甲,重型胸甲
+Heavy Crossbow,Heavy Crossbow,,Heavy Crossbow,Schwere Armbrust,Heavy Crossbow,Arbalète lourde,クロスボウ（ヘビー）,중량 석궁,Besta Pesada,重型十字弓,重型十字弓
+SkinTypeArmorHeavyLegs,SkinTypeArmorHeavyLegs,,Heavy Leg Armor,Schwere Beinrüstung,Heavy Leg Armor,Jambière lourde,レッグアーマー（ヘビー）,중량 다리 갑옷,Armadura de Perna Pesada,重型腿甲,重型腿甲
+SkinTypeHelmet,SkinTypeHelmet,,Helmet,Helm,Helmet,Casque,ヘルメット,투구,Capacete,头盔,頭盔
+HelmetAlar,HelmetAlar,,Helmet of Alar,Helm von Alar,Helmet of Alar,Casque d'Alar,翼の生えたヘルメット,날개 투구,Capacete de Alar,阿拉尔之盔,雙翼頭盔
+,,,Hero,Held,Hero,Héros,ヒーロー,영웅,Herói,英雄,英雄
+HeroDeaths,HeroDeaths,,Hero Deaths,Heldentode,Hero Deaths,Morts de héros,ヒーロー... ゲームオーバー！,영웅 사망,Mortes de Herói,英雄阵亡次数,英雄死亡次數
+HeroExpress,HeroExpress,a thing you can buy that lets you be a hero immediately instead of waiting your turn,Hero Express,Expressheld,Hero Express,Héros express,ヒーローエクスプレス,영웅 이용권,Expresso de Herói,英雄速递,英雄變身券
+,,,Hero Express Ready,Expressheld bereit,Hero Express Ready,Héros express prêt,ヒーローエクスプレス、準備OK！,영웅 이용권 준비,Expresso de Herói Preparado,英雄速递已就绪,英雄變身券已可使用
+HeroKills,HeroKills,,Hero Kills,Helden-Kills,Hero Kills,Victimes de héros,倒したヒーロー,잡은 영웅,Mortes de Herói,英雄杀敌数,英雄擊殺數
+,,heading above a list of weapon and armor skins you can apply to your hero,Hero Skins,Helden-Skins,Hero Skins,Skins de héros,ヒーローのスキン,영웅 스킨,Aparências de Herói,英雄皮肤,英雄外觀
+HeroSlots,HeroSlots,The number of heroes a player can have,Hero Slots,Heldenplätze,Hero Slots,Emplacements de héros,ヒーロースロット,영웅 슬롯,Espaços de Herói,英雄卡槽,英雄欄位
+HeroUnlocked,HeroUnlocked,,Hero Unlocked,,Héroe desbloqueado,,ヒーローがアンロックされました,영웅 잠금 해제됨,,英雄已解锁,已解鎖英雄
+,,Whether a piece of the player's equipment will be displayed on their avatar or not,Hide In Game,Im Spiel verbergen,Hide In Game,Masquer dans le jeu,ゲーム中は隠す,게임에서 숨기기,Esconder no Jogo,在游戏中隐藏,在遊戲中隱藏
+,,,Hide Roblox Accessories,Roblox-Zubehör verbergen,Hide Roblox Accessories,Masquer accessoires Roblox,Robloxのアクセサリーは隠す,Roblox 액세서리 숨기기,Esconder Acessórios do Roblox,隐藏Roblox组件,隱藏 Roblox 飾品
+,,,Hide Roblox Accessories When This Monster,Als dieses Monster Roblox-Zubehör verbergen,Hide Roblox Accessories When This Monster,Masquer accessoires Roblox avec ce monstre,このモンスターの時、Robloxのアクセサリーは隠す,Roblox 액세서리 숨기기,Esconda os Acessórios quando esse Monstro,隐藏Roblox组件当这个怪物,成為這隻怪物時隱藏 Roblox 飾品
+HighLevelServer,HighLevelServer,,High Level Server,Hohes-Level-Server,,Serveur haut niveau,ハイレベルサーバー,하이 레벨 서버,Servidor de Nível Alto,高端服务器,高端伺服器
+HourBoost,HourBoost,singular hour,Hour Boost,Stunden-Boost,Hour Boost,Boost d'une heure,時間ブースト,시간 부스트,Boost Horário,时间加速,一小時強化
+,,,How are you enjoying Dungeon Life lately?,,¿Cómo estás disfrutando Dungeon Life últimamente?,,近頃、Dungeon Lifeをいかがお楽しみですか？,최근 던전 라이프를 재미있게 플레이하고 있나요?,,最近《Dungeon Life》玩得还开心吗？,你最近還喜歡 Dungeon Life 嗎？
+,,,How are you enjoying Dungeon Life so far?,O que você está achando de Dungeon Life até agora?,¿Cómo estás disfrutando de Dungeon Life hasta ahora?,,近頃、Dungeon Lifeをいかがお楽しみですか？,던전 라이프를 지금까지 재미있게 플레이하고 있나요?,O quanto você está gostando de Dungeon Life até agora?,到目前为止还喜欢《Dungeon Life》吗？,你目前還喜歡 Dungeon Life 嗎？
+Humanoids,Humanoids,,Humanoids,Humanoide,Humanoids,Humanoïdes,ヒューマノイド,휴머노이드,Humanoides,人形怪物,人形生物
+InviteToBeginnerServer,InviteToBeginnerServer,,I see you are new to Dungeon Life! Would you like to switch to a beginner server?,Du scheinst neu zu sein bei Dungeon Life! Möchtest du zu einem Anfänger-Server wechseln?,I see you are new to Dungeon Life! Would you like to switch to a beginner server?,Tu débutes dans Dungeon Life! Veux-tu passer sur un serveur pour les débutants?,Dungeon Lifeは初めてかな？初心者用のサーバーに移動するかい？,Dungeon Life에 처음 오셨군요! 초보자 서버로 이동하시겠어요?,Vejo que você é novo em Dungeon Life! você gostaria de mudar para um servidor de iniciante?,看来你还是《Dungeon Life》世界的新手！你想要切换到新手服务器吗？,看來你才剛開始玩《Dungeon Life》！要切換到適合新手的伺服器嗎？
+coldNoun3,coldNoun3,,Ice,Eis,Hielo,Glace,アイス,얼음,Gelo,冰,冰
+coldAdjectiveFP2,coldAdjectiveFP2,female plural,Icy,Eisiger,Icy,glacé,氷のような,얼음의,Gelado,冰冷,冰凍
+coldAdjectiveFS2,coldAdjectiveFS2,female singular,Icy,Eisiger,Icy,glacé,氷のような,얼음의,Gelado,冰冷,冰凍
+coldAdjectiveMP2,coldAdjectiveMP2,male plural,Icy,Eisige,Icy,glacés,氷のような,얼음의,Gelados,冰冷,冰凍
+coldAdjectiveMS2,coldAdjectiveMS2,male singular,Icy,Eisiger,Icy,glacé,氷のような,얼음의,Gelado,冰冷,冰凍
+DaggersDualClean,DaggersDualClean,,Immaculate Daggers,Makellose Dolche,Immaculate Daggers,Dagues immaculées,便利なダガー,완벽한 단도,Adagas Imaculadas,毫无瑕疵的匕首,無瑕匕首
+MaceClean,MaceClean,,Immaculate Mace,Makelloser Streitkolben,Immaculate Mace,Masse immaculée,便利な催涙ガス,완벽한 철퇴,Maça Imaculada,毫无瑕疵的狼牙棒,無瑕鎚矛
+fireNoun4,fireNoun4,,Inferno,Inferno,Inferno,Enfer,インフェルノ,지옥 불,Inferno,炼狱,地獄火
+ChandelierIron,ChandelierIron,,Iron Chandelier,Eisen-Kronleuchter,,Chandelier de fer,鉄のシャンデリア,철제 샹들리에,,铁制水晶灯,鐵製水晶燈
+EquipTypejewelry,EquipTypejewelry,,Jewelry,Schmuck,Jewelry,Bijou,宝石,보석,Joalheria,珠宝,首飾
+Journeyer,Journeyer,player rank,Journeyer,Reisender,Journeyer,Voyageur,旅人,여행자,Viajante,旅行者,旅人
+Knee Guard Leggings,Knee Guard Leggings,,Knee Guard Leggings,Knieschutz-Beinkleid,guarda de las rodillas,Genouillères,膝あて,무릎 보호 각반,Guarda de Joelhos Calças,护膝绑腿,護膝
+Leather Hood,Leather Hood,,Leather Hood,Lederkapuze,Leather Hood,Capuchon en cuir,皮のフード,가죽 후드,Capuz de Couro,皮帽,皮革兜帽
+Leather Legs,Leather Legs,,Leather Legs,Lederbeinkleid,Leather Legs,Jambières en cuir,皮のブーツ,가죽 하의,Pernas de Couro,皮质下装,皮革護腿
+SkinTypeLeatherLegs,SkinTypeLeatherLegs,,Leather Pants,Lederhose,Leather Pants,Pantalon en cuir,皮のパンツ,가죽 바지,Calça de Couro,皮质长裤,皮革褲子
+SkinTypeLeatherTorso,SkinTypeLeatherTorso,,Leather Shirt,Lederhemd,Leather Shirt,Chemise en cuir,皮のシャツ,가죽 상의,Camisa de Couro,皮质上装,皮革上衣
+Leather Vest,Leather Vest,,Leather Vest,Lederweste,Leather Vest,Veste en cuir,皮のベスト,가죽 조끼,Vestimenta de Couro,皮质背心,皮革背心
+Rarity5,Rarity5,,Legendary,Legendär,Legendario,Légendaire,レジェンド,전설,Lendário,传奇,傳奇
+,CoreGui,"power level of character, monster, weapon, spell, etc",Level,Level,Nivel,Niveau,レベル,레벨,Nivel,等级,等級
+LevelUp,LevelUp,,Level up!,Stufenaufstieg!,Level up!,Niveau supérieur!,レベルアップしたよ！,레벨 업! ,Subiu de Nível! ,升级了！,升級了！
+LevelUpHero,LevelUpHero,,Level up! Use the hero button to improve your hero!,Stufenaufstieg! Verbessere deinen Helden mit dem Helden-Button!,Level up! Use the hero button to improve your hero!,Niveau supérieur! Utilise le bouton Héros pour améliorer ton héros!,レベルアップしたよ！ヒーローボタンでヒーローを強化しよう！,레벨 업! 영웅을 향상하려면 영웅 버튼을 사용하세요!,Subiu de Nível! Use o botão de herói para aprimorar seu herói!,升级了！使用英雄按键来强化你的英雄！,升級了！按一下英雄按鈕來提升能力值！
+Level,,,Level {1:int},Level {1:int},Nivel {1:int},"Niveau {1:int}
+",レベル{1:int},레벨 {1:int},Nível {1:int},{1:int}级,等級 {1:int}
+ToolNameFormat,ToolNameFormat,"In some languages adjectives come before tooltype, in others after.
+ Level 2 Hale Leather Hood of Focus
+ Level 6 Cold Bolt of Scorch
+ Level 3 Cold Hawk Eye Longbow of Flame and Constitution
+",Level {level:int} {adjective2} {adjective1} {tooltype} {suffix},Stufe {level:int} {adjective2} {adjective1} {tooltype} {suffix},Level {level:int} {adjective2} {adjective1} {tooltype} {suffix},{tooltype} {suffix} {adjective2} {adjective1} de niveau {level:int},{adjective2}{adjective1}{tooltype}{suffix}（レベル{level:int}）,레벨 {level:int} {adjective2} {adjective1} {tooltype} {suffix},Evelay {level:int} {tooltype} {adjective1} {adjective2} {suffix},{level:int}级{adjective2}{adjective1}{tooltype}{suffix},等級 {level:int} {adjective2}{adjective1}{tooltype}{suffix}
+FullHeroDescription,FullHeroDescription,Level 5 Warrior,Level {level:int} {class},Stufe {level:int} {class},Level {level:int} {class},{class} de niveau {level:int},{class}（レベル{level:int}）,레벨 {level:int} {class},Nível {level:int} {class},{level:int}级{class},等級 {level:int} {class}
+radiantNoun1,radiantNoun1,,Light,Licht,Luz,Lumière,明り,경량,Leve,轻型,光
+SkinTypeArmorLightTorso,SkinTypeArmorLightTorso,,Light Chest Armor,Leichte Brustrüstung,Light Chest Armor,Plastron léger,チェストアーマー（ライト）,경량 가슴 갑옷,Armadura de Peitoral Leve,轻型胸甲,輕型胸甲
+Light Crossbow,Light Crossbow,,Light Crossbow,Leichte Armbrust,Light Crossbow,Arbalète légère,クロスボウ（ライト）,경량 석궁,Besta Leve,轻型十字弓,輕型十字弓
+SkinTypeArmorLightLegs,SkinTypeArmorLightLegs,,Light Leg Armor,Leichte Beinrüstung,Light Leg Armor,Jambière légère,レッグアーマー（ライト）,경량 다리 갑옷,Armadura de Perna Leve,轻型护腿,輕型腿甲
+Lighting,Lighting,category of furniture includes torches and braziers and chandeliers,Lighting,Beleuchtung,Lighting,Lumières,明り,빛,Luzes,照明,照明
+Long Bow,Long Bow,,Long Bow,Langbogen,Long Bow,Arc long,ロングボウ,긴 활,Arco Longo,长弓,長弓
+,,,Lord Winter's Palace,Lord Winters Palast,,Le palais du Lord Winter,マスター・ウィンターの宮殿,겨울 군주의 성,,寒冰霸主的宫殿,寒冰霸主的王宮
+Lord Winter's Palace,Lord Winter's Palace,,Lord Winter's Palace,Lord Winters Palast,,Le palais de Lord Winter,マスター・ウィンターの宮殿,겨울 군주의 성,,寒冰领主的宫殿,寒冰霸主的王宮
+Lvl,Lvl,Level for places without a lot of screen real estate: Lv27,Lv{1:int},St.{1:int},Lv{1:int},Niv.{1:int},Lv{1:int},{1:int}레벨,Lv{1:int},{1:int}级,Lv{1:int}
+Mace,Mace,,Mace,Streitkolben,Mace,Masse,催涙ガス,철퇴,Maça,狼牙棒,鎚矛
+Mage,Mage,,Mage,Magier,Mage,Mage,魔法使い,마법사,Mago,狼牙棒,法師
+,,"mana, MP",Magic,Magisch,Magic,Magie,魔法,마법,Mágia,魔法,魔力
+Magic Barrier,Magic Barrier,,Magic Barrier,Magiebarriere,Magic Barrier,Barrière magique,マジックバリア,마법 장벽,Barreira Mágica,魔法屏障,魔力屏障
+SkinTypeMagicBarrier,SkinTypeMagicBarrier,,Magic Barrier,Magiebarriere,Magic Barrier,Barrière magique,マジックバリア,마법 장벽,Barreira Mágica,魔法屏障,魔力屏障
+SkinTypeMagicBolt,SkinTypeMagicBolt,,Magic Bolt,Magieblitz,Magic Bolt,Éclair magique,マジックボルト,매직 볼트,Projétil Mágico,魔法冲击,魔力彈
+ToolInfoManaCost,ToolInfoManaCost,Magic cost: 30,Magic cost: {1:int},Magiekosten: {1:int},Magic cost: {1:int},Coût en magie: {1:int},魔力コスト: {1:int},마력 소모: {1:int},Custo Mágico: {1:int},魔法消耗：{1:int},魔力花費：{1:int}
+Master,Master,player rank,Master,Meister,Master,Maître,マスター,마스터,Mestre,宗师,大師
+SkinTypeMaul,SkinTypeMaul,,Maul,Hammer,mazo,Mutilation,傷,철퇴,Maltrato,摩尔,大鎚
+Mausoleum,Mausoleum,,Mausoleum,Mausoleum,el mausoleo,Mausolée,霊廟,묘지,,崩塌陵墓,陵墓
+Miasma,Miasma,,Miasma,Miasma,Miasma,Miasme,不気味な霧,독기,Fedor,瘴气,毒氣
+MonsterDeaths,MonsterDeaths,,Monster Deaths,Monstertode,Monster Deaths,Morts de monstres,モンスター... ゲームオーバー！,몬스터 사망,Mortes do Monstro,怪物阵亡数,怪物死亡次數
+MonsterKills,MonsterKills,,Monster Kills,Monster-Kills,Monster Kills,Victimes monstres,倒したモンスター,잡은 몬스터,Abates do Monstro,怪物杀敌数,怪物擊殺數
+,,heading above a list of weapon and armor skins you can apply to your monster - they're not skins for the monster itself,Monster Skins,Monster-Skins,Monster Skins,Skins de monstre,モンスターのスキン,몬스터 스킨,Aparências de Monstro,怪物皮肤,怪物外觀
+TutorialOnMonsters,TutorialOnMonsters,,"Monsters start weaker than heroes, but monsters keep coming back and keep getting stronger.",Monsters sind zu Beginn schwächer als Helden. Dafür kehren sie immer wieder und werden stärker.,"Monsters start weaker than heroes, but monsters keep coming back and keep getting stronger.","Les monstres sont plus faibles que les héros au départ, mais ils reviennent à chaque fois de plus en plus forts.",モンスターは最初、ヒーローより弱い。だけど何度も戦うことで、だんだん強くなっていくんだ。,"몬스터는 처음에는 영웅보다 약하지만, 계속해서 돌아오며 점점 더 강해집니다.","Monstros começam mais fracos que Heróis, mas monstros continuam a voltar e continuam a se tornar fortes",怪物刚出现时要弱于英雄，但是随着一波接一波的涌现，他们会变得越来越强,一開始怪物會比英雄弱，但怪物可以不斷復活，並且變得越來越強大。
+,,for music on/off button,Music,Musik,Música,Musique,音楽,음악,Música,音乐,音樂
+willAdjectiveFP3,willAdjectiveFP3,female plural,Mystic,Mystischer,Místico,mystique,神秘的な,신비한,Místico,神秘,神秘
+willAdjectiveFS3,willAdjectiveFS3,female singular,Mystic,Mystischer,Místico,mystique,神秘的,신비한,Místico,神秘,神秘
+willAdjectiveMP3,willAdjectiveMP3,male plural,Mystic,Mystische,Místico,mystiques,神秘的,신비한,Místicos,神秘,神秘
+willAdjectiveMS3,willAdjectiveMS3,male singular,Mystic,Mystischer,Místico,mystique,神秘的,신비한,Místico,神秘,神秘
+,,header of player names in the custom player list,Names,Namen,Names,Noms,名前,이름,Nomes,名字,名稱
+Necro Barrier,Necro Barrier,,Necro Barrier,Nekro-Barriere,,Barrière nécro,死霊バリア,죽음의 장벽,,死灵屏障,死靈屏障
+Necro Bolt,Necro Bolt,,Necro Bolt,Nekro-Bolzen,,Boulon nécro,死霊ボルト,죽음의 볼트,,死灵能量波,死靈能量波
+Necromancer,Necromancer,,Necromancer,Nekromant,,Nécromancien,死霊魔術師,주술사,Necromante,死灵法师,死靈法師
+SpawnNecromancer,SpawnNecromancer,,Necromancer Portal,Nekromanter-Portal,,Portail Nécromancien,死霊魔術師のポータル,주술사 포탈,,死灵法师传送门,死靈法師傳送門
+NewLevels,NewLevels,How many times you've gone down a floor,New Floors,Neue Ebenen,New Floors,Nouveaux étages,新しいフロア,새로운 층,Novos Andares,新的地层,新關卡
+,,,No,Keine,No,Non,いいえ,아니요,Não,否,否
+AxeBronze,AxeBronze,,Northland Axe,Nordlandaxt,Northland Axe,Hache nordique,北国のオノ,노스랜드 도끼,Machado Northland,北境之斧,北國斧
+HammerBlue,HammerBlue,,Northland Hammer,Nordlandhammer,martillo  Northland,Marteau nordique,北国のハンマー,노스랜드 망치,Martelo Northland,北境之锤,北國鐵鎚
+OutOfMana,OutOfMana,,Not Enough Magic,Nicht genug Magie,Not Enough Magic,Magie insuffisante,魔力が足りない！,마력 부족,Sem Mágia o Suficiente,魔力不足,魔力不足
+NotEnoughDP,NotEnoughDP,,Not enough Dungeon Points,Nicht genug Dungeon-Punkte,Not enough Dungeon Points,Points de donjon insuffisants,ダンジョンポイントが足りません,던전 포인트가 부족합니다,Sem Pontos de Dungeon o Suficiente,地下城积分不足,地城點數不足
+NotEnoughGold,NotEnoughGold,,Not enough gold,Nicht genug Gold,,Pas assez d'or,ゴールドが足りません,금이 모자람,Seom Ouro Suficiente,金币不足,黃金不足
+NotEnoughMoney,NotEnoughMoney,,Not enough money,Nicht genug Geld,No tienes suficiente Money,Argent insuffisant,お金が足りません,돈이 부족합니다,Sem dinheiro o Suficiente,金钱不足,金錢不足
+Novice,Novice,player rank,Novice,Neuling,Novice,Novice,初心者,초보자,Novato,初学者,新手
+FurnishingsNumberLeft,FurnishingsNumberLeft,Number left: 3,Number left: {1:int},Verbl. Anzahl: {1:int},Number left: {1:int},Nombre restant: {1:int},残り: {1:int},남은 수: {1:int},Número faltando: {1:int},剩余数量：{1:int},剩餘數量：{1:int}
+,,ok button,OK,OK,OK,OK,OK,확인,OK,好的,好
+Obsidian Halls,Obsidian Halls,,Obsidian Halls,Obsidianhallen,,Couloirs d'obsidienne,オブシディアンホール,흑요석 홀,,黑曜石殿堂,黑曜石殿堂
+willAdjectiveFP1,willAdjectiveFP1,female plural,Occult,Okkulter,Occult,occulte,オカルト,주술적인,Oculto,诡秘,奧祕
+willAdjectiveFS1,willAdjectiveFS1,female singular,Occult,Okkulter,Occult,occulte,オカルト,주술적인,Oculto,诡秘,奧祕
+willAdjectiveMP1,willAdjectiveMP1,male plural,Occult,Okkulte,Occult,occultes,オカルト,주술적인,Ocultos,诡秘,奧祕
+willAdjectiveMS1,willAdjectiveMS1,male singular,Occult,Okkulter,Occult,occulte,オカルト,주술적인,Oculto,诡秘,奧祕
+strNoun3,strNoun3,,Ogre Strength,Ogerstärke,Ogre Strength,Force d'ogre,オーガのちから,오거 체력,Força de Ogro,食人魔之力,食人魔之力
+SkinTypeAxe1H,SkinTypeAxe1H,,One Handed Axe,Einhandaxt,One Handed Axe,Hache à une main,片手オノ,한손 도끼,Machado de Uma Mão,单手斧,單手斧
+SkinTypeSword1H,SkinTypeSword1H,,One Handed Sword,Einhandschwert,One Handed Sword,Épée à une main,片手剣,한손 검,Espada de Uma Mão,单手剑,單手劍
+TipMonsterChests,TipMonsterChests,,Only heroes can open chests.,Nur Helden können Truhen öffnen.,,Seuls les héros peuvent ouvrir les coffres.,ヒーローだけが宝箱を開けられるよ。,영웅만 보물 상자를 열 수 있어요.,Apenas Heróis podem abrir Baús.,只有英雄可以打开宝箱。,只有英雄可以開啟寶箱。
+explosiveNoun3,explosiveNoun3,,Oof,Uff,Oof,Oooh!,ノックアウト,으앗,Oof,噢,轟鳴
+FenceDescription,FenceDescription,,"Opens for monsters but not for heroes
+
+Can shoot through it but not walk through it","Öffnet sich für Monster, nicht aber für Helden
+
+Man kann hindurchschießen, aber nicht hindurchgehen","Opens for monsters but not for heroes
+
+Can shoot through it but not walk through it","S'ouvre pour les monstres, mais pas pour les héros.
+
+Ces derniers peuvent tirer à travers, mais pas la franchir.","モンスター専用の出入り口。ヒーローの時は開かないよ。
+
+（弓矢など、隙間から攻撃することはできるけど、すり抜けて進むことはできません）","몬스터에게는 열리지만, 영웅에겐 아닙니다
+
+공격할 수 있지만 지나갈 수 없습니다","Abre para Monstros mas não para Heróis
+
+Pode-se atirar através mas não andar através","只对怪物开放，英雄止步
+
+可以对内进行射击但本人无法通过","只有怪物接近時才會開啟，不會對英雄開啟
+
+遠程攻擊可穿過柵欄，但角色無法穿越"
+Orc,Orc,,Orc,Ork,Orc,Orque,オーク,오크,Orc,兽人,半獸人
+SwordOrcBlade,SwordOrcBlade,,Orc Blade,Orkklinge,,Lame d'orc,オークブレード,오크 검,,兽人之刃,半獸人大劍
+SpawnOrc,SpawnOrc,,Orc Tent,Orkzelt,Orc Tent,Tente d'orque,オークのテント,오크 천막,Barraca de Orc,兽人营帐,半獸人帳篷
+,,,Out Of Boost,Kein Boost mehr,Out Of Boost,Boost à sec,ブースト切れ,부스트 없음,Boost Esgotado,强化效果已结束,強化已用盡
+,,,Out of health potions,Lebenstränke alle,Out of health potions,Potions de santé à sec,HPポーション切れ,체력 물약 없음,Poções de Saúde esgotadas,生命药水已耗尽,生命值藥水已用盡
+,,,Out of magic potions,Zaubertränke alle,Out of magic potions,Potions magiques à sec,魔力ポーション切れ,마력 물약 없음,Poções Mágicas Esgotadas,魔法药水已耗尽,魔力已用盡
+OutOfGearSlots,OutOfGearSlots,,"Out of space for gear!
+Throw away items to make more space","Kein Platz für Ausrüstung mehr!
+Schaffe welchen, indem du Items wegwirfst","Out of space for gear!
+Throw away items to make more space","Espace insuffisant pour l'équipement!
+Jette des objets pour faire de la place.","ギアを入れるスペースが無くなりました！
+アイテムを整理して、スペースを空けよう","장비를 둘 공간이 없어요!
+공간을 획득하려면 아이템을 버리세요","Sem espaço para Equipamentos!
+Jogue fora alguns itens para liberar espaço","没有多余的空间存放装备！
+扔掉任意物品以腾出空间","沒有裝備空間了！
+請丟棄物品以騰出空間"
+strAdjectiveFP3,strAdjectiveFP3,female plural,Ox,Ochsenhafte,Ox,de bœuf,オックスの,황소,Boi,公牛,猛牛
+strAdjectiveFS3,strAdjectiveFS3,female singular,Ox,Ochsenhafter,Ox,de bœuf,オックスの,황소,Boi,公牛,猛牛
+strAdjectiveMP3,strAdjectiveMP3,male plural,Ox,Ochsenhafte,Ox,de bœuf,オックスの,황소,Boi,公牛,猛牛
+strAdjectiveMS3,strAdjectiveMS3,male singular,Ox,Ochsenhafter,Ox,de bœuf,オックスの,황소,Boi,公牛,猛牛
+Pedestal,Pedestal,,Pedestal,Podest,Pedestal,Piédestal,台座,받침대,Pedestal,底座,臺座
+Permaboost,Permaboost,permanent or infinite boost,Permaboost,Dauerboost,Permaboost,Boost permanent,無限ブースト,영속 부스트,Boost Permanente,永久强化,永久強化
+FurnishingPersonalMax,FurnishingPersonalMax,Personal Pit Trap maximum already built,Personal {1} maximum already built,Persönliches „{1}“-Maximum bereits gebaut,Personal {1} maximum already built,Limite personnelle maximum de {1} déjà construite,1人で作成できる{1}の限界を越えました,개인 제작 한도 {1} 도달,Máximo {1} Pessoal já Construído,个人{1}建造数已达上限,已達個人{1}建造上限
+willAdjectiveFP4,willAdjectiveFP4,female plural,Philosopher's,Philosophische,Philosopher's,de philosophe,哲学者の,철학자의,Filósofo,贤者,賢者
+willAdjectiveFS4,willAdjectiveFS4,female singular,Philosopher's,Philosophischer,Philosopher's,de philosophe,哲学者の,철학자의,Filósofo,贤者,賢者
+willAdjectiveMP4,willAdjectiveMP4,male plural,Philosopher's,Philosophische,Philosopher's,de philosophe,哲学者の,철학자의,Filósofo,贤者,賢者
+willAdjectiveMS4,willAdjectiveMS4,male singular,Philosopher's,Philosophischer,Philosopher's,de philosophe,哲学者の,철학자의,Filósofo,贤者,賢者
+LightPhoenixgardeLegs,LightPhoenixgardeLegs,,Phoenixgarde Legs,Phoenixgarde-Beinkleid,Phoenixgarde Legs,Jambières garde phénix,フェニックスガード（足）,피닉스가르드 하의,Phoenixgarde Pernas,凤凰守卫下装,鳳凰先鋒護腿
+LightPhoenixgardeTorso,LightPhoenixgardeTorso,,Phoenixgarde Torso,Phoenixgarde-Torso,Phoenixgarde Torso,Plastron garde phénix,フェニックスガード（体）,피닉스가르드 토르소,Phoenixgarde Tronco,凤凰守卫躯干,鳳凰先鋒上半身
+PitTrap,PitTrap,,Pit Trap,Fallgrube,Pit Trap,Fosse,落とし穴,구덩이 함정,Armadilha de Cova,陷阱,坑洞陷阱
+StoreInfoVIP,StoreInfoVIP,,Place statues of your own avatar in the dungeon! VIP label on player list! Thanks for supporting Dungeon Life!,"Platziere Statuen deines Avatars im Dungeon! VIP-Zeichen in der Spielerliste! Danke, dass du Dungeon Life unterstützt!",Pon estatuas de su propio avatar en la mazmorra! Etiqueta de VIP en la lista de personas! Gracias por ayudar a Dungeon Life!,Place des statues de ton avatar dans le donjon! Balise VIP dans la liste des joueurs! Merci de soutenir Dungeon Life!,自分のアバター像を、ダンジョンに設置しよう！VIPラベルがプレイヤーリストにのるよ！Dungeon Lifeをプレイしてくれてありがとう！,던전에 내 아바타 동상을 세우고 플레이어 목록에 VIP 표시를 달아보세요! Dungeon Life를 지원해주셔서 감사합니다!,Coloque estatuas de seu próprio avatar no calabouço! Selo de VIP na lista de jogador! Obrigado por suportar Dungeon Life!,在地下城中放置个人的头像雕塑！在玩家列表上为自己挂上VIP标签！感谢你对于《Dungeon Life》的支持！,在地城裡放置你虛擬人偶的雕像！玩家名單中也會顯示 VIP 標籤！感謝你支持《Dungeon Life》！
+,,,Places,,Lugares,,プレース,장소,,圣地,地點
+Plate Helmet,Plate Helmet,,Plate Helmet,Panzerhelm,Plate Helmet,Casque de plaques,プレートのヘルメット,판금 투구,Capacete de Placa,板甲头盔,板甲頭盔
+Plate Mail Leggings,Plate Mail Leggings,,Plate Mail Leggings,Ringpanzerbeinkleid,Plate Mail Leggings,Jambières de plates,プレートメイルの足,판금 갑옷 각반,Pernas de Cota de Malha de Placa,板甲下装,板甲護腿
+Plate Mail Shirt,Plate Mail Shirt,,Plate Mail Shirt,Ringpanzerhemd,Plate Mail Shirt,Haut de plates,プレートメイルの体,판금 갑옷 상의,Camisa de Cota de Malha de Placa,板甲上装,板甲上衣
+ClassLockedSingular,ClassLockedSingular,Player hero once more to unlock rogue,Play hero once more to unlock {2},,Juega héroe una vez más para desbloquear {1},,{2}をアンロックするにはもう一度ヒーローをプレイ,영웅으로 1회 더 플레이하고 {2}을(를) 잠금 해제하세요,,再玩一次英雄就可以解锁{2},以英雄進行 1 場遊戲解鎖{2}
+ClassLockedPlural,ClassLockedPlural,Play hero 3 more times to unlock priest,Play hero {1:int} more times to unlock {2},,Juega héroe {1:int} veces más para desbloquear {2},,{2}をアンロックするにはもう{1:int}回ヒーローをプレイ,영웅으로 {1:int}회 더 플레이하고 {2}을(를) 잠금 해제하세요,,再玩{1:int}次英雄就可以解锁{2},以英雄進行 {1:int} 場遊戲解鎖{2}
+EquipTypepotion,EquipTypepotion,,Potion,Trank,Potion,Potion,ポーション,물약,Poção,药水,藥水
+EquipTypepower,EquipTypepower,,Power,Macht,Power,Puissance,パワー,힘,Poder,力量,力量
+dexAdjectiveFP1,dexAdjectiveFP1,female plural,Precise,Präzise,Precise,précises,精密,신중한,Preciso,精准,精準
+dexAdjectiveFS1,dexAdjectiveFS1,female singular,Precise,Präziser,Precise,précis,精密,신중한,Preciso,精准,精準
+dexAdjectiveMP1,dexAdjectiveMP1,male plural,Precise,Präzise,Precise,précis,精密,신중한,Preciso,精准,精準
+dexAdjectiveMS1,dexAdjectiveMS1,male singular,Precise,Präziser,Precise,précis,精密,신중한,Preciso,精准,精準
+dexNoun1,dexNoun1,,Precision,Präzision,Precision,Précision,精密さ,신중함,Precisão,精准度,精準
+Premium,Premium,,Premium,Premium,Prima,Premium,プレミアム,프리미엄,Prêmio,高级,高級物品
+,PlayerGui.TopGui.GameStateLabel,Preparation 60,Preparation {1},Vorbereitung {1},Preparation {1},Préparation {1},準備{1},준비 {1},Preparação {1},准备{1},準備倒數 {1}
+Priest,Priest,,Priest,Priester,Priest,Prêtre,プリースト,사제,Sacerdote,祭司,祭司
+DoorDescription,DoorDescription,,Provides some privacy but anyone can go through,"Bietet eine Privatsphäre, aber jeder kann durchgehen",,Donne un peu d'intimité mais tout le monde peut entrer,多少はプライバシーが守られますが誰でも見れます,독립된 공간을 만들어 주지만 누구든 드나들 수 있음,"Providencia alguma privacidade, mas qualquer um pode atravessar-la",提供一部分隐私，不过别人还是可以通过,提供一點隱私，不過其他人可以自由進出
+BombPumpkin,BombPumpkin,,Pumpkin Bomb,Kürbisbombe,Pumpkin Bomb,Bombe citrouille,かぼちゃ爆弾,호박 폭탄,Bomba de Abóbora,南瓜炸弹,南瓜炸彈
+,,,Put away tool to open,Leg das Werkzeug beiseite zum Öffnen,Put away tool to open,Enlève l'outil pour ouvrir,道具を片付けてから、開けよう,도구를 치우고 열기,Guarde sua arma para abrir,放开工具以打开,收起工具以開啟
+explosiveNoun4,explosiveNoun4,,Quake,Beben,Quake,Séisme,大揺れ,지진,Terremoto,地震,波動
+CyclopsSuper,CyclopsSuper,,Queen Cyclops,Zyklopenkönigin,Queen Cyclops,Reine des cyclopes,サイクロプスクイーン,외눈박이 여왕,Rainha Ciclope,独眼巨人皇后,獨眼巨人女王
+SpawnCyclopsSuper,SpawnCyclopsSuper,,Queen Cyclops Prison,Zyklopenkönigingefängnis,Queen Cyclops Prison,Prison de la reine des cyclopes,サイクロプスクイーンの牢屋,외눈박이 여왕 감옥,Prisão de Rainha Ciclope,独眼巨人皇后的监狱,獨眼巨人女王牢籠
+radiantNoun2,radiantNoun2,,Radiance,Leuchten,Radiance,Éclat,光,광채,Radiância,辐射,光輝
+radiantAdjectiveFP2,radiantAdjectiveFP2,female plural,Radiant,Leuchtende,Radiant,rayonnantes,光の,광채의,Radiantes,辐射,燦爛
+radiantAdjectiveFS2,radiantAdjectiveFS2,female singular,Radiant,Leuchtender,Radiant,rayonnant,光の,광채의,Radiante,辐射,燦爛
+radiantAdjectiveMP2,radiantAdjectiveMP2,male plural,Radiant,Leuchtende,Radiant,rayonnants,光の,광채의,Radiantes,辐射,燦爛
+radiantAdjectiveMS2,radiantAdjectiveMS2,male singular,Radiant,Leuchtender,Radiant,rayonnant,光の,광채의,Radiante,辐射,燦爛
+ToolInfoRange,ToolInfoRange,Range: 7,Range: {1:int},Reichweite: {1:int},Range: {1:int},Portée: {1:int},距離: {1:int},범위: {1:int},Alcance: {1:int},范围：{1:int},射程：{1:int}
+EquipTyperanged,EquipTyperanged,as in 'ranged attack',Ranged,Fern,Ranged,À distance,遠隔,범위,a Distância,远程,遠程
+,,,Ranged Damage,Fernschaden,Ranged Damage,Dégâts à distance,遠隔ダメージ,범위 공격력,Dano a Distância,远程伤害,遠程殺傷力
+,,,Ranged Defense,Fernverteidigung,Ranged Defense,Défense à distance,遠隔防御力,범위 방어,Defesa a Distância,远程防御,遠程防禦力
+,PlayerGui.PlayerListGui.CustomLeaderboard.Contents.User128450567.Rank,"player's rank in game, how long they've been playing",Rank,Rang,Rank,Rang,ランク,랭크,Rank,段位,位階
+Rarity3,Rarity3,,Rare,Selten,Raro,Rare,レア,희귀,Raro,稀有,稀有
+,,"done setting up character, ready to play",Ready!,Bereit!,¡Listo!,Prêt!,よーい！,준비!,Preparado!,准备好！,就緒！
+,,,Recommended,Empfohlen,Recomendado,Conseillé,おすすめ,추천 아이템,Recomendado,推荐,建議
+WarriorDescription,WarriorDescription,,Recommended for new players. Tough and usually fights up close,Empfehlung für neue Spieler. Zäh und üblicherweise stark im Nahkampf,Recommended for new players. Tough and usually fights up close,Recommandé pour les nouveaux joueurs. Costaud et se bat en général au corps à corps.,初心者におすすめ。丈夫で、直接攻撃が得意なキャラ。,초보 플레이어에게 추천합니다. 강인하며 주로 근접 전투를 합니다,Recomendado para novos jogadores. Resistente e usualmente luta a curta distância,皮糙肉厚，擅长近战，推荐新手玩家使用,適合新玩家使用，體質強壯，習慣近身戰鬥
+HeavyRedcliffLegs,HeavyRedcliffLegs,,Redcliff Elite Legs,Rotklippe-Elite-Beinkleid,Redcliff Elite Legs,Jambières d'élite rouges,レッドクリフエリート（足）,레드클리프 엘리트 하의,Pernas Elite de Redcliff,赤壁精英下装,赤紅菁英護腿
+HeavyRedcliffTorso,HeavyRedcliffTorso,,Redcliff Elite Torso,Rotklippe-Elite-Torso,Redcliff Elite Torso,Plastron d'élite rouge,レッドクリフエリート（体）,레드클리프 엘리트 토르소,Tronco Elite de Redcliff,赤壁精英躯干,赤紅菁英上半身
+ToolRequires,ToolRequires,Requires Level 5 or Arcane 14,Requires Level {level:int} or {statname} {statreq:int},Erfordert Stufe {level:int} oder {statname} {statreq:int},Requires Level {level:int} or {statname} {statreq:int},Requiert le niveau {level:int} ou {statname} {statreq:int},レベル{level:int}、または{statname}{statreq:int}が必要です,레벨 {level:int} 또는 {statname} {statreq:int} 필요,Precisa de Nível {level:int} ou {statname} {statreq:int},等级需要达到{level:int}级或{statname}{statreq:int},需要等級 {level:int} 或{statname} {statreq:int}
+Restore Potion,Restore Potion,,Restore Potion,Trank wiederherstellen,Restore Potion,Potion de restauration,ポーションを回復,물약 회복,Poção de Restauração,恢复药水,恢復藥水
+ManaDescription,ManaDescription,Restores 30 magic,Restores {1:int} magic,Stellt {1:int} Magie wieder her,Restores {1:int} magic,Restaure {1:int} magie,魔力を{1:int}回復,마력 {1:int} 회복,Restaura {1:int} Mágia,恢复{1:int}魔法值,恢復 {1:int} 魔力
+Reward For Completing Monster Tutorial,Reward For Completing Monster Tutorial,,Reward For Completing Monster Tutorial,Belohnung für Abschluss von Monster-Tutorial,Reward For Completing Monster Tutorial,Récompense pour avoir fini le didacticiel Monstre,モンスターのチュートリアルを完了した報酬,몬스터 튜토리얼 완료 보상,Prêmio por Completar o Tutorial de Monstro,完成怪物教程的奖励,完成怪物教學的獎勵
+Reward For Winter King Defeated,Reward For Winter King Defeated,,Reward For Demon Lord Winter Defeated,Belohnung für den Sieg über den Dämonenlord von Winter,,Récompense pour avoir vaincu le démon Lord Winter,デーモンマスター・ウィンターを倒したご褒美,겨울 군주 데몬 승리 보상,"Recompensa por Derrotar o ""Lord Demônio do Inverno""",击败恶魔领主温特的奖励,擊敗寒冰霸主的獎勵
+Reward for Completing Monster Tutorial,Reward for Completing Monster Tutorial,,Reward for Completing Monster Tutorial,Belohnung für Abschluss von Monster-Tutorial,Reward for Completing Monster Tutorial,Récompense pour avoir fini le didacticiel Monstre,モンスターのチュートリアルを完了した報酬,몬스터 튜토리얼 완료 보상,Prêmio por Completar o Tutorial de Monstro,完成怪物教程的奖励,完成怪物教學的獎勵
+Reward for Cyclops Queen Defeated,Reward for Cyclops Queen Defeated,,Reward for Cyclops Queen Defeated,Belohnung für Besiegen der Zyklopenkönigin,Reward for Cyclops Queen Defeated,Récompense pour avoir vaincu la reine des cyclopes,サイクロプスクイーンを倒した報酬,외눈박이 여왕 승리 보상,Prêmio por derrptar a Rainha Ciclope,击败独眼巨人皇后的奖励,擊敗獨眼巨人女王的獎勵
+Reward for Fifty Heroic Deaths,Reward for Fifty Heroic Deaths,,Reward for Fifty Heroic Deaths,Belohnung für 50 Heldentode,Reward for Fifty Heroic Deaths,Récompense pour 50 morts de héros,ヒーローとして50回ゲームオーバーした報酬,50번째 영웅 사망 보상,Prêmio por Cinquenta Mortes Heróicas,壮烈牺牲次数达到50次的奖励,英雄死亡 50 次獎勵
+Reward for Fifty Monster Deaths,Reward for Fifty Monster Deaths,,Reward for Fifty Monster Deaths,Belohnung für 50 Monstertode,Reward for Fifty Monster Deaths,Récompense pour 50 morts de monstres,モンスターとして50回ゲームオーバーした報酬,50번째 몬스터 사망 보상,Prêmio por Cinquenta Mortes de Monstro,怪物死亡次数达到50次的奖励,怪物死亡 50 次獎勵
+Reward for First Heroic Death,Reward for First Heroic Death,,Reward for First Heroic Death,Belohnung für ersten Heldentod,Reward for First Heroic Death,Récompense pour 1re mort de héros,ヒーローとして初めてゲームオーバーした報酬,첫 영웅 사망 보상,Prêmio pela Primeira Morte Heróica,首次壮烈牺牲的奖励,英雄首次死亡獎勵
+Reward for First Monster Death,Reward for First Monster Death,,Reward for First Monster Death,Belohnung für ersten Monstertod,Reward for First Monster Death,Récompense pour 1re mort de monstre,モンスターとして初めてゲームオーバーした報酬,첫 몬스터 사망 보상,Prêmio pela Primeira Morte de Monstro,首次怪物死亡的奖励,怪物首次死亡獎勵
+Reward for First Trip Downstairs,Reward for First Trip Downstairs,,Reward for First Trip Downstairs,Belohnung für ersten Trip nach unten,Reward for First Trip Downstairs,Récompense pour 1er voyage en bas,初めて階段を下りた報酬,첫 지하 모험 보상,Prêmio pela Primeira Viajem Escada a baixo,首次探索地下的奖励,首次過關獎勵
+Reward for Five Heroic Deaths,Reward for Five Heroic Deaths,,Reward for Five Heroic Deaths,Belohnung für 5 Heldentode,Reward for Five Heroic Deaths,Récompense pour 5 morts de héros,ヒーローとして5回ゲームオーバーした報酬,5번째 영웅 사망 보상,Prêmio por Cinco Mortes Heróicas,5次壮烈牺牲的奖励,英雄死亡 5 次獎勵
+Reward for Five Monster Deaths,Reward for Five Monster Deaths,,Reward for Five Monster Deaths,Belohnung für 5 Monstertode,Reward for Five Monster Deaths,Récompense pour 5 morts de monstres,モンスターとして5回ゲームオーバーした報酬,5번째 몬스터 사망 보상,Prêmio por Cinco Mortes de Monstro,5次怪物死亡的奖励,怪物死亡 5 次獎勵
+Reward for One Hundred Heroic Deaths,Reward for One Hundred Heroic Deaths,,Reward for One Hundred Heroic Deaths,Belohnung für 100 Heldentode,Reward for One Hundred Heroic Deaths,Récompense pour 100 morts de héros,ヒーローとして100回ゲームオーバーした報酬,100번째 영웅 사망 보상,Prêmio por Cem Mortes Heróicas,100次壮烈牺牲的奖励,英雄死亡 100 次獎勵
+Reward for One Hundred Monster Deaths,Reward for One Hundred Monster Deaths,,Reward for One Hundred Monster Deaths,Belohnung für 100 Monstertode,Reward for One Hundred Monster Deaths,Récompense pour 100 morts de monstres,モンスターとして100回ゲームオーバーした報酬,100번째 몬스터 사망 보상,Prêmio por Cem Mortes de Monstro,100次怪物死亡的奖励,怪物死亡 100 次獎勵
+Reward for Ten Heroic Deaths,Reward for Ten Heroic Deaths,,Reward for Ten Heroic Deaths,Belohnung für 10 Heldentode,Reward for Ten Heroic Deaths,Récompense pour 10 morts de héros,ヒーローとして10回ゲームオーバーした報酬,10번째 영웅 사망 보상,Prêmio por Dez Mortes Heróicas,10次壮烈牺牲的奖励,英雄死亡 10 次獎勵
+Reward for Ten Monster Deaths,Reward for Ten Monster Deaths,,Reward for Ten Monster Deaths,Belohnung für 10 Monstertode,Reward for Ten Monster Deaths,Récompense pour 10 morts de monstres,モンスターとして10回ゲームオーバーした報酬,10번째 몬스터 사망 보상,Prêmio por Dez Mortes de Monstro,10次怪物死亡的奖励,怪物死亡 10 次獎勵
+Reward for Twenty Heroic Deaths,Reward for Twenty Heroic Deaths,,Reward for Twenty Heroic Deaths,Belohnung für 20 Heldentode,Reward for Twenty Heroic Deaths,Récompense pour 20 morts de héros,ヒーローとして20回ゲームオーバーした報酬,20번째 영웅 사망 보상,Prêmio por Vinte Mortes Heróicas,20次壮烈牺牲的奖励,英雄死亡 20 次獎勵
+Reward for Twenty Monster Deaths,Reward for Twenty Monster Deaths,,Reward for Twenty Monster Deaths,Belohnung für 20 Monstertode,Reward for Twenty Monster Deaths,Récompense pour 20 morts de monstres,モンスターとして20回ゲームオーバーした報酬,20번째 몬스터 사망 보상,Prêmio por Vinte Mortes de Monstro,20次怪物死亡的奖励,怪物死亡 20 次獎勵
+Rewards,Rewards,,Rewards,Belohnungen,Rewards,Récompenses,報酬,보상,Prêmios,奖励,獎勵
+Ritual Hat,Ritual Hat,,Ritual Hat,Ritualhut,Sombrero de Ritual,Chapeau de rituel,儀式に使う帽子,의식 모자,Chapéu do Ritual,祭祀之帽,儀式帽
+Ritual Robe,Ritual Robe,,Ritual Robe,Ritualrobe,Manto de Ritual,Tunique de rituel,儀式に使うローブ,의식 예복,Manto de Ritual,祭祀长袍,儀式袍
+Ritual Shirt,Ritual Shirt,,Ritual Shirt,Ritualhemd,Ritual Shirt,Chemise de rituel,儀式に使うシャツ,의식 상의,Camisa de Ritual,祭祀上装,儀式上衣
+Rogue,Rogue,,Rogue,Schurke,Rogue,Voleur,ローグ,로그,Ládino,盗贼,盜賊
+LeatherLegendaryRogueLegs,LeatherLegendaryRogueLegs,,Rogue Leggings,Schurkenbeinkleid,Rogue Leggings,Jambières de voleur,ローグ（足）,로그 각반,Pernas de Ládino,盗贼下装,盜賊腿部
+LeatherLegendaryRogueTorso,LeatherLegendaryRogueTorso,,Rogue Top,Schurkenoberteil,Rogue Top,Haut de voleur,ローグ（体）,로그 상의,Roupa de Ládino,盗贼上装,盜賊上衣
+Rubies,Rubies,,Rubies,Rubine,Rubíes,Rubis,ルビー,루비,Rubis,红宝石,紅寶石
+,,"in-game currency, goes with a ruby icon",Rubies:,Rubine:,Rubíes:,Rubis:,ルビー:,루비:,Rubis:,红宝石：,紅寶石數：
+radiantAdjectiveFP1,radiantAdjectiveFP1,female plural,Sacred,Heilige,Sagrados,sacrés,神聖な,신성한,Sagrados,神圣,神聖
+radiantAdjectiveFS1,radiantAdjectiveFS1,female singular,Sacred,Heilige,Sagrada,sacrée,神聖な,신성한,Sagrada,神圣,神聖
+radiantAdjectiveMP1,radiantAdjectiveMP1,male plural,Sacred,Heilige,Sagrados,sacrés,神聖な,신성한,Sagrados,神圣,神聖
+radiantAdjectiveMS1,radiantAdjectiveMS1,male singular,Sacred,Heiliger,Sagrados,sacré,神聖な,신성한,Sagrado,神圣,神聖
+Sasquatch,Sasquatch,,Sasquatch,Bigfoot,Sasquatch,Yéti,ビッグフット,설인,Sasquatch,大脚怪,大腳怪
+SpawnSasquatch,SpawnSasquatch,,Sasquatch Camp,Bigfoot-Lager,Campo de Sasquatch,Camp de yéti,ビッグフットのキャンプ,설인의 거처,Campo de Sasquatch,大脚怪营地,大腳怪營地
+Damage Wisp,Damage Wisp,,Savage Wisp,Wildes Irrlicht,,Sort violent,野蛮なウィスプ,사나운 정령,,残暴精灵,殘暴精靈
+Savant,Savant,player rank,Savant,Gelehrter,Sabio,Savant,学者,학자,Sábio,学者,學者
+Scale Mail Shirt,Scale Mail Shirt,,Scale Mail Shirt,Schuppenkettenhemd,Camisa de Correo de Escala,Haut écailles,スケールメイル（シャツ）,비늘 갑옷 상의,Camisa de Escamas de Cota de Malha,鳞甲上装,鱗甲上衣
+fireNoun1,fireNoun1,,Scorch,Versengung,Quemar,Brûlure,ミニファイアー,폭염,Queimar,烧焦,燒焦
+SellFor,SellFor,Sell for 30,Sell for {1:int} gold,Für {1:int} Gold verkaufen,,Vendre pour {1:int} or ?,{1:int} ゴールドで売る,금 {1:int}개에 팔기,Vender por {1:int} Ouros,以 {1:int} 金币售出,以 {1:int} 黃金售出
+SellConfirmation,SellConfirmation,Sell Helmet of the Bear for 23 gold?,Sell {item} for {amount:int} gold?,{item} für {amount:int} Gold verkaufen?,,Vendre {item} pour {amount:int} or ?,{amount:int} ゴールドで {item} を売りますか？,금 {amount:int}개에 {item} 아이템을 팔까요?,Vender {item} por {amount:int} Ouros?,以 {amount:int} 金币售出 {item}？,以 {amount:int} 黃金售出{item}？
+,,"button opens up window for you to choose which server you want to go to (beginner, high-level, standard)",Servers,Server,Servidores,Serveurs,サーバー,서버,Servidores,服务器,伺服器
+dexN,dexN,"stat: how 'sharp eyed' you are, how good you are at attacking with ranged weapons",Sharp,Scharfsichtig,Puntiagudo,Précision,鋭さ,예리한,Afiado,精确度,銳眼
+explosiveAdjectiveFP1,explosiveAdjectiveFP1,,Shockwave,Schockwellige,Shockwave,à onde de choc,ショックウェーブ,충격파,Ondas de Choque,冲击波,衝擊波
+explosiveAdjectiveFS1,explosiveAdjectiveFS1,,Shockwave,Schockwelle,Shockwave,Onde de choc,ショックウェーブ,충격파,Onda de Choque,冲击波,衝擊波
+explosiveAdjectiveMP1,explosiveAdjectiveMP1,male plural,Shockwave,Schockwellige,Shockwave,à onde de choc,ショックウェーブ,충격파,Ondas de Choque,冲击波,衝擊波
+explosiveAdjectiveMS1,explosiveAdjectiveMS1,male singular,Shockwave,Schockwelliger,Shockwave,à onde de choc,ショックウェーブ,충격파,Onda de Choque,冲击波,衝擊波
+explosiveNoun2,explosiveNoun2,,Shockwave,Schockwelle,Shockwave,Onde de choc,ショックウェーブ,충격파,Onda de Choque,冲击波,衝擊波
+,,,Shop For Gear,,Comprar equipo,,ギアを買う,장비 구매,,购买装备,購買裝備
+Short Sword,Short Sword,,Short Sword,Kurzschwert,Short Sword,Épée courte,短剣,단검,Espada Curta,短剑,短劍
+strNoun2,strNoun2,,Sinews,Sehnen,Sinews,Muscles,筋力,정력,Tendões,肌肉,骨架
+Skeleton,Skeleton,,Skeleton,Skelett,Esqueleto,Squelette,スケルトン,해골,Esqueleto,骷髅,骷髏
+SpawnSkeleton,SpawnSkeleton,,Skeleton's Coffin,Skelettsarg,Ataúd de Esqueleto,Cercueil de squelette,スケルトンの棺桶,해골의 관,Caixão do Esqueleto,枯骨之棺,骷髏棺
+Skins,Skins,,Skins,Lackierungen,Aparencias,Skins,スキン,스킨,Aparências,皮肤,外觀
+BombSkull,BombSkull,,Skull Bomb,Schädelbombe,Bomba de Calavera,Bombe crâne,スカル爆弾,해골 폭탄,Bomba de Caveira,头骨炸弹,頭骨炸彈
+coldDescription,coldDescription,Slows attacks to 75% for 3.20 seconds,Slows attacks to {amount:int}% for {duration:fixed} seconds,Verlangsamt Angriffe für {duration:fixed} Sek. um {amount:int} %,Slows attacks to {amount:int}% for {duration:fixed} seconds,Ralentit les attaques de {amount:int} % pendant {duration:fixed} secondes,{duration:fixed}秒の間、攻撃を{amount:int}%遅くする,{duration:fixed}초 동안 공격 속도 {amount:int}% 감소,Diminui ataques para {amount:int}% por {duration:fixed} segundos,在{duration:fixed}秒是攻击速度将至{amount:int}%,減緩攻擊速度 {amount:int}%，持續 {duration:fixed} 秒
+SoloPlace,SoloPlace,Debug only,Solo Place,Solo-Ort,,,ソロプレース,Solo Place,Lugar Solitário,单独地点,Solo Place
+IncorrectCode,IncorrectCode,,"Sorry, incorrect code. Please double check that you are typing it correctly.","Sorry, falsche Code. Bitte überprüfe, dass du ihn richtig eingegeben hast.","Perdon, ese codigo esta incorrecto. Por favor chequeas devuelta si lo escribistes correctamente.",Code incorrect. Vérifie que tu l'as saisi correctement.,コードが間違ってるみたいです。もう一度確認して、慎重に入力してみてね。,죄송합니다. 정확하지 않은 코드입니다. 잘 입력했는지 다시 한번 확인하세요.,"Desculpe, Código Incorreto. Por favor Cheque novamente se você esta escrevendo corretamente",对不起，代码有误。请确认之后再次尝试输入正确的代码,抱歉，代碼錯誤。請再次確認你輸入的代碼是否正確。
+UnavailableCode,UnavailableCode,,"Sorry, that code is no longer available.","Sorry, dieser Code ist nicht mehr verfügbar.","Perdon, ese codigo ya no esta disponible.",Ce code n'est plus disponible.,もう使えないコードです。,더는 유효하지 않은 코드입니다.,"Desculpe, este Código não esta mais Válido",对不起，该代码已失效,抱歉，此代碼已無法使用。
+StaffFeathered,StaffFeathered,,Southland Staff,Südlandstab,Baston de Southland,Bâton méridional,南国の杖,사우스랜드 지팡이,Bastão de Southland,南境之杖,南方魔杖
+Spawn,Spawn,category of furniture spawns regular monsters,Spawn,Spawn,Generar,Générateurs,スポーン,생성,Spawn,召唤,重生點
+SpawnNecromancerDescription,SpawnNecromancerDescription,,"Spawns Necromancers
+
+Necromancers cast spells
+
+You will immediately respawn as this monster",Spawnt Nekromanter Nekromanter sprechen Zauber Du wirst sofort als dieses Monster respawnen,,"Spawns Nécromanciens
+Les Nécromanciens lancent des sorts
+Tu vas respawn en étant ce monstre","死霊魔術師をスポーン
+
+死霊魔術師は呪文をかけます
+
+このモンスターとしてすぐにリスポーンします",주술사 소환. 주술사가 마법을 걸고 나는 즉시 몬스터로 회생할 거예요,,"重生死灵法师
+
+死灵法师可以施法
+
+你会立刻以这个怪物的身份重生","重生死靈法師
+
+死靈法師可以施法
+
+你會立刻重生為這個怪物"
+SpawnGhostDescription,SpawnGhostDescription,,"Spawns ghosts
+
+You will immediately respawn as this monster","Spawnt Geister
+
+Du spawnst direkt wieder als dieses Monster","Spawns ghosts
+
+You will immediately respawn as this monster","Génère des fantômes.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","ゴーストのスポーン
+
+すぐにゴーストとしてリスポーンできます","유령을 생성합니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Fantasmas
+
+Você irá imediatamente Re-aparecer como este monstro","召唤鬼魂
+
+你将立即重生为该怪物","重生鬼魂
+
+你會立刻重生為這個怪物"
+SpawnGremlinDescription,SpawnGremlinDescription,,"Spawns gremlins
+
+ou will immediately respawn as this monster","Spawnt Gremlins
+
+Du spawnst direkt wieder als dieses Monster","Spawns gremlins
+
+ou will immediately respawn as this monster","Génère des gremlins.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","グレムリンのスポーン
+
+すぐにグレムリンとしてリスポーンできます","그렘린을 생성합니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Gremlins
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤小精灵
+
+你将立即重生为该怪物","重生小魔怪
+
+你會立刻重生為這個怪物"
+SpawnOrcDescription,SpawnOrcDescription,,"Spawns orcs
+
+You will immediately respawn as this monster","Spawnt Orks
+
+Du spawnst direkt wieder als dieses Monster","Spawns orcs
+
+You will immediately respawn as this monster","Génère des orques.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","オークのスポーン
+
+すぐにオークとしてリスポーンできます","오크를 생성합니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Orcs
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤兽人
+
+你将立即重生为该怪物","重生半獸人
+
+你會立刻重生為這個怪物"
+SpawnSasquatchDescription,SpawnSasquatchDescription,,"Spawns sasquatches
+
+Sasquatches do extra damage
+
+You will immediately respawn as this monster","Spawnt Bigfoots
+
+Bigfoots bewirken Zusatzschaden
+
+Du spawnst direkt wieder als dieses Monster","Spawns sasquatches
+
+Sasquatches do extra damage
+
+You will immediately respawn as this monster","Génère des yétis.
+
+Les yétis font des dégâts supplémentaires.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","ビッグフットのスポーン
+
+ビッグフットはより大きなダメージを与えられる
+
+ここからすぐに、ビッグフットとしてリスポーンできるぞ","설인을 생성합니다
+
+설인은 공격력이 더 강합니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Sasquatches
+
+Sasquatches dão Dano Extra
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤大脚野人
+
+大脚野人可造成额外伤害
+
+你将立即重生为该怪物","重生大腳怪
+
+大腳怪能造成額外傷害
+
+你會立刻重生為這個怪物"
+SpawnSkeletonDescription,SpawnSkeletonDescription,,"Spawns skeletons
+
+Skeletons are fast
+
+You will immediately respawn as this monster","Spawnt Skelette
+
+Skelette sind schnell
+
+Du spawnst direkt wieder als dieses Monster","Crea esqueletos
+
+Esqueletos son mas rapidos
+
+Apareceras como este monstruo immediatamente 
+","Génère des squelettes.
+
+Les squelettes sont rapides.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","スケルトンのスポーン
+
+スケルトンは、動きが早い
+
+ここからすぐに、スケルトンとしてリスポーンできるぞ","해골을 생성합니다
+
+해골은 움직임이 빠릅니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Esqueletos
+
+Esqueletos são Rápidos
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤骷髅
+
+骷髅行动迅速
+
+你将立即重生为该怪物","重生骷髏
+
+骷髏的移動速度快
+
+你會立刻重生為這個怪物"
+SpawnWerewolfDescription,SpawnWerewolfDescription,,"Spawns werewolves
+
+Werewolves can pretend to be heroes
+
+You will immediately respawn as this monster","Spawnt Werwölfe
+
+Werwölfe können sich als Helden ausgeben
+
+Du spawnst direkt wieder als dieses Monster","Crea hombre-lobos
+
+Hombre-lobos pueden aparecer como heroes
+
+Apareceras como este monstruo immediatamente","Génère des loups-garous.
+
+Les loups-garous peuvent se faire passer pour des héros.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","ウェアウルフのスポーン
+
+ウェアウルフは、ヒーローのふりができる
+
+ここからすぐに、ウェアウルフとしてリスポーンできるぞ","늑대인간을 생성합니다
+
+늑대인간은 영웅인 척 행동할 수 있습니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Lobisomens
+
+Lobisomens podem Fingir serem Heróis
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤狼人
+
+狼人可以伪装成英雄
+
+你将立即重生为该怪物","重生狼人
+
+狼人可偽裝成英雄
+
+你會立刻重生為這個怪物"
+SpawnZombieDescription,SpawnZombieDescription,,"Spawns zombies
+
+Zombies are slow but can sense heroes
+
+You will immediately respawn as this monster","Spawnt Zombies
+
+Zombies sind langsam, können aber Helden erspüren
+
+Du spawnst direkt wieder als dieses Monster","Crea zombis
+
+Zombis son lentos pero pueden sentir heroes
+
+Apareceras como este monstruo immediatamente","Génère des zombies.
+
+Les zombies sont lents, mais perçoivent les héros.
+
+Tu réapparaîtras immédiatement dans la peau de ce monstre.","ゾンビのスポーン
+
+ゾンビは、動きが遅い。でもヒーローを嗅ぎ分けられる
+
+ここからすぐに、ゾンビとしてリスポーンできるぞ","좀비를 생성합니다
+
+좀비는 속도는 느리지만, 영웅을 감지할 수 있습니다
+
+나도 즉시 이 몬스터로 재생성됩니다","Invoca Zumbis
+
+Zumbis são devagares mas podem sentir os Heróis
+
+Você irá imediatamente Re-aparecer como este Monstro","召唤僵尸
+
+僵尸行动缓慢但是它们可以感知到英雄的存在
+
+你将立即重生为该怪物","重生殭屍
+
+殭屍的移動速度慢，但可以感知英雄的位置
+
+你會立刻重生為這個怪物"
+,,items that are 'on special' in the store,Specials,Spezial,Specials,Spécial,スペシャル,특별,Especiais,特价,特殊
+EquipTypespell,EquipTypespell,,Spell,Zauber,Magia,Sort,呪文,주문,Magia,法术,法術
+,,,Spell Damage,Zauberschaden,Spell Damage,Dégâts de sort,呪文ダメージ,주문 공격력,Dano de Magia,法术伤害,法術殺傷力
+,,,Spell Defense,Zauberverteidigung,Spell Defense,Défense de sort,呪文防御力,주문 방어력,Defesa de Magia,法术防御,法術防禦力
+PitTrapSpiked,PitTrapSpiked,,Spiked Pit Trap,Gestachelte Grubenfalle,,Piège qui pique,トゲ付き落とし穴,가시 돋친 구덩이 함정,,刺坑陷阱,刺坑陷阱
+Sprint Power,Sprint Power,,Sprint Power,Sprintstärke,Poder de esprintar,Puissance de sprint,スプリントパワー,질주력,Poder de Corrida,疾速,疾速之力
+SkinTypeStaff,SkinTypeStaff,,Staff,Stab,Bastón,Bâton,杖,지팡이,Cajado,法杖,魔杖
+Staff,Staff,,Staff,Stab,Bastón,Bâton,杖,지팡이,Cajado,法杖,魔杖
+Standard,Standard,"or ""Default""",Standard,Standard,,Standard,標準,기본,Padrão,标准,預設
+LowLevelServer,LowLevelServer,,Standard Server,Standard-Server,,Serveur standard,標準サーバー,일반 서버,Servidor Padrão,标准服务器,普通伺服器
+Stars,Stars,,Stars,Sterne,Estrellas,Étoiles,スター,별,Estrelas,星星,星星
+,,"indication of how much you've played the game, used to determine your rank, goes with a five pointed star icon",Stars:,Sterne:,Stars:,Étoiles:,スター:,별:,Estrelas:,星数：,星星數：
+,,package of items a beginning player can buy once,Starter Pack,Starterpaket,Starter Pack,Pack de démarrage,スターターパック,스타터 팩,Pacote de Iniciante,新手包,新手組合包
+BarbarianDescription,BarbarianDescription,,Starts out doing more close combat damage than any other hero class,Bewirkt anfangs mehr Nahkampfschaden als jede andere Heldenklasse,Empieza haciendo mas daño cerca que todos los otros heroes,Commence par faire plus de dégâts au corps à corps que les autres classes de héros.,直接攻撃で大きなダメージを与えられる（どのクラスのヒーローもかなわないくらい）状態でゲームがスタートする,다른 영웅보다 초기 근접 전투 공격력이 뛰어납니다,Começa com mais dano de combate próximo que qualquer outra classe de Herói,和其他英雄职阶比起来，能造成更高的近战伤害,初期能比其他英雄職業造成更多近戰傷害
+,,how many points you have to spend improving your stats,Stat Points {1},Wertepunkte {1},Stat Points {1},{1} points de stats,ステータスアップに必要なポイント: {1},능력치 포인트 {1},Pontos de Estatísticas {1},属性点{1},能力值點數 {1}
+Statue,Statue,,Statue,Statue,Estatua,Statue,像,동상,Estátua,雕像,雕像
+ClawsSteel,ClawsSteel,,Steel Claws,Stahlklauen,Garras de acero,Griffes d'acier,鋼の爪,강철 발톱,Garras de Aço,钢爪,鋼鐵利爪
+,,button opens up in-game store window,Store,Laden,Tienda,Boutique,ストア,상점,Loja,商店,商店
+strAdjectiveFP1,strAdjectiveFP1, 'stout' as in strong - female plural,Stout,Kräftige,gruesas,résistantes,頑丈な,튼튼한,Robustas,结实的,魁武
+strAdjectiveFS1,strAdjectiveFS1, 'stout' as in strong - female singular,Stout,Kräftiger,grueso,résistant,頑丈な,튼튼한,Robusto,结实的,魁武
+strAdjectiveMP1,strAdjectiveMP1, 'stout' as in strong - male plural,Stout,Kräftige,gruesos,résistants,頑丈な,튼튼한,Robustos,结实的,魁武
+strAdjectiveMS1,strAdjectiveMS1, 'stout' as in strong - male singular,Stout,Kräftiger,grueso,résistant,頑丈な,튼튼한,Robusto,结实的,魁武
+strNoun1,strNoun1,,Strength,Stärke,Fuerza,Force,力,체력,Força,力量,力量
+strAdjectiveFP2,strAdjectiveFP2,female plural,Strong,Stark,Fuerza,Force,強力,힘,Forte,强壮的,強壯
+strAdjectiveFS2,strAdjectiveFS2,female singular,Strong,Starke,Fuerte,forte,強力,힘,Forte,强壮的,強壯
+strAdjectiveMP2,strAdjectiveMP2,male plural,Strong,Stark,Fuerza,Force,強い,힘,Forte,强壮的,強壯
+strAdjectiveMS2,strAdjectiveMS2,male singular,Strong,Starker,Fuerte,fort,強力,힘,Forte,强壮的,強壯
+strN,strN,muscle strength stat,Strong,Stark,Fuerza,Force,強力,힘,Forte,强壮的,強壯
+GateDescription,GateDescription,,Stronger than fences. Opens for monsters but not for heroes,"Stärker als Zäune. Öffnet sich für Monster, nicht aber für Helden",Mas fuerte que Cercas. Abre para monstruos pero no para Heroes,"Plus robuste que les clôtures. S'ouvre pour les monstres, mais pas pour les héros.",フェンスより丈夫。モンスターは通れるけど、ヒーローの時は開かないよ。,"울타리보다 강력합니다. 몬스터에게는 열리지만, 영웅에겐 아닙니다",Mais fortes que Cercas. Abrem para Monstros mas não para Heróis,比栅栏更加强力。只对怪物开放，英雄无法进入,比柵欄更堅固，只有怪物接近時才會開啟，不會對英雄開啟
+Subcellar,Subcellar,,Subcellar,Tiefkeller,Subcellar,Sous-sol,地下室,지하실,Subcelular,地下二层,地下室
+Subdweller Colony,Subdweller Colony,,Subdweller Colony,Unterirdischenkolonie,Subdweller Colony,Colonie souterraine,地下住民のコロニー,지하 거주지,Colônia Subcelular,地下殖民地,地穴根據地
+MagicHealingDescription,MagicHealingDescription,Heals 40,Summons a wisp that heals allies {1:int} per second for {2:fixed} seconds,Heilt {1:int},Heals {1:int},Soigne {1:int},味方を毎秒{1:int}で{2:fixed}秒間癒すウィスプを召喚,{1:int} 치료,Regenera {1:int},回复{1:int},治療 {1:int} 生命值
+CurseWispDescription,CurseWispDescription,,Summons a wisp that increases enemy cooldowns {1:int}% for {2:fixed} seconds,"Ruft ein Irrlicht herbei, das das Abkühlen deiner Gegner um {1:int}% für {2:fixed} Sekunden erhöht",,Invoque un sort qui augmente les cooldowns ennemis de {1:int}% pendant {2:fixed} secondes,敵のクールダウンを{1:int}%、{2:fixed}秒間増加させるウィスプを召喚,{2:fixed}초 동안 적의 쿨다운을 {1:int}% 높이는 정령 소환,,召唤一只精灵，{2:fixed} 秒内敌人冷却时间增加 {1:int}%。,召喚一隻精靈，{2:fixed} 秒內敵人冷卻時間增加 {1:int}%。
+DamageWispDescription,DamageWispDescription,,Summons a wisp that increases the chances of ally critical hits {1:int}% for {2:fixed} seconds,"Ruft ein Irrlicht herbei, das die Chancen kritischer Treffer deiner Verbündeten um {1:int}% für {2:fixed} erhöht",,Invoque un sort qui augmente les chances de coups critiques alliés de {1:int}% pendant {2:fixed} secondes,味方のクリティカルヒットの確率を{1:int}%、{2:fixed}秒間増加させるウィスプを召喚,동지의 치명타율을 {2:fixed}초간 {1:int}% 증가시키는 정령 소환,,召唤一只精灵，{2:fixed} 秒内队友爆击率增加 {1:int}%。,召喚一隻精靈，{2:fixed} 秒內隊友爆擊率增加 {1:int}%。
+HasteWispDescription,HasteWispDescription,,Summons a wisp that reduces ally cooldowns {1:int}% for {2:fixed} seconds,"Ruft ein Irrlicht herbei, das das Abkühlen deiner Allierten um {1:int}% für {2:fixed} Sekunden reduziert",,Invoque un sort qui réduit les cooldowns d'alliés de {1:int}% pendant {2:fixed} secondes,味方のクールダウンを{1:int}%、{2:fixed}秒間低下させるウィスプを召喚,동지의 쿨다운을 {2:fixed}초간 {1:int}% 낮추는 정령 소환,,召唤一只精灵，{2:fixed} 秒内队友冷却时间减少 {1:int}%。,召喚一隻精靈，{2:fixed} 秒內隊友冷卻時間減少 {1:int}%。
+ClawsSun,ClawsSun,,Sun Claws,Sonnenklauen,Garras de Sol,Griffes solaires,太陽の爪,태양 발톱,Garras do Sol,太阳之爪,烈日利爪
+supportedLanguage,supportedLanguage,this is a support variable - it must be set to read 'TRUE' in English no matter what language you're working with,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+,,,Take Off,Ablegen,Take Off,Retirer,取りやめる,해제,Jogar Fora,脱下,取下
+AlphaReward,AlphaReward,,Thanks for being an alpha player!,"Danke, dass du die Alpha-Version spielst!",Gracias por ser un Jugador Alpha!,Merci d'être un joueur alpha!,アルファプレイに参加してくれてありがとう！,알파 플레이어가 되어 주셔서 감사합니다!,Obrigado por ser um Jogador Alfa!,感谢你参与测试版的游戏！,感謝你參與 Alpha 測試！
+SpotOccupied,SpotOccupied,,That spot occupied,Da ist besetzt,That spot occupied,Cet emplacement est occupé,この場所はいっぱいです,사용 중인 공간,Este Espaço está Ocupado,该地点已被占用,該位置已被佔用
+radiantNoun4,radiantNoun4,,The Angels,Engel,The Angels,Les anges,救いの光,천사,Os Anjos,天使,天使
+conNoun4,conNoun4,,The Bear,Bär,The Bear,L'ours,耐久,곰,O Urso,熊,熊族
+The Cyclops Queen,The Cyclops Queen,,The Cyclops Queen,Zyklopenkönigin,The Cyclops Queen,La reine des cyclopes,サイクロプスクイーン,외눈박이 여왕,A Rainha Ciclope,独眼巨人皇后,獨眼巨人女王
+,,,"The Cyclops Queen has long been imprisoned beneath Castle Avalon. Now that the castle is in ruins and monsters have moved in, is the Queen still in her cell? If you make it to the bottom you'll find out!","Die Zyklops-Königin wurde lange unter dem Schloss Avalon gefangen gehalten. Jetzt, wo die Burg in Trümmern liegt und Monster eingezogen sind, ist die Königin noch in ihrer Zelle? Wenn du es bis zum Ende schaffst, wirst du es herausfinden!",,"La Reine de Cyclopes a été emprisonnée sous le Chateau Avalon depuis un moment. Maintenant que le chateau est en ruines et que les monstres l'ont envahi, est-ce que la Reine est toujours dans sa cellule ? Si tu arrives au sous-sol, tu le sauras !",長い間、アヴァロン城の地下牢に閉じ込められてきたサイクロプスクイーン。城が廃墟となってモンスターが住むようになった今、クイーンはまだ地下牢にいるのか？下までたどりつければ、わかるよ！,외눈박이 여왕은 아발론 성 아래에 오랜 시간 갇혀 있었어요. 성은 폐허가 되었고 몬스터들이 이를 점령했죠. 여왕은 아직도 감방에 있을까요? 바닥까지 도달하면 알 수 있을 거예요!,,独眼巨人女王长期被关在阿瓦隆城堡底下，但现在城堡已沦为废墟。怪物占领城堡之后会把把女王释放出来吗？到达最底层，你就会知道答案！,獨眼巨人女王長期被關在阿瓦隆城堡底下，但現在城堡已淪為廢墟。怪物佔領城堡之後，會不會把女王釋放出來？你到最底層就會知道！
+The Dark,The Dark,,The Dark,Dunkelheit,La ,Les ténèbres,ダークネス,어둠,O Escuro,黑暗,黑暗
+,,,The Demon Lord of Winter lies dead deep beneath his palace and necromancers are doing experiments in his crypt. Will they awaken the long dead demon king? Of course they will!,Der Dämonenlord von Winter liegt tief unter seinem Palast und Nekromanten führen Experimente in seiner Gruft durch. Werden sie den längst toten Dämonenkönig erwecken? Klar doch!,,Le démon Lord Winter est quelque part au fond de ce palais et des nécromanciens en font des expériences... Vont-il le réveiller ? Bien sûr !,デーモンマスター・ウィンターは城の地下深くに永眠していて、地下室では死霊魔術師が実験をしています。亡くなって長い時間が経っているデーモンキングを蘇らせることができるのか？もちろん、できるはず！！,겨울 군주 데몬이 성 아래 깊은 곳에 죽어 누워 있어요. 주술사는 그의 지하실에서 실험을 하고 있죠. 이들이 오래 전 죽은 데몬 왕을 살려낼 수 있을까요? 당연히 그럴 거예요!,O Lord Demônio do Inverno se encontra morto afundo em seu palácio e os Necromantes estão fazendo Experimentos em sua Cripta. Eles irão acordar o Rei demônio? Claro que vão!,寒冰霸主长眠在他的王宫底下，而死灵法师正在在他的地穴做实验。他们会成功唤醒寒冰霸主吗？当然会！,寒冰霸主長眠在他的王宮底下，而死靈法師正在在他的地穴做實驗。他們會成功甦醒寒冰霸主嗎？當然會！
+dexNoun4,dexNoun4,,The Eagle,Adler,The Eagle,L'aigle,イーグル,독수리,A Águia,鹰,鷹
+dexNoun3,dexNoun3,,The Hawk,Falke,The Hawk,Le faucon,ホーク,매,O Falcão,雕,隼
+The Mist,The Mist,,The Mist,Der Nebel,,La Brume,霧,스모그,A Névoa,迷雾,霧霾
+willNoun2,willNoun2,,The Occult,Okkulte,The Occult,L'occulte,オカルト,주술,O Oculto,神秘学,奧祕
+willNoun3,willNoun3,,The Owl,Eule,The Owl,La chouette,フクロウ,올빼미,A Coruja,猫头鹰,鴞
+willNoun4,willNoun4,,The Philosopher,Philosoph,The Philosopher,Le philosophe,哲学者,철학자,O Filósofo,贤者,賢者
+radiantNoun3,radiantNoun3,,The Sun,Sonne,The Sun,Le soleil,太陽,태양,O Sol,太阳,烈日
+GameDescription,GameDescription,,"The action RPG where the monsters are you!
+
+Be all kinds of monsters: 👻🧟🐺👹🐉
+Outfit a dungeon with traps, treasure, and decorations!
+Fight heroes with swords, bows, bombs and more!
+Use special powers!
+Be a boss!
+
+Be a hero: ⚔🏹🔥
+Fight monsters!
+Collect loot!
+Cast spells!
+Level up!","Das Rollenspiel, wo du die Monster bist! Sei jede Art von Monster: 👻  🐺👹🐉 Statte einen Dungeon mit Fallen, Schätzen und Deko aus! Kämpfe mit Schwertern, Bögen, Bomben und mehr gegen Helden! Verwende besondere Kräfte! Sei ein Boss! Sei ein Held: ⚔🔥 Kämpfe gegen Monster! Sammle Beute! Steige auf!",,"RPG d'action où le monstre; c'est toi ! Sois celui que tu veux : 👻🧟🐺👹🐉 Installe des pièges, mais aussi des trésors et des décorations ! Bats-toi contre les héros avec des épées, des arcs, des bombes et plus encore ! Sois un héros ⚔🏹🔥Écrase les monstres ! Gagne ton butin ! Jette des sorts !","君がモンスターになるアクションRPG！
+
+いろいろな種類のモンスターになる: 👻🧟🐺👹🐉
+ダンジョンをトラップやお宝、装飾品などで飾る！
+剣や爆弾などを使ってヒーローと闘う！
+特別なパワーを使う！
+ボスになる！
+
+ヒーローになる: ⚔🏹🔥
+モンスターと闘う！
+お宝を集める！
+呪文をかける！
+レベルアップ！","몬스터가 되어 즐기는 액션 RPG 게임!
+
+이곳에서 👻🧟🐺👹🐉 등 모든 종류의 몬스터가 되어 보세요. 
+던전에 함정과 보물, 장식을 놓으세요!
+검과 활, 폭탄 등 다양한 무기로 영웅과 싸우세요!
+스페셜 파워를 사용하세요!
+보스가 되세요!
+
+영웅이 되세요! ⚔🏹🔥
+몬스터를 물리치세요! 
+약탈품을 수집하세요! 
+마법을 거세요! 
+레벨을 올리세요!",,"在这个动作 RPG 游戏中，你就是怪物！
+
+成为各式各样的怪物：👻🧟🐺👹🐉 
+在地下城放置陷阱、宝箱和装饰！ 
+使用剑、弓、炸弹等武器和英雄战斗！ 
+使用特殊能力！
+成为大boss！ 
+
+成为英雄：⚔🏹🔥 
+抗击怪物！
+获得宝藏！ 
+施展魔法！ 
+不断升级！","在這個動作 RPG 裡，你就是怪物！
+
+成為各式各樣的怪物：👻🧟🐺👹🐉 
+在地城放置陷阱、寶箱和裝飾！ 
+使用劍、弓、炸彈等武器和英雄戰鬥！ 
+使用特殊能力！
+成為大魔王！ 
+
+成為英雄：⚔🏹🔥 
+擊殺怪物！
+獲得寶藏！ 
+施放魔法！ 
+持續升級！"
+TutorialHeroPrep,TutorialHeroPrep,,"The monsters get some time before the round starts to build the dungeon. This is a great time to sell excess gear, outfit your hero, and shop!","Die Monster haben etwas Zeit, bevor die Runde beginnt, um den Dungeon zu bauen. Dies ist ein guter Zeitpunkt, überflüssige Ausrüstung zu verkaufen, deine Helden auszustatten und zu shoppen!",,"Les monstres ont un peu de temps avant le début de la partie pour construire le donjon. C'est le moment parfait pour vendre ce que tu as en trop, équiper ton héros et faire des achats !",モンスターは、ラウンド開始前にダンジョンを建設する時間がもらえます。この時間は、いらないギアを売ったり、ヒーローに服を着せたり、買い物するのに最適です。,"몬스터는 던전을 제작하기 전에 어느 정도 시간이 있습니다. 여분의 장비를 팔거나 영웅을 꾸미거나, 쇼핑을 하기에 아주 좋은 시간이죠!","Os Monstros tem algum tempo antes da rodada começar, para construir sua Dungeon. Por outro lado, para os heróis isso é ótimo para vender seus equipamentos em excesso, Equipar seus itens e comprar coisas novas!",在回合开始前，怪物有一些时间来建造地下城。这是出售多余装备、装备英雄和购物的好机会！,在遊戲開始前，怪物會有時間建造地域。你可以使用這個時間賣掉多出的裝備、打扮你的英雄和購物。
+TrapDoorsDescription,TrapDoorsDescription,,The way out,Der Weg nach draußen,The way out,La sortie,出口,나가는 길,A Saída,出路,出口
+ThrowAwayConfirmation,ThrowAwayConfirmation,Throw away Helmet of the Bear?,Throw away {item}?,{item} wegwerfen?,Throw away {item}?,Jeter {item}?,{item}を捨てますか？,{item} 아이템을 버릴까요?,Jogar {item} fora?,确定扔掉{item}？,要丟棄{item}嗎？
+Titan,Titan,player rank,Titan,Titanhafter,Titan,titanesque,巨人,거인,Titã,泰坦,泰坦
+strAdjectiveFP4,strAdjectiveFP4,female plural,Titan,Titanhafter,Titan,titanesque,巨人,거인,Titã,泰坦,泰坦
+strAdjectiveFS4,strAdjectiveFS4,female singular,Titan,Titanhafte,Titan,titanesque,巨人,거인,Titã,泰坦,泰坦
+strAdjectiveMP4,strAdjectiveMP4,male plural,Titan,Titanhafte,Titan,titanesques,巨人,거인,Titãs,泰坦,泰坦
+strAdjectiveMS4,strAdjectiveMS4,male singular,Titan,Titanhafter,Titan,titanesque,巨人,거인,Titã,泰坦,泰坦
+TotalPartyKill,TotalPartyKill,A total party kill or TPK is D&D nerd speak for all the heroes dying,"Total Party Kill!
+Starting over with new heroes","Totaler Gruppen-Kill!
+Neustart mit neuen Helden","Todo el partido estaba matado!     
+ Continuando con nuevos heroes","Groupe éliminé!
+Redémarrage avec de nouveaux héros","パーティー全滅！
+ヒーローを選んでやり直そう","모두 죽었습니다!
+새 영웅으로 다시 시작하는 중","Todos os heróis morreram!
+Começando com novos heróis","团灭！
+选择新英雄重新开始","全數殲滅！
+以新英雄重新開始"
+TimeInvested,TimeInvested,,Total Time Played,Gesamtspielzeit,Total Time Played,Total temps de jeu,プレイ時間の合計,총 플레이 시간,Tempo total jogado,总游戏时间：,遊玩總時數
+FurnishingsTotal,FurnishingsTotal,Total built on floor: 2/3,Total built on floor: {1:int}/{2:int},Insgesamt gebaut auf Ebene: {1:int}/{2:int},Total construido en este piso: {1:int}/{2:int},Construction à cet étage: {1:int}/{2:int},フロアに作成した合計: {1:int}/{2:int},층 내 총 제작품: {1:int}/{2:int},Total construido no andar: {1:int}/{2:int},总建筑数：{1:int}/{2:int},關卡中建造總數：{1:int}/{2:int}
+conAdjectiveFP2,conAdjectiveFP2,female plural,Tough,Zäh,Resistente,Endurance,丈夫,끈기의,Resistente,坚韧,堅韌
+conAdjectiveFS2,conAdjectiveFS2,female singular,Tough,Zähe,Resistente,coriace,丈夫,끈기의,Resistente,坚韧,堅韌
+conAdjectiveMP2,conAdjectiveMP2,male plural,Tough,Zähe,Resistentes,coriaces,丈夫,끈기의,Resistentes,坚韧,堅韌
+conAdjectiveMS2,conAdjectiveMS2,male singular,Tough,Zäher,Resistente,coriace,丈夫な,끈기의,Resistente,坚韧,堅韌
+conN,conN,"stat: how much constitution you have, how much health you will have",Tough,Zäh,Resistente,Endurance,丈夫,끈기의,Resistente,坚韧,堅韌
+conNoun2,conNoun2,,Toughness,Zähigkeit,Resistencia,Résistance,丈夫さ,끈기,Resistência,韧性,韌性
+Transform,Transform,change from animal to human or back,Transform,Verwandlung,Transformar,Transformation,変身,변환,Transformar,转换,變身
+Trap,Trap,"category of furniture includes trapped chests, poison fountains, pits",Trap,Falle,Trampa,Piège,トラップ,함정,Armadilha,陷阱,陷阱
+TrappedChest,TrappedChest,,Trapped Chest,Fallentruhe,Tesoro de Trampa,Coffre piégé,トラップつき宝箱,함정 상자,Armadilha de Tesouro,陷阱箱,陷阱箱
+Treasure,Treasure,category of furniture includes chests and barrels of gold,Treasure,Schatz,Tesoro,Trésor,お宝,보물,Tesouro,宝藏,寶藏
+Chest,Chest,,Treasure Chest,Schatztruhe,Cofre de Tesoro,Coffre au trésor,宝箱,보물 상자,Baú de Tesouro,宝箱,寶箱
+ScytheTribladeBlue,ScytheTribladeBlue,,Triblade Scythe,Dreiklingensense,guadaña de tres espadas,Faux trilame,トリプルブレードの大がま,삼중날 낫,Foice Triblade,三刃镰,三刃鐮刀
+Tutorial,Tutorial,,Tutorial,Tutorial,Tutorial,Didacticiel,チュートリアル,튜토리얼,Tutorial,教程,教學
+SkinTypeAxe2H,SkinTypeAxe2H,,Two Handed Axe,Zweihandaxt,Hacha de Dos Filos,Hache à deux mains,両手オノ,양손 도끼,Machado de Duas Mãos,双手斧,雙手斧
+SkinTypeSword2H,SkinTypeSword2H,,Two Handed Sword,Zweihandschwert,Espada de Dos Filos,Épée à deux mains,両手剣,양손 검,Espada de Duas Mãos,双手剑,雙手劍
+Rarity2,Rarity2,,Uncommon,Ungewöhnlich,Incomun,Peu commun,アンコモン,비범,Incomum,罕见,罕見
+Underhaven,Underhaven,Name of a town in the game,Underhaven,Underhaven,,Underhaven,アンダーヘイヴン,지하 은신처,Refúgio Subterrãneo,地下庇护所,地下聖所
+,,,Unlock hero slot,Heldenplatz freischalten,Unlock hero slot,Débloquer emplacement héros,ヒーロースロットをアンロック,영웅 슬롯 열기,Desbloquear Espaço de Herói,解锁英雄槽,解除英雄欄位的鎖定
+SkinTypeUnskinnable,SkinTypeUnskinnable,,Unskinnable,Nicht skinbar,Unskinnable,Peau dure,スキンにできません,스킨 적용 불가,Inflexível,无法添加皮肤,無外觀
+conAdjectiveFP3,conAdjectiveFP3,female plural,Unyielding,Unnachgiebiger,Unyielding,inflexible,固い,불굴의,Inflexível,不屈的,堅固
+conAdjectiveFS3,conAdjectiveFS3,female singular,Unyielding,Unnachgiebiger,Unyielding,inflexible,固い,불굴의,Inflexível,不屈的,堅固
+conAdjectiveMP3,conAdjectiveMP3,male plural,Unyielding,Unnachgiebige,Unyielding,inflexibles,固い,불굴의,Inflexíveis,不屈的,堅固
+conAdjectiveMS3,conAdjectiveMS3,male singular,Unyielding,Unnachgiebiger,Unyielding,inflexible,固い,불굴의,Inflexível,不屈的,堅固
+RogueDescription,RogueDescription,,Usually stays back and fights from a distance,Hält sich üblicherweise im Hintergrund und kämpft aus der Ferne,Usually stays back and fights from a distance,"En général, reste en arrière et se bat à distance.",少し離れて、遠隔攻撃するのが一般的。,주로 한 발짝 물러서서 원거리에서 싸웁니다,Usualmente fica de longe e luta de uma distáncia,时刻保持距离，从远处发动进攻,一般都在後方從遠處攻擊
+,,"Very Important Player - needs to be a small word or acronym, used in small places",VIP,VIP,VIP,VIP,VIP,VIP,VIP,VIP,VIP
+,,,VIP Pass,VIP-Pass,VIP Pass,Passe VIP,VIPパス,VIP 패스,Passagem VIP,VIP通行证,VIP 通行證
+conNoun3,conNoun3,,Vitality,Vitalität,Vitalidad,Vitalité,活力,활력,Vitalidade,活力,活力
+fireAdjectiveFP4,fireAdjectiveFP4,female plural,Volcano,Vulkanische,Volcan,volcaniques,火山のような,화산,Vulcões,火山,火山
+fireAdjectiveFS4,fireAdjectiveFS4,female singular,Volcano,Vulkanischer,Volcan,volcanique,火山のような,화산,Vulcão,火山,火山
+fireAdjectiveMP4,fireAdjectiveMP4,male plural,Volcano,Vulkanische,Volcan,volcaniques,火山のような,화산,Vulcões,火山,火山
+fireAdjectiveMS4,fireAdjectiveMS4,male singular,Volcano,Vulkanischer,Volcan,volcanique,火山のような,화산,Vulcão,火山,火山
+Vote For Dungeon,Vote For Dungeon,,Vote For Dungeon,Für Dungeon abstimmen,,Vote pour Dungeon,ダンジョンに投票,던전 투표하기,,地下城投票,地域投票
+Warrior,Warrior,,Warrior,Krieger,Guerrero,Guerrier,ウォーリアー,전사,Guerreiro,战士,戰士
+WaterFeature,WaterFeature,category of furniture includes fountains,Water Feature,Wasserhaftes,Water Feature,Eau,噴水など,분수,Característica de água,水景,流水
+,,,Wear,Anziehen,Poner,Porter,身につける,착용,Vestir,衣着,穿戴
+TutorialWelcome2,TutorialWelcome2,,"Welcome to Dungeon Life!
+Dungeon Life is a game where we take turns playing monsters and heroes fighting in a dungeon.
+Monsters are weak but keep respawning and can build stuff.
+Heroes are strong and resourceful but once they're dead their turn is over.","Willkommen bei Dungeon Life! Dungeon Life ist ein Spiel, in dem wir abwechselnd Monster und Helden spielen, die in einem Dungeon kämpfen. Monster sind schwach, aber sie respawnen immer wieder und können Sachen bauen. Helden sind stark und einfallsreich, aber wenn sie tot sind, ist ihre Runde vorbei.",,"Bienvenue sur Dungeon Life, le jeu où on est parfois un monstre et parfois un héros qui se batte dans un donjon. Les monstres sont faibles mais n'arrêtent pas de respawn et de construire des pièges. Les héros sont forts et pleins de ressources mais une fois mort, la partie est finie.","ダンジョンライフへようこそ！
+ダンジョンライフは、地下迷宮で闘うモンスターとヒーローを交互にプレイするゲームです。
+モンスターは弱いですが、リスポーンし続け、物を作れます。
+ヒーローは強くて機知に富んでいますが、一度死ぬとそのラウンドは終了します。","Dungeon Life에 온 걸 환영해요! Dungeon Life는 몬스터와 영웅을 번갈아 맡으며 던전에서 싸우는 게임입니다. 몬스터는 약하지만 계속해서 회생할 수 있고, 여러 가지를 제작할 수 있어요. 영웅은 강력하고 여러 자원을 사용할 수 있지만 한번 죽으면 끝이죠.",,"欢迎来到《Dungeon Life》! 
+在这个游戏中，我们会轮流成为怪兽和英雄，一起在地下城战斗。
+怪物虽然能力较弱，不过可以一直重生和盖东西。
+英雄能力强大、能善用资源，但是死亡一次就不能复活。",歡迎來到 Dungeon Life! 在這裡，我們會輪流成為怪獸和英雄在地城戰鬥。怪物雖然能力較弱，不過可以一直重生和蓋東西。英雄能力強大、能善用資源，但是死亡一次就不能復活。
+TutorialWelcome,TutorialWelcome,Show you the ropes an idiom for 'teach you how' or 'give you an introduction',"Welcome to Dungeon Life!
+Let's show you the ropes.","Willkommen bei Dungeon Life!
+Legen wir mit den Grundlagen los.","Bienvenido a Dungeon Life!
+Vamos a enseñarte a jugar.","Bienvenue dans Dungeon Life!
+On va t'apprendre les règles du jeu.","Dungeon Lifeへようこそ！
+最初に、簡単な説明をするね。","Dungeon Life에 오신 것을 환영합니다!
+몇 가지 팁을 알려드릴게요.","Bem-Vindo á Dungeon Life!
+Vamos ensinar a você como jogar!","欢迎来到《Dungeon Life》！
+让我来告诉你一些窍门吧。","歡迎來到《Dungeon Life》！
+教你一些竅門吧。"
+Werewolf,Werewolf,,Werewolf,Werwolf,Werewolf,Loup-garou,ウェアウルフ,늑대인간,Lobisomem,狼人,狼人
+SpawnWerewolf,SpawnWerewolf,,Werewolf Den,Werwolfbau,Werewolf Den,Tanière de loup-garou,ウェアウルフの巣穴,늑대인간 소굴,Covil de Lobisomem,狼人巢穴,狼人巢穴
+CrossbowOrnate,CrossbowOrnate,,Westland Crossbow,Westlandarmbrust,Westland Crossbow,Arbalète occidentale,西国のクロスボウ,웨스트랜드 석궁,Besta de Westland,西境十字弓,西洋十字弓
+SwordKnotwork,SwordKnotwork,,Westland Sword,Westlandschwert,espada de Westland,Épée occidentale,西国の剣,웨스트랜드 검,Espada de Westland,东境之剑,西洋劍
+,PlayerGui.NoResetGui.FeedbackPanel.Main.Message,,What do you think of Dungeon Life overall?,Wir gefällt dir Dungeon Life alles in allem?,What do you think of Dungeon Life overall?,Que penses-tu de Dungeon Life?,Dungeon Lifeはどんな感じ？,Dungeon Life에 대해 어떻게 생각하세요?,O que voce acha sobre Dungeon Life em geral?,你对《Dungeon Life》的整体印象如何？,你覺得《Dungeon Life》整體來說怎麼樣呢？
+StoreChanges,StoreChanges,,"What's in the shop changes every day, and different heroes are offered different items. Check with each of your heroes, and check back tomorrow!","Was sich im Laden befindet, ändert sich jeden Tag und verschiedenen Helden werden verschiedene Gegenstände angeboten. Überprüfe das mit jedem Ihrer Helden und schaue morgen wieder vorbei!",,Les objets de la boutique changent tous les jours et les différents héros n'ont pas les mêmes choix. Teste avec chacun de tes héros et reviens demain !,ショップにあるものは毎日変わり、ヒーローによって違うアイテムが用意してあります。それぞれのヒーローをチェックして、また明日も戻ってきてチェックしてください！,"상점의 품목은 매일 바뀌고, 영웅에 따라 여러 다른 아이템을 살 수 있어요. 영웅별로 상점을 둘러보고, 내일도 들르세요!","O que está na Loja muda todos os dias, e para outros Heróis é oferecido diferentes itens. Veja com cada um de seus Heróis! também veja amanha!",商店的道具每天都会更换，不同的英雄可以购买不同的道具，每天都可以使用所有英雄看一次商店！,商店的道具每天都會更換，不同的英雄可以購買不同的道具，每天都可以使用所有英雄看一次商店！
+TutorialSpawn,TutorialSpawn,,When you build a monster spawn point you become that monster. Let's build an Orc Spawn.,"Wenn du einen Monster-Spawnpunkt baust, wirst du zu diesem Monster. Lass uns einen Ork-Spawn bauen.",When you build a monster spawn point you become that monster. Let's build an Orc Spawn.,"Quand tu construis un point de génération de monstre, tu deviens celui-ci. Construirons un point d'apparition d'orque.",モンスターがスポーンする場所を作る（ビルドする）と、その場所で君がそのモンスターになれる。オークのスポーンをビルドしてみよう。,몬스터 생성 지점을 제작하면 그 몬스터가 됩니다. 오크 생성 지점을 제작해봅시다.,Quando você constrói um spawn point de monstro voce vira esse monstro. Vamos construir um spawn de Orc.,当你建造出一个怪物巢穴后，你就会变成该怪物。让我们建造一个兽人巢穴,建造了怪物重生點後，你就會變成該怪物。建造一個半獸人重生點吧。
+LowLevelServerDesc,LowLevelServerDesc,,"Where most players play, levels {minlevel:int} to {maxlevel:int}.","Wo die meisten Spieler sind, Levels {minlevel:int} bis {maxlevel:int}.",,"Rassemble la majorité des joueurs, niveaux {minlevel:int} à {maxlevel:int}.",ほとんどのプレイヤーがプレイするのは、レベル {minlevel:int} から {maxlevel:int}です。,대부분의 플레이어를 위한 레벨 {minlevel:int}부터 {maxlevel:int}.,"Onde a Maioria dos jogadores jogam, do Nível {minlevel:int} até {maxlevel:int}",大部分玩家所在的地方，等级 {minlevel:int} 到 {maxlevel:int}。,大部分玩家所在的地方，等級 {minlevel:int} 到 {maxlevel:int}。
+coldNoun4,coldNoun4,,Winter,Winter,Invierno,Hiver,ウィンター,겨울,Inverno,冬天,冬季
+Winter's Crypt,Winter's Crypt,,Winter's Crypt,Wintergruft,Winter's Crypt,Crypte hivernale,冬の地下室,겨울 지하실,Cripta do Inverno,冬天的冰窖,冬季地穴
+WoodChair,WoodChair,,Wood Chair,Holzstuhl,Wood Chair,Chaise en bois,木製の椅子,나무 의자,Cadeira de Madeira,木质椅子,木椅
+WoodTable,WoodTable,,Wood Table,Holztisch,Wood Table,Table en bois,木製のテーブル,나무 테이블,Mesa de Madeira,木质桌子,木桌
+,,,Yes,Ja,Sí,Oui,はい,예,Sim,是,是
+AllYouNeed,AllYouNeed,they've maxed out a particular blueprint or skin,You already have all you need,Du hast bereits alles Nötige,You already have all you need,Tu as déjà tout le nécessaire.,これ以上、必要なものは無さそうだ,이미 필요한 물건을 전부 가지고 있습니다,Você já tem tudo que você precisa,你已经拥有了全部所需物品,已擁有所需的全部物品
+MsgWelcomeDungeonLord,MsgWelcomeDungeonLord,,"You are a Dungeon Lord. For now, you can build but not fight. If you want to fight build a monster spawn.","Du bist ein Dungeon Lord. Fürs Erste kannst du nur bauen und nicht kämpfen. Wenn du das möchtest, musst du ein Monster-Spawn bauen.","You are a Dungeon Lord. For now, you can build but not fight. If you want to fight build a monster spawn.","Tu es un seigneur de donjon. Pour l'instant, tu peux construire, mais pas te battre. Si tu veux te battre, construis un point de génération de monstre.",ダンジョンマスター。いまの君にできるのは、戦いではなく「ビルド」だ。戦いたいなら、モンスターのスポーンをビルドしてくれ。,던전 군주가 되었습니다. 지금은 전투가 아니라 제작만 할 수 있습니다. 전투를 시작하려면 몬스터 생성 지점을 제작하세요.,"Você é um Lorde da Dungeon. Por agora, você pode construir mas não lutar. Se voce quiser lutar construa um spawn de monstro.",你是个地下城领主。目前你只能进行建造并不能战斗。如果你想要战斗，就去建造一个怪物巢穴吧,你現在是地城領主，暫時只能進行建造，無法參與戰鬥。如果想戰鬥，請建造一個怪物重生點吧。
+MsgIdentifyMonster,MsgIdentifyMonster,You are a level 3 Gremlin. Outfit the dungeon and fight the heroes!,You are a level {level:int} {class}. Outfit the dungeon and fight the heroes!,Du bist {class} der Stufe {level:int}. Statte den Dungeon aus und bekämpfe die Helden!,You are a level {level:int} {class}. Outfit the dungeon and fight the heroes!,Tu es {class} de niveau {level:int}. Équipe le donjon et affronte les héros!,レベル{level:int}の{class}になった。ダンジョンの中でビルドして、ヒーローと戦おう！,레벨 {level:int} {class}입니다. 던전에 갈 준비를 하고 영웅과 싸워봅시다!,Você é um {class} nível {level:int}. Veste o calabouço e lute contra os heróis!,你是一个{level:int}级的{class}。武装起来去与英雄战斗吧！,你現在是等級 {level:int} {class}。布置地城並和英雄戰鬥吧！
+InviteToOtherServer,InviteToOtherServer,,"You are in a server for heroes up to level {currentserverlevel:int}.
+Switch to {destservername}?","Du bist auf einem Server für Helden mit einer Stufe bis zu {currentserverlevel:int}.
+Zu {destservername} wechseln?","You are in a server for heroes up to level {currentserverlevel:int}.
+Switch to {destservername}?","Tu es sur un serveur pour les héros jusqu'au niveau {currentserverlevel:int}.
+Passer sur le serveur {destservername}?","このサーバーには、最大レベル{currentserverlevel:int}のヒーローがいる
+{destservername}に移動する？","이 서버에 입장 가능한 최대 영웅 레벨은 {currentserverlevel:int}입니다.
+{destservername} 서버로 바꾸시겠습니까?",Você está em um servidor de heróis até {currentserverlevel:int}.Trocar para {destservername}?,"当前服务器中英雄的等级最高可以达到{currentserverlevel:int}级。
+要跳转到{destservername}吗？","目前所在的伺服器適合等級 {currentserverlevel:int} 以上的英雄。
+要切換到 {destservername} 嗎？"
+FurnishingsYouBuilt,FurnishingsYouBuilt,You built: 1/3,You built: {1:int}/{2:int},Gebaut: {1:int}/{2:int},You built: {1:int}/{2:int},Tu as construit: {1:int}/{2:int},作成したもの: {1:int}/{2:int},내 제작품: {1:int}/{2:int},Você construiu: {1:int}/{2:int},已建造：{1:int}/{2:int},已建造：{1:int}/{2:int}
+LootThanksToBoost,LootThanksToBoost,,You got this loot thanks to boost! Buy more?,Diese Beute hast du einem Boost zu verdanken! Mehr kaufen?,You got this loot thanks to boost! Buy more?,Tu as eu ce butin grâce au boost! Acheter encore?,ブーストのおかげでたくさんもらえたね！もっと買う？,부스트 덕분에 약탈에 성공했어요! 더 구매할까요?,Você conseguiu este loot graças ao boost! Comprar mais?,多亏了强化效果你才得到了这份战利品！再多买一些？,因為有強化你才能獲得這個戰利品！要購買更多嗎？
+,,,You got...,Du erhältst ...,You got...,Tu as eu...,ゲットしたのは...,획득...,Você conseguiu...,你已有……,你得到了...
+MsgAuraOfDefense,MsgAuraOfDefense,,"You have accompanied a much more experienced hero into a dangerous dungeon. Avoid the higher level monsters if you can, let the high level hero handle them! As a reward for your bravery you have been enchanted with an Aura of Defense.","Du bist einem Helden mit viel mehr Erfahrung in einen gefährlichen Dungeon gefolgt. Meide möglichst Monster höherer Stufen, um die soll sich dein erfahrener Begleiter kümmern! Als Belohnung für deine Tapferkeit wurdest du mit einer Verteidigungsaura verzaubert.","You have accompanied a much more experienced hero into a dangerous dungeon. Avoid the higher level monsters if you can, let the high level hero handle them! As a reward for your bravery you have been enchanted with an Aura of Defense.","Tu as accompagné un héros bien plus expérimenté dans un donjon dangereux. Évite les monstres de niveau supérieur à tout prix. Laisse le héros de haut rang s'en occuper! En récompense de ton courage, tu as reçu le sort Aura de défense.",危険なダンジョンだけど、自分よりずっと経験豊富なヒーローと一緒に行けることになった。レベルの高いモンスターはなるべく避けて、仲間になんとかしてもらおう！このダンジョンに挑戦した勇気をたたえて、君には「防御のオーラ魔法」がかかっているよ。,훨씬 더 숙련된 영웅과 함께 위험한 던전에 들어오셨군요. 가능한 한 더 높은 레벨의 몬스터는 피하고 높은 레벨의 영웅에게 맡기세요! 용기에 대한 보상으로 방어의 오라를 부여해드렸습니다!,"Você está acompanhado por um herói muito mais experiente em um calabouço perigoso. Se afaste de qualquer monstro de nível alto se voce conseguir, deixe o herói de nível alto segura-los! Como um prêmio de sua bravura voce foi encantado com uma Aura de Defesa.",你已经跟随着一个超高等级的英雄进入了地下城。尽量避开等级比你高的怪物，让高等级的英雄去对付它们！作为对你勇气的嘉奖，你将获得一个防御光环,有位經驗豐富的英雄和你一起進入了危險的地城。盡可能躲避高等怪物，把它們交給等級較高的英雄解決！為了表揚你的英勇，你獲得了防禦光環。
+TutorialBlueprintsCrate,TutorialBlueprintsCrate,,You have enough Rubies to buy a Crate. Let's do it! Open the Store and buy the Blueprints Crate.,Du hast genug Rubine für eine Kiste. Also los! Öffne den Shop und kauf die Entwürfekiste.,You have enough Rubies to buy a Crate. Let's do it! Open the Store and buy the Blueprints Crate.,Tu as assez de rubis pour acheter un coffre. C'est parti! Ouvre la boutique et achète le coffre de plans.,十分なルビーが溜まったね。箱が買えるよ！ストアを開いて、設計図の箱を買ってみよう。,궤짝을 살 수 있는 루비가 충분합니다. 상점을 열고 설계도 궤짝을 구매하세요!,Você tem Rubis o sufuciente para comprar uma Caixa. Vamos lá! Abra a loja e compre uma Caixa de Diagramas,你所拥有的红宝石够买一个箱子了。还等什么！打开商店去购买图纸箱吧,你有足夠的紅寶石可以購買木箱了。快去買吧！開啟「商店」即可購買「設計圖木箱」。
+TutorialDungeonLord,TutorialDungeonLord,,"You start on the monster team as a Dungeon Lord. Right now your job is to outfit the dungeon.
+You get Rubies and Dungeon Points for building things that are marked in green. Let's make a Treasure Chest for the heroes to find. Open up the build menu.","Als Dungeon Lord beginnst du im Monster-Team. Erst einmal ist es dein Job, den Dungeon auszustatten.
+Für den Bau grün markierter Dinge erhältst du Rubine und Dungeon-Punkte. Erstellen wir eine Schatztruhe, die die Helden finden können. Öffne das Bauen-Menü.","You start on the monster team as a Dungeon Lord. Right now your job is to outfit the dungeon.
+You get Rubies and Dungeon Points for building things that are marked in green. Let's make a Treasure Chest for the heroes to find. Open up the build menu.","Tu commences dans l'équipe des monstres en tant que seigneur de donjon.
+Tu obtiens des rubis et des points de donjon pour avoir construit les éléments indiqués en vert. Faisons un coffre au trésor pour les héros. Ouvre le menu Construire.","ではこれから、モンスター同士のチーム... チーム「ダンジョンマスター」として戦いを始める。最初の仕事は、ダンジョンに仕掛けを作る（ビルドする）ことだ。
+緑色で表示されているアイテムをビルドすると、ルビーやダンジョンポイントが手に入る。手始めに、ヒーローたちが見つける宝箱を作ってみよう。ビルドメニューを開いて...","몬스터 팀의 던전 군주로 시작합니다. 지금 해야 할 일은 던전을 준비하는 거예요.
+초록색으로 표시된 것을 제작하면 루비와 던전 포인트를 획득합니다. 영웅이 찾을 보물상자를 만들어볼까요. 제작 메뉴를 열어보세요.",Você começa no time dos monstros como um 'Lorde da Dungeon'. Agora mesmo seu trabalho é vestir o calabouço. Você ganha Rubis e Pontos Dungeon por construir coisas que estão marcados em verde. Vamos fazer um baú de tesouro para os heróis encontrarem. Abra o menu de construção.,"游戏开始时你将作为怪物一方的地下城领主。现在你的任务就是将地下城武装起来。
+通过建造带有绿色标记的建筑，你可以获得红宝石和地下城积分。让我们制作一个宝箱供英雄搜寻吧。打开“建造”菜单。","你會先作為怪物隊伍的地城領主開始遊戲。現在你的任務是布置地城。
+建造標示為綠色的物品即可獲得紅寶石和地城點數。建造一個寶箱來讓英雄尋寶吧。請開啟建造選單。"
+SpawnDaemonDescription,SpawnDaemonDescription,,You will immediately respawn as a crystal demon! This can only happen once per level,Du spawnst direkt wieder als Kristalldämon! Das ist nur einmal pro Level möglich,You will immediately respawn as a crystal demon! This can only happen once per level,Tu réapparaîtras immédiatement en tant que démon de cristal! Possible 1 fois par niveau uniquement.,1レベル1回きりの復活チャンス！すぐにクリスタルデーモンとしてリスポーンするよ！,즉시 크리스탈 데몬으로 재생성됩니다! 레벨 당 한 번만 할 수 있습니다,Você imediatamente irá nascer como um Demônio de Cristal! Isso pode apenas acontecer uma vez por nivel.,你将立即重生为水晶恶魔！每层只可触发一次,你即將重生為水晶惡魔！每個關卡僅能重生一次
+SpawnCyclopsDescription,SpawnCyclopsDescription,,You will immediately respawn as a cyclops! This can only happen once per level,Du spawnst direkt wieder als Zyklop! Das ist nur einmal pro Level möglich,You will immediately respawn as a cyclops! This can only happen once per level,Tu réapparaîtras immédiatement en tant que cyclope! Possible 1 fois par niveau uniquement.,1レベル1回きりの復活チャンス！すぐにサイクロプスとしてリスポーンするよ！,즉시 외눈박이로 재생성됩니다! 레벨 당 한 번만 할 수 있습니다,Você imediatamente irá nascer como um Ciclope! Isso pode apenas acontecer uma vez por nivel.,你将立即重生为独眼巨人！每层只可触发一次,你即將重生為獨眼巨人！每個關卡僅能重生一次
+SpawnCyclopsSuperDescription,SpawnCyclopsSuperDescription,,You will immediately respawn as a cyclops! This can only happen once per level,Du spawnst direkt wieder als Zyklop! Das ist nur einmal pro Level möglich,You will immediately respawn as a cyclops! This can only happen once per level,Tu réapparaîtras immédiatement en tant que cyclope! Possible 1 fois par niveau uniquement.,サイクロプスとしてすぐにリスポーンします！これは、各レベルで一回だけ起きます,즉시 외눈박이로 재생성됩니다! 레벨 당 한 번만 할 수 있습니다,Você imediatamente irá nascer como um Ciclope! Isso pode apenas acontecer uma vez por nivel.,你将立即重生为独眼巨人！每层只可触发一次,你即將重生為獨眼巨人！每個關卡僅能重生一次
+SpawnDragonDescription,SpawnDragonDescription,,You will immediately respawn as a dragon! This can only happen once per level,Du spawnst direkt wieder als Drache! Das ist nur einmal pro Level möglich,You will immediately respawn as a dragon! This can only happen once per level,Tu réapparaîtras immédiatement en tant que dragon! Possible 1 fois par niveau uniquement.,1レベル1回きりの復活チャンス！すぐにドラゴンとしてリスポーンするよ！,즉시 용으로 재생성됩니다! 레벨 당 한 번만 할 수 있습니다,Você imediatamente irá nascer como um Dragão! Isso pode apenas acontecer uma vez por nivel.,你将立即重生为龙！每层只可触发一次,你即將重生為魔龍！每個關卡僅能重生一次
+HeroExpressLine,HeroExpressLine,,You're now in the hero express line!,Du bist nun in der Expressheld-Schlange!,You're now in the hero express line!,Tu es maintenant dans la file Héros express!,ヒーローエクスプレス、発動中...！,현재 영웅 이용권을 사용 중입니다!,Agora você está na linha do Expresso de Herói!,你现在已经在英雄速递的队列中了！,你正在使用英雄變身券！
+FurnishingBlueprintMax,FurnishingBlueprintMax,You've used all your Pit Trap blueprints this floor,You've used all your {1} blueprints this floor,Du hast auf dieser Ebene alle deine {1} Entwürfe verwendet,You've used all your {1} blueprints this floor,Tu as utilisé tous tes plans de {1} à cet étage,このフロアで使える{1}の設計図は、もう全部使ったよ,이 층에서 설계도 {1}개를 전부 사용했습니다,Você usou todos seus {1} diagramas neste andar.,你已经用掉了该层所有的{1}图纸,已用完本關卡中的全部 {1} 張設計圖
+MsgTooHighLevel,MsgTooHighLevel,,Your hero's level is too high for your companions. You have been temporarily nerfed to balance things out.,"Dein Level ist für deine Gefährten zu hoch. Du wurdest vorläufig abgeschwächt, um die Dinge auszugleichen.",,Ton niveau est trop élevée par rapport à tes compagnons. T'as été nerfé pour un peu contre-balancer tout ça.,あなたのヒーローのレベルは仲間には高すぎます。バランスを保つために一時的にナーフされています。,영웅의 레벨이 동지들에 비해 너무 높네요. 밸런스를 맞추기 위해 일시적으로 능력이 약화되었어요.,,你的英雄等级高于同伴过多，为了游戏平衡已将你的英雄能力减弱。,你的英雄等級高於同伴過多，為了遊戲平衡已將你的英雄能力減弱。
+,,dialog box displayed when it's your turn to play a hero,"Your turn to be a hero! Do you want to be a hero?
+(Your Dungeon Points will reset.)","Du verwandelst dich in einen Helden! Möchtest du ein Held sein?
+(Deine Dungeon-Punkte werden zurückgesetzt.)","Your turn to be a hero! Do you want to be a hero?
+(Your Dungeon Points will reset.)","À ton tour d'être héros! Veux-tu être un héros?
+(Tes points de donjon seront réinitialisés.)","今度は君がヒーローだ！このまま進んで大丈夫？
+（ダンジョンポイントがリセットされます）","영웅이 될 차례입니다! 영웅이 되고 싶나요?
+(던전 포인트가 없어집니다.)",Seu turno de ser herói! Voce quer ser herói? (Seus Pontos Dungeon serão resetados.),轮到你了，你想要成为一个英雄吗？（你的地下城积分将会重置）,"輪到你當英雄了！想成為英雄嗎？
+(你的地城點數將重設。)"
+Zombie,Zombie,,Zombie,Zombie,Zombi,Zombie,ゾンビ,좀비,Zumbi,僵尸,殭屍
+SpawnZombie,SpawnZombie,,Zombie Experiment,Zombie-Experiment,Zombie Experiment,Expérience zombie,ゾンビ研究所,좀비 실험,Experimento Zumbi,僵尸实验,殭屍實驗室
+Axe Gender,Axe Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Bastard Sword Gender,Bastard Sword Gender,just m or f for the gender of its translation,m,n,m,f,m,m,f,男性,m
+Battle Axe Gender,Battle Axe Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Bolt Gender,Bolt Gender,just m or f for the gender of its translation,m,m,m,m,m,m,m,男性,m
+Bomb Gender,Bomb Gender,just m or f for the gender of its translation,m,f,m,f,m,m,f,男性,m
+Broad Sword Gender,Broad Sword Gender,just m or f for the gender of its translation,m,n,m,f,m,m,f,男性,m
+Chain Mail Leggings Gender,Chain Mail Leggings Gender,just m or f for the gender of its translation,m,n,m,f,m,m,f,男性,m
+Chain Mail Shirt Gender,Chain Mail Shirt Gender,just m or f for the gender of its translation,m,n,m,m,m,m,f,男性,m
+Claws Gender,Claws Gender,just m or f for the gender of its translation,m,f,m,f,m,m,f,男性,m
+Club Gender,Club Gender,just m or f for the gender of its translation,m,f,m,m,m,m,f,男性,m
+Curse Wisp Gender,Curse Wisp Gender,,m,f,m,f,m,f,f,男性,m
+Damage Wisp Gender,Damage Wisp Gender,,m,f,m,f,m,f,f,男性,m
+Dual Daggers Gender,Dual Daggers Gender,just m or f for the gender of its translation,m,m,m,f,m,m,f,男性,m
+Great Axe Gender,Great Axe Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Great Sword Gender,Great Sword Gender,just m or f for the gender of its translation,m,n,m,m,m,m,f,男性,m
+Half Helm Gender,Half Helm Gender,just m or f for the gender of its translation,m,m,m,m,m,m,m,男性,m
+Haste Wisp Gender,Haste Wisp Gender,,m,f,m,f,m,f,f,男性,m
+Hatchet Gender,Hatchet Gender,just m or f for the gender of its translation,m,n,m,f,m,m,f,男性,m
+Heal Spell Gender,Heal Spell Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Healing Potion Gender,Healing Potion Gender,just m or f for the gender of its translation,m,m,m,f,m,m,f,男性,m
+Healing Wisp Gender,Healing Wisp Gender,,m,f,m,f,m,f,f,男性,m
+Heavy Crossbow Gender,Heavy Crossbow Gender,just m or f for the gender of its translation,m,f,m,f,m,m,f,男性,m
+Knee Guard Leggings Gender,Knee Guard Leggings Gender,just m or f for the gender of its translation,m,n,m,f,m,m,m,男性,m
+Leather Hood Gender,Leather Hood Gender,just m or f for the gender of its translation,m,f,m,m,m,m,m,男性,m
+Leather Legs Gender,Leather Legs Gender,just m or f for the gender of its translation,m,n,m,f,m,m,m,男性,m
+Leather Vest Gender,Leather Vest Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Light Crossbow Gender,Light Crossbow Gender,just m or f for the gender of its translation,m,f,m,f,m,m,f,男性,m
+Long Bow Gender,Long Bow Gender,just m or f for the gender of its translation,m,m,m,m,m,m,m,男性,m
+Mace Gender,Mace Gender,just m or f for the gender of its translation,m,m,m,f,m,m,f,男性,m
+Magic Barrier Gender,Magic Barrier Gender,just m or f for the gender of its translation,m,f,m,f,m,m,f,男性,m
+Plate Helmet Gender,Plate Helmet Gender,just m or f for the gender of its translation,m,m,m,m,m,m,m,男性,m
+Plate Mail Leggings Gender,Plate Mail Leggings Gender,just m or f for the gender of its translation,m,n,m,j,m,m,f,男性,m
+Plate Mail Shirt Gender,Plate Mail Shirt Gender,just m or f for the gender of its translation,m,n,m,m,m,m,f,男性,m
+Restore Potion Gender,Restore Potion Gender,just m or f for the gender of its translation,m,m,m,f,m,m,f,男性,m
+Ritual Hat Gender,Ritual Hat Gender,just m or f for the gender of its translation,m,m,m,m,m,m,m,男性,m
+Ritual Robe Gender,Ritual Robe Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Ritual Shirt Gender,Ritual Shirt Gender,just m or f for the gender of its translation,m,n,m,f,m,m,m,男性,m
+Scale Mail Shirt Gender,Scale Mail Shirt Gender,just m or f for the gender of its translation,m,n,m,m,m,m,f,男性,m
+Short Sword Gender,Short Sword Gender,just m or f for the gender of its translation,m,n,m,f,m,m,f,男性,m
+Sprint Power Gender,Sprint Power Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Staff Gender,Staff Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+Transform Gender,Transform Gender,just m or f for the gender of its translation,m,f,m,f,m,m,m,男性,m
+ToolSuffixFormat1,ToolSuffixFormat1,"suffix of one noun passed to the ToolNameFormat, such as 'of the Bear' or 'of Flame'",of {noun1},v. {noun1},of {noun1},de {noun1},{noun1}の,- {noun1},do {noun1},的{noun1},{noun1}
+ToolSuffixFormat2,ToolSuffixFormat2,"suffix of two nouns passed to ToolNameFormat, such as 'of the Bear and Flame'",of {noun1} and {noun2},v. {noun1} und {noun2},of {noun1} and {noun2},de {noun1} et {noun2},{noun1}と{noun2}の,- {noun1} {noun2},do {noun1} e {noun2},的{noun1}和{noun2},{noun1}{noun2}
+NumberGearSlots,NumberGearSlots,15 Gear Slots,{1:int} Gear Slots,{1:int} Ausrüstungsplätze,{1:int} Gear Slots,{1:int} emplacements équipement,ギアスロットの数: {1:int},장비 슬롯 {1:int}칸,{1:int} Espaços de Ferramenta,{1:int}装备槽,{1:int} 個裝備欄位
+GoldAmount,GoldAmount,200 Gold,{1:int} Gold,{1:int} Gold,,{1:int} or,{1:int} ゴールド,금 {1:int}개,{1:int} Ouros,{1:int} 金币,{1:int} 黃金
+HoursBoost,HoursBoost,6 Hours Boost,{1:int} Hours Boost,{1:int} Std.-Boost,{1:int} Hours Boost,Boost {1:int} heures,{1:int}時間ブースト,{1:int}시간 부스트,Boost de {1:int} Horas,{1:int}小时加成,{1:int} 小時強化
+MinutesBoost,MinutesBoost,15 Minutes Boost,{1:int} Minutes Boost,{1:int} Min.-Boost,{1:int} Minutes Boost,Boost {1:int} minutes,{1:int}分ブースト,{1:int}분 부스트,Boost de {1:int} Minutos,{1:int}分钟加成,{1:int} 分鐘強化
+RubyAmount,RubyAmount,200 Rubies,{1:int} Rubies,{1:int} Rubine,{1:int} Rubies,{1:int} rubis,ルビー{1:int}個,루비 {1:int}개,{1:int} Rubis,{1:int}红宝石,{1:int} 個紅寶石
+NumBlueprintsOwned,NumBlueprintsOwned,space after period essential,{1:int} blueprints owned.,{1:int} Entwürfe im Besitz. ,{1:int} blueprints owned.,{1:int} plans possédés.,持ってる設計図: {1:int},설계도 {1:int}개 보유.,{1:int} Diagramas Adquiridos.,已获得{1:int}图纸,已擁有 {1:int} 張設計圖。
+ToolInfoJumpPower,ToolInfoJumpPower,50% jump power,{1:int}% jump power,{1:int} % Sprungkraft,{1:int}% jump power,{1:int} % de puissance de saut,ジャンプ力{1:int}%,{1:int}% 점프력,{1:int}% Força de Pulo,{1:int}%跳跃力,{1:int}% 跳躍力量
+ToolInfoWalkSpeed,ToolInfoWalkSpeed,90% walk speed,{1:int}% walk speed,{1:int} % Gehtempo,{1:int}% walk speed,{1:int} % de vitesse de marche,歩くスピード{1:int}%,{1:int}% 걸음 속도,{1:int}% velocidade de movimento,{1:int}%步行速度,{1:int}% 步行速度
+ToolInfoWalkSpeedCooldown,ToolInfoWalkSpeedCooldown,90% walk speed during cooldown,{1:int}% walk speed during cooldown,{1:int} % Gehtempo bei Abklingzeit,{1:int}% walk speed during cooldown,{1:int} % de vitesse de marche pendant récupération,クールダウン中の歩くスピード{1:int}%,쿨다운 중 걷는 속도 {1:int}%,{1:int}% velocidade de movimento durante o tempo,{1:int}%冷却时间下的步行速度,{1:int}% 冷卻時的步行速度
+SkinSpecial,SkinSpecial,Redcliff Elite Torso Skin,{1} Skin,„{1}“-Skin,{1} Skin,Skin {1},{1}スキン,{1} 스킨,{1} Aparência,{1}皮肤,{1}外觀
+SuperbossDefeated,SuperbossDefeated,Cyclops Queen defeated!,{1} defeated!,{1} besiegt!,{1} defeated!,Tu as vaincu: {1}!,{1}を倒した！,{1} 패배!,{1} derrotada!,{1}已被击败！,已擊敗{1}！
+RubyGift,RubyGift,Jamie_Fristrom has given you Rubies,{1} has given you Rubies,{1} hat dir Rubine gegeben,{1} has given you Rubies,{1} t'a donné des rubis,{1}からルビーをもらった！,{1} 님이 루비를 줬습니다,{1} lhe deu Rubis,{1}赠送了你红宝石,{1} 給了你紅寶石
+NextFloor,NextFloor,Jamie_Fristrom is taking the heroes to the next floor,{1} is taking the heroes to the next floor,{1} bringt die Helden auf die nächste Ebene,{1} is taking the heroes to the next floor,{1} emmène les héros à l'étage suivant,{1}がヒーローを次のフロアへ連れて行った,{1} 님이 영웅을 다음 층으로 데려가고 있습니다,{1} está levando os heróis para o próximo andar,{1}正带着英雄前往下一层,{1} 正在帶領英雄們前往下一關卡
+FurnishingFloorMax,FurnishingFloorMax,Pit Trap total maximum already built on this floor,{1} total maximum already built on floor,„{1}“-Maximum auf Ebene bereits gebaut,{1} total maximum already built on floor,Total max de {1} déjà construit à cet étage,フロアに作成できる{1}が限界を越えました,층별 제작 한도({1}) 도달,{1} total máximo já construido no andar,{1}建造数已达到该层上限,此關卡的{1}建造數已達上限
+explosiveDescription,explosiveDescription,60% explosion damage,{amount:int}% explosion damage,{amount:int} % Explosionsschaden,{amount:int}% explosion damage,{amount:int} % de dégâts d'explosion,爆発ダメージ{amount:int}%,{amount:int}% 폭발 피해,{amount:int}% Dano de explosão,{amount:int}%爆炸伤害,{amount:int}% 爆炸殺傷力
+FloorFullName,FloorFullName,Subdweller Colony Floor 2: Subcellar,{dungeonname} Floor {depth:int}: {floorname},„{dungeonname}“-Ebene {depth:int}: {floorname},{dungeonname} Floor {depth:int}: {floorname},{dungeonname} - Étage {depth:int}: {floorname},{dungeonname}フロア{depth:int}: {floorname},{dungeonname}층 {depth:int}: {floorname},{dungeonname} Andar {depth:int}: {floorname},{dungeonname}层{depth:int}：{floorname},{dungeonname}關卡 {depth:int}：{floorname}
+,,button for deleting item or character,💀Delete 💀,💀Löschen 💀,💀Delete 💀,💀Supprimer 💀,💀消す💀,💀삭제 💀,💀Deletar💀,💀删除💀,💀刪除💀
+,,,💀Throw Away 💀,💀Wegwerfen 💀,💀Throw Away 💀,💀Jeter 💀,💀捨てる💀,💀버리기 💀,💀Jogar Fora💀,💀丢弃💀,💀丟棄💀
