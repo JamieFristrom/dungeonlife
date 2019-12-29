@@ -9,7 +9,8 @@ local FlexEquipUtility     = require( game.ReplicatedStorage.Standard.FlexEquipU
 
 local HeroUtility          = require( game.ReplicatedStorage.Standard.HeroUtility )
 
-local AnimationManifest = require( game.ReplicatedStorage.TS.AnimationManifest ).AnimationManifest
+local AnimationManifest = require( game.ReplicatedFirst.TS.AnimationManifest ).AnimationManifest
+
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local BoltWeaponUtilityXL = {}

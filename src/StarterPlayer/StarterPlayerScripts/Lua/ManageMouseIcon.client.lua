@@ -9,20 +9,22 @@ local localPlayer = game.Players.LocalPlayer
 
 local defaultMouseIconId = localPlayer:GetMouse().Icon
 
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local mouseIconCooldownIdA =
 {
-	"rbxassetid://2253173429",    -- 1
-	"rbxassetid://2253173823",    -- 2
-	"rbxassetid://2253174167",    -- 3
-	"rbxassetid://2253174551",    -- 4
-	"rbxassetid://2253175029",    -- 5
-	"rbxassetid://2253175379",    -- 6
-	"rbxassetid://2253175681",    -- 7
-	"rbxassetid://2253175973",    -- 8
-	"rbxassetid://2253176277",    -- 9
-	"rbxassetid://2253176563",    -- 10
-	"rbxassetid://2253176872",    -- 11
-	"rbxassetid://2253177216",	  -- 12
+	AssetManifest.ImageCooldownCursor01,
+    AssetManifest.ImageCooldownCursor02,
+    AssetManifest.ImageCooldownCursor03,
+    AssetManifest.ImageCooldownCursor04,
+    AssetManifest.ImageCooldownCursor05,
+    AssetManifest.ImageCooldownCursor06,
+    AssetManifest.ImageCooldownCursor07,
+    AssetManifest.ImageCooldownCursor08,
+    AssetManifest.ImageCooldownCursor09,
+    AssetManifest.ImageCooldownCursor10,
+    AssetManifest.ImageCooldownCursor11,
+    AssetManifest.ImageCooldownCursor12
 }
 
 local function SetCooldownMouseIconId( cooldownFractionRemaining )

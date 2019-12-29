@@ -9,7 +9,8 @@ local MapTileData = require( game.ReplicatedStorage.MapTileDataModule )
 
 local MonsterUtility = require( game.ReplicatedStorage.MonsterUtility )
 
-local AssetManifest = require( game.ReplicatedStorage.TS.AssetManifest ).AssetManifest
+local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 
 local playerGui = script.Parent.Parent.Parent
