@@ -7,11 +7,9 @@ local DeveloperProducts  = require( game.ReplicatedStorage.DeveloperProducts )
 local InventoryClient    = require( game.ReplicatedStorage.InventoryClient )
 local PossessionData     = require( game.ReplicatedStorage.PossessionData )
 
-local HeroClasses = require( game.ReplicatedStorage.TS.HeroClassesTS ).HeroClasses
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
-
-local heroData = HeroClasses.heroClassPrototypes
 
 local heroGuiFrame = script.Parent.Parent:WaitForChild("HeroGui") 
 local chooseClassFrame = heroGuiFrame:WaitForChild("ChooseClass")
@@ -31,18 +29,18 @@ end
 local function Refresh()
 	InstanceXL:ClearAllChildrenBut( chooseClassFrame.Grid, "UIGridLayout" )
 	local idxN = 0
-	for i, heroDatum in pairs( heroData ) do
+	for classId, heroDatum in pairs( CharacterClasses.heroStartingStats ) do
 		
 		local heroButton = chooseClassFrame.HeroButtonTemplate:Clone()
 		heroButton.Name = "Hero"..idxN
 		idxN = idxN + 1
-		heroButton.HeroName.Text = heroDatum.readableNameS
-		heroButton.Description.Text = Localize.formatByKey( heroDatum.idS.."Description" )
-		heroButton.Image.Image = heroDatum.imageId
+		heroButton.HeroName.Text = PossessionData.dataT[ classId ].readableNameS
+		heroButton.Description.Text = Localize.formatByKey( classId.."Description" )
+		heroButton.Image.Image = PossessionData.dataT[ classId ].imageId
 		heroButton.Visible = true
 		
 		function hasClass( heroDatum )
-			return not heroDatum.gamePassId or InventoryClient:GetCount( heroDatum.idS ) > 0 
+			return not heroDatum.gamePassId or InventoryClient:GetCount( classId ) > 0 
 		end
 
 		if not hasClass( heroDatum ) then
@@ -52,7 +50,7 @@ local function Refresh()
 
 		local function clickChooseHero()
 			if hasClass( heroDatum ) then
-				ChooseClass( heroDatum.idS )
+				ChooseClass( classId )
 			else
 				if( heroDatum.gamePassId )then
 					game.MarketplaceService:PromptGamePassPurchase( game.Players.LocalPlayer, heroDatum.gamePassId )
@@ -68,7 +66,7 @@ local function Refresh()
 		heroButton.Parent = chooseClassFrame.Grid
 
 		if InputXL:UsingGamepad() then
-			if i==1 then
+			if idxN==1 then
 				game.GuiService.SelectedObject = heroButton.Choose
 			end 
 		end		

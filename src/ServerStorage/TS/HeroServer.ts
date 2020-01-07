@@ -11,10 +11,7 @@ import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
-import { HeroClasses } from "ReplicatedStorage/TS/HeroClassesTS";
-import { GameplayTestService } from "./GameplayTestService";
-import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility";
-import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest";
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 import { PlayerServer } from "./PlayerServer";
 
 let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
@@ -111,11 +108,15 @@ export namespace HeroServer
     export function awardBadgesForHero( player: Player, hero: Hero, experienceBonus: number )
     {
         // only works on server
-        let myClass = HeroClasses.heroClassPrototypes[ hero.idS ]
-        let numBadges = math.floor( hero.getActualLevel() / 5 )
-        for( let i = 0; i < numBadges && i < myClass.badges.size(); i++ )
+        const possibleBadges = CharacterClasses.classData[ hero.idS ].badges
+        DebugXL.Assert( possibleBadges !== undefined )
+        if( possibleBadges )
         {
-            BadgeService.AwardBadge( player.UserId, myClass.badges[i] )
+            const numBadges = math.floor( hero.getActualLevel() / 5 )
+            for( let i = 0; i < numBadges && i < possibleBadges.size(); i++ )
+            {
+                BadgeService.AwardBadge( player.UserId, possibleBadges[i] )
+            }
         }
     }
 

@@ -101,8 +101,6 @@ function Werewolf:WolfOutWait( player )
 		
 		-- set health display back to normal
 		humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
---      managed by CharacterXL now:
---		humanoid.WalkSpeed = PossessionData.dataT[ taggerFlavorS ].walkSpeedN
 
 		-- we don't need to unequip held weapon, the costume application did that for us
 		-- remove cosmetic armor

@@ -12,12 +12,6 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local FlexEquip = {}
 
--- function FlexEquip:ApplyCostumeItemWait( character, equipItemT, activeSkinsT )
--- 	local equipDatum = ToolData.dataT[ equipItemT.baseDataS ]
--- 	local baseEquipS = activeSkinsT[ equipDatum.skinType ] and PossessionData.dataT[ activeSkinsT[ equipDatum.skinType ] ].baseEquipS or equipDatum.baseEquipS
--- 	local baseEquipObj = game.ServerStorage.Equip[ baseEquipS ]
--- 	Costumes:ApplyNewCharacterCostumeWait( character, baseEquipObj, true, true )
--- end
 
 function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end

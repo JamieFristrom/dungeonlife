@@ -95,7 +95,7 @@ local function DisplayChoices()
 			Localize.formatByKey( "willN" ).." "..hero.statsT.willN.."\n"..
 			Localize.formatByKey( "conN" ).." "..hero.statsT.conN.."\n"
 			
-		heroButton.Image.Image = hero.imageId
+		heroButton.Image.Image = PossessionData.dataT[ hero.idS ].imageId
 		heroButton.Visible = true
 		heroButton.Parent = chooseHeroFrame.Grid
 		heroButton.Choose.MouseButton1Click:Connect( function()

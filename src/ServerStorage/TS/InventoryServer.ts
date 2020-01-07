@@ -11,7 +11,7 @@ import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { InventoryI, ReviewEnum } from "ReplicatedStorage/TS/InventoryI"
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility";
-import { HeroClasses } from "ReplicatedStorage/TS/HeroClassesTS";
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
 import { Hero } from "ReplicatedStorage/TS/HeroTS";
 
 let codeStore = new DataStoreXL( "CodeWarehouse" )

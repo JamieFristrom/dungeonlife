@@ -10,6 +10,7 @@ local CharacterClientI    = require( game.ReplicatedStorage.CharacterClientI )
 local FurnishUtility      = require( game.ReplicatedStorage.FurnishUtility )
 local PossessionData      = require( game.ReplicatedStorage.PossessionData )
 
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 
 -- services
 local players           = game:GetService("Players")
@@ -57,8 +58,8 @@ remotes.PlaceInstanceRF.OnServerInvoke = function(player, name, position, rotati
 						furnishingDatum.furnishingType == PossessionData.FurnishingEnum.BossSpawn then
 					
 					-- kludge to prevent superboss player from ruining last level
-					local classInfo = PossessionData.dataT[ CharacterClientI:GetCharacterClass( player ) ]
-					if not classInfo or not classInfo.tagsT["Superboss"] then   -- letting heroes build for debug purposes
+					local monsterInfo = CharacterClasses.monsterStats[ CharacterClientI:GetCharacterClass( player ) ]
+					if not monsterInfo or not monsterInfo.tagsT["Superboss"] then   -- letting heroes build for debug purposes
 						player.Team = game.Teams.Monsters -- necessery in Underhaven
 						CharacterI:SetCharacterClass( player, instance.MonsterSpawn.CharacterClass.Value )
 						GameManagement:MarkPlayersCharacterForRespawn( player, instance.MonsterSpawn )

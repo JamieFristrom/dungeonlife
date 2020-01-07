@@ -27,6 +27,7 @@ local CostumesServer   = require( game.ServerStorage.Standard.CostumesServer )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 local PlayerXL         = require( game.ServerStorage.Standard.PlayerXL )
 
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
@@ -141,7 +142,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	local monsterClass = CharacterClientI:GetCharacterClass( player )
 --	local monsterClass = MathXL:RandomKey( legalMonsterClassesSet )
 	DebugXL:Assert( monsterClass ~= "" ) 
-	local monsterDatum = PossessionData.dataT[ monsterClass ]
+	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	DebugXL:Assert( monsterDatum )
 
 	local forceField = InstanceXL.new( "ForceField", { Parent = character, Name = "ForceField" } )
@@ -176,21 +177,21 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 			monsterLevel = MonsterServer.determineMonsterSpawnLevel( player )
 		end	
 	end
-	
-	Monsters:Initialize( character, player, monsterDatum, monsterLevel )
 
-	local pcData = Monster.new( monsterDatum.idS,
-		monsterDatum.imageId,
-		monsterDatum.walkSpeedN,
-		monsterDatum.jumpPowerN,
+	-- give the monster weapons in a bit; we need to adjust their starting levels
+	local pcData = Monster.new( monsterClass,
 		{},
 		monsterLevel )
+
+	Monsters:Initialize( character, player, pcData:getWalkSpeed(), monsterDatum, monsterLevel )
+
 
 	PlayerServer.pcs[ PCKey( player ) ] = pcData
 
 	-- starting gear
-	if monsterDatum.mainWeaponsA then
-		for _, weapon in pairs( monsterDatum.mainWeaponsA ) do
+	local startingItems = CharacterClasses.startingItems[ monsterClass ]
+	if startingItems then
+		for _, weapon in pairs( startingItems ) do
 			GiveWeapon( character, player, weapon )
 		end
 	end
@@ -203,9 +204,9 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	--actually giving monsters armor was a bad idea:  it makes bigger slower weapons OP, makes your damage bubbles look smaller, better to just
 	--increase their hit points
 	--table.insert( pcData.itemsT, { baseDataS = "MonsterArmorMedium", levelN = monsterLevel, enchantmentsA = {}, equippedB = true } )
-	if monsterDatum.idS == "Werewolf" then
+	if monsterClass == "Werewolf" then
 		local inventory = Inventory:GetWait( player )
-		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterDatum.idS ].hideAccessoriesB
+		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
 		pcData:giveRandomArmor( hideAccessoriesB )
 	end
 	
@@ -257,7 +258,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 --	--print( "Estimate: "..damageEstimate )
 	-- ( dividing by healthModifier quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
 	-- ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
-	local xp = humanoid.MaxHealth + character.MaxManaValue.Value + monsterDatum.walkSpeedN + totalDamageEstimate / damageModifierN
+	local xp = humanoid.MaxHealth + pcData:getWalkSpeed() + totalDamageEstimate / damageModifierN
 	xp = xp * BalanceData.heroXPMultiplierN
 	
 	InstanceXL.new( "NumberValue", { Name = "ExperienceReward", Value = xp, Parent = character }, true )
@@ -270,7 +271,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	spawn( function()
 		wait( math.random( 15, 45 ) )		
 		while character.Parent do
-			SoundXL:PlaySoundOnPart( game.ReplicatedStorage.MonsterConfigurations[ monsterDatum.idS ].Idle, 
+			SoundXL:PlaySoundOnPart( game.ReplicatedStorage.MonsterConfigurations[ monsterClass ].Idle, 
 				character.PrimaryPart )
 			wait( math.random( 15, 45 ) )
 		end
@@ -294,7 +295,7 @@ end
 
 -- returns pair [ number, bool ]
 function Monsters:CalculateDamageN( monsterClass, monsterLevelN, flexToolInst, postToAnalyticsB )
-	local enemyData = PossessionData.dataT[ monsterClass ]
+	local enemyData = CharacterClasses.monsterStats[ monsterClass ]
 	if not enemyData then DebugXL:Error( "Couldn't find data for enemy "..monsterClass ) end
 	local damage1, damage2 = unpack( FlexEquipUtility:GetDamageNs( flexToolInst, 1, 1 ))
 	local damageBonusPerLevelN = enemyData.damageBonusPerLevelN
@@ -366,7 +367,7 @@ function Monsters:Died( player )
 	-- drop item
 	local monsterClass = Monsters:GetClass( monster )
 
-	local monsterDatum = PossessionData.dataT[ monsterClass ]
+	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	if not monsterDatum then
 		DebugXL:Error( "Couldn't find monster "..monsterClass.." of player "..player.Name )
 		return
@@ -415,7 +416,7 @@ function Monsters:Died( player )
 end
 
 
-function Monsters:Initialize( monster, player, enemyData, level )
+function Monsters:Initialize( monster, player, walkSpeedN, enemyData, level )
 	DebugXL:Assert( self == Monsters )
 	local AI
 
@@ -428,12 +429,14 @@ function Monsters:Initialize( monster, player, enemyData, level )
 
 	monster.Humanoid.MaxHealth	= standardHealth 
 		
-	local standardMana = enemyData.baseManaN + enemyData.manaPerLevelN * level
+	--local standardMana = enemyData.baseManaN + enemyData.manaPerLevelN * level
 	
-	InstanceXL.new( "NumberValue", { Parent = monster, Name = "ManaValue",    Value = standardMana }, true )
-	InstanceXL.new( "NumberValue", { Parent = monster, Name = "MaxManaValue", Value = standardMana }, true )
+	-- monsters have effectively infinite mana (their spells cost 0) but we still need the fields so there
+	-- are no edge cases
+	InstanceXL.new( "NumberValue", { Parent = monster, Name = "ManaValue",    Value = 0 }, true )
+	InstanceXL.new( "NumberValue", { Parent = monster, Name = "MaxManaValue", Value = 0 }, true )
 
-	monster.Humanoid.WalkSpeed   = enemyData.walkSpeedN
+	monster.Humanoid.WalkSpeed   = walkSpeedN
 	
 	monster.Humanoid.Health		= monster.Humanoid.MaxHealth
 	

@@ -7,7 +7,7 @@ local WeaponUtility = require( game.ReplicatedStorage.Standard.WeaponUtility )
 local CharacterPhysics = {}
 
 function CharacterPhysics:GetBaseWalkSpeed( pcData )
-	return pcData.walkSpeedN or 12
+	return pcData:getWalkSpeed()
 end
 
 function CharacterPhysics:CalculateWalkSpeed( character, pcData )	
@@ -55,7 +55,7 @@ end
 
 
 function CharacterPhysics:GetBaseJumpPower( pcData )
-	return pcData.jumpPowerN
+	return pcData:getJumpPower()
 end
 
 

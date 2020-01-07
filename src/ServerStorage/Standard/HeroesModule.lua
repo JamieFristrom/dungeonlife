@@ -33,15 +33,13 @@ local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsSe
 
 local HeroUtility 		= require( game.ReplicatedStorage.Standard.HeroUtility )
 
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility ).GameplayTestUtility
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local HeroStable = require( game.ReplicatedStorage.TS.HeroStableTS ).HeroStable
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
-local HeroClasses = require( game.ReplicatedStorage.TS.HeroClassesTS ).HeroClasses
-local heroClassPrototypes = HeroClasses.heroClassPrototypes
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
@@ -154,8 +152,9 @@ function Heroes:ChooseClass( player, classNameS )
 	-- possible for player to pick a hero and have the choice made for them at same time, so check first
 	--print( player.Name.." chose class "..classNameS )
 	if PlayerServer.pcs[ PCKey( player ) ] then warn( player.Name.." data was already set up!?" ) end -- could happen if you come right back after a death I suppose
-	local heroPrototype = heroClassPrototypes[ classNameS ] 
-	local pcData = Hero.new( heroPrototype ) -- TableXL:DeepCopy( heroDatum )
+	local pcData = Hero.new( classNameS,
+		CharacterClasses.heroStartingStats[ classNameS ],
+		CharacterClasses.startingItems[ classNameS ] ) -- TableXL:DeepCopy( heroDatum )
 
 	-- only works because not a sparse array yet
 	-- now set by constructor:

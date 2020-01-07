@@ -1,6 +1,7 @@
 import { Workspace, Teams } from "@rbxts/services";
 
-import { HeroStatBlockI, HeroClasses, HeroI, HeroClassI } from "./HeroClassesTS"
+import { HeroStatBlockI, CharacterClasses } from "./CharacterClasses"
+import { HeroI } from "./HeroClassesTS"
 import { FlexTool, FlexToolI } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
@@ -8,7 +9,6 @@ import { PC } from "./PCTS"
 import { Enhancements } from "./EnhancementsTS";
 import { DebugXL } from "./DebugXLTS";
 
-let heroClassPrototypes = HeroClasses.heroClassPrototypes
 
 let nerfTest = 100000  // test nerfing to this level
 
@@ -19,7 +19,7 @@ export class Hero extends PC implements HeroI
 
     static readonly xpForLevelMultiplier = 1.5
 
-    // now the servers cap levelscd cd 
+    // now the servers cap levels
     // static readonly levelCapN = 15
 
     // public idS: string
@@ -34,10 +34,14 @@ export class Hero extends PC implements HeroI
     public lastShopResetLevel = 0
     public currentSlot = -1
    
-    constructor( heroPrototype: HeroClassI )
+    constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexToolI[] )
     {
-        super( heroPrototype.idS, heroPrototype.imageId, heroPrototype.walkSpeedN, heroPrototype.jumpPowerN, heroPrototype.itemsT )
-        this.statsT = ObjectXL.clone( heroPrototype.statsT )
+        super( heroId, 
+            //heroPrototype.imageId, 
+            //heroPrototype.walkSpeedN, 
+            //heroPrototype.jumpPowerN, 
+            startingItems )
+        this.statsT = ObjectXL.clone( stats )
     }        
 
     static objectify( rawHeroData: HeroI )
@@ -137,8 +141,6 @@ export class Hero extends PC implements HeroI
         if( !this.lastShopResetLevel )
             this.lastShopResetLevel = 0
 
-        this.walkSpeedN = 12
-        this.jumpPowerN = 35
     }
 
     getActualLevel()
@@ -192,9 +194,13 @@ export class Hero extends PC implements HeroI
         let placeLevelCap = Hero.getCurrentMaxHeroLevel()
         if( this.getActualLevel() > placeLevelCap ) 
         {
-            let heroClassInfo = heroClassPrototypes[ this.idS ]
-            let originalBaseStat = heroClassInfo.statsT[ stat ]
-            statN = math.floor( ( statN - originalBaseStat ) * placeLevelCap / this.getActualLevel() + originalBaseStat )
+            let statsT = CharacterClasses.heroStartingStats[ this.idS ]
+            DebugXL.Assert( statsT !== undefined )
+            if( statsT )
+            {
+                let originalBaseStat = statsT[ stat ]
+                statN = math.floor( ( statN - originalBaseStat ) * placeLevelCap / this.getActualLevel() + originalBaseStat )
+            }
         }
 
         let bonus = this.getStatBonus(stat, heldToolInst)
