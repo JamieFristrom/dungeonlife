@@ -7,7 +7,7 @@ import { DebugXL } from './DebugXLTS'
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
 
-import { AnimationManifest } from 'ReplicatedFirst/TS/AnimationManifest'
+import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestService'
 
 
 
@@ -143,7 +143,7 @@ export class MeleeWeaponClient
             {
                 if( windUpAnimName )
                 {
-                    const windUpAnim = AnimationManifest.getAnimInstance( windUpAnimName )
+                    const windUpAnim = AnimationManifestService.getAnimInstance( windUpAnimName )
                     // we don't need to save this; we play the pose once and we're done. the attack animations also segue to the pose
                     windUpAnimTrack = humanoid.LoadAnimation( windUpAnim )
                     windUpAnimTrack.Looped = false
@@ -153,11 +153,11 @@ export class MeleeWeaponClient
                 }
                 for( let i = 0; i < fullBodyAttackAnimNames.size(); i++ )
                 {
-                    const attackAnim = AnimationManifest.getAnimInstance( fullBodyAttackAnimNames[i] )
+                    const attackAnim = AnimationManifestService.getAnimInstance( fullBodyAttackAnimNames[i] )
                     attackAnimTracks[i] = humanoid.LoadAnimation( attackAnim )
                     attackAnimTracks[i].Looped = false
                     // just assuming you provide the upper body version. do it
-                    const attackUpperBodyAnim = AnimationManifest.getAnimInstance( upperBodyAttackAnimNames[i] )
+                    const attackUpperBodyAnim = AnimationManifestService.getAnimInstance( upperBodyAttackAnimNames[i] )
                     attackUpperBodyAnimTracks[i] = humanoid.LoadAnimation( attackUpperBodyAnim )
                     attackUpperBodyAnimTracks[i].Looped = false 
                 }

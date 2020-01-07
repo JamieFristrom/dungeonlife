@@ -1,7 +1,7 @@
 import { ContentProvider } from '@rbxts/services'
 
 import { AssetManifest } from './AssetManifest'
-import { AnimationManifest } from './AnimationManifest'
+import { AnimationManifestService } from './AnimationManifestService'
 
 const imageIdsToPreload = 
 [
@@ -40,9 +40,9 @@ ContentProvider.PreloadAsync( decals )
 // afraid I don't remember why I decided these were necessary to preload
 const animsToPreload =
 [
-    AnimationManifest.getAnimInstance('AttackOneHand1'),
-    AnimationManifest.getAnimInstance('AttackOneHand2'),
-    AnimationManifest.getAnimInstance('WindUpOneHandUpperBody')
+    AnimationManifestService.getAnimInstance('AttackOneHand1'),
+    AnimationManifestService.getAnimInstance('AttackOneHand2'),
+    AnimationManifestService.getAnimInstance('WindUpOneHandUpperBody')
 ]
 
 ContentProvider.PreloadAsync( animsToPreload )

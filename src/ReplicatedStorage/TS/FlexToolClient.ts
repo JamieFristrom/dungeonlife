@@ -56,7 +56,7 @@ export namespace FlexToolClient
         // {
         if( baseData.namePerLevel )
         {            
-            for(let i=1; i<= flexTool.levelN; i++ )  //I don't know how high levels are going to get. What if they 
+            for(let i=0; i<= flexTool.levelN; i++ )  //I don't know how high levels are going to get. What if they 
             {
                 if( baseData.namePerLevel[i] )
                     keyName = baseData.namePerLevel[i]

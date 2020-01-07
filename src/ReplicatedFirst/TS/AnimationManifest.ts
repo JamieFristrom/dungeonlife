@@ -1,23 +1,14 @@
-import { ReplicatedStorage, ReplicatedFirst } from "@rbxts/services"
-import { DebugXL } from "../../ReplicatedStorage/TS/DebugXLTS"
+// This file will need to be unique for the Game or Group that the Place is in.
+// When new animations are added this file will have to be updated in every Game / Group. 
+// Not sure what the best way to do that with git is. Probably forks or branches where this one file is different.
 
-/**
-    \brief Wrapper around data about what the animation id's are for this particular place or group.
-    I thought about having AnimationManifest be a data file where we'd keep track of our animation ids, 
-    which might have been a little easier to deal with, but then there'd be issues with checking in the file:
-    and if we left it in .gitignore what if we added more animation types later?
-*/
-export namespace AnimationManifest
-{
-    const animationManifest = ReplicatedFirst.WaitForChild( 'AnimationManifest', 5 )
-    DebugXL.Assert( animationManifest !== undefined )
-
-    export function getAnimInstance( animName: string ) : Animation
-    {
-        const animInstance = animationManifest ? animationManifest.WaitForChild<Animation>( animName, 5 ) : undefined
-        if( !animInstance ) {
-            DebugXL.Error( 'Content error: no animation manifest for '+animName )
-        }
-        return animInstance!  // because if it's not you're doing it wrong
-    }
+export const AnimationManifest : {[k:string] : string} =
+{  
+    AttackBothHands1: 'rbxassetid://2222750295',
+    AttackOneHand1: 'rbxassetid://2297560938',
+    AttackOneHand2: 'rbxassetid://2297663217',
+    AttackOneHandUpperBody1: 'rbxassetid://2298375708',
+    AttackOneHandUpperBody2: 'rbxassetid://2298373968',
+    BowFire: 'rbxassetid://2584852733',
+    WindUpOneHandUpperBody: 'rbxassetid://2297606575'
 }
