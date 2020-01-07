@@ -9,7 +9,9 @@ import { PlayerServer } from "./PlayerServer";
 
 export namespace CharacterServer
 {
-    
+    /**
+        Is player playing with companions out of their league?
+     */
     // had to keep this out of HeroServer because it needs to be used by CharacterXL ; couldn't include PlayerServer for same reason
     export function IsDangerZoneForHero( pcs: Map< Player, PC >, player: Player ) : boolean
     {

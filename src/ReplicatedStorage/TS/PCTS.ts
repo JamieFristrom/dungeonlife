@@ -4,6 +4,8 @@ import { ObjectXL } from 'ReplicatedStorage/TS/ObjectXLTS'
 import { ToolData } from './ToolDataTS';
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
+import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
+import { CharacterClasses } from './CharacterClasses';
 
 function strcmp( a: string, b: string )
 {
@@ -14,10 +16,13 @@ function strcmp( a: string, b: string )
 export interface PCI
 {
     idS: string
-    imageId: string
-    walkSpeedN: number
-    jumpPowerN: number
-	// don't really need to keep this around for the hero but I'm doing it anyway out of laziness:
+    getImageId() : string
+    getWalkSpeed() : number
+    getJumpPower() : number
+// this is all duplicate data. DRY!
+//    imageId: string
+//    walkSpeedN: number
+//    jumpPowerN: number
 }
 
 export abstract class PC implements PCI
@@ -28,15 +33,16 @@ export abstract class PC implements PCI
     constructor(
         public idS: string,
         //public readableNameS: string,
-        public imageId: string,
-        public walkSpeedN: number,
-        public jumpPowerN: number,        
-        _itemsT: { [k: string]: FlexToolI } )
+        //public imageId: string,
+        //public walkSpeedN: number,
+        //public jumpPowerN: number,        
+        _startItems: FlexToolI[] )
         {
             this.itemsT = new Map< string, FlexTool >()
-            for( let k of Object.keys(_itemsT) as string[] )
+            for( let i = 0; i < _startItems.size(); i++ )
             {
-                let item = ObjectXL.clone( _itemsT[k] ) as FlexTool
+                const k: string = 'item' + i
+                let item = ObjectXL.clone( _startItems[i] ) as FlexTool
                 this.itemsT.set( k, item )
                 let idx = tonumber(k.sub(4))
                 DebugXL.Assert( idx !== undefined )
@@ -237,6 +243,21 @@ export abstract class PC implements PCI
     {
         let items = this.itemsT.entries()
         return PC.sortItemPairs( items )
+    }
+
+    getImageId() 
+    {
+        return PossessionData.dataT[this.idS].imageId
+    }
+
+    getWalkSpeed() : number
+    {
+        return CharacterClasses.classData[this.idS].walkSpeedN
+    }
+
+    getJumpPower() : number
+    {
+        return CharacterClasses.classData[this.idS].jumpPowerN
     }
 
     abstract getLocalLevel() : number

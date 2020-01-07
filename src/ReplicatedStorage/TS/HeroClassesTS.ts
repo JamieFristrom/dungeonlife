@@ -1,26 +1,12 @@
 import { FlexToolI } from ".\\FlexToolTS"
 import { PCI } from ".\\PCTS"
-import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
-
+import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
 //import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
 //
 // heroes
 //
 
-
-export interface HeroStatBlockI
-{
-    [key:string] : number
-    strN: number
-    dexN: number
-    willN: number
-    conN: number
-	experienceN: number
-	goldN: number
-    deepestDungeonLevelN: number
-    totalTimeN: number
-}
 
 export interface HeroI extends PCI
 {
@@ -40,6 +26,7 @@ export interface HeroClassI // rerolling so I don't have to rewrite item tables 
 	gamePassId?: number
 }
 
+/*
 export namespace HeroClasses {
 	export let heroClassPrototypes: { [ k: string ]: HeroClassI } =
 	{
@@ -55,21 +42,7 @@ export namespace HeroClasses {
 				item2   :  { baseDataS : "Healing",    levelN : 1, enhancementsA: [] },
 				item3   :  { baseDataS : "ScaleTorso", levelN : 3, enhancementsA: [], equippedB : true },
 				item4   :  { baseDataS : "ScaleLegs", levelN : 3, enhancementsA: [], equippedB : true },
-	/*
-	--				item3   :  { baseDataS : "PlateTorso", levelN : 3, enhancementsA: [] }, 
-	--				item4   :  { baseDataS : "PlateLegs", levelN : 3, enhancementsA: [] }, 
-	--				item5   :  { baseDataS : "HelmetFull", levelN : 1, enhancementsA: [], equippedB : true }, 
-	--				item6   :  { baseDataS : "HelmetHalf", levelN : 1, enhancementsA: [] }, 
-	--				item7   :  { baseDataS : "HoodLeather", levelN : 1, enhancementsA: [] }, 
-	--				item8   :  { baseDataS : "HatCloth", levelN : 1, enhancementsA: [] }, 
-	--				item9   :  { baseDataS : "LeatherTorso", levelN : 1, enhancementsA: [] }, 
-	--				item10   :  { baseDataS : "LeatherLegs", levelN : 1, enhancementsA: [] }, 
-	--				item11   :  { baseDataS : "ClothTorso", levelN : 1, enhancementsA: [] }, 
-	--				item12   :  { baseDataS : "ClothLegs", levelN : 1, enhancementsA: [] }, 
-	--				item13   :  { baseDataS : "ChainTorso", levelN : 1, enhancementsA: [] }, 
-	--				item14   :  { baseDataS : "ChainLegs", levelN : 1, enhancementsA: [] }, 
-	--				{ baseDataS : "MagicBarrier", levelN : 1, enhancementsA : { { flavorS : "fire", seconds : 5, dps : 1 } } },
-	*/
+
 				// munchkin:
 				// item5 : { baseDataS: "Greatsword", levelN: 16, enhancementsA: [ { flavorS: "fire", levelN: 4 } ] },
 				// item6 : { baseDataS : "PlateTorso", levelN : 41, enhancementsA: [ { flavorS: "con", levelN: 4} ] }, 
@@ -78,22 +51,7 @@ export namespace HeroClasses {
 				// item9 : { baseDataS : "Crossbow", levelN: 16, enhancementsA: [ { flavorS: "explosive", levelN: 4 } ] },
 				// item10   : { baseDataS : "MagicHealing", levelN : 16, enhancementsA: [], slotN : 2 },
 
-				// level 8    munchkin:
-				/*
-				item1 : { baseDataS: "Greatsword", levelN: 8, enhancementsA: [ { flavorS: "fire", levelN: 4 } ] },
 
-				// 19 defense health 402
-				//item2 : { baseDataS : "PlateTorso", levelN : 18, enhancementsA: [ { flavorS: "con", levelN: 4} ] } , 
-				//item3 : { baseDataS : "PlateLegs", levelN : 15, enhancementsA: [ { flavorS: "con", levelN: 4} ] }, 
-				//item4 : { baseDataS : "HelmetFull", levelN : 12, enhancementsA: [ { flavorS: "con", levelN: 4} ] }, 
-
-
-				item2 : { baseDataS : "PlateTorso", levelN : 16, enhancementsA: [] } , 
-				item3 : { baseDataS : "PlateLegs", levelN : 16, enhancementsA: [] }, 
-				item4 : { baseDataS : "HelmetFull", levelN : 16, enhancementsA: [ { flavorS: "con", levelN: 4} ] }, 
-
-				item5 : { baseDataS : "Crossbow", levelN: 8, enhancementsA: [ { flavorS: "explosive", levelN: 4 } ] },
-				item6   : { baseDataS : "MagicHealing", levelN : 2, enhancementsA: [], slotN : 2 },*/
 			},
 			statsT :
 			{
@@ -235,4 +193,4 @@ export namespace HeroClasses {
 	}		
 
 	//	-- alchemist?... a spell that makes bombs? a spell that makes potions?
-} 
+} */

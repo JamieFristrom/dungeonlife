@@ -13,6 +13,7 @@ local Heroes           = require( game.ServerStorage.Standard.HeroesModule )
 local RandomGear = require( game.ServerStorage.Standard.RandomGear )
 
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local PossessionData = require( game.ReplicatedStorage.PossessionData )
@@ -191,7 +192,7 @@ end
 
 
 function Loot:MonsterDrop( monsterLevel, monsterClassS, lastAttackingPlayer, worldPosV3 )
-	local odds = PossessionData.dataT[ monsterClassS ].dropItemPctN * itemDropRateModifierN / #game.Teams.Heroes:GetPlayers()
+	local odds = CharacterClasses.monsterStats[ monsterClassS ].dropItemPctN * itemDropRateModifierN / #game.Teams.Heroes:GetPlayers()
 --	--print( "Loot:MonsterDrop level "..monsterLevel.."; odds: "..odds )
 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
 		local boostInPlay = false

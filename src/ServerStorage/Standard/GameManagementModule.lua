@@ -41,6 +41,7 @@ local Inventory         = require( game.ServerStorage.InventoryModule )
 local Monsters          = require( game.ServerStorage.MonstersModule )
 
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local DungeonVoteUtility = require( game.ReplicatedStorage.TS.DungeonVoteUtility ).DungeonVoteUtility
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
@@ -617,7 +618,7 @@ local function MonitorPlayer( player )
 							--print( "Found a boss spawn for "..player.Name ) 
 							if spawner.LastPlayer.Value == nil then
 								--print( "Unoccupied" )
-								if PossessionData.dataT[ spawner.CharacterClass.Value ].tagsT.Superboss then
+								if CharacterClasses.monsterStats[ spawner.CharacterClass.Value ].tagsT.Superboss then
 									--print( "Megaboss" )
 									spawnPart = spawner
 									spawner.LastPlayer.Value = player

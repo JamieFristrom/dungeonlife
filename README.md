@@ -83,8 +83,8 @@ Sorry it's so much work! That's honestly the easiest way I've found for getting 
 
 # it's not you it's me
 
-Some current known problems: some of the images are still missing and the in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the ids in order to let people buy things in yours.
+Known problem: the in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the ids in order to let people buy things in yours.
 
-If you spot other problems, it's probably because there are other issues running the code in a standalone place. You can check my test place https://www.roblox.com/games/4476008779: if the bug happens there too, it's not you, it's me. :)
+If you spot other problems, it's probably because there are other issues running the code in a standalone place. You can check my test place https://www.roblox.com/games/4476008779: if the bug happens there too, it's not you, it's me. :) Let me know! 
 
 

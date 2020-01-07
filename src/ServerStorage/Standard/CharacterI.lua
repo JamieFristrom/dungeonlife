@@ -10,9 +10,6 @@ local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 
-local HeroClasses = require( game.ReplicatedStorage.TS.HeroClassesTS ).HeroClasses
-local heroClassPrototypes = HeroClasses.heroClassPrototypes
-
 -- *** deliberately does not require heroes or monsters in the header to avoid circular requires ***
 
 -- the interface between encapsulated game components and this particular game's specific characters;
@@ -118,23 +115,8 @@ function CharacterI:GetBaseWalkSpeed( character )
 	if player then  -- target dummies don't have players
 		local pc = CharacterI:GetPCDataWait( player )
 		if pc then
-			DebugXL:Assert( pc.walkSpeedN )
-			return pc.walkSpeedN or 12
+			return pc:getWalkSpeed() or 12
 		end
---		local characterClass = CharacterClientI:GetCharacterClass( player )
---		-- there is a moment when a monster is promoted to a hero where the character still
---		-- exists but its character class has been erased
---		if characterClass == "" then
---			return 12
---		elseif characterClass == "Werewolf" then
---			if player.Character:FindFirstChild("Werewolf Head") then
---				return PossessionData.dataT[ characterClass ].walkSpeedN			
---			else
---				return 12
---			end
---		else
---			return PossessionData.dataT[ characterClass ].walkSpeedN
---		end
 	end
 	return 12
 end
@@ -145,19 +127,9 @@ function CharacterI:GetBaseJumpPower( character )
 	if player then
 		local pc = CharacterI:GetPCDataWait( player )
 		if pc then
-			return pc.jumpPowerN
+			return pc:getJumpPower()
 		end		
 		
---		local characterClass = CharacterClientI:GetCharacterClass( player )
---		-- there is a moment when a monster is promoted to a hero where the character still
---		-- exists but its character class has been erased
---		if characterClass == "" then
---			return 35
---		else
---			return PossessionData.dataT[ characterClass ].jumpPowerN
---		end
---	else
---		return 35
 	end
 	return 35
 end

@@ -16,6 +16,8 @@ local CharacterI       = require( game.ServerStorage.CharacterI )
 local Costumes         = require( game.ServerStorage.Standard.CostumesServer )
 local Inventory        = require( game.ServerStorage.Standard.InventoryModule )
 
+local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
+
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local PlayerXL = {}
@@ -269,7 +271,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 	local srcCharacter
 	local noAttachSet = Costumes.allAttachmentsSet
 	if player.Team == game.Teams.Monsters then
-		local monsterPrototype = PossessionData.dataT[ characterClassS ].prototypeObj
+		local monsterPrototype = CharacterClasses.monsterStats[ characterClassS ].prototypeObj
 		if monsterPrototype then
 			srcCharacter = game.ServerStorage.Monsters:FindFirstChild(monsterPrototype)			
 		end

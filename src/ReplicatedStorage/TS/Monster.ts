@@ -6,13 +6,13 @@ export class Monster extends PC
 {   
     constructor(
         id: string,
-        imageId: string,
-        walkSpeed: number,
-        jumpPower: number,        
-        items: { [k: string]: FlexToolI },
+//        imageId: string,
+//        walkSpeed: number,
+//        jumpPower: number,        
+        items: FlexToolI[],
         public monsterLevel: number )
         {
-            super( id, imageId, walkSpeed, jumpPower, items )
+            super( id, items )
         }
 
     getLocalLevel() { return this.monsterLevel }
