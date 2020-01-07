@@ -9,7 +9,7 @@ local FlexEquipUtility     = require( game.ReplicatedStorage.Standard.FlexEquipU
 
 local HeroUtility          = require( game.ReplicatedStorage.Standard.HeroUtility )
 
-local AnimationManifest = require( game.ReplicatedFirst.TS.AnimationManifest ).AnimationManifest
+local AnimationManifestService = require( game.ReplicatedFirst.TS.AnimationManifestService ).AnimationManifestService
 
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
@@ -78,7 +78,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 	local Character
 	local Player
 
-	local aimAndFireAnimObj = animName and AnimationManifest.getAnimInstance( animName ) or nil
+	local aimAndFireAnimObj = animName and AnimationManifestService.getAnimInstance( animName ) or nil
 	local animTrack 
 
 	local function CheckIfAlive()

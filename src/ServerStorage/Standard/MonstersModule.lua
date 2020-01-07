@@ -99,7 +99,10 @@ local function GiveUniqueWeapon( character, player, potentialWeaponsA )
 	if CharacterClientI:GetCharacterClass( player )~="Werewolf" then
 		_slotN = PlayerServer.pcs[ player ]:countTools() + 1
 	end
-	local flexToolInst = { baseDataS = weaponTemplate.idS, levelN = math.floor( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN ), enhancementsA = {}, slotN = _slotN }
+	local flexToolInst = { baseDataS = weaponTemplate.idS, 
+		levelN = math.max( 1, math.floor( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN ) ), 
+		enhancementsA = {}, 
+		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
 	PlayerServer.pcs[ player ]:giveTool( flexTool )
 
