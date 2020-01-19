@@ -1,7 +1,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
-warn( "DUNGEON LIFE 12/28" )
-warn( "Open source version handles preloads correct" )
+warn( "DUNGEON LIFE 1/19/2020" )
+warn( "Error reporting and game analytics re-enabled" )
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
