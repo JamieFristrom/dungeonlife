@@ -10,11 +10,11 @@
 export namespace Config
 {
     export const telemetryEnabled = false
-    export const gameAnalyticsEnabled = false
-    export const errorTrackingEnabled = false
+    export const gameAnalyticsEnabled = true
+    export const errorTrackingEnabled = true
 
     export const telemetryServerURL = ''
-    export const gameAnalyticsGKey =  ''
-    export const gameAnalyticsSKey = ''
-    export const googleAnalyticsUserId = ''
+    export const gameAnalyticsGKey =  'e48101e667e25fcb726b128ac0ddae12'
+    export const gameAnalyticsSKey = '3e328381bea42187bdd091763b7a59334b04dbed'
+    export const googleAnalyticsUserId = 'UA-44686010-9'
 }
