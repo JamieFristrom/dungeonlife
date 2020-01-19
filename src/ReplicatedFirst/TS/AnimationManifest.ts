@@ -1,6 +1,6 @@
 // This file will need to be unique for the Game or Group that the Place is in.
 // When new animations are added this file will have to be updated in every Game / Group. 
-// Not sure what the best way to do that with git is. Probably forks or branches where this one file is different.
+// Not sure what the best way to do that with git is. Forks or branches where this one file is different?
 
 export const AnimationManifest : {[k:string] : string} =
 {  

@@ -1,0 +1,8 @@
+game.ReplicatedFirst.TS:Destroy()
+game.ReplicatedStorage.TS:Destroy()
+game.ReplicatedStorage.Standard:Destroy()
+game.ReplicatedStorage.rbxts_include:Destroy()
+game.ServerStorage.TS:Destroy()
+game.ServerStorage.Standard:Destroy()
+game.StarterPlayer.StarterPlayerScripts.Lua:Destroy()
+game.StarterPlayer.StarterPlayerScripts.TS:Destroy()

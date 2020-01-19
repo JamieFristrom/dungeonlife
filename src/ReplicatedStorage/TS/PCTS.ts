@@ -41,7 +41,7 @@ export abstract class PC implements PCI
             this.itemsT = new Map< string, FlexTool >()
             for( let i = 0; i < _startItems.size(); i++ )
             {
-                const k: string = 'item' + i
+                const k: string = 'item' + ( i + 1 )
                 let item = ObjectXL.clone( _startItems[i] ) as FlexTool
                 this.itemsT.set( k, item )
                 let idx = tonumber(k.sub(4))
@@ -49,6 +49,7 @@ export abstract class PC implements PCI
                 if( idx )
                 {
                     DebugXL.Assert( idx >= 1 )
+                    // make sure tool key server starts serving after existing items
                     this.toolKeyServerN = math.max( this.toolKeyServerN, idx+1 )
                 }
             }
