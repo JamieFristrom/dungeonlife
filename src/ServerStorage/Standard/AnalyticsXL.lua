@@ -35,7 +35,7 @@ local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 pcall( function()
 	if Config.errorTrackingEnabled then
 		print("Initializing error analytics")
-		GA.Init( Config.GoogleAnalyticsUserId )
+		GA.Init( Config.googleAnalyticsUserId )
 	end
 end )
 
