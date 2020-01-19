@@ -1143,10 +1143,10 @@ export namespace ToolData
 
     // dump weapon data
     dataA.filter(toolDatum => toolDatum.damageNs !== undefined).forEach(toolDatum => {
-        if( toolDatum.critChanceN !== undefined )
-            print(toolDatum.idS + " " + toolDatum.damageNs![0] + " " + toolDatum.damageNs![1] + " " + toolDatum.critChanceN! + " " + toolDatum.cooldownN!)
-        else
+        if( toolDatum.critChanceN === undefined )
             warn(toolDatum.idS + " missing crit chance" )
+        //else
+            //print(toolDatum.idS + " " + toolDatum.damageNs![0] + " " + toolDatum.damageNs![1] + " " + toolDatum.critChanceN! + " " + toolDatum.cooldownN!)
     })
 }
 

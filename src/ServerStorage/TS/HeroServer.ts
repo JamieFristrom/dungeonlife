@@ -38,7 +38,7 @@ export namespace HeroServer
             hero.shopT.clear()
             for( let i=0; i<25; i++ )
             {
-                print( "Shop item " + i )
+                //print( 'Shop item ' + i )
                 let gearItem = undefined
                 let duplicateCount = 0
                 while( !gearItem )

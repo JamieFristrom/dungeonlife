@@ -101,6 +101,7 @@ let CommandList: {[k:string]:unknown} =
     // !equip {"baseDataS":"DaggersDual","levelN":1}
     // !equip {"baseDataS":"DaggersDual","levelN":1}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"cold","levelN":2}]}
+    // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"fire","levelN":2}]}
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}
     // !equip {"baseDataS":"MagicHealing","levelN":2}
     // !equip {"baseDataS":"Bomb","levelN":2}

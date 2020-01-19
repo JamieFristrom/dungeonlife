@@ -395,7 +395,7 @@ function Monsters:Died( player )
 	if monsterDatum.tagsT.Superboss then
 		-- everybody gets credit & loot for the superboss but xp shared as usual
 		for _, hero in pairs( game.Teams.Heroes:GetPlayers() ) do
-			Inventory:AdjustCount( hero, "Kills"..monsterDatum.idS, 1 )
+			Inventory:AdjustCount( hero, "Kills"..monsterClass, 1 )
 			Inventory:AdjustCount( player, "Stars", 20, "Kill", "Superboss" )
 			Inventory:EarnRubies( player, 20, "Kill", "Superboss" )	
 			-- GameAnalyticsServer.ServerEvent( {
