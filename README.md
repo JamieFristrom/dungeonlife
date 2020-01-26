@@ -10,6 +10,10 @@ And that said, there's more here I'm proud of than embarrassed of--for the most 
 
 And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know! A good place to ask would be on the Discord (https://discord.gg/7BQNSu which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
 
+# downloading / cloning
+
+You'll need to use git-lfs; it should prompt you to set that up automatically. The RBLX and other large files use git-lfs.
+
 # building
 
 Anyways, here's how to build for the first time. Most of these instructions are adapted from (https://roblox-ts.github.io/docs/guides/github-installation) 
