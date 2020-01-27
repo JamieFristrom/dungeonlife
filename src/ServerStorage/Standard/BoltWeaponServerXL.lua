@@ -31,7 +31,8 @@ function BoltWeaponServerXL.new( Tool )
 	-- we want to delete the Bolt so it's not floating around in the environment,
 	-- but we don't want to do it before the client has also cloned it
 	
-	
+	local owningHumanoid = nil
+
 	local ToolEquipped = false
 	
 	Tool.Enabled = true
@@ -41,7 +42,7 @@ function BoltWeaponServerXL.new( Tool )
 	local flexToolInst
 
 	local function CheckIfAlive()
-		return (((Character and Character.Parent and Humanoid and Humanoid.Parent and Humanoid.Health > 0 and Player and Player.Parent) and true) or false)
+		return (((Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0 and Player and Player.Parent) and true) or false)
 	end
 	
 	local enabled = true
@@ -100,7 +101,7 @@ function BoltWeaponServerXL.new( Tool )
 	local function Equipped(Mouse)
 		Character = Tool.Parent
 		flexToolInst = FlexibleTools:GetToolInst( Tool )
-		Humanoid = Character:FindFirstChild("Humanoid")
+		owningHumanoid = Character:FindFirstChild("Humanoid")
 		Player = Players:GetPlayerFromCharacter(Character)
 		if WeaponServer:CheckRequirements( Tool, Player ) then		
 			if not CheckIfAlive() then

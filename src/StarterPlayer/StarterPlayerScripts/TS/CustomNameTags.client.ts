@@ -111,8 +111,8 @@ while( true )
 										// y of 0 -> -1  y of 0.5 -> 0  y of 1 -> 1  y of 0.25 -> -0.5 y of 0.75 -> .5  
 										let ratio = math.max( ( myEffectiveLevel / theirEffectiveLevel - 0.5 ) * 2, 0 )					
 		//								print( player.Name.." is stronger. Ratio "..ratio )
-										
-										frameTextLabel.TextColor3 = new Color3(1,0,0).Lerp( new Color3(1,1,1), ratio )
+										const red = new Color3(1,0,0)
+										frameTextLabel.TextColor3 = red.Lerp( new Color3(1,1,1), ratio )
 										if( ratio <= 0 ) {
 											frameTextLabel.Text = "💀" + name + "💀"
 										}

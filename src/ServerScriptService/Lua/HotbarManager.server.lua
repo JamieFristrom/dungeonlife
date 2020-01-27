@@ -6,7 +6,7 @@ local PowerServer = require( game.ServerStorage.TS.PowerServer ).PowerServer
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 
-HotbarRemote = {}
+local HotbarRemote = {}
 
 function HotbarRemote:Equip( player, hotbarSlotN )
 --	--print( player.Name.." equipping "..hotbarSlotN )
@@ -14,7 +14,7 @@ function HotbarRemote:Equip( player, hotbarSlotN )
 	local flexToolInst = CharacterI:GetHotbarToolDatum( player, hotbarSlotN )
 	if flexToolInst then
 		local possessionDatum = ToolData.dataT[ flexToolInst.baseDataS ]
-		if possessionDatum.useTypeS == "power" then
+	if possessionDatum.useTypeS == "power" then
 			PowerServer.activatePower( player, flexToolInst )
 		end
 	end		

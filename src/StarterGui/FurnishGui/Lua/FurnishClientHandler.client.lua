@@ -678,7 +678,7 @@ end)
 
 PopulateCategoryListFrame()
 
-FurnishClientHandlerRemote = {}
+local FurnishClientHandlerRemote = {}
 
 function FurnishClientHandlerRemote.Close( )
 	if currentBuildMenu then

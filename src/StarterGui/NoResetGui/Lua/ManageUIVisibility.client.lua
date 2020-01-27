@@ -2,7 +2,7 @@
 game.StarterGui:SetCoreGuiEnabled( Enum.CoreGuiType.Backpack, false )
 game.StarterGui:SetCoreGuiEnabled( Enum.CoreGuiType.PlayerList, false )
 
-GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
+local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
 
 local playerGui = script.Parent.Parent.Parent
 playerGui:SetTopbarTransparency(0)

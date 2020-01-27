@@ -44,6 +44,7 @@ local equipKeyCodes =
 
 local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local audio = playerGui:WaitForChild("Audio")
+	
 
 function AssignCurrentToHotbarSlot( i )
 	DebugXL:Assert( PCClient.pc )
@@ -56,12 +57,6 @@ function AssignCurrentToHotbarSlot( i )
 			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
 			WireInfoFrame( curFlexToolIdx )			
 		end
-	end
-end
-
-function UnbindAssignActions()
-	for i = 1, 4 do
-		game.ContextActionService:UnbindAction( "assign"..i )
 	end
 end
 
@@ -89,11 +84,6 @@ function ShowInfoFrame()
 	end
 end
 
-
-function HideInfoFrame()
-	itemInfoFrame.Visible = false
-	UnbindAssignActions()
-end
 
 function WireInfoFrame( flexToolIdx )
 	DebugXL:Assert( PCClient.pc )
@@ -161,6 +151,19 @@ function WireInfoFrame( flexToolIdx )
 		end	
 		ShowInfoFrame()
 	end
+end
+
+
+function UnbindAssignActions()
+	for i = 1, 4 do
+		game.ContextActionService:UnbindAction( "assign"..i )
+	end
+end
+
+
+function HideInfoFrame()
+	itemInfoFrame.Visible = false
+	UnbindAssignActions()
 end
 
 
