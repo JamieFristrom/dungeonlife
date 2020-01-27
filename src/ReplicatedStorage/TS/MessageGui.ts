@@ -276,6 +276,8 @@ function processArgs( _args: { [k:string]:string | number | FlexTool } )  // arr
     return args
 }
 
+export let MessageGui = new MessageGuiC()  // this has to come before below Waits otherwise a message might be posted before we've set the pointer
+
 let messageRE = Workspace.WaitForChild('Standard').WaitForChild('MessageGuiXL').WaitForChild('MessageRE') as RemoteEvent
 messageRE.OnClientEvent.Connect( function( _messageKeyS: string, _args: { [k:string]:string | number | FlexTool }, _needsAckB: boolean, _displayDelay: number, _modalB: boolean )
 {
@@ -358,5 +360,4 @@ function messagePumpHealthWatcher()
 spawn( messagePump )
 spawn( messagePumpHealthWatcher )
 
-export let MessageGui = new MessageGuiC()
 
