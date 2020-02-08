@@ -13,7 +13,7 @@ local AnalyticsXL = require( game.ServerStorage.Standard.AnalyticsXL )
 local Config = require( game.ReplicatedStorage.TS.Config ).Config
 
 	
-Settings = {
+local Settings = {
 	ApplyTax = false; -- This will send the R$ cost of something as math.floor(Input * .7)
 	ConvertedToUSD = false; -- This will send the R$ cost as USD doing math.floor(Input * 0.0035)
 
@@ -44,7 +44,7 @@ If you liked this please send money :D
 https://www.roblox.com/catalog/887592545/Send-money-please
 --]]
 
-Functions = game.ReplicatedStorage -- Change this to where ever you keep your functions or w/e. Just set this to a place you guarentee my function and event won't be destroy, accessible from both the erver and clinet
+local Functions = game.ReplicatedStorage -- Change this to where ever you keep your functions or w/e. Just set this to a place you guarentee my function and event won't be destroy, accessible from both the erver and clinet
 
 local HTTPService		= game:GetService("HttpService")
 local lockbox 			= require( script.Parent.Parent.lockbox)
@@ -56,36 +56,36 @@ local hmac 				= require(lockbox.mac.hmac)
 local sha256 			= require(lockbox.digest.sha2_256)
 
 --	Device Info (this doesn't matter to us, this is only sent in the initalisation, don't change cuz it'll break stuff)
-Platform 				= "ios"
-OS_Version 				= "ios 8.2"
-SDK_Version 			= "rest api v2" -- I lie don't change this one
-Device 					= "Unknown"
-Manufacturer			= "Unknown"
+local Platform 				= "ios"
+local OS_Version 				= "ios 8.2"
+local SDK_Version 			= "rest api v2" -- I lie don't change this one
+local Device 					= "Unknown"
+local Manufacturer			= "Unknown"
 
 -- Game Info (Change this if you like"
-BuildVersion			= "1"
-EngineVersion			= "unity 5.1.0"
+local BuildVersion			= "1"
+local EngineVersion			= "unity 5.1.0"
 
 -- Keys (These keys give you access to a sand box place I set up (Gameanalytic's default one is stingy with annotations))
-GameKey 				= "d39c482fd8604b680a7f5440b8e60286"
-SecretKey				= "80d0dd29e81cfbd34c4b4536ffd1b095894e5568"
+local GameKey 				= "d39c482fd8604b680a7f5440b8e60286"
+local SecretKey				= "80d0dd29e81cfbd34c4b4536ffd1b095894e5568"
 
 -- URLS (Don't touch)
-URL_Init				= "http://api.gameanalytics.com/v2/" .. GameKey .. "/init"
-URL_Events				= "http://api.gameanalytics.com/v2/" .. GameKey .. "/events"
+local URL_Init				= "http://api.gameanalytics.com/v2/" .. GameKey .. "/init"
+local URL_Events				= "http://api.gameanalytics.com/v2/" .. GameKey .. "/events"
 
 
 
 
-PlayerData 				= {
+local PlayerData 				= {
 	
 }
 
-PlayerJoinTimes			= {
+local PlayerJoinTimes			= {
 	
 }
 
-State_Config 			= {
+local State_Config 			= {
 	-- the amount of seconds the client time is offset by server_time will be set when init call receives server_time
 	["Client_TS_Offset"] = 0;
 	-- Will be updated when a session starts
@@ -98,7 +98,7 @@ State_Config 			= {
 	["session_num"] = math.floor(tick())
 }
 
-Transactions = 1
+local Transactions = 1
 function HmacHashWithSecret(body, key)
 	local hmacBuilder = hmac()
 		.setBlockSize(64)
@@ -146,6 +146,20 @@ function Request_Init()
 		print("GameAnalytics failure" )
 	end
 	return InitResponse
+end
+
+
+function AnnotateEvent(Event, Player)
+	local Time = os.time()
+	local ClientTime = os.time() -- Difference for us is negligable
+	local Annotations = PlayerData[Player.Name]
+	repeat wait() Annotations = PlayerData[Player.Name] until Annotations
+	for i,v in pairs(Annotations) do
+		Event[i] = v
+	end
+	Event["client_ts"] = ClientTime
+	Event["custom_01"] = CharacterClientI:GetCharacterClass( Player )
+	return Event
 end
 
 
@@ -253,19 +267,6 @@ function Run() -- Drops the bass
 		
 	end
 	
-end
-
-function AnnotateEvent(Event, Player)
-	local Time = os.time()
-	local ClientTime = os.time() -- Difference for us is negligable
-	local Annotations = PlayerData[Player.Name]
-	repeat wait() Annotations = PlayerData[Player.Name] until Annotations
-	for i,v in pairs(Annotations) do
-		Event[i] = v
-	end
-	Event["client_ts"] = ClientTime
-	Event["custom_01"] = CharacterClientI:GetCharacterClass( Player )
-	return Event
 end
 
 

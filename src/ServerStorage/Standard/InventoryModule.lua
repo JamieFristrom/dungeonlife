@@ -229,60 +229,6 @@ function Inventory:IsStarFeedbackDue( player )
 end
 
 
-function Inventory:SetNextStarFeedbackDueTime( player )
-	local starFeedbackCount = Inventory:GetCount( player, 'StarFeedbackCount')
-	local nextStarFeedbackDelay = 60 * 60 * ( 1.5 ^ starFeedbackCount )
-	Inventory:SetCount( player, 'NextStarFeedbackDue', Inventory:GetTotalTimeInvested( player ) + nextStarFeedbackDelay )
-	Inventory:SetCount( player, 'StarFeedbackCount', starFeedbackCount+1 )
-end
-
-
-function PlayerRemovingWait( player )
-	local inventoryStore = Inventory:GetInventoryStoreWait( player )
-	if not inventoryStore then return end
-	local inventory = inventoryStore:Get()
-	if inventory then
-		if inventory.itemsT then  -- itemsT can be nil when I, Jamie, reset my inventory
-			local sessionTicks = Inventory:GetSessionTime( player )
-			inventory.itemsT.TimeInvested = inventory.itemsT.TimeInvested + sessionTicks
-			local endingStars = inventory.itemsT.Stars -- inventoryCacheT[ CacheKey( player ) ].itemsT.Stars
-			if endingStars then  -- after resetting inventory there will be no neding stars, so we need this check for debug purposes
-				local starsForSession = endingStars - startingInfoT[ CacheKey( player ) ].starsN
-				
-				local starsPerHour = starsForSession * 60 * 60 / sessionTicks
-				
-				if sessionTicks >= 600 then
-					AnalyticsXL:ReportHistogram( player, 
-						"StarsPerHour", 
-						starsPerHour, 
-						1, 
-						"Star", 
-						"Stars "..starsForSession..", Minutes "..math.ceil( sessionTicks / 60 ) )   
-				end
-				--Inventory:SaveWait( player )
-				--inventoryCacheT[ CacheKey( player/f ) ] = nil
-			
-				-- why the ugly delay?
-				-- lingering functions may be processing players after the players get removed, accessing their 
-				-- inventory, etc, so by waiting a good long time we make sure to not cause any race conditions
-				-- if we're aggressive about garbage collection then we'd have to use other mechanisms to make sure
-				-- the players aren't being accessed anymore	 
-
-				-- measure rubies see if there are non-spenders
-				local rubiesLeft = inventory.itemsT.Rubies
-				GameAnalyticsServer.RecordDesignEvent( player, "RubiesLeft", rubiesLeft, 50, "Ruby50" )
-			end
-		end
-	end
---	delay( 300, function() startingInfoT[ CacheKey( player ) ] = nil end )
---  wishlist fix: it's leaking here
-end
-
-
-for _, player in pairs( game.Players:GetPlayers() ) do spawn( function() PlayerAddedWait( player ) end ) end
-game.Players.PlayerAdded:Connect( PlayerAddedWait )
-game.Players.PlayerRemoving:Connect( PlayerRemovingWait )
-
 function CheckForReward( player, itemKeyS, x )
 	local rewardsA = PossessionData.dataT[ itemKeyS ].rewardsA
 	if rewardsA then
@@ -297,30 +243,6 @@ function CheckForReward( player, itemKeyS, x )
 					end				
 				end )			
 			end
-		end
-	end
-end
-
-
-function Inventory:SetCount( player, itemKeyS, x )
-	DebugXL:Assert( typeof(x)=="number" )
-	local inventoryStore = Inventory:GetInventoryStoreWait( player )
-	if not inventoryStore then return end
-	local inventory = inventoryStore:Get()
-	if x ~= inventory.itemsT[ itemKeyS ] then  -- deliberately not comparing with lastCount, below, to make sure we overwrite nil with 0 if the occassion arises
-		local lastCount = inventory.itemsT[ itemKeyS ] or 0
-		inventory.itemsT[ itemKeyS ] = x
-		
-		if PossessionData.dataT[ itemKeyS ].publishValueB then
-			InstanceXL:CreateSingleton( "NumberValue", { Name = itemKeyS, Parent = player, Value = inventory.itemsT[ itemKeyS ] or 0 } )
-		end
-		if x > lastCount then
-			CheckForReward( player, itemKeyS, x )
-		end
-		
-		inventoryStore:Set( inventory ) 
-		if not PossessionData.dataT[ itemKeyS ].skipClientRefreshB then
-			workspace.Signals.InventoryRE:FireClient( player, "Update", inventory )		
 		end
 	end
 end
@@ -381,6 +303,94 @@ function Inventory:AdjustCount( player, itemKeyS, increment, analyticItemTypeS, 
 end
 
 
+function Inventory:AwardRandomPossession( player, crateDatum, occasionS )
+	local instantDeck = InventoryUtility:MakeCrateDeck( crateDatum )
+	local possessionChoiceN = MathXL:RandomInteger( 1, #instantDeck )
+	local newPossessionName = instantDeck[ possessionChoiceN ].idS
+	Inventory:AdjustCount( player, newPossessionName, 1, "Award", occasionS )
+	workspace.Signals.InventoryRE:FireClient( player, "Award", newPossessionName, occasionS )	
+	return true
+end
+
+
+function Inventory:SetCount( player, itemKeyS, x )
+	DebugXL:Assert( typeof(x)=="number" )
+	local inventoryStore = Inventory:GetInventoryStoreWait( player )
+	if not inventoryStore then return end
+	local inventory = inventoryStore:Get()
+	if x ~= inventory.itemsT[ itemKeyS ] then  -- deliberately not comparing with lastCount, below, to make sure we overwrite nil with 0 if the occassion arises
+		local lastCount = inventory.itemsT[ itemKeyS ] or 0
+		inventory.itemsT[ itemKeyS ] = x
+		
+		if PossessionData.dataT[ itemKeyS ].publishValueB then
+			InstanceXL:CreateSingleton( "NumberValue", { Name = itemKeyS, Parent = player, Value = inventory.itemsT[ itemKeyS ] or 0 } )
+		end
+		if x > lastCount then
+			CheckForReward( player, itemKeyS, x )
+		end
+		
+		inventoryStore:Set( inventory ) 
+		if not PossessionData.dataT[ itemKeyS ].skipClientRefreshB then
+			workspace.Signals.InventoryRE:FireClient( player, "Update", inventory )		
+		end
+	end
+end
+
+
+function Inventory:SetNextStarFeedbackDueTime( player )
+	local starFeedbackCount = Inventory:GetCount( player, 'StarFeedbackCount')
+	local nextStarFeedbackDelay = 60 * 60 * ( 1.5 ^ starFeedbackCount )
+	Inventory:SetCount( player, 'NextStarFeedbackDue', Inventory:GetTotalTimeInvested( player ) + nextStarFeedbackDelay )
+	Inventory:SetCount( player, 'StarFeedbackCount', starFeedbackCount+1 )
+end
+
+
+function PlayerRemovingWait( player )
+	local inventoryStore = Inventory:GetInventoryStoreWait( player )
+	if not inventoryStore then return end
+	local inventory = inventoryStore:Get()
+	if inventory then
+		if inventory.itemsT then  -- itemsT can be nil when I, Jamie, reset my inventory
+			local sessionTicks = Inventory:GetSessionTime( player )
+			inventory.itemsT.TimeInvested = inventory.itemsT.TimeInvested + sessionTicks
+			local endingStars = inventory.itemsT.Stars -- inventoryCacheT[ CacheKey( player ) ].itemsT.Stars
+			if endingStars then  -- after resetting inventory there will be no neding stars, so we need this check for debug purposes
+				local starsForSession = endingStars - startingInfoT[ CacheKey( player ) ].starsN
+				
+				local starsPerHour = starsForSession * 60 * 60 / sessionTicks
+				
+				if sessionTicks >= 600 then
+					AnalyticsXL:ReportHistogram( player, 
+						"StarsPerHour", 
+						starsPerHour, 
+						1, 
+						"Star", 
+						"Stars "..starsForSession..", Minutes "..math.ceil( sessionTicks / 60 ) )   
+				end
+				--Inventory:SaveWait( player )
+				--inventoryCacheT[ CacheKey( player/f ) ] = nil
+			
+				-- why the ugly delay?
+				-- lingering functions may be processing players after the players get removed, accessing their 
+				-- inventory, etc, so by waiting a good long time we make sure to not cause any race conditions
+				-- if we're aggressive about garbage collection then we'd have to use other mechanisms to make sure
+				-- the players aren't being accessed anymore	 
+
+				-- measure rubies see if there are non-spenders
+				local rubiesLeft = inventory.itemsT.Rubies
+				GameAnalyticsServer.RecordDesignEvent( player, "RubiesLeft", rubiesLeft, 50, "Ruby50" )
+			end
+		end
+	end
+--	delay( 300, function() startingInfoT[ CacheKey( player ) ] = nil end )
+--  wishlist fix: it's leaking here
+end
+
+
+for _, player in pairs( game.Players:GetPlayers() ) do spawn( function() PlayerAddedWait( player ) end ) end
+game.Players.PlayerAdded:Connect( PlayerAddedWait )
+game.Players.PlayerRemoving:Connect( PlayerRemovingWait )
+
 
 function Inventory:GiftOnce( player, itemKeyS, increment )
 	local inventoryStore = Inventory:GetInventoryStoreWait( player )
@@ -440,16 +450,6 @@ local Crates = require( game.ReplicatedStorage.Standard.Crates )
 local cratesTable = {}
 for _, crate in ipairs( Crates ) do
 	cratesTable[ crate.Name ] = crate
-end
-
-
-function Inventory:AwardRandomPossession( player, crateDatum, occasionS )
-	local instantDeck = InventoryUtility:MakeCrateDeck( crateDatum )
-	local possessionChoiceN = MathXL:RandomInteger( 1, #instantDeck )
-	local newPossessionName = instantDeck[ possessionChoiceN ].idS
-	Inventory:AdjustCount( player, newPossessionName, 1, "Award", occasionS )
-	workspace.Signals.InventoryRE:FireClient( player, "Award", newPossessionName, occasionS )	
-	return true
 end
 
 
@@ -644,8 +644,6 @@ function InventoryRemote.PostFeedback( player, feedback )
 end
 
 
-
-
 workspace.Signals.InventoryRF.OnServerInvoke = function( player, funcname, ... )
 	return InventoryRemote[ funcname ]( player, ... )
 end
@@ -656,6 +654,7 @@ workspace.Signals.InventoryRE.OnServerEvent:Connect( function( player, funcname,
 end )
 
  
+
 -- Function to handle a completed prompt and purchase
 local function OnPromptGamePassPurchaseFinished(player, purchasedPassId, purchaseSuccess)
 	if purchaseSuccess == true then
