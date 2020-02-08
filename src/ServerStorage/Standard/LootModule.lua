@@ -154,7 +154,7 @@ function Loot:ChestDrop( targetLevel, player, worldPosV3 )  -- opening player no
 	if not playerLootRandomishers[ player ] then
 		playerLootRandomishers[ player ] = Randomisher.new( 7 )
 	end
-	dieRoll = playerLootRandomishers[ player ]:next0to1()
+	local dieRoll = playerLootRandomishers[ player ]:next0to1()
 	local lootEventStr = ""
 	if dieRoll <= odds then
 		lootB = true
@@ -204,7 +204,7 @@ function Loot:MonsterDrop( monsterLevel, monsterClassS, lastAttackingPlayer, wor
 		if not playerLootRandomishers[ player ] then
 			playerLootRandomishers[ player ] = Randomisher.new( 7 )
 		end
-		dieRoll = playerLootRandomishers[ player ]:next0to1()	
+		local dieRoll = playerLootRandomishers[ player ]:next0to1()	
 		if dieRoll <= odds then
 			local averageLevel = ( monsterLevel + PlayerServer.getActualLevel( player ) ) / 2
 --			--print( "Loot:MonsterDrop HIT: "..player.Name..": odds: "..odds.."; dieRoll: "..dieRoll )

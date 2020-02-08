@@ -28,22 +28,7 @@ function removePlayerNameFromStack(stack)
 	return stack
 end
 
-function setupScriptErrorTracking()
-	game:GetService("ScriptContext").Error:connect(function (message, stack)
-		if string.find( message, "GAModule" ) or string.find( stack, "GAModule" ) then 
-			return 
-		end
-		API.ReportEvent(category,
-			removePlayerNameFromStack(message) .. " | " .. 
-			removePlayerNameFromStack(stack), "none", 1)
-	end)
-	-- add tracking for clients
-	-- helper.Parent = game.StarterGui
-	-- -- add to any players that are already in game
-	-- for i, c in ipairs(game.Players:GetChildren()) do
-	-- 	helper:Clone().Parent = (c:WaitForChild("PlayerGui"))
-	-- end
-end
+
 
 function stringifyEvent(category, action, label, value)
 	return "GA EVENT: " .. 
@@ -122,10 +107,10 @@ function API.Init(userId, config)
 
 		id = userId
 		remoteEvent.Parent = game:GetService("ReplicatedStorage")
-		remoteEvent.OnServerEvent:connect(
-			function (client, ...) 
+		remoteEvent.OnServerEvent:Connect(
+			function (client, a, b, c, d, e, f)  -- ... was throwing a warning in new script analysis
 				print( "Client reporting analytics event")
-				local arg = {...}
+				-- local arg = {...}
 				-- let the other debug savvy players know, actually, screw it, let's not because we're using it for Resolution events now
 				-- local message = "Client "..client.Name.." report: "..arg[2]
 				-- for _, player in pairs( game.Players:GetPlayers() ) do
@@ -134,7 +119,7 @@ function API.Init(userId, config)
 				-- 	end
 				-- end
 				-- workspace.Standard.DebugGuiRE:FireAllClients( message )				
-				API.ReportEvent(...) 
+				API.ReportEvent(a, b, c, d, e, f) 
 			end)
 		
 		if config == nil or not config["DoNotReportScriptErrors"] then
@@ -153,6 +138,23 @@ function API.Init(userId, config)
 	else
 		error("Attempting to re-initalize Analytics Module")
 	end
+end
+
+function setupScriptErrorTracking()
+	game:GetService("ScriptContext").Error:connect(function (message, stack)
+		if string.find( message, "GAModule" ) or string.find( stack, "GAModule" ) then 
+			return 
+		end
+		API.ReportEvent(category,
+			removePlayerNameFromStack(message) .. " | " .. 
+			removePlayerNameFromStack(stack), "none", 1)
+	end)
+	-- add tracking for clients
+	-- helper.Parent = game.StarterGui
+	-- -- add to any players that are already in game
+	-- for i, c in ipairs(game.Players:GetChildren()) do
+	-- 	helper:Clone().Parent = (c:WaitForChild("PlayerGui"))
+	-- end
 end
 
 return API

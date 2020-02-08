@@ -123,9 +123,8 @@ local function DisplayChoices()
 				game.GuiService.SelectedObject = heroButton.Choose 	
 			end
 		end
-	end
-	
-	
+	end	
+		
 	-- new hero 
 	if #savedPlayerCharacters.heroesA < 5 then
 		local newHeroButton = chooseHeroFrame.NewHeroButtonTemplate:Clone()
@@ -137,10 +136,10 @@ local function DisplayChoices()
 			newHeroButton.Image.Image = AssetManifest.ImagePadlockLocked
 			newHeroButton.NewHero.Text = "Unlock hero slot"
 			newHeroButton.NewHero.MouseButton1Click:Connect( function()
-				UnlockHeroSlot( #savedPlayerCharacters.heroesA + 1 )
+				UnlockHeroSlot()
 			end)
 			newHeroButton.Image.MouseButton1Click:Connect( function()
-				UnlockHeroSlot( #savedPlayerCharacters.heroesA + 1 )
+				UnlockHeroSlot()
 			end)
 		else
 			newHeroButton.NewHero.MouseButton1Click:Connect( function()

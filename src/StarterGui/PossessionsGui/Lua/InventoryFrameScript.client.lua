@@ -44,46 +44,9 @@ local equipKeyCodes =
 
 local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local audio = playerGui:WaitForChild("Audio")
-	
 
-function AssignCurrentToHotbarSlot( i )
-	DebugXL:Assert( PCClient.pc )
-	if( PCClient.pc )then
-		audio.UIClick:Play()
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
-		if flexToolInst then  -- it's possible to sell your item and click on it again in your inventory before it's updated, so we have to check
-			pcEvent:FireServer( "AssignItemToSlot", curFlexToolIdx, i )  -- on server
-			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curFlexToolIdx, i )  -- on client for snap
-			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
-			WireInfoFrame( curFlexToolIdx )			
-		end
-	end
-end
-
-
-function ShowInfoFrame()
-	DebugXL:Assert( PCClient.pc )
-	if( PCClient.pc )then	
-		shopItemInfoFrame.Visible = false
-		itemInfoFrame.Visible = true
-		
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
-		local baseData = ToolData.dataT[ flexToolInst.baseDataS ] 	
-		local weaponB = baseData.useTypeS == "held" or baseData.useTypeS == "power"
-		if weaponB then
-			for i = 1, 4 do
-				game.ContextActionService:BindAction( "assign"..i, function( _, uis )
-					if uis == Enum.UserInputState.Begin then
-						AssignCurrentToHotbarSlot( i )
-					end
-				end, false, unpack( equipKeyCodes[i]))
-			end
-		else
-			UnbindAssignActions()
-		end
-	end
-end
-
+-- forward declaration hack for new script analysis
+local ShowInfoFrame = nil
 
 function WireInfoFrame( flexToolIdx )
 	DebugXL:Assert( PCClient.pc )
@@ -150,6 +113,45 @@ function WireInfoFrame( flexToolIdx )
 			end
 		end	
 		ShowInfoFrame()
+	end
+end
+
+
+function AssignCurrentToHotbarSlot( i )
+	DebugXL:Assert( PCClient.pc )
+	if( PCClient.pc )then
+		audio.UIClick:Play()
+		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		if flexToolInst then  -- it's possible to sell your item and click on it again in your inventory before it's updated, so we have to check
+			pcEvent:FireServer( "AssignItemToSlot", curFlexToolIdx, i )  -- on server
+			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curFlexToolIdx, i )  -- on client for snap
+			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
+			WireInfoFrame( curFlexToolIdx )			
+		end
+	end
+end
+
+
+function ShowInfoFrame()
+	DebugXL:Assert( PCClient.pc )
+	if( PCClient.pc )then	
+		shopItemInfoFrame.Visible = false
+		itemInfoFrame.Visible = true
+		
+		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local baseData = ToolData.dataT[ flexToolInst.baseDataS ] 	
+		local weaponB = baseData.useTypeS == "held" or baseData.useTypeS == "power"
+		if weaponB then
+			for i = 1, 4 do
+				game.ContextActionService:BindAction( "assign"..i, function( _, uis )
+					if uis == Enum.UserInputState.Begin then
+						AssignCurrentToHotbarSlot( i )
+					end
+				end, false, unpack( equipKeyCodes[i]))
+			end
+		else
+			UnbindAssignActions()
+		end
 	end
 end
 
