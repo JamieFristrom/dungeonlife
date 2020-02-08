@@ -21,7 +21,6 @@ export interface CharacterClassI
 {
     readonly idS: string
     //imageId: string
-    readonly ghostifyB?: boolean
     readonly walkSpeedN: number
     readonly jumpPowerN: number
     // readonly statsT?: HeroStatBlockI
@@ -52,6 +51,7 @@ export interface MonsterStatBlockI
 
     // optionals
     //readonly soloLevelN?: number  // unused
+    readonly ghostifyB?: boolean
     readonly auraColor3?: Color3
     readonly fogDistanceN?: number 
     readonly invulnerableB?: boolean
@@ -116,7 +116,6 @@ export namespace CharacterClasses {
         {
             idS             : "DungeonLord",
             //readableNameS   : "Dungeon Lord"
-            ghostifyB       : false,
             walkSpeedN      : 14,
             jumpPowerN      : 35,						
         },
@@ -193,7 +192,6 @@ export namespace CharacterClasses {
         Ghost:
         {
             idS           : "Ghost",
-            ghostifyB       : true,
             walkSpeedN      : 12,
             jumpPowerN      : 35,			
         },
@@ -201,7 +199,6 @@ export namespace CharacterClasses {
         {
             idS           : "Gremlin",
             //readableNameS : "Gremlin",
-            ghostifyB       : false,
             walkSpeedN      : 14,  // 16 was too high - rogues couldn't stay ahead of them and neither could players with aura of courage - 10/29
             jumpPowerN      : 60,			
         },
@@ -519,6 +516,7 @@ export namespace CharacterClasses {
         Ghost:
         {
             prototypeObj : undefined,
+            ghostifyB: true,
             scaleN          : 1,
             auraColor3      : new Color3( 0.55, 0.55, 0.55 ),
             fogDistanceN    : 150,
