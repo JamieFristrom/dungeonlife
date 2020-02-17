@@ -49,6 +49,7 @@ local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
+local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
 
 local FlexibleTools = {}
 
@@ -70,7 +71,6 @@ local FlexibleTools = {}
 --                      ... 
 --                    }
 --  }
-local serverToolDataT = {}
 
 
 
@@ -155,7 +155,7 @@ function FlexibleTools:GetToolInst( toolObj )
 end
 
 function FlexibleTools:GetToolInstFromId( toolId )
-	return serverToolDataT[ toolId ].flexToolInst
+	return FlexibleToolsServer.get( toolId ).flexToolInst
 end
 
 function FlexibleTools:GetToolBaseData( toolObj )
@@ -183,7 +183,7 @@ function FlexibleTools:CreateTool( params )
 --	--print( "Creating "..toolInstanceDatumT.baseDataS.." for "..destinationPlayer.Name )
 	
 	local toolId = ServeToolId()
-	serverToolDataT[ toolId ] = { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey }
+	FlexibleToolsServer.set( toolId, { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey } )
 	
 	-- if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
 	if not toolInstanceDatumT.enhancementsA then toolInstanceDatumT.enhancementsA = {} end
@@ -282,19 +282,13 @@ function FlexibleTools:CreateTool( params )
 		DebugXL:Error("Need to specify a destination or player")
 	end
 	
---	newToolInstance.AncestryChanged:Connect( function( _, parent )
---		if not parent then
---			serverToolDataT[ toolId ] = nil
---		end
---	end)
-	
 	return newToolInstance
 end
 
 
 function FlexibleTools:RemoveToolWait( player, tool )
 	local toolId = tool.ToolId.Value
-	local toolServerData = serverToolDataT[ toolId ]
+	local toolServerData = FlexibleToolsServer.getFlexToolAccessor( toolId )
 	DebugXL:Assert( player == toolServerData.player )
 	
 	local pcData = CharacterI:GetPCDataWait( player )
@@ -323,7 +317,7 @@ end
 function FlexibleTools:GetToolInstanceDatum( toolObject )
 	DebugXL:Assert( self == FlexibleTools )
 	local toolId = toolObject.ToolId.Value
-	return serverToolDataT[ toolId ].flexToolInst
+	return FlexibleToolsServer.getFlexToolAccessor( toolId ).flexToolInst
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -609,8 +603,8 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 	local toolBaseData = FlexibleTools:GetToolBaseData( tool )
 	local toolSkinType = toolBaseData.skinType
 	local activeSkin = _activeSkinsT[ toolSkinType ]
-	local _possessionsKey = serverToolDataT[ tool.ToolId.Value ].possessionsKey
-	DebugXL:Assert( serverToolDataT[ tool.ToolId.Value ].player == player )
+	local _possessionsKey = FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).possessionsKey
+	DebugXL:Assert( FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).player == player )
 	-- oh look, I can use local functions to avoid the hassle of passing parameters
 	local function RecreateTool()
 		local _toolInstanceDatum = FlexibleTools:GetToolInstanceDatum( tool )
@@ -620,7 +614,7 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 			end
 		end
 		tool:Destroy()
-		-- puts in your backpack and that's fine
+		-- puts in your backpack and that's fine 
 		FlexibleTools:CreateTool( {
 			toolInstanceDatumT = _toolInstanceDatum,
 			destinationPlayer  = player,

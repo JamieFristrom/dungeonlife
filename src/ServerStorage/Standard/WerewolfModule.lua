@@ -117,18 +117,8 @@ function Werewolf:WolfOutWait( player )
 		for k, toolInst in pairs( pcData.itemsT ) do
 			if toolInst.baseDataS == "ClawsWerewolf" then
 				CharacterClientI:AssignPossessionToSlot( pcData, k, 1 )
-				-- FlexibleTools:CreateTool( { 
-				-- 	toolInstanceDatumT = toolInst,
-				-- 	destinationPlayer = player,
-				-- 	activeSkinsT = Inventory:GetActiveSkinsWait( player ).monster,
-				-- 	possessionsKey = k } )				
 			elseif toolInst.baseDataS == "TransformWerewolf" then
 				CharacterClientI:AssignPossessionToSlot( pcData, k, 2 )
-				-- FlexibleTools:CreateTool( { 
-				-- 	toolInstanceDatumT = toolInst,
-				-- 	destinationPlayer = player,
-				-- 	activeSkinsT = Inventory:GetActiveSkinsWait( player ).monster,
-				-- 	possessionsKey = k } )				
 			end
 		end
 		PlayerServer.updateBackpack( player, pcData )
