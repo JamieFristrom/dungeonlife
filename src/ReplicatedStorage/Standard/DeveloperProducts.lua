@@ -357,12 +357,14 @@ DeveloperProducts.productsA =
 function DeveloperProducts:UserOwnsGamePassWait( player, gamePassId )
 	local hasPass = false
  
-	local success, message = pcall(function()
-		hasPass = game.MarketplaceService:UserOwnsGamePassAsync(player.UserId, gamePassId )
-	end)
- 
-	if not success then
-		DebugXL:Error("Error while checking if player has pass: " .. tostring(message))
+	if player.UserId > 0 then
+		local success, message = pcall(function()
+			hasPass = game.MarketplaceService:UserOwnsGamePassAsync(player.UserId, gamePassId )
+		end)
+	
+		if not success then
+			DebugXL:Error("Error while checking if player has pass: " .. tostring(message))
+		end
 	end
 	
 	return hasPass	
