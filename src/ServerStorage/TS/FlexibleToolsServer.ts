@@ -13,12 +13,12 @@ export namespace FlexibleToolServer
     
     let serverToolDataT = new Map<number, FlexToolAccessor>()
 
-    function getFlexToolAccessor( toolId : number ) 
+    export function getFlexToolAccessor( toolId : number ) 
     {
         return serverToolDataT.get( toolId );
     }
 
-    function setFlexToolInst( toolId: number, fta: FlexToolAccessor )
+    export function setFlexToolInst( toolId: number, fta: FlexToolAccessor )
     {
         serverToolDataT.set( toolId, fta )
     }
