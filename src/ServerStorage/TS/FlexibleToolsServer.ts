@@ -1,5 +1,11 @@
-import {FlexToolI} from 'ReplicatedStorage/TS/FlexToolTS'
 import {ToolData} from 'ReplicatedStorage/TS/ToolDataTS'
+
+// thinking about things which can hold weapons
+// thinking about characters which can be cpu or player controlled
+// currently, players hold weapons
+// what about the shop? how does that work?
+// heroes have shops
+
 
 export interface FlexToolAccessor 
 {
@@ -8,7 +14,7 @@ export interface FlexToolAccessor
     possessionsKey: string     // which tool in player's inventory it is
 }
 
-export namespace FlexibleToolServer
+export namespace FlexibleToolsServer
 {
     
     let serverToolDataT = new Map<number, FlexToolAccessor>()

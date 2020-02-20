@@ -7,7 +7,7 @@ import { Enhancements } from "./EnhancementsTS"
 print( "FlexToolClient: Enhancements required" )
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
 print( "FlexToolClient: PCClient required" )
-import { FlexTool, FlexToolI } from "ReplicatedStorage/TS/FlexToolTS";
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 print( "FlexToolClient: FlexTool required" )
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 print( "FlexToolClient: ToolData required" )
@@ -45,7 +45,7 @@ export namespace FlexToolClient
     }
 
     
-    function getLocKey( flexTool: FlexToolI )
+    function getLocKey( flexTool: FlexTool )
     {
         DebugXL.Assert( flexTool.levelN >= 1 )
         let baseData = ToolData.dataT[ flexTool.baseDataS ]
@@ -75,7 +75,7 @@ export namespace FlexToolClient
         return keyName
     }
 
-    export function getShortName( flexTool: FlexToolI )
+    export function getShortName( flexTool: FlexTool )
     {
         return Localize.formatByKey( getLocKey( flexTool ) )
         //}
@@ -93,7 +93,7 @@ export namespace FlexToolClient
         return Localize.formatByKey( enhancement.flavorS + "Noun" + enhancement.levelN )
     }
 
-    function getGenderAndPlurality( flexTool: FlexToolI )
+    function getGenderAndPlurality( flexTool: FlexTool )
     {
         let baseData = ToolData.dataT[ flexTool.baseDataS ]
         let locKey = getLocKey( flexTool )
@@ -111,7 +111,7 @@ export namespace FlexToolClient
         return [ genderChar, pluralChar ]
     }
 
-    export function getReadableName( flexTool: FlexToolI )
+    export function getReadableName( flexTool: FlexTool )
     {
         let baseData = ToolData.dataT[ flexTool.baseDataS ]
         let baseNameS = FlexToolClient.getShortName( flexTool )

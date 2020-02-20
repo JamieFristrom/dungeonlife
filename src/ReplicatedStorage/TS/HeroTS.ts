@@ -2,10 +2,10 @@ import { Workspace, Teams } from "@rbxts/services";
 
 import { HeroStatBlockI, CharacterClasses } from "./CharacterClasses"
 import { HeroI } from "./HeroClassesTS"
-import { FlexTool, FlexToolI } from "./FlexToolTS";
+import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
-import { PC } from "./PCTS"
+import { PC, ItemPool as ItemPool } from "./PCTS"
 import { Enhancements } from "./EnhancementsTS";
 import { DebugXL } from "./DebugXLTS";
 
@@ -34,7 +34,7 @@ export class Hero extends PC implements HeroI
     public lastShopResetLevel = 0
     public currentSlot = -1
    
-    constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexToolI[] )
+    constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexTool[] )
     {
         super( heroId, 
             //heroPrototype.imageId, 
@@ -44,10 +44,15 @@ export class Hero extends PC implements HeroI
         this.statsT = ObjectXL.clone( stats )
     }        
 
-    static objectify( rawHeroData: HeroI )
-    {        
+    static convertFromPersistent( rawHeroData: HeroI )
+    {
         let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
-        hero.itemsT.forEach( item => FlexTool.objectify( item ) )
+        DebugXL.Assert( hero.itemsT !== undefined )
+        if( hero.itemsT )
+        {
+            hero.itemPool = new ItemPool( hero.itemsT )
+            hero.itemsT = undefined
+        }
         if( !hero.shopT )
         {
             hero.shopT = new Map<string, FlexTool >()
@@ -60,6 +65,18 @@ export class Hero extends PC implements HeroI
 
         return hero
     }
+
+    static convertFromRemote( rawHeroData: HeroI )
+    {
+        let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
+        DebugXL.Assert( hero.itemsT === undefined )
+        setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
+        hero.itemPool.forEach( item => FlexTool.objectify( item ) )
+        hero.shopT.forEach( item => FlexTool.objectify( item ) )
+
+        return hero
+    }
+    
 
     static levelForExperience( xp: number )
     {
@@ -107,14 +124,13 @@ export class Hero extends PC implements HeroI
         }
         
         //-- only later did I smack myself on the forehead and ask why don't all tools have empty enhancementsA arrays
-        let inventory = this.itemsT
-        this.itemsT.forEach( function( flexToolInst, k)
+        let itemPool = this.itemPool
+        this.itemPool.forEach( function( flexToolInst, k)
         {
             //-- you may have an obsolete item; a lot of players are rocking HelmetWinged's
             if( flexToolInst.baseDataS === "MonsterSprint" || !ToolData.dataT[ flexToolInst.baseDataS ] )
             {
-                inventory.delete( k )
-//                this.itemsT[ k ] = undefined
+                itemPool.delete( k )
                 warn( player.Name+" had nonexistent item "+flexToolInst.baseDataS+". Removing." )
             }
             else
@@ -155,18 +171,20 @@ export class Hero extends PC implements HeroI
         return math.min( this.getActualLevel(), Hero.getCurrentMaxHeroLevel(), nerfTest )
     }
 
-    private getStatBonus(stat: string, heldToolInst: FlexToolI | undefined, ignoreEquipSlot?: ToolData.EquipSlotEnum ) {
-        let equipped: FlexTool[] = this.itemsT.values().filter(item => item.equippedB === true); 
+    private getStatBonus(stat: string, heldToolInst: FlexTool | undefined, ignoreEquipSlot?: ToolData.EquipSlotEnum ) {
         let bonusSum = 0;
-        equipped.forEach(function (item) {
-            if( item.getEquipSlot() !== ignoreEquipSlot )
+        this.itemPool.forEach(function (item) {
+            if( item.equippedB )
             {
-                let statEnhances = item.enhancementsA.filter(enhancement => enhancement.flavorS + "N" === stat);
-                // going to use actual level instead of local level here because partial numbers for increases don't make super sense
-                // it makes stat boosting equipment fairly powerful
-                // also easier to process
-                let bonuses = statEnhances.map( enhance => Enhancements.enhancementFlavorInfos[ enhance.flavorS ].effectFunc!( enhance.levelN ) )
-                bonuses.forEach( bonus => bonusSum += bonus )
+                if( item.getEquipSlot() !== ignoreEquipSlot )
+                {
+                    let statEnhances = item.enhancementsA.filter(enhancement => enhancement.flavorS + "N" === stat);
+                    // going to use actual level instead of local level here because partial numbers for increases don't make super sense
+                    // it makes stat boosting equipment fairly powerful
+                    // also easier to process
+                    let bonuses = statEnhances.map( enhance => Enhancements.enhancementFlavorInfos[ enhance.flavorS ].effectFunc!( enhance.levelN ) )
+                    bonuses.forEach( bonus => bonusSum += bonus )
+                }
             }
         });
         if (heldToolInst) {
@@ -187,7 +205,7 @@ export class Hero extends PC implements HeroI
     }
 
 
-    getAdjBaseStat( stat: string, heldToolInst?: FlexToolI )
+    getAdjBaseStat( stat: string, heldToolInst?: FlexTool )
     {
         // adjust for max level
         let statN = this.statsT[ stat ]
@@ -213,7 +231,7 @@ export class Hero extends PC implements HeroI
     {
         let sum = 0
         let actualLevel = this.getActualLevel()
-        this.itemsT.forEach( function( equip, k )
+        this.itemPool.forEach( function( equip, k )
         {
             if( equip.equippedB )
             {
@@ -223,12 +241,12 @@ export class Hero extends PC implements HeroI
         return sum
     }
  
-    getMaxMana( heldToolInst: FlexToolI )
+    getMaxMana( heldToolInst: FlexTool )
     {
         return this.getAdjBaseStat( "willN", heldToolInst ) * 6
     }
 
-    getMaxHealth( heldToolInst: FlexToolI )
+    getMaxHealth( heldToolInst: FlexTool )
     {
         let localLevel = math.min( this.getActualLevel(), Hero.getCurrentMaxHeroLevel() )
         return math.floor( 74 + localLevel * 8 / 3 + this.getAdjBaseStat( "conN", heldToolInst ) * 6 )//HeroUtility:GetAdjBaseStat( pcData, "conN", heldToolInst ) * 6
@@ -246,7 +264,7 @@ export class Hero extends PC implements HeroI
     getShopItems()
     {
         let items = this.shopT.entries()
-        return PC.sortItemPairs( items )
+        return ItemPool.sortItemPairs( items )
     }
 
     static getCurrentMaxHeroLevel()

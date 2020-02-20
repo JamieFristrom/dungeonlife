@@ -7,15 +7,36 @@ export class HeroStable
 	private saveVersionN = HeroStable.latestVersionN
 	public heroesA = new Array<Hero>()
 
-	static objectify( rawHeroStableData: object )
+	static convertFromRemote( rawHeroStableData: object )
 	{
 		let heroStable = setmetatable( rawHeroStableData as HeroStable, HeroStable as LuaMetatable<HeroStable> ) as HeroStable
 		
 		heroStable.heroesA.forEach(element => {
-			Hero.objectify( element )
+			Hero.convertFromRemote( element )
 		});
 		
 		return heroStable
+	}
+
+	static convertFromPersistent( rawHeroStableData: object )
+	{
+		let heroStable = setmetatable( rawHeroStableData as HeroStable, HeroStable as LuaMetatable<HeroStable> ) as HeroStable
+		
+		heroStable.heroesA.forEach(element => {
+			Hero.convertFromPersistent( element )
+		});
+		
+		return heroStable
+	}
+
+	prepareForSave()
+	{
+		this.heroesA.forEach( element => element.prepareForSave() )
+	}
+
+	releaseAfterSave()
+	{
+		this.heroesA.forEach( element => element.releaseAfterSave() )
 	}
 
 	checkVersion( player: Player )

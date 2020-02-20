@@ -19,7 +19,7 @@ export namespace PCClient
         if( pcData.statsT )
         {
             print( "Local player pcdata is hero")
-            let pc = Hero.objectify( pcData as unknown as Hero )
+            let pc = Hero.convertFromRemote( pcData as unknown as Hero )
             pc.getActualLevel();  // just for test
             //print( pc )
             //print( PCClient )
@@ -28,7 +28,7 @@ export namespace PCClient
         else
         {
             //print( "Local player pcdata is monster")
-            return PC.objectify( pcData as unknown as PC )
+            return PC.convertFromRemote( pcData as unknown as PC )
         }
     }
 

@@ -54,7 +54,7 @@ function Werewolf:TakeHumanFormWait( player )
 
 		-- put non-claws in hotbar; not bothering to equip 
 		local slot = 1
-		for k, toolInst in pairs( pcData.itemsT ) do
+		pcData.itemPool:forEach( function( toolInst, k )
 			local baseDataS = toolInst.baseDataS
 			if baseDataS ~= "ClawsWerewolf" then
 				if ToolData.dataT[ baseDataS ].useTypeS ~= "worn" then
@@ -62,7 +62,7 @@ function Werewolf:TakeHumanFormWait( player )
 					slot = slot + 1
 				end
 			end
-		end
+		end )
 		PlayerServer.updateBackpack( player, pcData )
 				
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )		
@@ -105,22 +105,24 @@ function Werewolf:WolfOutWait( player )
 		-- we don't need to unequip held weapon, the costume application did that for us
 		-- remove cosmetic armor
 		local pcData = CharacterI:GetPCDataWait( player )
-		for _, item in pairs( pcData.itemsT ) do
+		pcData.itemPool:forEach( function(item)
 			item.equippedB = nil
-		end
+		end )
+
 		-- clear human weapons from hotbar		
 		for i = 1,4 do
 			CharacterClientI:AssignPossessionToSlot( pcData, nil, i )
 		end
 
 		-- put claws in hotbar and equip
-		for k, toolInst in pairs( pcData.itemsT ) do
+		pcData.itemPool:forEach( function(toolInst, k)
 			if toolInst.baseDataS == "ClawsWerewolf" then
 				CharacterClientI:AssignPossessionToSlot( pcData, k, 1 )
 			elseif toolInst.baseDataS == "TransformWerewolf" then
 				CharacterClientI:AssignPossessionToSlot( pcData, k, 2 )
 			end
-		end
+		end )
+		
 		PlayerServer.updateBackpack( player, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
