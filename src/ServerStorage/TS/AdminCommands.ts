@@ -12,7 +12,7 @@ import * as Inventory from "ServerStorage/Standard/InventoryModule"
 import * as CharacterI from "ServerStorage/Standard/CharacterI"
 
 
-import { FlexTool, FlexToolI } from "ReplicatedStorage/TS/FlexToolTS";
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS";
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
@@ -113,7 +113,7 @@ let CommandList: {[k:string]:unknown} =
         print( "Equipping " + sender.Name + " with " + args[1] )
         DebugXL.Assert( args[0]==="equip")
         let myPC = CharacterI.GetPCDataWait( sender )      
-        let flexToolRaw = HttpService.JSONDecode( args[1] ) as FlexToolI 
+        let flexToolRaw = HttpService.JSONDecode( args[1] ) as FlexTool 
         if( flexToolRaw )
         {
           if( !flexToolRaw.enhancementsA ) flexToolRaw.enhancementsA = []

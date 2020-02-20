@@ -155,7 +155,7 @@ function FlexibleTools:GetToolInst( toolObj )
 end
 
 function FlexibleTools:GetToolInstFromId( toolId )
-	return FlexibleToolsServer.get( toolId ).flexToolInst
+	return FlexibleToolsServer.getFlexToolAccessor( toolId ).flexToolInst
 end
 
 function FlexibleTools:GetToolBaseData( toolObj )
@@ -183,7 +183,7 @@ function FlexibleTools:CreateTool( params )
 --	--print( "Creating "..toolInstanceDatumT.baseDataS.." for "..destinationPlayer.Name )
 	
 	local toolId = ServeToolId()
-	FlexibleToolsServer.set( toolId, { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey } )
+	FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey } )
 	
 	-- if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
 	if not toolInstanceDatumT.enhancementsA then toolInstanceDatumT.enhancementsA = {} end
@@ -294,8 +294,8 @@ function FlexibleTools:RemoveToolWait( player, tool )
 	local pcData = CharacterI:GetPCDataWait( player )
 	-- possible the player has been killed since we threw a bomb, so check first:
 	if pcData then
-		DebugXL:Assert( pcData.itemsT[ toolServerData.possessionsKey ] == toolServerData.flexToolInst )		
-		pcData.itemsT[ toolServerData.possessionsKey ] = nil
+		DebugXL:Assert( pcData.itemPool:get( toolServerData.possessionsKey ) == toolServerData.flexToolInst )		
+		pcData.itemPool:delete( toolServerData.possessionsKey )
 	else
 		warn( "Couldn't find pcData for "..player.Name )
 	end

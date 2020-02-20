@@ -11,9 +11,6 @@ DebugXL:Dump( formulaxy )
 --]]
 local PCClient = require( game.ReplicatedStorage.TS.PCClient ).PCClient
 
---local pcData = workspace.Signals.HotbarRF:InvokeServer( "GetPCData" )
---PC:objectify( pcData )
-
 game["Run Service"].RenderStepped:Connect( function()
 	local character = game.Players.LocalPlayer.Character
 	if character then
@@ -32,27 +29,5 @@ game["Run Service"].Heartbeat:Connect( function()
 		end
 	end	
 end)
-
---local ClientPhysicsRemote = {}
-
--- function ClientPhysicsRemote.Refresh( _pcData )
--- 	pcData = PC:objectify( _pcData )
--- end
-
--- workspace.Signals.HotbarRE.OnClientEvent:Connect( function( funcName, ... )  
--- 	ClientPhysicsRemote[ funcName ]( ... )
--- end)
-
---[[
-
-local formulaX = formulaxy[1]
-local formulaY = formulaxy[2]
-
-workspace.Signals.ClientPhysicsRF.OnClientInvoke = function( z ) 
-    local answer = z * formulaX - formulaY 
---    --print("polo "..answer) 
-    return { z * formulaX - formulaY } 
-end
---]]
 
 return {}

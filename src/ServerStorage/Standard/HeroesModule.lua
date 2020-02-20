@@ -38,6 +38,7 @@ local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility ).GameplayTestUtility
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local HeroStable = require( game.ReplicatedStorage.TS.HeroStableTS ).HeroStable
+local ItemPool = require( game.ReplicatedStorage.TS.PCTS ).ItemPool
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
@@ -62,23 +63,10 @@ local Heroes = {}
 -- unlike the way I converted Inventory to datastore2, here I'm keeping a cache of the cache  :P
 -- it was easier to integrate that way, and less awkward get/set in every function
 	
---local playerCharactersT = {}       -- current active player character
 local savedPlayerCharactersT = {}  -- persistent player characters that can be chosen / resurrected
 
 local function PCKey( player ) return player end
 
---DataStoreService = game:GetService("DataStoreService")
---Teleport  = game:GetService("TeleportService")
-
---local heroStore = DataStoreService:damageataStore("HeroStore")
-
---SavedPlayerCharacters = {}
---
---local saveVersionN = 1
---
---function SavedPlayerCharacters.new()
---	return { versionN = saveVersionN, heroesA = {} }		 
---end
 
 local birthTickT = {}
 
@@ -141,10 +129,14 @@ function Heroes:SaveHeroesWait( player )
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", PlayerServer.pcs[PCKey( player )] )
 	end
 
+
 	if not playerOverrideId then
 		local heroStore = DataStore2( "Heroes", player )
+		savedPlayerCharactersT[ PCKey( player ) ]:prepareForSave()
 		heroStore:Set( savedPlayerCharactersT[ PCKey( player ) ] )
+		savedPlayerCharactersT[ PCKey( player ) ]:releaseAfterSave()
 	end
+
 end
 
 
@@ -156,10 +148,6 @@ function Heroes:ChooseClass( player, classNameS )
 		CharacterClasses.heroStartingStats[ classNameS ],
 		CharacterClasses.startingItems[ classNameS ] ) -- TableXL:DeepCopy( heroDatum )
 
-	-- only works because not a sparse array yet
-	-- now set by constructor:
-	-- pcData.toolKeyServerN = TableXL:GetN( pcData.itemsT ) + 1
-	
 	PlayerServer.pcs[ PCKey( player ) ] = pcData
 	CharacterI:SetCharacterClass( player, classNameS )
 	HeroServer.calculateCurrentLevelCapWait()
@@ -242,19 +230,15 @@ function Heroes:CharacterAdded( character, player )
 	-- if hero doesn't have a potion, give them one
 	local level = Hero:levelForExperience( myPCData.statsT.experienceN )
 
-	local potion = TableXL:FindWhere( myPCData.itemsT, function( possession ) return possession.baseDataS=="Healing" end )
-	if not potion then
+	local potionCount = myPCData.itemPool:count( function( possession ) return possession.baseDataS=="Healing" end )
+	if potionCount==0 then
 		GivePossession( player, myPCData, { baseDataS="Healing", levelN = level, enhancementsA = {} } ) 
 	end
-	-- local potion = TableXL:FindWhere( myPCData.itemsT, function( possession ) return possession.baseDataS=="Mana" end )
-	-- if not potion then
-	-- 	GivePossession( player, myPCData, { baseDataS="Mana", levelN = level, enhancementsA = {} } ) 
-	-- end
 	
 	-- if hero doesn't have a usable melee weapon, give them one
-	local meleeWeapon = TableXL:FindWhere( myPCData.itemsT, function( possession ) 
+	local meleeWeaponCount = myPCData.itemPool:count( function( possession ) 
 		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and HeroUtility:CanUseWeapon( myPCData, possession ) end )
-	if not meleeWeapon then
+	if meleeWeaponCount==0 then
 		-- a weak melee weapon. a 1st level wizard could chuck their staff and rejoin and do all right... 
 		GivePossession( player, myPCData, FlexTool.new( "Shortsword", math.max( 1, level-1 ), {} ) ) 
 	end
@@ -311,8 +295,6 @@ function GivePossession( player, myPCData, flexToolInst )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
 		myPCData:giveTool( flexToolInst )
 		PlayerServer.updateBackpack( player, myPCData )
---		myPCData.itemsT[ "item"..myPCData.toolKeyServerN ] = flexToolInst
-		--myPCData.toolKeyServerN = myPCData.toolKeyServerN + 1
 	else		
 		local gearCount = HeroUtility:CountGear( myPCData )
 		local givenB = false
@@ -322,8 +304,6 @@ function GivePossession( player, myPCData, flexToolInst )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
 			PlayerServer.updateBackpack( player, myPCData )
 			givenB = true
---			myPCData.itemsT[ "item"..myPCData.toolKeyServerN ] = flexToolInst
---			myPCData.toolKeyServerN = myPCData.toolKeyServerN + 1
 		end  
 		local gearCount = HeroUtility:CountGear( myPCData )
 		-- we make the count right away again so if they *just* filled up they still get a warning ( note we could just add one in theory but we've got the cycles so why not be careful, who knows what might happen)
@@ -368,11 +348,9 @@ function Heroes:Died( player )
 	end
 
 	-- good opportunity to record progress, probably not overdoing
-	if not playerOverrideId then
-		local heroStore = DataStore2( "Heroes", player )
-		heroStore:Save()
-	end
---  this can throw errors because the character is still active for a bit before the player is gone,
+	Heroes:SaveHeroesWait()
+
+	--  this can throw errors because the character is still active for a bit before the player is gone,
 	--  so instead we do a garbage collection step later
 	--  actually that makes it even worse...  
 	--  PlayerServer.pcs[ PCKey( player ) ] = nil	
@@ -431,7 +409,6 @@ function ConfigureCharacter( player )
 	humanoid.Health    = humanoid.MaxHealth		
 	
 ----print( player.Name.." refreshing client hero data" )
---	DebugXL:Dump( myPCData.itemsT )
 	DebugXL:Assert( myPCData )
 	workspace.Signals.HeroesRE:FireClient( player, "RefreshSheet", myPCData )
 	workspace.Signals.HotbarRE:FireClient( player, "Refresh", myPCData )
@@ -737,24 +714,20 @@ local function PlayerAdded( player )
 	for _, hero in pairs( savedPlayerCharacters.heroesA ) do
 					
 		-- once upon a time, stuff was stored in a sparse array called possessionsA.  If your hero used that old obsolete
-		-- method, it's time to update to the new itemsT
+		-- method, it's time to update to the new itemPool
 		if hero.possessionsA then
-			DebugXL:Assert( not hero.itemsT )
-			hero.itemsT = {}
+			DebugXL:Assert( not hero.itemPool )
+			hero.itemPool = ItemPool.new()
 			if not hero.toolKeyServerN then hero.toolKeyServerN = 1 end
 			for i, item in pairs( hero.possessionsA ) do
-				hero.itemsT[ "item"..i ] = item
+				hero.itemPool:set( "item"..i, item )
 				hero.toolKeyServerN = math.max( hero.toolKeyServerN, i+1 )
 			end
 			hero.possessionsA = nil
 		end
 	end
 
-	HeroStable:objectify( savedPlayerCharacters )
---	if not savedPlayerCharacters.versionN or savedPlayerCharacters.versionN < saveVersionN then
---		savedPlayerCharacters = SavedPlayerCharacters.new()
---		heroStore:Set( savedPlayerCharacters )
---	end
+	HeroStable:convertFromPersistent( savedPlayerCharacters )
 
 	
 	for _, hero in pairs( savedPlayerCharacters.heroesA ) do
@@ -773,20 +746,17 @@ local function PlayerAdded( player )
 			hero.statsT.willN = math.floor( ( hero.statsT.willN - 10 ) * statPointsEarned / statPointsSpent + 10 )  
 			hero.statsT.conN  = math.floor( ( hero.statsT.conN - 10 ) * statPointsEarned / statPointsSpent + 10 )  
 		end
-	
+
+		hero.itemPool:purgeObsoleteItems()
+
 		-- only later did I smack myself on the forehead and ask why don't all tools have empty enhancementsA arrays
-		for k, flexToolInst in pairs( hero.itemsT ) do
-			-- you may have an obsolete item; a lot of players are rocking HelmetWinged's
-			if not ToolData.dataT[ flexToolInst.baseDataS ] then
-				hero.itemsT[ k ] = nil
-				DebugXL:Error( player.Name.." had nonexistent item "..flexToolInst.baseDataS..". Removing." )
-			else
-				if not flexToolInst.enhancementsA then
-					flexToolInst.enhancementsA = {}
-				end
+		-- here we make that happen for old data
+		hero.itemPool:forEach( function( flexToolInst, k )
+			if not flexToolInst.enhancementsA then
+				flexToolInst.enhancementsA = {}
 			end
-		end
-		
+		end )
+
 		-- once upon a time heroes didn't own their own jumpPowerN
 		-- sad duplication of data that became necessary partway through the transition to typescript
 		if not hero.jumpPowerN then
@@ -924,8 +894,7 @@ function HeroRemote.TakeBestHealthPotion( player )
 	local delta = player.Character.Humanoid.MaxHealth - player.Character.Humanoid.Health
 	if delta <= 0 then return end  -- don't waste it if you don't need to
 	
-	-- back when potions could be different it worked this way
-	local pot, k = TableXL:FindWhere( pcData.itemsT, function( item ) return item.baseDataS == "Healing" end )
+	local pot, k = unpack( pcData.itemPool:findIf( function( item ) return item.baseDataS == "Healing" end ) )
 	if pot then
 		local characterLevel = pcData:getLocalLevel()
 		local character = player.Character
@@ -938,7 +907,7 @@ function HeroRemote.TakeBestHealthPotion( player )
 		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( character, effectStrength, false )		
 
 		-- and good-bye potion
-		pcData.itemsT[ k ] = nil
+		pcData.itemPool:delete( k )
 		Heroes:SaveHeroesWait( player )
 
 		PlayerServer.publishPotions( player, pcData )		
@@ -958,8 +927,7 @@ function HeroRemote.TakeBestManaPotion( player )
 	local delta = player.Character.MaxManaValue.Value - player.Character.ManaValue.Value
 	if delta <= 0 then return end  -- don't waste it if you don't need to
 	
-	-- back when potions could be different it worked this way
-	local pot, k = TableXL:FindWhere( pcData.itemsT, function( item ) return item.baseDataS == "Mana" end )
+	local pot, k = unpack( pcData.itemPool:findIf( function( item ) return item.baseDataS == "Mana" end ) )
 	if pot then
 		local characterLevel = pcData:getLocalLevel()
 		local character = player.Character
@@ -968,7 +936,7 @@ function HeroRemote.TakeBestManaPotion( player )
 			character.MaxManaValue.Value )
 		require( game.ServerStorage.CharacterFX.MagicHealing ):Activate( character, Color3.new( 0, 0, 1 ) )
 		-- and good-bye potion
-		pcData.itemsT[ k ] = nil
+		pcData.itemPool:delete( k )
 		Heroes:SaveHeroesWait( player )
 	end
 end
@@ -988,11 +956,7 @@ end
 function HeroRemote.DeleteHero( player, slotN )
 	-- I don't think that this can be used to grief because only the owning player can call for themselves
 	table.remove( savedPlayerCharactersT[ PCKey( player ) ].heroesA, slotN )
-	if not playerOverrideId then
-		local heroStore = DataStore2( "Heroes", player )
-		heroStore:Set( savedPlayerCharactersT[ PCKey( player ) ] )
-	--	spawn( function() heroStore:SetAsync( "user"..player.UserId, savedPlayerCharactersT[ PCKey( player ) ] ) end )
-	end
+	Heroes:SaveHeroesWait()
 	return savedPlayerCharactersT[ PCKey( player ) ]
 end
 
@@ -1009,19 +973,19 @@ function HeroRemote.AwardExperienceWait( player )
 end
 
 
-function HeroRemote.SaveHeroes( player )
-	if not playerOverrideId then
-		local heroStore = DataStore2( "Heroes", player )
-		heroStore:Save()
-	end
-end
+-- function HeroRemote.SaveHeroes( player )
+-- 	if not playerOverrideId then
+-- 		local heroStore = DataStore2( "Heroes", player )
+-- 		heroStore:Save()
+-- 	end
+-- end
 
 
 function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 	local pcData = Heroes:GetPCDataWait( player )
 	if not pcData then return end
 
-	local item = pcData.itemsT[ itemKey ]
+	local item = pcData.itemPool:get( itemKey )
 	if item then  -- it's possible to sell off a weapon and click on it in your inventory before it's gone and send other spurious commands
 		if HeroUtility:CanUseWeapon( pcData, item ) then
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
@@ -1036,7 +1000,7 @@ function HeroRemote.Equip( player, itemKey, equipB )
 	local pcData = Heroes:GetPCDataWait( player )
 	if not pcData then return end
 
-	local item = pcData.itemsT[ itemKey ]
+	local item = pcData.itemPool:get( itemKey )
 	if not item then return end  -- I guess it's possible to click throw away and then rapidly quick equip
 	if item.equippedB ~= equipB then
 		if equipB then
@@ -1078,11 +1042,12 @@ function HeroRemote.SellItem( player, itemKey )
 	end
 
 	-- possible to queue up two throw-away clicks, so check first
-	if pcData.itemsT[ itemKey ] then
+	local itemToBeSold = pcData.itemPool:get( itemKey )
+	if itemToBeSold then
 		if player.Parent then
-			local goldAmount = pcData.itemsT[ itemKey ]:getSellPrice()
+			local goldAmount = itemToBeSold:getSellPrice()
 			local resultsA = MessageServer.QueryBox( player, 
-				"SellConfirmation", { item = pcData.itemsT[ itemKey ], amount = goldAmount },
+				"SellConfirmation", { item = itemToBeSold, amount = goldAmount },
 				true,  -- needs ack
 				0, -- no delay
 				true, -- modal,
@@ -1124,7 +1089,7 @@ function HeroRemote.SetHideItem( player, itemKey, hideItemB )
 	if not pcData then return end
 
 	-- possible to queue up two throw-away clicks, so check first
-	local item = pcData.itemsT[ itemKey ]
+	local item = pcData.itemPool:get( itemKey )
 	if item then
 		if player.Parent then
 			item.hideItemB = hideItemB
@@ -1144,7 +1109,7 @@ function HeroRemote.SetHideAccessories( player, itemKey, hideAccessoriesB )
 	if not pcData then return end
 
 	-- possible to queue up two throw-away clicks, so check first
-	local item = pcData.itemsT[ itemKey ]
+	local item = pcData.itemPool:get( itemKey )
 	if item then
 		if player.Parent then
 			item.hideAccessoriesB = hideAccessoriesB

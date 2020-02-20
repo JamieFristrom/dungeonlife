@@ -13,7 +13,7 @@ print( "FlexTool: Players required")
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
-export interface FlexToolI
+export interface ToolDefinition
 {
     baseDataS: string
     levelN: number
@@ -24,7 +24,6 @@ export interface FlexToolI
     hideItemB?: boolean
     hideAccessoriesB?: boolean
 }
-
 export interface GlobalToolInfo
 {
     cooldownFinishTime: number
@@ -35,7 +34,7 @@ let globalToolInfos = new Map<Player, { [toolId:string]:GlobalToolInfo }>()
 const enhancementPriceFactor = 1.2
 const priceGamma = 1.2
 
-export class FlexTool implements FlexToolI
+export class FlexTool 
 {
     constructor(
         public baseDataS: string,
@@ -48,9 +47,9 @@ export class FlexTool implements FlexToolI
         public hideAccessoriesB?: boolean
         ) {}
     
-    static objectify( rawToolData: FlexToolI )
+    static objectify( rawToolData: FlexTool )
     {
-        return setmetatable( rawToolData, FlexTool as LuaMetatable<FlexToolI> ) as FlexTool
+        return setmetatable( rawToolData, FlexTool as LuaMetatable<FlexTool> ) as FlexTool
     }
 
     static retexture( tool: Tool, textureSwapId?: string )
