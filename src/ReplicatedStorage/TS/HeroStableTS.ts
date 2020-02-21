@@ -3,7 +3,7 @@ import { Hero } from ".//HeroTS"
 
 export class HeroStable 
 {
-	static readonly latestVersionN = 3
+	static readonly latestVersionN = 4  // changing to ItemPool
 	private saveVersionN = HeroStable.latestVersionN
 	public heroesA = new Array<Hero>()
 
@@ -23,26 +23,16 @@ export class HeroStable
 		let heroStable = setmetatable( rawHeroStableData as HeroStable, HeroStable as LuaMetatable<HeroStable> ) as HeroStable
 		
 		heroStable.heroesA.forEach(element => {
-			Hero.convertFromPersistent( element )
+			Hero.convertFromPersistent( element, heroStable.saveVersionN )
 		});
 		
 		return heroStable
 	}
 
-	prepareForSave()
-	{
-		this.heroesA.forEach( element => element.prepareForSave() )
-	}
-
-	releaseAfterSave()
-	{
-		this.heroesA.forEach( element => element.releaseAfterSave() )
-	}
-
 	checkVersion( player: Player )
 	{
 		this.heroesA.forEach(hero => {
-			hero.updateStoredData( this.saveVersionN, HeroStable.latestVersionN, player )
+			hero.updateStoredData( this.saveVersionN, HeroStable.latestVersionN, player )  // not all of the updating is done here, some is done in the individual convertFromPersistent calls from the heroes
 		});
 		this.saveVersionN = HeroStable.latestVersionN
 	}
