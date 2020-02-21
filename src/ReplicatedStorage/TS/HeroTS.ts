@@ -29,10 +29,12 @@ export class Hero extends PC implements HeroI
     // public jumpPowerN: number
     public statsT: HeroStatBlockI
 
-    public shopT = new Map<string, FlexTool >()
+    protected shopT: { [k:string]: FlexTool } | undefined   // was technically defined as a map before but they way it was implemented was thus so it will work without needing to add new constructor to ItemPool
     public lastShopResetOsTime = 0 
     public lastShopResetLevel = 0
     public currentSlot = -1
+
+    public shopPool: ItemPool = new ItemPool({})
    
     constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexTool[] )
     {
@@ -44,24 +46,47 @@ export class Hero extends PC implements HeroI
         this.statsT = ObjectXL.clone( stats )
     }        
 
-    static convertFromPersistent( rawHeroData: HeroI )
+    static convertFromPersistent( rawHeroData: HeroI, storageVersion: number )
     {
+        // at first I was thinking leave the persistent data in the old format when I created these item pools, but then it seemed
+        // more likely there would be bugs if I was constantly converting back and forth
         let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
         DebugXL.Assert( hero.itemsT !== undefined )
-        if( hero.itemsT )
+        if( !hero.itemPool )
         {
-            hero.itemPool = new ItemPool( hero.itemsT )
-            hero.itemsT = undefined
+            DebugXL.Assert( storageVersion < 4 )
+            DebugXL.Assert( hero.itemsT !== undefined )  
+            if( hero.itemsT )          
+            {
+                hero.itemPool = new ItemPool( hero.itemsT )
+                hero.itemsT = undefined
+            }
         }
-        if( !hero.shopT )
+        else
         {
-            hero.shopT = new Map<string, FlexTool >()
-        }        
+            setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
+            hero.itemPool.forEach( item => FlexTool.objectify( item ) )
+        }
+
+        if( !hero.shopPool )
+        {
+            DebugXL.Assert( storageVersion < 4 )
+            DebugXL.Assert( hero.itemsT !== undefined )  
+            if( hero.shopT )          
+            {
+                hero.shopPool = new ItemPool( hero.shopT )
+                hero.shopT = undefined
+            }
+        }
+        else
+        {
+            setmetatable( hero.shopPool, ItemPool as LuaMetatable<ItemPool> )
+            hero.shopPool.forEach( item => FlexTool.objectify( item ) ) 
+        }
         if( !hero.statsT.goldN )
         {
             hero.statsT.goldN = 0
         }
-        hero.shopT.forEach( item => FlexTool.objectify( item ) )
 
         return hero
     }
@@ -72,7 +97,7 @@ export class Hero extends PC implements HeroI
         DebugXL.Assert( hero.itemsT === undefined )
         setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
         hero.itemPool.forEach( item => FlexTool.objectify( item ) )
-        hero.shopT.forEach( item => FlexTool.objectify( item ) )
+        hero.shopPool.forEach( item => FlexTool.objectify( item ) )
 
         return hero
     }
@@ -263,8 +288,7 @@ export class Hero extends PC implements HeroI
     // every hero has their own shop
     getShopItems()
     {
-        let items = this.shopT.entries()
-        return ItemPool.sortItemPairs( items )
+        return this.shopPool.makeSortedList()
     }
 
     static getCurrentMaxHeroLevel()

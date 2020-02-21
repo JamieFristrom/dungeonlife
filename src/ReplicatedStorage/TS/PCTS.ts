@@ -39,9 +39,11 @@ export class ItemPool
         }
     }
 
-    get( key: string ) { return this.items.get( key ); }
-    set( key: string, item: FlexTool ) { this.items.set( key, item ); }
+    get( key: string ) { return this.items.get( key ) }
+    set( key: string, item: FlexTool ) { this.items.set( key, item ) }
     has( key: string ) { return this.items.get( key ) ? true: false }
+
+    clear() { this.items.clear() }
 
     getFromSlot( slot: number ) : [ FlexTool | undefined, string | undefined ]
     {
@@ -53,7 +55,7 @@ export class ItemPool
             {
                 if( foundItem !== undefined )
                 {
-                    DebugXL.Error( `Found both ${item.baseDataS} and ${foundItem.baseDataS} in slot ${slot}` );
+                    DebugXL.Error( `Found both ${item.baseDataS} and ${foundItem.baseDataS} in slot ${slot}` )
                 }
                 foundKey = k
                 foundItem = item
@@ -72,7 +74,7 @@ export class ItemPool
             {
                 if( foundItem !== undefined )
                 {
-                    DebugXL.Error( `Found both ${item.baseDataS} and ${foundItem.baseDataS} in slot ${equipSlot}` );
+                    DebugXL.Error( `Found both ${item.baseDataS} and ${foundItem.baseDataS} in slot ${equipSlot}` )
                 }
                 foundKey = k
                 foundItem = item
@@ -410,20 +412,4 @@ export abstract class PC implements PCI
 
     // not data-driving this so we aren't duplicating data
     abstract getTeam(): Object
-
-    prepareForSave()
-    {
-        // keeping old save data format
-        this.itemsT = {}
-        this.itemPool.forEach( (v, k ) =>
-        {
-            this.itemsT![k] = v
-        } )
-    }
-
-    releaseAfterSave()
-    {
-        // to make sure rest of code base is using new system, burn this bridge. 
-        this.itemsT = undefined
-    }
 }
