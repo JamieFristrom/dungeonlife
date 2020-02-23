@@ -1,5 +1,5 @@
 import { FlexTool } from ".\\FlexToolTS"
-import { ItemPool, PCI } from ".\\PCTS"
+import { GearPool, PCI } from ".\\PCTS"
 import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
 //import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
@@ -19,7 +19,7 @@ export interface HeroClassI // rerolling so I don't have to rewrite item tables 
     readableNameS: string
     imageId: string
 	itemsT: { [k: string]: FlexTool }  // retained for accessing persistent data using old schema
-	itemPool: ItemPool
+	itemPool: GearPool
     walkSpeedN: number
     jumpPowerN: number
 	statsT: HeroStatBlockI

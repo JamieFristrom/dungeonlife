@@ -1,6 +1,5 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
-import { ObjectXL } from 'ReplicatedStorage/TS/ObjectXLTS'
+import { FlexTool, GearDefinition } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from './ToolDataTS';
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
@@ -20,36 +19,34 @@ export interface PCI
     getImageId() : string
     getWalkSpeed() : number
     getJumpPower() : number
-// this is all duplicate data. DRY!
-//    imageId: string
-//    walkSpeedN: number
-//    jumpPowerN: number
 }
 
-export class ItemPool 
-{
-    private items = new Map<string, FlexTool>()
 
-    constructor( itemsT : { [k:string]:FlexTool } )
+// wishlist: put in own module. This will require updating a bunch of requires / imports
+export class GearPool 
+{
+    private gear = new Map<string, FlexTool>()
+
+    constructor( gearT : { [k:string]:FlexTool } )
     {
-        for( let [k, v] of Object.entries(itemsT) )
+        for( let [k, v] of Object.entries(gearT) )
         {
             this.set( k as string, v )
             FlexTool.objectify( v )
         }
     }
 
-    get( key: string ) { return this.items.get( key ) }
-    set( key: string, item: FlexTool ) { this.items.set( key, item ) }
-    has( key: string ) { return this.items.get( key ) ? true: false }
+    get( key: string ) { return this.gear.get( key ) }
+    set( key: string, item: FlexTool ) { this.gear.set( key, item ) }
+    has( key: string ) { return this.gear.get( key ) ? true: false }
 
-    clear() { this.items.clear() }
+    clear() { this.gear.clear() }
 
     getFromSlot( slot: number ) : [ FlexTool | undefined, string | undefined ]
     {
         let foundItem: FlexTool | undefined = undefined
         let foundKey: string | undefined = undefined
-        this.items.forEach( (item,k) =>
+        this.gear.forEach( (item,k) =>
         {
             if( item.slotN === slot )
             {
@@ -68,7 +65,7 @@ export class ItemPool
     {
         let foundItem: FlexTool | undefined = undefined
         let foundKey: string | undefined = undefined
-        this.items.forEach( (item,k) =>
+        this.gear.forEach( (item,k) =>
         {            
             if( item.equippedB && item.getEquipSlot() === equipSlot )
             {
@@ -102,7 +99,7 @@ export class ItemPool
     getWornWalkSpeedMul()
     {
         let mul = 1
-        this.items.forEach( (v,k)=>
+        this.gear.forEach( (v,k)=>
         {
             if( v.equippedB )
             {
@@ -119,7 +116,7 @@ export class ItemPool
     getWornJumpPowerMul()
     {
         let mul = 1
-        this.items.forEach( (v,k)=>
+        this.gear.forEach( (v,k)=>
         {
             if( v.equippedB )
             {
@@ -135,32 +132,43 @@ export class ItemPool
 
     forEach( valueKeyFunc: (v: FlexTool, k: string )=>void )
     {
-        this.items.forEach( valueKeyFunc )
+        this.gear.forEach( valueKeyFunc )
     }
 
     delete( itemKey: string )
     {
-        this.items.delete( itemKey )
+        this.gear.delete( itemKey )
     }
 
     size()
     {
-        return this.items.size()
+        return this.gear.size()
     }
 
     countIf( func: (v: FlexTool)=>boolean )
     {
-        return this.items.values().filter( func ).size()
+        return this.gear.values().filter( func ).size()
     }
 
     findIf( func: (v: FlexTool)=>boolean )
     {
-        for( let [k,v] of Object.entries( this.items ) )
+        for( let [k,v] of Object.entries( this.gear ) )
         {
             if( func( v ) )
                 return [ v, k ]
         }
         return [ undefined, undefined ]
+    }
+
+    findAllWhere( func: (v: FlexTool)=>boolean ) 
+    {
+        let gearMap = new Map<string, FlexTool>()
+        for( let [k,v] of Object.entries( this.gear ) )
+        {
+            if( func( v ) )
+                gearMap.set( k, v )
+        }
+        return gearMap
     }
 
     static sortItemPairs( items: [string, FlexTool][] )
@@ -196,19 +204,19 @@ export class ItemPool
 
     makeSortedList()
     {
-        let items = this.items.entries()
-        return ItemPool.sortItemPairs( items )
+        let items = this.gear.entries()
+        return GearPool.sortItemPairs( items )
     }
 
     purgeObsoleteItems()
     {
         // you may have an obsolete item; a lot of players are rocking HelmetWinged's
-        for( let [k, flexToolInst] of Object.entries( this.items ))
+        for( let [k, flexToolInst] of Object.entries( this.gear ))
         {
             if( ToolData.dataT[ flexToolInst.baseDataS ] === undefined )
             {
                 DebugXL.Error( `Nonexistent item ${flexToolInst.baseDataS}. Removing.` )
-                this.items.delete( k )
+                this.gear.delete( k )
             }
         }
     }
@@ -217,7 +225,7 @@ export class ItemPool
 export abstract class PC implements PCI
 {   
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
-    protected itemPool: ItemPool
+    protected gearPool: GearPool
     private toolKeyServerN = 1
 
     constructor(
@@ -226,15 +234,25 @@ export abstract class PC implements PCI
         //public imageId: string,
         //public walkSpeedN: number,
         //public jumpPowerN: number,        
-        _startItems: FlexTool[] )
+        _startItems: GearDefinition[] )
         {
             this.itemsT = undefined  // just used for persistence in old system
-            this.itemPool = new ItemPool({})
+            this.gearPool = new GearPool({})
             for( let i = 0; i < _startItems.size(); i++ )
             {
+                let startItem = _startItems[i]
                 const k: string = 'item' + ( i + 1 )
-                let item = ObjectXL.clone( _startItems[i] ) as FlexTool
-                this.itemPool.set( k, item )
+                let gearItem = new FlexTool(
+                    startItem.baseDataS,
+                    startItem.levelN,
+                    startItem.enhancementsA,
+                    startItem.slotN,
+                    startItem.equippedB,
+                    startItem.boostedB, // theoretically always false
+                    startItem.hideItemB, // theoretically always false
+                    startItem.hideAccessoriesB // theoretically always false                                        
+                )
+                this.gearPool.set( k, gearItem )
                 let idx = tonumber(k.sub(4))
                 DebugXL.Assert( idx !== undefined )
                 if( idx )
@@ -250,8 +268,8 @@ export abstract class PC implements PCI
     {        
         let pc = setmetatable( rawPCData, PC as LuaMetatable<PCI> ) as PC
         DebugXL.Assert( pc.itemsT === undefined )
-        setmetatable( pc.itemPool, ItemPool as LuaMetatable<ItemPool> )
-        pc.itemPool.forEach( item => FlexTool.objectify(item) )
+        setmetatable( pc.gearPool, GearPool as LuaMetatable<GearPool> )
+        pc.gearPool.forEach( item => FlexTool.objectify(item) )
         return pc
     }
 
@@ -264,7 +282,7 @@ export abstract class PC implements PCI
     getTotalDefense( attackType: string )
     {
         let sum = 0
-        this.itemPool.forEach( function( equip, k )
+        this.gearPool.forEach( function( equip, k )
         {
             if( equip.equippedB )
             {
@@ -277,14 +295,14 @@ export abstract class PC implements PCI
     getTool( itemKey: string )
     {
         DebugXL.Assert( itemKey.sub( 0, 3 ) === 'item' )
-        return this.itemPool.get( itemKey )
+        return this.gearPool.get( itemKey )
     }
 
     giveTool( flexTool: FlexTool )
     {        
         let key = 'item' + this.toolKeyServerN
-        DebugXL.Assert( !this.itemPool.has( key ) )
-        this.itemPool.set( key, flexTool )
+        DebugXL.Assert( !this.gearPool.has( key ) )
+        this.gearPool.set( key, flexTool )
         this.toolKeyServerN++
         return key        
     }
@@ -292,26 +310,26 @@ export abstract class PC implements PCI
     removeTool( itemKey: string )
     {
         DebugXL.Assert( itemKey.sub( 0, 3 ) === 'item' )
-        let item = this.itemPool.get( itemKey )
-        this.itemPool.delete( itemKey )
+        let item = this.gearPool.get( itemKey )
+        this.gearPool.delete( itemKey )
         return item
     }
 
     countTools()
     {
-        return this.itemPool.size()
+        return this.gearPool.size()
     }
 
     // only counts healing potions for display purposes
     countPotions()
     {
-        return this.itemPool.countIf( (item)=> item.baseDataS==='Healing' )
+        return this.gearPool.countIf( (item)=> item.baseDataS==='Healing' )
     }
 
     getPossessionKeyFromSlot( slot: number )
     {
         let _key: string | undefined
-        this.itemPool.forEach( function( flexTool: FlexTool, key: string )
+        this.gearPool.forEach( function( flexTool: FlexTool, key: string )
         {
             if( flexTool.slotN === slot )
             {
@@ -324,7 +342,7 @@ export abstract class PC implements PCI
 
     getSlotFromPossessionKey( possessionKey: string )
     {
-        let flexTool = this.itemPool.get( possessionKey )
+        let flexTool = this.gearPool.get( possessionKey )
         if( flexTool )
         {
             return flexTool.slotN
@@ -375,7 +393,7 @@ export abstract class PC implements PCI
     {
         let slotUsed = { Torso: false, Legs: false, Head: false }
         
-        this.itemPool.forEach( function( item )
+        this.gearPool.forEach( function( item )
         {
             let equipSlot = ToolData.dataT[ item.baseDataS ].equipSlot
             if( equipSlot )
@@ -388,7 +406,7 @@ export abstract class PC implements PCI
     // sorts by equip slot and then level to help make decisions about how to equip
     getSortedItems()
     {
-        return this.itemPool.makeSortedList()
+        return this.gearPool.makeSortedList()
     }
 
     getImageId() 

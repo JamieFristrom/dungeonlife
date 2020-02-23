@@ -147,16 +147,11 @@ export namespace FlexibleToolsServer
                                 const descendentScript = descendent as Script
                                 descendent.Disabled = false
                             }
-                            else if( descendent.IsA('ParticleEmitter'))
+                            else if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire'))
                             {
-                                const descendentEmitter = descendent as ParticleEmitter
+                                // now *that's* a new idea to me. Any of these things have Enabled properties, so...
+                                const descendentEmitter = descendent as ParticleEmitter | Beam | Light | Fire
                                 descendentEmitter.Enabled = true
-                                nonDefaultFX = true
-                            }
-                            else if( descendent.IsA('Beam'))  // this is awkward, it really could use the same code as above but typescript gets confused
-                            {
-                                const descendentBeam = descendent as Beam
-                                descendentBeam.Enabled = true
                                 nonDefaultFX = true
                             }
                             else
@@ -174,15 +169,10 @@ export namespace FlexibleToolsServer
                     {
                         if( descendent.Name === 'FXdefault' )
                         {
-                            if( descendent.IsA('ParticleEmitter'))
+                            if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire'))
                             {
-                                const descendentEmitter = descendent as ParticleEmitter
-                                descendentEmitter.Enabled = false
-                            }
-                            else if( descendent.IsA('Beam'))  // this is awkward, it really could use the same code as above but typescript gets confused
-                            {
-                                const descendentBeam = descendent as Beam
-                                descendentBeam.Enabled = false
+                                let effect = descendent as ParticleEmitter | Beam | Light | Fire
+                                effect.Enabled = false
                             }
                             else
                             {

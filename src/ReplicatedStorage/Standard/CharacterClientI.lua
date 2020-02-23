@@ -100,7 +100,7 @@ end
 -- returns item and possessionsKey which you could well need
 
 function CharacterClientI:GetPossessionFromSlot( characterDataT, slotN )  -- returns item, key or nil, nil
-	return unpack( characterDataT.itemPool:getFromSlot( slotN ) )
+	return unpack( characterDataT.gearPool:getFromSlot( slotN ) )
 end
 
 
@@ -120,12 +120,12 @@ end
 
 -- use nil itemKey to clear slot
 function CharacterClientI:AssignPossessionToSlot( characterDataT, itemKey, slotN )
-	characterDataT.itemPool:assignToSlot( itemKey, slotN )
+	characterDataT.gearPool:assignToSlot( itemKey, slotN )
 end
 
 
 function CharacterClientI:GetEquipFromSlot( characterDataT, equipSlot )
-	return unpack( characterDataT.itemPool:getFromEquipSlot( equipSlot ) )
+	return unpack( characterDataT.gearPool:getFromEquipSlot( equipSlot ) )
 end
 
 
@@ -135,12 +135,12 @@ end
 
 
 function CharacterClientI:GetWornWalkSpeedMul( defenderDataT )
-	return defenderDataT.itemPool:getWornWalkSpeedMul()
+	return defenderDataT.gearPool:getWornWalkSpeedMul()
 end
 
 
 function CharacterClientI:GetWornJumpPowerMul( defenderDataT )
-	return defenderDataT.itemPool:getWornJumpPowerMul()
+	return defenderDataT.gearPool:getWornJumpPowerMul()
 end
 
 

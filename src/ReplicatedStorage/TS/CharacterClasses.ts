@@ -2,7 +2,7 @@
 
 import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
-import { FlexTool, ToolDefinition } from "./FlexToolTS"
+import { FlexTool, GearDefinition } from "./FlexToolTS"
 
 export interface HeroStatBlockI
 {
@@ -639,7 +639,7 @@ export namespace CharacterClasses {
         }
     }
 
-    export const startingItems: { [ k: string ]: ToolDefinition[] } =
+    export const startingItems: { [ k: string ]: GearDefinition[] } =
 	{
 		Warrior:
 		[

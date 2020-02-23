@@ -12,7 +12,7 @@ import * as Inventory from "ServerStorage/Standard/InventoryModule"
 import * as CharacterI from "ServerStorage/Standard/CharacterI"
 
 
-import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
+import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS";
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
@@ -113,18 +113,19 @@ let CommandList: {[k:string]:unknown} =
         print( "Equipping " + sender.Name + " with " + args[1] )
         DebugXL.Assert( args[0]==="equip")
         let myPC = CharacterI.GetPCDataWait( sender )      
-        let flexToolRaw = HttpService.JSONDecode( args[1] ) as FlexTool 
-        if( flexToolRaw )
-        {
-          if( !flexToolRaw.enhancementsA ) flexToolRaw.enhancementsA = []
-          if( !flexToolRaw.levelN ) flexToolRaw.levelN = 1
-          if( !ToolData.dataT[ flexToolRaw.baseDataS ] )
+        let gearDef = HttpService.JSONDecode( args[1] ) as GearDefinition 
+        if( gearDef )
+        {          
+          if( !ToolData.dataT[ gearDef.baseDataS ] )
           {
-            print( flexToolRaw.baseDataS+" doesn't exist")
+            print( gearDef.baseDataS+" doesn't exist")
           }
           else
-          {
-            let flexTool = FlexTool.objectify( flexToolRaw )
+          {            
+            let flexTool = new FlexTool(
+              gearDef.baseDataS,
+              gearDef.levelN ? gearDef.levelN : 1,
+              gearDef.enhancementsA ? gearDef.enhancementsA : [] )
             myPC.giveTool( flexTool )
             PlayerServer.updateBackpack( sender, myPC )
           }

@@ -20,9 +20,7 @@ local function ChooseClass( classNameS )
 	workspace.Signals.MainRE:FireServer( "SignalReady" )	
 	heroGuiFrame.Visible = false
 	chooseClassFrame.Visible = false
---  actually, jump into play with your new class, what is there to do?
---	playerGui.CharacterSheetGui.CharacterSheet.Visible = true
---	playerGui.PossessionsGui.PossessionsFrame.Visible = true
+--  jump into play with your new class, what is there to do?
 end
 
 

@@ -92,7 +92,7 @@ function Loot:CheckForPotionDrop( player, dropChance, potionIdS, worldPosV3 )
 
 	local pcData = Heroes:GetPCDataWait( player )
 	
-	local potionsN = pcData.itemPool:countIf( function( _, item ) return item.baseDataS == potionIdS end )
+	local potionsN = pcData.gearPool:countIf( function( _, item ) return item.baseDataS == potionIdS end )
 	
 	-- chance of drop depends on ratio of monster level to your level
 	-- we don't want to give a level 10 hero lots of potions for killing level 1 monsters

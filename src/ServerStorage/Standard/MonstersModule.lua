@@ -212,7 +212,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	-- make sure you don't just have a one-shot weapon
 	
 	if pcData:countTools() == 1 then  -- one for armor, one for the possible one shot
-		if pcData.itemPool:get("item1").baseDataS == "Bomb" then
+		if pcData.gearPool:get("item1").baseDataS == "Bomb" then
 			GiveUniqueWeapon( character, player, potentialWeaponsA )			
 		end
 	end
@@ -243,7 +243,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	end
 --	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
 	local totalDamageEstimate = 0
-	pcData.itemPool:forEach( function( possession ) 
+	pcData.gearPool:forEach( function( possession ) 
 		if ToolData.dataT[ possession.baseDataS ].damageNs then
 			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
 			local average = ( damageN1 + damageN2 ) / 2

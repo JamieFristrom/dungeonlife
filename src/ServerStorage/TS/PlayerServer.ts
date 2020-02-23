@@ -87,6 +87,11 @@ export namespace PlayerServer
             if( possessionKey )
             {
                 let flexTool = pc.getTool( possessionKey )!
+                if( flexTool.getUseType === undefined )
+                {
+                    DebugXL.Error( `flexTool ${flexTool.baseDataS} likely missing metatable`)
+                    continue
+                }
                 if( flexTool.getUseType() === "held" )
                 {
                     let tool = PC.getToolInstanceFromPossessionKey( player, possessionKey )

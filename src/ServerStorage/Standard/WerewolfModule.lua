@@ -54,7 +54,7 @@ function Werewolf:TakeHumanFormWait( player )
 
 		-- put non-claws in hotbar; not bothering to equip 
 		local slot = 1
-		pcData.itemPool:forEach( function( toolInst, k )
+		pcData.gearPool:forEach( function( toolInst, k )
 			local baseDataS = toolInst.baseDataS
 			if baseDataS ~= "ClawsWerewolf" then
 				if ToolData.dataT[ baseDataS ].useTypeS ~= "worn" then
@@ -105,7 +105,7 @@ function Werewolf:WolfOutWait( player )
 		-- we don't need to unequip held weapon, the costume application did that for us
 		-- remove cosmetic armor
 		local pcData = CharacterI:GetPCDataWait( player )
-		pcData.itemPool:forEach( function(item)
+		pcData.gearPool:forEach( function(item)
 			item.equippedB = nil
 		end )
 
@@ -115,7 +115,7 @@ function Werewolf:WolfOutWait( player )
 		end
 
 		-- put claws in hotbar and equip
-		pcData.itemPool:forEach( function(toolInst, k)
+		pcData.gearPool:forEach( function(toolInst, k)
 			if toolInst.baseDataS == "ClawsWerewolf" then
 				CharacterClientI:AssignPossessionToSlot( pcData, k, 1 )
 			elseif toolInst.baseDataS == "TransformWerewolf" then

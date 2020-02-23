@@ -18,7 +18,7 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 
 	local equippedItemModelsA = {}
 	local noAttachmentsSet = {}
-	pcData.itemPool:forEach( function( item, _ )
+	pcData.gearPool:forEach( function( item, _ )
 		if item.equippedB then
 			local equipDatum = ToolData.dataT[ item.baseDataS ]
 			if not item.hideItemB then
