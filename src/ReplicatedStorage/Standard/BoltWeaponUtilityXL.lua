@@ -77,12 +77,13 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 	
 	local Character
 	local Player
+	local owningHumanoid
 
 	local aimAndFireAnimObj = animName and AnimationManifestService.getAnimInstance( animName ) or nil
 	local animTrack 
 
 	local function CheckIfAlive()
-		return (((Character and Character.Parent and Humanoid and Humanoid.Parent and Humanoid.Health > 0 and Player and Player.Parent) and true) or false)
+		return (((Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0 and Player and Player.Parent) and true) or false)
 	end
 	
 	local function Activated( )
@@ -157,13 +158,13 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 	local function Equipped(Mouse)
 		mouse = Mouse
 		Character = Tool.Parent
-		Humanoid = Character:FindFirstChild("Humanoid")
+		owningHumanoid = Character:FindFirstChild("Humanoid")
 		Player = Players:GetPlayerFromCharacter(Character)
 		if not CheckIfAlive() then
 			return
 		end
 		if aimAndFireAnimObj then
-			animTrack = Humanoid:LoadAnimation( aimAndFireAnimObj )
+			animTrack = owningHumanoid:LoadAnimation( aimAndFireAnimObj )
 			animTrack:Play()
 			-- first frame of animation is holding steady pose
 			animTrack:AdjustSpeed( 0 )

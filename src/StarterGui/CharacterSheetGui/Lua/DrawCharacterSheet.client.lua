@@ -124,7 +124,7 @@ local function SpendStatPoint( stat )
 		if not PCClient.pc.statsT then return end  -- probably shouldn't even be here but whatever
 
 		PCClient.pc.statsT[ stat ] = PCClient.pc.statsT[ stat ] + 1
-		HeroesRemote:RefreshSheet( PCClient.pc )
+		HeroesRemote:RefreshSheet()
 	end
 end
 
