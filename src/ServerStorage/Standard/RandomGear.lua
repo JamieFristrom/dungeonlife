@@ -2,7 +2,7 @@ local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 
-local FlexibleTools    = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Inventory        = require( game.ServerStorage.InventoryModule )
 
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )

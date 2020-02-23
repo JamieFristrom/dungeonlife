@@ -6,7 +6,7 @@ local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL ) 
 
-local FlexibleTools    = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Loot             = require( game.ServerStorage.LootModule )
 
 local CharacterI       = require( game.ServerStorage.CharacterI )

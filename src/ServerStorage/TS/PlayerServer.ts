@@ -1,17 +1,24 @@
+print('PlayerServer.ts executed')
 import { Players, Teams } from "@rbxts/services"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { PC } from "ReplicatedStorage/TS/PCTS"
+print('PlayerServer: ReplicatedStorage/TS imports succesful')
 
 import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
+print('PlayerServer: FlexibleTools imported')
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
+print('PlayerServer: GameAnalyticsServer imported')
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
+print('PlayerServer: ServerStorage/Standard imports succesful')
 
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
+print('PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
+print('PlayerServer: Analytics imports succesful')
 
 export namespace PlayerServer
 {

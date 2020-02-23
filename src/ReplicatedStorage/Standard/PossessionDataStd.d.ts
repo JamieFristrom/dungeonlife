@@ -26,6 +26,12 @@ declare namespace PossessionData   // namespace for info about possessions
         getReadableName: ( self: PossessionDatumI )=>string
     }
 
+    interface SkinDatumI extends PossessionDatumI
+    {
+        baseToolS: string
+        textureSwapId: string
+    }
+
     enum FlavorEnum
     {
         Currency   = "Currency",

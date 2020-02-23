@@ -390,7 +390,10 @@ export class FlexTool
             return 0
         }
     }
+
+    static nullTool = new FlexTool( 'NullTool', 1, [] )
 }
+
 
 Players.PlayerRemoving.Connect( function( )
 {

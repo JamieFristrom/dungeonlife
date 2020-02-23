@@ -1,13 +1,6 @@
-import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
-import { ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes";
+import { CreateToolParamsI } from "ServerStorage/TS/CreateToolParamsI"
 
-declare interface CreateToolParamsI
-{
-    toolInstanceDatumT: FlexTool
-    destinationPlayer: Player
-    activeSkinsT: ActiveSkinSetI
-    possessionsKey: string
-}
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 
 declare class FlexibleToolsClass
 {
@@ -16,8 +9,12 @@ declare class FlexibleToolsClass
     CreateTool( params: CreateToolParamsI ) : Tool
     GetAdjFlexToolStat( flexTool: FlexTool, statName: string ) : number
     ResolveFlexToolEffects( flexTool: FlexTool, humanoid: Humanoid, attackingPlayer: Player ): void
+    GetToolRangeN( toolObj: Tool ) : number
+    GetCooldownN( toolObj: Tool ) : number
+    GetManaCostN( toolObj: Tool ): number
 }
 
 declare let FlexibleTools: FlexibleToolsClass
 
 export = FlexibleTools
+

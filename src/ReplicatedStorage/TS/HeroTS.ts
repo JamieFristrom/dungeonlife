@@ -71,7 +71,7 @@ export class Hero extends PC implements HeroI
         if( !hero.shopPool )
         {
             DebugXL.Assert( storageVersion < 4 )
-            DebugXL.Assert( hero.itemsT !== undefined )  
+            DebugXL.Assert( hero.shopT !== undefined )  
             if( hero.shopT )          
             {
                 hero.shopPool = new ItemPool( hero.shopT )
@@ -96,6 +96,7 @@ export class Hero extends PC implements HeroI
         let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
         DebugXL.Assert( hero.itemsT === undefined )
         setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
+        setmetatable( hero.shopPool, ItemPool as LuaMetatable<ItemPool> )
         hero.itemPool.forEach( item => FlexTool.objectify( item ) )
         hero.shopPool.forEach( item => FlexTool.objectify( item ) )
 
