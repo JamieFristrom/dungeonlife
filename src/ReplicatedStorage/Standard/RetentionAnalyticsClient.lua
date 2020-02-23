@@ -5,7 +5,7 @@ print( script.Name.." executed")
 
 local Config = require( game.ReplicatedStorage.TS.Config ).Config
 
-Functions = game.ReplicatedStorage -- Change this to where ever you keep your functions or w/e. Just set this to a place you guarentee my function and event won't be destroy, accessible from both the erver and clinet
+local Functions = game.ReplicatedStorage -- Change this to where ever you keep your functions or w/e. Just set this to a place you guarentee my function and event won't be destroy, accessible from both the erver and clinet
 
 
 local Analytics = {}

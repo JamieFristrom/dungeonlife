@@ -915,6 +915,7 @@ PossessionData.dataA =
 			levelCapN = 1,
 			startingCountN = 0,  
 			rarityN = 0,						-- indicates not a player ownable thing
+			forbiddenToBuild = true,
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		-- superboss spawns
@@ -1490,8 +1491,10 @@ for _, item in pairs( PossessionData.dataT ) do
 			DebugXL:Error( item.idS.." corrupt rewardsA")
 		end
 	end
-	if item.flavor == PossessionData.FlavorEnum.Blueprint then
-		DebugXL:Assert( game.ReplicatedStorage["Shared Instances"]["Placement Storage"]:FindFirstChild( item.idS ) )
+	if item.flavor == PossessionData.FlavorEnum.Furnishing then
+		if not item.forbiddenToBuild and not game.ReplicatedStorage["Shared Instances"]["Placement Storage"]:FindFirstChild( item.idS ) then
+			DebugXL:Error( "can't find furnishing "..item.idS )
+		end
 	elseif item.flavor == PossessionData.FlavorEnum.Furnishing then
 		if not item.rarityN then
 			DebugXL:Error( item.idS.." is missing rarityN" )

@@ -160,29 +160,9 @@ GameManagement.levelStartTime = time()
 --	badTbl[ badRef ] = "bad thing"
 --end )
 
--- hack
-local GameManagementRemote = {}
-
-function GameManagementRemote.AcknowledgeGuiLoaded( player )
-	DungeonPlayer:Get( player ).guiLoadedB = true
-
-	--print( player.Name.." gui acknowledged" )
-end
-
-workspace.Signals.GameManagementRE.OnServerEvent:Connect( function( player, funcName, ... )
-	GameManagementRemote[ funcName ]( player, ... )
-end)
-warn( "Time until GameManagementRE connected: "..time() )
-
-workspace.Signals.ChooseHeroRE.OnServerEvent:Connect( function( player, code )
-	DebugXL:Assert( code == "ack")
-	print( player.Name.." ChooseHeroRE acknowledged" )
-	DungeonPlayer:Get( player ).chooseHeroREAckedB = true
-end )
-
 
 -- dungeon player class
-DungeonPlayer = {
+local DungeonPlayer = {
 	
 }
 
@@ -207,6 +187,28 @@ function DungeonPlayer:Get( player )
 	end 
 	return dungeonPlayersT[ player ] 
 end
+
+
+-- hack
+local GameManagementRemote = {}
+
+function GameManagementRemote.AcknowledgeGuiLoaded( player )
+	DungeonPlayer:Get( player ).guiLoadedB = true
+
+	--print( player.Name.." gui acknowledged" )
+end
+
+workspace.Signals.GameManagementRE.OnServerEvent:Connect( function( player, funcName, ... )
+	GameManagementRemote[ funcName ]( player, ... )
+end)
+warn( "Time until GameManagementRE connected: "..time() )
+
+workspace.Signals.ChooseHeroRE.OnServerEvent:Connect( function( player, code )
+	DebugXL:Assert( code == "ack")
+	print( player.Name.." ChooseHeroRE acknowledged" )
+	DungeonPlayer:Get( player ).chooseHeroREAckedB = true
+end )
+
 
 -- utility
 

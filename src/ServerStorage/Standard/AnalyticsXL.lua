@@ -28,7 +28,7 @@ local config = {
 
 local useGoogleForTelemetry = false
 
-GA = require( game.ServerStorage.Standard.GAModule ) -- 153590792)
+local GA = require( game.ServerStorage.Standard.GAModule ) -- 153590792)
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 
 -- continuing to use google for error logging, so we can track errors in our other thing

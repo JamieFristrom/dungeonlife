@@ -197,7 +197,7 @@ function Heroes:ChooseDefaultHeroWait( player )
 		--if not slotRec then slotRec = 1 end
 		local slotRec = 1
 		if slotRec == #mySavedPlayerCharactersT.heroesA + 1 then
-			Heroes:ChooseClass( player, "Warrior", 1 )			
+			Heroes:ChooseClass( player, "Warrior" )			
 		else
 			Heroes:ChooseHero( player, slotRec )
 		end
