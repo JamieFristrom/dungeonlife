@@ -229,6 +229,16 @@ function Inventory:IsStarFeedbackDue( player )
 end
 
 
+function Inventory:AwardRandomPossession( player, crateDatum, occasionS )
+	local instantDeck = InventoryUtility:MakeCrateDeck( crateDatum )
+	local possessionChoiceN = MathXL:RandomInteger( 1, #instantDeck )
+	local newPossessionName = instantDeck[ possessionChoiceN ].idS
+	Inventory:AdjustCount( player, newPossessionName, 1, "Award", occasionS )
+	workspace.Signals.InventoryRE:FireClient( player, "Award", newPossessionName, occasionS )	
+	return true
+end
+
+
 function CheckForReward( player, itemKeyS, x )
 	local rewardsA = PossessionData.dataT[ itemKeyS ].rewardsA
 	if rewardsA then
@@ -300,16 +310,6 @@ function Inventory:AdjustCount( player, itemKeyS, increment, analyticItemTypeS, 
 		end
 	end
 	--workspace.Signals.InventoryRE:FireClient( player, "Update", inventoryCacheT[ CacheKey( player ) ])
-end
-
-
-function Inventory:AwardRandomPossession( player, crateDatum, occasionS )
-	local instantDeck = InventoryUtility:MakeCrateDeck( crateDatum )
-	local possessionChoiceN = MathXL:RandomInteger( 1, #instantDeck )
-	local newPossessionName = instantDeck[ possessionChoiceN ].idS
-	Inventory:AdjustCount( player, newPossessionName, 1, "Award", occasionS )
-	workspace.Signals.InventoryRE:FireClient( player, "Award", newPossessionName, occasionS )	
-	return true
 end
 
 
