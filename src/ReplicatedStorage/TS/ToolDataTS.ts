@@ -87,6 +87,27 @@ export namespace ToolData
     export let dataA: ToolDatumI[] =
     [
         {
+            idS            : "NullTool",
+            readableNameS  : "NullTool",
+            namePlural: false,
+            minLevelN : 1,
+            useTypeS : "held",
+            equipType    : EquipTypeEnum.Melee,
+            statReqS       : "dexN",
+            skinType       : SkinTypeEnum.Sword1H,
+            baseToolS      : "Shortsword",
+            damageNs       :  [ 0, 0 ],  
+            cooldownN      : 1,
+            critChanceN    : 1, 
+            rangeN         : 1,
+            monsterStartGearBiasN : 0,
+            dropLikelihoodN : 0,
+            walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
+            priceMulN: 1,
+            imageId : "rbxassetid://124987047",
+        },
+        {
             idS : "PlateTorso",
             minLevelN : 4,
             readableNameS : "Plate Mail Shirt",

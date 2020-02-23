@@ -10,27 +10,33 @@ local GameManagement = {
 game.Players.CharacterAutoLoads = false
 
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
+local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
+print( 'GameManagementModule: utilities includes succesful' )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local FloorData         = require( game.ReplicatedStorage.FloorData )
-local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
 local MapTileData       = require( game.ReplicatedStorage.MapTileDataModule )
 local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local RankForStars      = require( game.ReplicatedStorage.RankForStars )
+print( 'GameManagementModule: ReplicatedStorage includes succesful' )
 
-local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
 
 local AnalyticsXL       = require( game.ServerStorage.Standard.AnalyticsXL )
+print( 'GameManagementModule: AnalyticsXL included')
 local ChatMessages      = require( game.ServerStorage.Standard.ChatMessages )
+print( 'GameManagementModule: ChatMessages included')
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
+print( 'GameManagementModule: Costumes included')
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
+print( 'GameManagementModule: GameAnalyticsServer included')
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
+print( 'GameManagementModule: ServerStorage.Standard includes succesful' )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Destructible      = require( game.ServerStorage.Standard.Destructible )
@@ -39,12 +45,15 @@ local FurnishServer     = require( game.ServerStorage.FurnishServerModule )
 local Heroes            = require( game.ServerStorage.Standard.HeroesModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 local Monsters          = require( game.ServerStorage.MonstersModule )
+print( 'GameManagementModule: ServerStorage includes succesful' )
 
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
+local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
 local DungeonVoteUtility = require( game.ReplicatedStorage.TS.DungeonVoteUtility ).DungeonVoteUtility
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
+print( 'GameManagementModule: ReplicatedStorage.TS includes succesful' )
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).DestructibleServer
@@ -55,7 +64,9 @@ local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServ
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService ).GameplayTestService
+print( 'GameManagementModule: ServerStorage.TS includes succesful' )
 
+print( 'GameManagementModule processing')
 local StarterGui = game.StarterGui
 
 -- I have watched multiple heroes leave during a long prep; 60 is definitely too long. Sometimes they also get confused and wonder

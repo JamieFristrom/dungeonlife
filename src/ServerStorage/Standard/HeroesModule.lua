@@ -22,7 +22,7 @@ local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
-local FlexibleTools     = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
@@ -132,9 +132,7 @@ function Heroes:SaveHeroesWait( player )
 
 	if not playerOverrideId then
 		local heroStore = DataStore2( "Heroes", player )
-		savedPlayerCharactersT[ PCKey( player ) ]:prepareForSave()
 		heroStore:Set( savedPlayerCharactersT[ PCKey( player ) ] )
-		savedPlayerCharactersT[ PCKey( player ) ]:releaseAfterSave()
 	end
 
 end
@@ -230,13 +228,13 @@ function Heroes:CharacterAdded( character, player )
 	-- if hero doesn't have a potion, give them one
 	local level = Hero:levelForExperience( myPCData.statsT.experienceN )
 
-	local potionCount = myPCData.itemPool:count( function( possession ) return possession.baseDataS=="Healing" end )
+	local potionCount = myPCData.itemPool:countIf( function( possession ) return possession.baseDataS=="Healing" end )
 	if potionCount==0 then
 		GivePossession( player, myPCData, { baseDataS="Healing", levelN = level, enhancementsA = {} } ) 
 	end
 	
 	-- if hero doesn't have a usable melee weapon, give them one
-	local meleeWeaponCount = myPCData.itemPool:count( function( possession ) 
+	local meleeWeaponCount = myPCData.itemPool:countIf( function( possession ) 
 		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and HeroUtility:CanUseWeapon( myPCData, possession ) end )
 	if meleeWeaponCount==0 then
 		-- a weak melee weapon. a 1st level wizard could chuck their staff and rejoin and do all right... 

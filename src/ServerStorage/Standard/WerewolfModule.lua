@@ -4,7 +4,7 @@ local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
-local FlexibleTools     = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 local Monsters          = require( game.ServerStorage.MonstersModule )

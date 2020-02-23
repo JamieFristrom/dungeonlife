@@ -1,9 +1,10 @@
 import * as CharacterI from "ServerStorage/Standard/CharacterI"
+
 import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 
-import MechanicalEffects = require("ServerStorage/Standard/MechanicalEffects")
+import * as MechanicalEffects from "ServerStorage/Standard/MechanicalEffects"
 
 export namespace LobbedBombServer
 {

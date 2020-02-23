@@ -10,7 +10,7 @@ local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUt
 local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
 
 local CharacterI          = require( game.ServerStorage.CharacterI )
-local FlexibleTools       = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Mana                = require( game.ServerStorage.ManaModule )
 
 local showThrownObjOnServerB = true

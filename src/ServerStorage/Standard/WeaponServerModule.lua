@@ -4,7 +4,7 @@ local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local HeroUtility      = require( game.ReplicatedStorage.Standard.HeroUtility )
 
-local FlexibleTools    = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 local Heroes           = require( game.ServerStorage.Standard.HeroesModule )
 
