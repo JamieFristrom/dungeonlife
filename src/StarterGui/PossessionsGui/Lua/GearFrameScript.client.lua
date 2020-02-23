@@ -163,12 +163,12 @@ function AssignCurrentToHotbarSlot( i )
 	DebugXL:Assert( PCClient.pc )
 	if( PCClient.pc )then
 		audio.UIClick:Play()
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local flexToolInst = PCClient.pc.itemsT[ curGearPoolKey ]
 		if flexToolInst then  -- it's possible to sell your item and click on it again in your inventory before it's updated, so we have to check
-			pcEvent:FireServer( "AssignItemToSlot", curFlexToolIdx, i )  -- on server
-			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curFlexToolIdx, i )  -- on client for snap
+			pcEvent:FireServer( "AssignItemToSlot", curGearPoolKey, i )  -- on server
+			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curGearPoolKey, i )  -- on client for snap
 			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
-			WireInfoFrame( curFlexToolIdx )			
+			WireInfoFrame( curGearPoolKey )			
 		end
 	end
 end
@@ -180,7 +180,7 @@ function ShowInfoFrame()
 		shopItemInfoFrame.Visible = false
 		itemInfoFrame.Visible = true
 		
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local flexToolInst = PCClient.pc.itemsT[ curGearPoolKey ]
 		local baseData = ToolData.dataT[ flexToolInst.baseDataS ] 	
 		local weaponB = baseData.useTypeS == "held" or baseData.useTypeS == "power"
 		if weaponB then
