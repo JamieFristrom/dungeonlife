@@ -13,16 +13,16 @@ print( "FlexTool: Players required")
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
-export interface ToolDefinition
+export interface GearDefinition
 {
-    baseDataS: string
-    levelN: number
-    enhancementsA: Array<Enhancements.EnhancementI>
-    slotN?: number
-    equippedB?: boolean
-    boostedB?: boolean
-    hideItemB?: boolean
-    hideAccessoriesB?: boolean
+    readonly baseDataS: string
+    readonly levelN: number
+    readonly enhancementsA: Array<Enhancements.EnhancementI>
+    readonly slotN?: number
+    readonly equippedB?: boolean
+    readonly boostedB?: boolean
+    readonly hideItemB?: boolean
+    readonly hideAccessoriesB?: boolean
 }
 export interface GlobalToolInfo
 {
@@ -34,19 +34,25 @@ let globalToolInfos = new Map<Player, { [toolId:string]:GlobalToolInfo }>()
 const enhancementPriceFactor = 1.2
 const priceGamma = 1.2
 
+
 export class FlexTool 
 {
+    public enhancementsA: Array<Enhancements.EnhancementI> // can't make readonly because we modify obsolete data on load
+
     constructor(
-        public baseDataS: string,
-        public levelN: number,
-        public enhancementsA: Array<Enhancements.EnhancementI>,
+        public readonly baseDataS: string,
+        public levelN: number,                                   // can't make readonly because we modify obsolete data on load
+        incomingEnhancementsA: Array<Enhancements.EnhancementI>,  
         public slotN?: number,
         public equippedB?: boolean,
-        public boostedB?: boolean,
+        public readonly boostedB?: boolean,
         public hideItemB?: boolean,
         public hideAccessoriesB?: boolean
-        ) {}
-    
+        ) 
+        {
+            this.enhancementsA = Object.assign( incomingEnhancementsA )  // copy so if we're assigning from static data (a starting classes items enhancement list, perhaps) we're safer
+        }
+   
     static objectify( rawToolData: FlexTool )
     {
         return setmetatable( rawToolData, FlexTool as LuaMetatable<FlexTool> ) as FlexTool

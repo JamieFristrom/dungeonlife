@@ -5,7 +5,7 @@ import { HeroI } from "./HeroClassesTS"
 import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
-import { PC, ItemPool as ItemPool } from "./PCTS"
+import { PC, GearPool } from "./PCTS"
 import { Enhancements } from "./EnhancementsTS";
 import { DebugXL } from "./DebugXLTS";
 
@@ -29,12 +29,12 @@ export class Hero extends PC implements HeroI
     // public jumpPowerN: number
     public statsT: HeroStatBlockI
 
-    protected shopT: { [k:string]: FlexTool } | undefined   // was technically defined as a map before but they way it was implemented was thus so it will work without needing to add new constructor to ItemPool
+    protected shopT: { [k:string]: FlexTool } | undefined   // was technically defined as a map before but they way it was implemented was thus so it will work without needing to add new constructor to GearPool
     public lastShopResetOsTime = 0 
     public lastShopResetLevel = 0
     public currentSlot = -1
 
-    public shopPool: ItemPool = new ItemPool({})
+    public shopPool: GearPool = new GearPool({})
    
     constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexTool[] )
     {
@@ -51,21 +51,20 @@ export class Hero extends PC implements HeroI
         // at first I was thinking leave the persistent data in the old format when I created these item pools, but then it seemed
         // more likely there would be bugs if I was constantly converting back and forth
         let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
-        DebugXL.Assert( hero.itemsT !== undefined )
-        if( !hero.itemPool )
+        if( !hero.gearPool )
         {
             DebugXL.Assert( storageVersion < 4 )
             DebugXL.Assert( hero.itemsT !== undefined )  
             if( hero.itemsT )          
             {
-                hero.itemPool = new ItemPool( hero.itemsT )
+                hero.gearPool = new GearPool( hero.itemsT )
                 hero.itemsT = undefined
             }
         }
         else
         {
-            setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
-            hero.itemPool.forEach( item => FlexTool.objectify( item ) )
+            setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
+            hero.gearPool.forEach( item => FlexTool.objectify( item ) )
         }
 
         if( !hero.shopPool )
@@ -74,13 +73,13 @@ export class Hero extends PC implements HeroI
             DebugXL.Assert( hero.shopT !== undefined )  
             if( hero.shopT )          
             {
-                hero.shopPool = new ItemPool( hero.shopT )
+                hero.shopPool = new GearPool( hero.shopT )
                 hero.shopT = undefined
             }
         }
         else
         {
-            setmetatable( hero.shopPool, ItemPool as LuaMetatable<ItemPool> )
+            setmetatable( hero.shopPool, GearPool as LuaMetatable<GearPool> )
             hero.shopPool.forEach( item => FlexTool.objectify( item ) ) 
         }
         if( !hero.statsT.goldN )
@@ -95,9 +94,9 @@ export class Hero extends PC implements HeroI
     {
         let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
         DebugXL.Assert( hero.itemsT === undefined )
-        setmetatable( hero.itemPool, ItemPool as LuaMetatable<ItemPool> )
-        setmetatable( hero.shopPool, ItemPool as LuaMetatable<ItemPool> )
-        hero.itemPool.forEach( item => FlexTool.objectify( item ) )
+        setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
+        setmetatable( hero.shopPool, GearPool as LuaMetatable<GearPool> )
+        hero.gearPool.forEach( item => FlexTool.objectify( item ) )
         hero.shopPool.forEach( item => FlexTool.objectify( item ) )
 
         return hero
@@ -150,8 +149,8 @@ export class Hero extends PC implements HeroI
         }
         
         //-- only later did I smack myself on the forehead and ask why don't all tools have empty enhancementsA arrays
-        let itemPool = this.itemPool
-        this.itemPool.forEach( function( flexToolInst, k)
+        let itemPool = this.gearPool
+        this.gearPool.forEach( function( flexToolInst, k)
         {
             //-- you may have an obsolete item; a lot of players are rocking HelmetWinged's
             if( flexToolInst.baseDataS === "MonsterSprint" || !ToolData.dataT[ flexToolInst.baseDataS ] )
@@ -199,7 +198,7 @@ export class Hero extends PC implements HeroI
 
     private getStatBonus(stat: string, heldToolInst: FlexTool | undefined, ignoreEquipSlot?: ToolData.EquipSlotEnum ) {
         let bonusSum = 0;
-        this.itemPool.forEach(function (item) {
+        this.gearPool.forEach(function (item) {
             if( item.equippedB )
             {
                 if( item.getEquipSlot() !== ignoreEquipSlot )
@@ -257,7 +256,7 @@ export class Hero extends PC implements HeroI
     {
         let sum = 0
         let actualLevel = this.getActualLevel()
-        this.itemPool.forEach( function( equip, k )
+        this.gearPool.forEach( function( equip, k )
         {
             if( equip.equippedB )
             {

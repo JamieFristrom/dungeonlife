@@ -1,6 +1,3 @@
--- unfortunately inventory has come to sometimes mean a character's inventory of weapons, etc and other times the player's inventory of their
--- microtransactions
-
 local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
 local InputXL          = require( game.ReplicatedStorage.Standard.InputXL )
 local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
@@ -32,7 +29,7 @@ local assignBar = itemInfoFrame:WaitForChild( "Hotbar" )
 
 --pcData = pcFunc:InvokeServer( "GetStatsWait" )
 
-local curFlexToolIdx
+local curGearPoolKey
 
 local equipKeyCodes =
 {
@@ -49,12 +46,12 @@ function AssignCurrentToHotbarSlot( i )
 	DebugXL:Assert( PCClient.pc )
 	if( PCClient.pc )then
 		audio.UIClick:Play()
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local flexToolInst = PCClient.pc.gearPool:get( curGearPoolKey )
 		if flexToolInst then  -- it's possible to sell your item and click on it again in your inventory before it's updated, so we have to check
-			pcEvent:FireServer( "AssignItemToSlot", curFlexToolIdx, i )  -- on server
-			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curFlexToolIdx, i )  -- on client for snap
+			pcEvent:FireServer( "AssignItemToSlot", curGearPoolKey, i )  -- on server
+			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curGearPoolKey, i )  -- on client for snap
 			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
-			WireInfoFrame( curFlexToolIdx )			
+			WireInfoFrame( curGearPoolKey )			
 		end
 	end
 end
@@ -72,7 +69,7 @@ function ShowInfoFrame()
 		shopItemInfoFrame.Visible = false
 		itemInfoFrame.Visible = true
 		
-		local flexToolInst = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local flexToolInst = PCClient.pc.gearPool:get( curGearPoolKey )
 		local baseData = ToolData.dataT[ flexToolInst.baseDataS ] 	
 		local weaponB = baseData.useTypeS == "held" or baseData.useTypeS == "power"
 		if weaponB then
@@ -98,8 +95,8 @@ end
 function WireInfoFrame( flexToolIdx )
 	DebugXL:Assert( PCClient.pc )
 	if( PCClient.pc )then	
-		curFlexToolIdx = flexToolIdx
-		local flexToolInst = PCClient.pc.itemsT[ flexToolIdx ]
+		curGearPoolKey = flexToolIdx
+		local flexToolInst = PCClient.pc.gearPool:get( flexToolIdx )
 		local baseData = ToolData.dataT[ flexToolInst.baseDataS ]
 
 		itemInfoFrame.Sell.Text = Localize.formatByKey( "SellFor", { flexToolInst:getSellPrice() } )
@@ -148,7 +145,7 @@ function WireInfoFrame( flexToolIdx )
 		end
 
 		if InputXL:UsingGamepad() then
-			local flexToolInst = PCClient.pc.itemsT[ flexToolIdx ]
+			local flexToolInst = PCClient.pc.gearPool:get( flexToolIdx )
 			local baseData = ToolData.dataT[ flexToolInst.baseDataS ] 	
 			local weaponB = baseData.useTypeS == "held" or baseData.useTypeS == "power"
 			if weaponB then
@@ -177,9 +174,9 @@ itemInfoFrame.Wear.MouseButton1Click:Connect( function()
 	if( PCClient.pc )then	
 		audio.UIClick:Play()
 		InstanceXL:CreateSingleton( "BoolValue", { Name= "ChangingCostume", Parent= game.Players.LocalPlayer.Character, Value= true })
-		local item = PCClient.pc.itemsT[ curFlexToolIdx ]
+		local item = PCClient.pc.gearPool:get( curGearPoolKey )
 		if item then  -- it's possible to sell your item and then rapidly click on it in inventory before it's gone
-			pcEvent:FireServer( "Equip", curFlexToolIdx, not CharacterClientI:GetEquipped( PCClient.pc.itemsT[ curFlexToolIdx ] ) )
+			pcEvent:FireServer( "Equip", curGearPoolKey, not CharacterClientI:GetEquipped( PCClient.pc.gearPool:get( curGearPoolKey ) ) )
 		end
 		HideInfoFrame()
 	end
@@ -191,10 +188,10 @@ itemInfoFrame.Sell.MouseButton1Click:Connect( function()
 --  this didn't work because the server than queries yes/no and if we say no we'll be stuck
 --  so I'm just letting it be ugly - the symptom is if you throw something away while running there'll be a 
 --  jump when the server gives you your new character
---	if CharacterClientI:GetEquipped( PCClient.pc.itemsT[ curFlexToolIdx ] ) then
+--	if CharacterClientI:GetEquipped( PCClient.pc.gearPool:get( curGearPoolKey ) ) then
 --	    InstanceXL:CreateSingleton( "BoolValue", { Name= "ChangingCostume", Parent= game.Players.LocalPlayer.Character, Value= true })		
 --	end
-	pcEvent:FireServer( "SellItem", curFlexToolIdx )
+	pcEvent:FireServer( "SellItem", curGearPoolKey )
 	HideInfoFrame()
 end)
 
@@ -203,9 +200,9 @@ itemInfoFrame.Hide.Checkbox.MouseButton1Click:Connect( function()
 	DebugXL:Assert( PCClient.pc )
 	if( PCClient.pc )then	
 		audio.UIClick:Play()
-		PCClient.pc.itemsT[ curFlexToolIdx ].hideItemB = not PCClient.pc.itemsT[ curFlexToolIdx ].hideItemB
-		pcEvent:FireServer( "SetHideItem", curFlexToolIdx, PCClient.pc.itemsT[ curFlexToolIdx ].hideItemB )
-		itemInfoFrame.Hide.Checkbox.Image = PCClient.pc.itemsT[ curFlexToolIdx ].hideItemB and "rbxassetid://61153606" or ""
+		PCClient.pc.gearPool:get( curGearPoolKey ).hideItemB = not PCClient.pc.gearPool:get( curGearPoolKey ).hideItemB
+		pcEvent:FireServer( "SetHideItem", curGearPoolKey, PCClient.pc.gearPool:get( curGearPoolKey ).hideItemB )
+		itemInfoFrame.Hide.Checkbox.Image = PCClient.pc.gearPool:get( curGearPoolKey ).hideItemB and "rbxassetid://61153606" or ""
 	end
 end )
 
@@ -213,9 +210,9 @@ itemInfoFrame.HideAccessories.Checkbox.MouseButton1Click:Connect( function()
 	DebugXL:Assert( PCClient.pc )
 	if( PCClient.pc )then	
 		audio.UIClick:Play()
-		PCClient.pc.itemsT[ curFlexToolIdx ].hideAccessoriesB = not PCClient.pc.itemsT[ curFlexToolIdx ].hideAccessoriesB
-		pcEvent:FireServer( "SetHideAccessories", curFlexToolIdx, PCClient.pc.itemsT[ curFlexToolIdx ].hideAccessoriesB )
-		itemInfoFrame.HideAccessories.Checkbox.Image = PCClient.pc.itemsT[ curFlexToolIdx ].hideAccessoriesB and "rbxassetid://61153606" or ""
+		PCClient.pc.gearPool:get( curGearPoolKey ).hideAccessoriesB = not PCClient.pc.gearPool:get( curGearPoolKey ).hideAccessoriesB
+		pcEvent:FireServer( "SetHideAccessories", curGearPoolKey, PCClient.pc.gearPool:get( curGearPoolKey ).hideAccessoriesB )
+		itemInfoFrame.HideAccessories.Checkbox.Image = PCClient.pc.gearPool:get( curGearPoolKey ).hideAccessoriesB and "rbxassetid://61153606" or ""
 	end
 end )
 
@@ -265,7 +262,6 @@ PCClient.pcUpdatedConnect( function()
 	RefreshSheet()
 end)
 
---InventoryFrameRemote:RefreshSheet( pcData )	
 
 local function CloseSheet()
 	possessionsFrame.Visible = false
@@ -290,7 +286,7 @@ possessionsFrame.Changed:Connect( function( property )
 					game.GuiService.SelectedObject = itemIcons[1];
 					DebugXL:Assert( PCClient.pc )
 					if( PCClient.pc )then	
-						local flexToolInst = PCClient.pc.itemsT[ itemIcons[1].Name ]
+						local flexToolInst = PCClient.pc.gearPool:get( itemIcons[1].Name )
 						GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )
 						WireInfoFrame( itemIcons[1].Name )
 					end
@@ -321,7 +317,7 @@ game.GuiService.Changed:Connect( function( property )
 			DebugXL:Assert( PCClient.pc )
 			if( PCClient.pc )then	
 				audio.UIClick:Play()			
-				local flexToolInst = PCClient.pc.itemsT[ game.GuiService.SelectedObject.Parent.Name ]
+				local flexToolInst = PCClient.pc.gearPool:get( game.GuiService.SelectedObject.Parent.Name )
 				GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )
 				WireInfoFrame( game.GuiService.SelectedObject.Parent.Name )			
 			end
@@ -338,9 +334,9 @@ end)
 RefreshSheet()
 
 while wait(0.1) do
-	-- hero tutorial for inventory
+	-- hero tutorial for gear choosing
 	if possessionsFrame.Visible then
-		if not PCClient.pc or not PCClient.pc.itemsT then 
+		if not PCClient.pc then 
 			possessionsFrame.Visible = false 
 		else
 			-- if you have unassigned gear you can use and an empty slot show how to assign it
@@ -365,7 +361,7 @@ while wait(0.1) do
 			-- teach them how to put in a weapon
 			local teachingHotbarB = false
 			if emptySlot then
-				local usableWeapons = TableXL:FindAllInTWhere( PCClient.pc.itemsT, function( _, item ) 
+				local usableWeapons = PCClient.pc.gearPool:findAllWhere( function( item ) 
 					return not CharacterClientI:GetPossessionSlot( PCClient.pc, item ) and
 						( ToolData.dataT[ item.baseDataS ].useTypeS == "held" or ToolData.dataT[ item.baseDataS ].useTypeS == "power" ) and
 						HeroUtility:CanUseWeapon( PCClient.pc, item ) 
@@ -376,7 +372,7 @@ while wait(0.1) do
 				end)
 				
 				if itemId then
-					if item ~= PCClient.pc.itemsT[ curFlexToolIdx ] then
+					if item ~= PCClient.pc.gearPool:get( curGearPoolKey ) then
 						local buttonName = itemId
 						local button = possessionsFrame.Inlay:FindFirstChild( buttonName )
 						if button then  						-- it's possible it doesn't exist if game discovers you have thing off the end of your sheet
@@ -395,7 +391,7 @@ while wait(0.1) do
 				for _, slot in pairs( ToolData.EquipSlotEnum ) do
 					local equipInSlot = CharacterClientI:GetEquipFromSlot( PCClient.pc, slot )
 					if not equipInSlot then
-						local usableArmor = TableXL:FindAllInTWhere( PCClient.pc.itemsT, function( _, item )
+						local usableArmor = PCClient.pc.gearPool:findAllWhere( function( item )
 							return ToolData.dataT[ item.baseDataS ].equipSlot == slot and
 								HeroUtility:CanUseWeapon( PCClient.pc, item)
 						end )
@@ -403,7 +399,7 @@ while wait(0.1) do
 							return item:getActualLevel()
 						end)
 						if itemId then
-							if item ~= PCClient.pc.itemsT[ curFlexToolIdx ] then
+							if item ~= PCClient.pc.gearPool:get( curGearPoolKey ) then
 								local buttonName = itemId
 								local button = possessionsFrame.Inlay:FindFirstChild( buttonName )
 								if button then  -- it's possible it doesn't exist if game discovers you have thing off the end of your sheet

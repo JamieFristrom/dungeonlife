@@ -113,6 +113,7 @@ local function DisplayChoices()
 				"No" )
 			if result[1]=="Yes" then
 				chooseHeroFrame.Visible = false			
+				print("Invoking DeleteHero for player "..game.Players.LocalPlayer:GetFullName())
 				savedPlayerCharacters = workspace.Signals.HeroesRF:InvokeServer( "DeleteHero", slotN )
 				DisplayChoices()
 				chooseHeroFrame.Visible = true			

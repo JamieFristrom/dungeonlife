@@ -333,26 +333,6 @@ function Costumes:LoadCharacter( player, srcCharactersA, noAttachmentsSet, alsoC
 	end
 end
 
--- function Costumes:ApplyNewCharacterCostumeWait( destCharacter, srcCharacter, alsoClothesB, leaveExistingAccessoriesB )
--- 	local player = game.Players:GetPlayerFromCharacter(destCharacter)
--- 	DebugXL:Assert( player )
--- 	if player then
--- 		local destCharacter = Costumes:GetSavedCostume( player ):Clone()
--- 		Costumes:ApplyCharacterCostumeWait( destCharacter, srcCharacter, alsoClothesB, leaveExistingAccessoriesB )
--- 		local oldCharacter = player.Character
--- 		destCharacter.PrimaryPart = destCharacter:FindFirstChild("HumanoidRootPart")
--- 		destCharacter:SetPrimaryPartCFrame( oldCharacter:GetPrimaryPartCFrame())
--- 		destCharacter.Humanoid:Destroy()
--- 		oldCharacter.Humanoid.Parent = destCharacter
--- 		oldCharacter.ManaValue.Parent = destCharacter
--- 		oldCharacter.MaxManaValue.Parent = destCharacter
--- 		destCharacter.Parent = game.Workspace
--- 		destCharacter.Name = oldCharacter.Name
--- 		player.Character = destCharacter
-		
--- 		oldCharacter:Destroy()  -- what's *that* going to fuck up
--- 	end
--- end
 
 function Costumes:ApplyCharacterCostumeWait( destCharacter, srcCharacter, alsoClothesB )
 	DebugXL:Assert( self == Costumes )
@@ -363,11 +343,8 @@ function Costumes:ApplyCharacterCostumeWait( destCharacter, srcCharacter, alsoCl
 		local humanoid = destCharacter:FindFirstChild("Humanoid")
 		if not humanoid then return end
 		
-		--local verifyJoints
 		local player = game.Players:GetPlayerFromCharacter(destCharacter)
 		if player then
-			--prepareClient(humanoid)
---			verifyJoints = prepareJointVerifier(humanoid)
 			if not humanoid.Parent then return end
 			
 			humanoid:UnequipTools()

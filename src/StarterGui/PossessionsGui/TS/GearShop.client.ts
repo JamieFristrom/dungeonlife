@@ -74,7 +74,7 @@ buyButton.MouseButton1Click.Connect( function()
     let shopItem = hero.shopPool.get( curFlexToolShopKey )!
     if( hero.statsT.goldN >= shopItem.getPurchasePrice() )
     {        
-        let gearCount = HeroUtility.CountGear( hero )
+        let gearCount = HeroUtility.CountNonPotionGear( hero )
         if( gearCount < InventoryClient.GetCount( 'GearSlots' ) )
         {
             heroEvent.FireServer( 'BuyItem', curFlexToolShopKey )

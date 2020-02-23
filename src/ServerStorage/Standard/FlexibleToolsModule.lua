@@ -149,6 +149,10 @@ function FlexibleTools:GetToolInst( toolObj )  -- fixme, this was a terrible nam
 	return FlexibleToolsServer.getFlexTool( toolObj )
 end
 
+function FlexibleTools:GetToolInstFromId( toolObj )
+	return FlexibleToolsServer.getFlexToolFromId( toolObj )
+end
+
 function FlexibleTools:GetToolBaseData( toolObj )
 	return FlexibleToolsServer.getToolBaseData( toolObj )
 end
@@ -289,8 +293,8 @@ function FlexibleTools:RemoveToolWait( player, tool )
 	local pcData = CharacterI:GetPCDataWait( player )
 	-- possible the player has been killed since we threw a bomb, so check first:
 	if pcData then
-		DebugXL:Assert( pcData.itemPool:get( toolServerData.possessionsKey ) == toolServerData.flexToolInst )		
-		pcData.itemPool:delete( toolServerData.possessionsKey )
+		DebugXL:Assert( pcData.gearPool:get( toolServerData.possessionsKey ) == toolServerData.flexToolInst )		
+		pcData.gearPool:delete( toolServerData.possessionsKey )
 	else
 		warn( "Couldn't find pcData for "..player.Name )
 	end

@@ -3,7 +3,7 @@ import { Hero } from ".//HeroTS"
 
 export class HeroStable 
 {
-	static readonly latestVersionN = 4  // changing to ItemPool
+	static readonly latestVersionN = 4  // changing to GearPool
 	private saveVersionN = HeroStable.latestVersionN
 	public heroesA = new Array<Hero>()
 
