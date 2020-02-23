@@ -598,7 +598,7 @@ function InventoryRemote.SetActiveSkin( player, skinOwnerS, skinTypeKey, skinIdS
 				-- has to come first otherwise you drop weapon
 				require( game.ServerStorage.FlexEquipModule ):ApplyEntireCostumeIfNecessaryWait( player )
 			end
-			require( game.ServerStorage.FlexibleToolsModule ):ReskinTools( player )
+			require( game.ServerStorage.Standard.FlexibleToolsModule ):ReskinTools( player )
 		end
 	end
 end

@@ -1,5 +1,5 @@
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-import { FlexTool, FlexToolI } from "ReplicatedStorage/TS/FlexToolTS"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 import { ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes";
 import { Debris, Workspace, Players, TweenService } from "@rbxts/services";
@@ -99,7 +99,7 @@ let LootTravellerRemote: { [k: string]: unknown } =
             startPosUDim2 = new UDim2( 0.5, 0, 0.5, 0 )
             midPosUDim2 = new UDim2( 0.5, 0, 0.25, 0 )
         }
-        let flexTool = FlexTool.objectify( flexToolInst as FlexToolI )
+        let flexTool = FlexTool.objectify( flexToolInst as FlexTool )
         new LootTraveller( startPosUDim2, midPosUDim2, flexTool, activeSkins as ActiveSkinSetI )    
     },
 

@@ -94,15 +94,15 @@ function HeroUtility:RecheckItemRequirements( pcData )
 	local dirtyB = true
 	while dirtyB do
 		dirtyB = false
-		for _, item in pairs( pcData.itemsT ) do
+		pcData.gearPool:forEach( function( item, _ )
 			if item.equippedB or item.slotN then
 				if not HeroUtility:CanUseWeapon( pcData, item ) then
 					item.equippedB = nil
 					item.slotN = nil
 					dirtyB = true
 				end
-			end
-		end
+			end 
+		end )
 	end
 end
 
@@ -163,10 +163,8 @@ function HeroUtility:GetRecommendation( player, savedPlayerCharacters )
 end
 --]]
 
-function HeroUtility:CountGear( pcData )
-	local nonPotionsT = TableXL:FindAllInTWhere( pcData.itemsT, function( _, item ) 
-		return ToolData.dataT[ item.baseDataS ].equipType ~= "potion" end )
-	local gearN = TableXL:GetN( nonPotionsT )
+function HeroUtility:CountNonPotionGear( pcData )
+	local gearN = pcData.gearPool:countIf( function( item ) return ToolData.dataT[ item.baseDataS ].equipType ~= "potion" end )
 	return gearN
 end
 

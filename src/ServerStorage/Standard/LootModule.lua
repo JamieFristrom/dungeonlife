@@ -5,7 +5,7 @@ local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 
 local CharacterI       = require( game.ServerStorage.CharacterI )
-local FlexibleTools    = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Inventory        = require( game.ServerStorage.InventoryModule )
 
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
@@ -92,8 +92,7 @@ function Loot:CheckForPotionDrop( player, dropChance, potionIdS, worldPosV3 )
 
 	local pcData = Heroes:GetPCDataWait( player )
 	
-	local potions = TableXL:FindAllInTWhere( pcData.itemsT, function( _, item ) return item.baseDataS == potionIdS end )
-	local potionsN = TableXL:GetN( potions )
+	local potionsN = pcData.gearPool:countIf( function( _, item ) return item.baseDataS == potionIdS end )
 	
 	-- chance of drop depends on ratio of monster level to your level
 	-- we don't want to give a level 10 hero lots of potions for killing level 1 monsters

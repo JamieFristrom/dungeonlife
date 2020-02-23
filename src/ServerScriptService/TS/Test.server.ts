@@ -19,6 +19,7 @@ if( RunService.IsStudio())
     wait(1)
     while( heroes.GetPlayers().size()===0 ) wait(1)
 
+    // test associating a hero with player
     let heroPlayer = Players.GetChildren()[0] as Player
     let fakePlayerMap = new Map<Player, PC>()
     fakePlayerMap.set( heroPlayer, new Hero( 'Warrior', 
@@ -26,6 +27,7 @@ if( RunService.IsStudio())
         [] ) )
     DebugXL.Assert( fakePlayerMap.get( heroPlayer )!.getTeam() === heroes )
 
+    // test associating a fake monster with player
     let fakeMonsterPlayer = Workspace.FindFirstChild('Camera') as Player
     fakePlayerMap.set( fakeMonsterPlayer, new Monster( 'x',
         [],

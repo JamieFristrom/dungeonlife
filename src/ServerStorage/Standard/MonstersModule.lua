@@ -6,7 +6,7 @@ local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL ) 
 
-local FlexibleTools    = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Loot             = require( game.ServerStorage.LootModule )
 
 local CharacterI       = require( game.ServerStorage.CharacterI )
@@ -72,7 +72,6 @@ local function GiveWeapon( character, player, flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw ) 
 	flexTool.levelN = math.ceil( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
 	PlayerServer.pcs[ player ]:giveTool( flexTool )
---	table.insert( playerCharactersT[ player ].itemsT, flexTool )	
 end
 
 
@@ -105,8 +104,6 @@ local function GiveUniqueWeapon( character, player, potentialWeaponsA )
 		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
 	PlayerServer.pcs[ player ]:giveTool( flexTool )
-
---	table.insert( PlayerServer.pcs[ player ].itemsT, flexTool )
 
 	TableXL:RemoveFirstElementFromA( potentialWeaponsA, weaponTemplate.idS )
 	return flexToolInst
@@ -206,7 +203,6 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	
 	--actually giving monsters armor was a bad idea:  it makes bigger slower weapons OP, makes your damage bubbles look smaller, better to just
 	--increase their hit points
-	--table.insert( pcData.itemsT, { baseDataS = "MonsterArmorMedium", levelN = monsterLevel, enchantmentsA = {}, equippedB = true } )
 	if monsterClass == "Werewolf" then
 		local inventory = Inventory:GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
@@ -216,7 +212,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	-- make sure you don't just have a one-shot weapon
 	
 	if pcData:countTools() == 1 then  -- one for armor, one for the possible one shot
-		if pcData.itemsT["item1"].baseDataS == "Bomb" then
+		if pcData.gearPool:get("item1").baseDataS == "Bomb" then
 			GiveUniqueWeapon( character, player, potentialWeaponsA )			
 		end
 	end
@@ -247,13 +243,13 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	end
 --	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
 	local totalDamageEstimate = 0
-	for _, possession in pairs( pcData.itemsT ) do
+	pcData.gearPool:forEach( function( possession ) 
 		if ToolData.dataT[ possession.baseDataS ].damageNs then
 			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
 			local average = ( damageN1 + damageN2 ) / 2
 			totalDamageEstimate = totalDamageEstimate + average
 		end
-	end
+	end )
 	totalDamageEstimate = totalDamageEstimate / pcData:countTools()
 	local damageBonusN = monsterDatum.baseDamageBonusN + monsterLevel * 0.15 -- monsterDatum.damageBonusPerLevelN  -- not using anymore to keep xp same after nerfing high level server monsters
 	totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN

@@ -12,6 +12,5 @@ export namespace MobServer
         const mob = mobTemplate.Clone()
         mob.SetPrimaryPartCFrame( new CFrame(8, 4, 0) )
         mob.Parent = Workspace.FindFirstChild<Folder>('Mobs')!
-//        FlexibleTools.CreateTool( { new FlexTool(  )} )
     }
 }

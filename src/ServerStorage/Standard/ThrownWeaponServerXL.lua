@@ -10,7 +10,7 @@ local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUt
 local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
 
 local CharacterI          = require( game.ServerStorage.CharacterI )
-local FlexibleTools       = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Mana                = require( game.ServerStorage.ManaModule )
 
 local showThrownObjOnServerB = true
@@ -42,42 +42,39 @@ function ThrownWeaponServer.new( tool )
 		if thrown == true then return end
 		if WeaponUtility:IsCoolingDown( player ) then return end
 		if tool.Remaining.Value <= 0 then return end
-		
-		-- MANA COST ONLY PARTIALLY IMPLEMENTED, NEEDS TO CHECK CLIENT AND USE ManaCost object value
-		-- (if we ever make a magic lobber thing)
-		if Mana:SpendMana( player.Character, FlexibleTools:GetManaCostN( tool ) ) then		
-			thrown = true  -- redundant but theoretically harmless
-			local character = player.Character
-			local humanoid = character.Humanoid
-			if humanoid == nil then return end
-		--	local targetPos = humanoid.TargetPoint
-			local thrownObj
-			if showThrownObjOnServerB then
-				thrownObj = ThrownWeaponUtility.Lob( player, projectileTemplate, mouseHitV3 ) 			
-				thrownObj.Parent = workspace.ActiveServerProjectiles
-				
-	--			Collisions.AssignToPlayersCollisionGroup( thrownObj, player )		
-				thrownObj:SetNetworkOwner( nil )
-			end
-			
-			-- we've rewritten this so the lobbed item will supposedly survive having its tool rmoved
 
-			local cooldownN = tool.Cooldown.Value
+		-- to do; if lobbed items are ever spells they need mana cost
+		thrown = true  -- redundant but theoretically harmless
+		local character = player.Character
+		local humanoid = character.Humanoid
+		if humanoid == nil then return end
+	--	local targetPos = humanoid.TargetPoint
+		local thrownObj
+		if showThrownObjOnServerB then
+			thrownObj = ThrownWeaponUtility.Lob( player, projectileTemplate, mouseHitV3 ) 			
+			thrownObj.Parent = workspace.ActiveServerProjectiles
 			
-			tool.Remaining.Value = tool.Remaining.Value - 1
-			if tool.Remaining.Value <= 0 then
-				-- we need to wait for tool action to resolve before destroying lest we mess things up
-				-- if thrownObj then thrownObj.AncestryChanged:Wait() end  -- didn't work
---				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
-				--print( "Destroying "..player.Name.."'s "..tool.Name.." id "..tool.ToolId.Value )
-				FlexibleTools:RemoveToolWait( player, tool )
-			end
-			
-			WeaponUtility:CooldownWait( player, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
-			
-
-			thrown = false
+--			Collisions.AssignToPlayersCollisionGroup( thrownObj, player )		
+			thrownObj:SetNetworkOwner( nil )
 		end
+		
+		-- we've rewritten this so the lobbed item will supposedly survive having its tool rmoved
+
+		local cooldownN = tool.Cooldown.Value
+		
+		tool.Remaining.Value = tool.Remaining.Value - 1
+		if tool.Remaining.Value <= 0 then
+			-- we need to wait for tool action to resolve before destroying lest we mess things up
+			-- if thrownObj then thrownObj.AncestryChanged:Wait() end  -- didn't work
+--				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
+			--print( "Destroying "..player.Name.."'s "..tool.Name.." id "..tool.ToolId.Value )
+			FlexibleTools:RemoveToolWait( player, tool )
+		end
+		
+		WeaponUtility:CooldownWait( player, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+		
+
+		thrown = false
 	end
 		
 	local function onEquipped()

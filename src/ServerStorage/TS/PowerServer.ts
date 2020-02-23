@@ -147,7 +147,7 @@ export namespace PowerServer
         let range = FlexEquipUtility.GetAdjStat(flexToolInst, "rangeN")
         new AreaEffect(newWisp, range, duration, affectedTeam, effectFunc )
         newWisp.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame().add(new Vector3(0, 7, 0)))
-        newWisp.FindFirstChild<NumberValue>("Range")!.Value = range
+        newWisp.FindFirstChild<NumberValue>('Range')!.Value = range
         newWisp.Parent = Workspace.FindFirstChild('Summons')
         delay(duration - 2, () => {
             newWisp.GetDescendants().forEach((descendant) => {

@@ -32,7 +32,7 @@ let placeTemplate = choosePlaceFrame.WaitForChild( "PlaceTemplate" ) as Frame
 
 
 let heroStableRaw = heroesRF.InvokeServer( "GetSavedPlayerCharactersWait" ) as object  // note it's plural; we're bringing in the whole stable
-let heroStable = HeroStable.objectify( heroStableRaw )
+let heroStable = HeroStable.convertFromRemote( heroStableRaw )
 
 class ServerGuiC
 {

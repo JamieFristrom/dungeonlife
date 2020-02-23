@@ -98,25 +98,9 @@ end
 -- * harder to pass remotely (an internal reference in a structure gets duplicated in the deep copy)
 
 -- returns item and possessionsKey which you could well need
-function CharacterClientI:GetPossessionFromSlot( characterDataT, slotN )
-	local foundItem
-	local foundKey
-	-- way 1
-	for key, item in pairs( characterDataT.itemsT ) do
-		if item.slotN == slotN then
-			if foundItem then
-				DebugXL:Error( "Found both "..item.baseDataS .." and "..foundItem.baseDataS.. " in slot "..slotN ) 
-			end
-			foundItem = item
-			foundKey = key
-		end
-	end
 
-	-- way 2
---	local foundItem = characterDataT.slotsT[ slotN ]
-
---	return foundItem
-	return foundItem, foundKey
+function CharacterClientI:GetPossessionFromSlot( characterDataT, slotN )  -- returns item, key or nil, nil
+	return unpack( characterDataT.gearPool:getFromSlot( slotN ) )
 end
 
 
@@ -136,53 +120,12 @@ end
 
 -- use nil itemKey to clear slot
 function CharacterClientI:AssignPossessionToSlot( characterDataT, itemKey, slotN )
-	-- way 1
-	-- empty slot
-	local currentItemInSlot = CharacterClientI:GetPossessionFromSlot( characterDataT, slotN )
-	if currentItemInSlot then
-		currentItemInSlot.slotN = nil
-	end
-	
-	local item = characterDataT.itemsT[ itemKey ]  -- if player has thrown away an item it will already be gone unfortunately, so hard to test for invalid parameters here
-	if item then
-		item.slotN = slotN
-	end
-
-	-- way 2
-	-- this can accidentally index the wrong item if player manages to drop something and assign to a slot at the same time,
-	-- which I don't really care about ATM, and we don't have to check if we go off edge because nil is nil
---	DebugXL:Assert( type( itemIdx ) == "number" )
---	DebugXL:Assert( type( slotN ) == "number" )
---	local currentSlot = CharacterClientI:GetPossessionSlot( pcData, pcData.itemsT[ itemKey ] )
---	if currentSlot then
---		pcData.slotsT[ currentSlot ] = nil
---	end
---	pcData.slotsT[ slotN ] = pcData.itemsT[ itemKey ]
-
+	characterDataT.gearPool:assignToSlot( itemKey, slotN )
 end
 
+
 function CharacterClientI:GetEquipFromSlot( characterDataT, equipSlot )
-	local foundItem
-	local foundKey
-	
-	-- way 1
-	for key, item in pairs( characterDataT.itemsT ) do
-		if item.equippedB then
-			local itemDatum = ToolData.dataT[ item.baseDataS ]
-			local itemEquipSlot = itemDatum.equipSlot
-			if itemEquipSlot == equipSlot then
-				DebugXL:Assert( not foundItem )
-				foundItem = item
-				foundKey = key
-			end
-		end
-	end
-
-	-- way 2
---	local foundItem = characterDataT.slotsT[ slotN ]
-
---	return foundItem
-	return foundItem, foundKey
+	return unpack( characterDataT.gearPool:getFromEquipSlot( equipSlot ) )
 end
 
 
@@ -192,32 +135,12 @@ end
 
 
 function CharacterClientI:GetWornWalkSpeedMul( defenderDataT )
-	local mul = 1
-	for _, equip in pairs( defenderDataT.itemsT ) do
-		if equip.equippedB then
-			-- not going to throw an error here because it gets called every frame. validation is elsewhere
-			local baseData = ToolData.dataT[ equip.baseDataS ]
-			if baseData then
-				mul = mul * ToolData.dataT[ equip.baseDataS ].walkSpeedMulN
-			end
-		end
-	end
-	return mul	
+	return defenderDataT.gearPool:getWornWalkSpeedMul()
 end
 
 
 function CharacterClientI:GetWornJumpPowerMul( defenderDataT )
-	local mul = 1
-	for _, equip in pairs( defenderDataT.itemsT ) do
-		if equip.equippedB then
-			-- not going to throw an error here because it gets called every frame. validation is elsewhere
-			local baseData = ToolData.dataT[ equip.baseDataS ]
-			if baseData then
-				mul = mul * ToolData.dataT[ equip.baseDataS ].jumpPowerMulN
-			end
-		end
-	end
-	return mul	
+	return defenderDataT.gearPool:getWornJumpPowerMul()
 end
 
 

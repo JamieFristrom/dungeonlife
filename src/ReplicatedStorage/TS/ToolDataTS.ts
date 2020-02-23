@@ -53,7 +53,6 @@ export namespace ToolData
         dropLikelihoodN: number
         imageId: string
         namePerLevel?: LevelNamePairing
-        walkSpeedMulN: number
         priceMulN: number  // ignored on some items
 
         statReqS?: string   // armor or weapon
@@ -61,7 +60,8 @@ export namespace ToolData
         // armor
         baseEquipS?: string                   // this could be refactored with baseTool
         equipSlot?: EquipSlotEnum
-        jumpPowerMulN?: number
+        walkSpeedMulN: number
+        jumpPowerMulN: number
         baseDefensesT?: { [k:string]: number }
 
         // weapon
@@ -87,13 +87,34 @@ export namespace ToolData
     export let dataA: ToolDatumI[] =
     [
         {
+            idS            : "NullTool",
+            readableNameS  : "NullTool",
+            namePlural: false,
+            minLevelN : 1,
+            useTypeS : "held",
+            equipType    : EquipTypeEnum.Melee,
+            statReqS       : "dexN",
+            skinType       : SkinTypeEnum.Sword1H,
+            baseToolS      : "Shortsword",
+            damageNs       :  [ 0, 0 ],  
+            cooldownN      : 1,
+            critChanceN    : 1, 
+            rangeN         : 1,
+            monsterStartGearBiasN : 0,
+            dropLikelihoodN : 0,
+            walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
+            priceMulN: 1,
+            imageId : "rbxassetid://124987047",
+        },
+        {
             idS : "PlateTorso",
             minLevelN : 4,
             readableNameS : "Plate Mail Shirt",
             namePlural: false,
             baseDefensesT : { melee : 2.75, ranged : 2.75, spell : 0 },  //	// 3 was too high  10/29		
-            walkSpeedMulN : 0.9,  
             priceMulN: 1,
+            walkSpeedMulN : 0.9,  
             jumpPowerMulN : 0,
             equipType : EquipTypeEnum.Armor,
             useTypeS : "worn",
@@ -370,6 +391,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,  // wishlist: make a player usable version that doesn't growl and looks metal
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             rangeN         : 6,			
             priceMulN: 1,
             imageId : AssetManifest.ImageToolClaws,
@@ -391,6 +413,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,  // wishlist: make a player usable version that doesn't growl and looks metal
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             rangeN         : 6,			
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2674833686&width=420&height=420&format=png",
@@ -415,6 +438,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,  // wishlist: make a player usable version that doesn't growl and looks metal
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
 
             rangeN         : 6,			
@@ -437,6 +461,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,  // wishlist: make a player usable version that doesn't growl and looks metal
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
 
             rangeN         : 10,			
@@ -461,6 +486,7 @@ export namespace ToolData
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://16215840",
         }, 
@@ -483,6 +509,7 @@ export namespace ToolData
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2574560933&width=420&height=420&format=png",
         }, // 2 hits to kill z        
@@ -504,6 +531,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 0.2,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2347448422&width=420&height=420&format=png",
 
@@ -555,6 +583,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "rbxassetid://124987047",
 
@@ -578,6 +607,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://11440361",
 	
@@ -600,6 +630,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://2319980778",
 	
@@ -631,6 +662,7 @@ export namespace ToolData
             monsterStartGearBiasN : 0,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "rbxassetid://49367564",
 	
@@ -654,6 +686,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2266973230&width=420&height=420&format=png",
 
@@ -677,6 +710,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://12768177",
 
@@ -699,6 +733,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "http://www.roblox.com/asset/?id=12215459",
 
@@ -721,6 +756,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "http://www.roblox.com/asset/?id=18409033",  // tarnished mace thumbnail
 
@@ -790,6 +826,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",			
         },
@@ -808,6 +845,7 @@ export namespace ToolData
             cooldownN: 1,
             critChanceN: 0.04,
             walkSpeedMulN   : 0.6,
+            jumpPowerMulN: 1,  
 
 //            effectStrengthN : 20,
 //            effectBonusPerLevelN : 2,
@@ -837,6 +875,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",
 
@@ -867,6 +906,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0.5,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,            
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
@@ -899,6 +939,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 1.5,
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
@@ -937,6 +978,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,  
             priceMulN: 2,
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 7 + 7 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  
@@ -960,6 +1002,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,
             priceMulN: 2,
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
@@ -983,6 +1026,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,
             priceMulN: 2,
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
@@ -1034,6 +1078,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 1,
             walkSpeedMulN   : 1,  // thought a moment about using the cooldown walkspeedmul to do the effect, but we want to bea ble to fire arrows while sprinting
+            jumpPowerMulN: 1,
             priceMulN: 2,
             descriptionArgs : ( me, level ) => [ math.ceil( ( me.effectStrengthN! + me.effectBonusPerLevelN! * level - 1 ) * 100 ),
                 me.durationFunc!( me, level ) ],
@@ -1063,6 +1108,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 0,
             walkSpeedMulN   : 1,  // thought a moment about using the cooldown walkspeedmul to do the effect, but we want to bea ble to fire arrows while sprinting
+            jumpPowerMulN: 1,
             priceMulN: 2,
             descriptionArgs : ( me, level ) => [ math.ceil( ( me.effectStrengthN! + me.effectBonusPerLevelN! * level - 1 ) * 100 ),
                 me.durationFunc!( me, level ) ],
@@ -1085,6 +1131,7 @@ export namespace ToolData
             cooldownN : 4, 
             dropLikelihoodN : 0,
             walkSpeedMulN   : 1,  // thought a moment about using the cooldown walkspeedmul to do the effect, but we want to bea ble to fire arrows while sprinting
+            jumpPowerMulN: 1,
             priceMulN: 2,
             imageId : "rbxassetid://2688472960",
         },	
@@ -1107,6 +1154,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 16,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744360",
@@ -1128,6 +1176,7 @@ export namespace ToolData
             monsterStartGearBiasN : 1,
             dropLikelihoodN : 4,
             walkSpeedMulN   : 1,
+            jumpPowerMulN: 1,
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744355",
