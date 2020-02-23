@@ -35,7 +35,7 @@ export namespace HeroServer
         if(( math.floor( hero.lastShopResetOsTime / shopResetPeriod ) < math.floor( osTime / shopResetPeriod ) )||
             ( hero.getActualLevel() > hero.lastShopResetLevel ))
         {
-            hero.shopT.clear()
+            hero.shopPool.clear()
             for( let i=0; i<25; i++ )
             {
                 //print( 'Shop item ' + i )
@@ -52,7 +52,7 @@ export namespace HeroServer
                     if( newItem )
                     {
                         let duplicate = false
-                        hero.shopT.forEach( (storeItem: FlexTool ) =>
+                        hero.shopPool.forEach( (storeItem: FlexTool ) =>
                         {
                             // at least 900 checks by the time we're through. let's see if it's too slow, because I'm having problems iterating 
                             // through roblox-ts's map using any method but this which means I can't break. That said our best case scenario sucks
@@ -70,7 +70,7 @@ export namespace HeroServer
                         }
                     }
                 }
-                hero.shopT.set( "item"+i, gearItem )
+                hero.shopPool.set( "item"+i, gearItem )
             }
             hero.lastShopResetOsTime = osTime
             hero.lastShopResetLevel = hero.getActualLevel()
@@ -87,19 +87,19 @@ export namespace HeroServer
     export function buyItem( player: Player, hero: Hero, shopItemKey: string )
     {
         // make sure didn't click twice before finished processing
-        let shopItem = hero.shopT.get( shopItemKey )
+        let shopItem = hero.shopPool.get( shopItemKey )
         if( shopItem )
         {
             if( hero.statsT.goldN >= shopItem.getPurchasePrice() )
             {
-                let gearCount = HeroUtility.CountGear( hero )
+                let gearCount = HeroUtility.CountNonPotionGear( hero )
                 if( gearCount < Inventory.GetCount( player, "GearSlots"))
                 {
                     HeroServer.adjustGold( player, hero, -shopItem.getPurchasePrice(), "Buy", shopItem.baseDataS )
                     hero.giveTool( shopItem )
-                    let totalPossessions = HeroUtility.CountGear( hero )
+                    let totalPossessions = HeroUtility.CountNonPotionGear( hero )
                     Analytics.ReportEvent( player, 'BuyTool', shopItem.baseDataS, tostring(shopItem.levelN), totalPossessions )        
-                    hero.shopT.delete( shopItemKey )
+                    hero.shopPool.delete( shopItemKey )
                 }
             }
         }

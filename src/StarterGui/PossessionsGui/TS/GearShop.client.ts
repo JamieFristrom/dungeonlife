@@ -51,7 +51,7 @@ function RefreshGearShop( pc: PC )
         ( toolIdx: string )=>
         {
             curFlexToolShopKey = toolIdx
-            let tool = hero.shopT.get( toolIdx )!
+            let tool = hero.shopPool.get( toolIdx )!
             buyButton.Text = Localize.formatByKey( 'BuyFor', [ tool.getPurchasePrice() ] )
             possessionsItemInfoFrame.Visible = false
             itemInfoFrame.Visible = true
@@ -71,10 +71,10 @@ buyButton.MouseButton1Click.Connect( function()
     uiClick.Play()
     let hero = PCClient.pc as Hero
     if( !hero.statsT ) return
-    let shopItem = hero.shopT.get( curFlexToolShopKey )!
+    let shopItem = hero.shopPool.get( curFlexToolShopKey )!
     if( hero.statsT.goldN >= shopItem.getPurchasePrice() )
     {        
-        let gearCount = HeroUtility.CountGear( hero )
+        let gearCount = HeroUtility.CountNonPotionGear( hero )
         if( gearCount < InventoryClient.GetCount( 'GearSlots' ) )
         {
             heroEvent.FireServer( 'BuyItem', curFlexToolShopKey )

@@ -9,7 +9,7 @@ local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUt
 
 local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
 
-local FlexibleTools       = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Mana                = require( game.ServerStorage.ManaModule )
 
 --print( "Made it here")

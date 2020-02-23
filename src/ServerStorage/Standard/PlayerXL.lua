@@ -4,21 +4,23 @@ local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local PossessionData   = require( game.ReplicatedStorage.Standard.PossessionDataStd )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
-
 local CharacterPhysics = require( game.ReplicatedStorage.Standard.CharacterPhysics )
-
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
+print( 'PlayerXL: ReplicatedStorage includes succesful' )
+
+local CharacterI       = require( game.ServerStorage.CharacterI )
 
 local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
-
-local CharacterI       = require( game.ServerStorage.CharacterI )
 local Costumes         = require( game.ServerStorage.Standard.CostumesServer )
 local Inventory        = require( game.ServerStorage.Standard.InventoryModule )
+print( 'PlayerXL: ReplicatedStorage includes succesful' )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
+print( 'PlayerXL: ReplicatedStorage.TS includes succesful' )
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+print( 'PlayerXL: ServerStorage.TS includes succesful' )
 
 local PlayerXL = {}
 

@@ -27,20 +27,23 @@ print( script:GetFullName().." executed" )
 
 local CharacterUtility  = require( game.ReplicatedStorage.Standard.CharacterUtility )
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
-local MathXL		    = require( game.ReplicatedStorage.Standard.MathXL )
+local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
+local MathXL		    = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 local ToolXL            = require( game.ReplicatedStorage.Standard.ToolXL )
 local WeaponUtility     = require( game.ReplicatedStorage.Standard.WeaponUtility )
+print( 'FlexibleToolsModule: ReplicatedStorage.Standard imports succesful')
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
-local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
+print( 'FlexibleToolsModule: ReplicatedStorage imports succesful')
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 local Mana              = require( game.ServerStorage.ManaModule )
 local MechanicalEffects = require( game.ServerStorage.Standard.MechanicalEffects )
+print( 'FlexibleToolsModule: ServerStorage imports succesful')
 
 local Enhancements = require( game.ReplicatedStorage.TS.EnhancementsTS ).Enhancements
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
@@ -48,7 +51,10 @@ local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
+print( 'FlexibleToolsModule: ReplicatedStorage imports succesful')
 
+local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
+print( 'FlexibleToolsModule: ServerStorage.TS imports succesful')
 
 local FlexibleTools = {}
 
@@ -70,7 +76,6 @@ local FlexibleTools = {}
 --                      ... 
 --                    }
 --  }
-local serverToolDataT = {}
 
 
 
@@ -134,36 +139,26 @@ end
 --------------------------------------------------------------------------------------------------------------------
 -- Local Functions
 --------------------------------------------------------------------------------------------------------------------
-local toolIdServer = 0
-function ServeToolId()
-	toolIdServer = toolIdServer + 1
-	return toolIdServer
-end
 
 
 --------------------------------------------------------------------------------------------------------------------
 -- Flexible Tool Functions
 --------------------------------------------------------------------------------------------------------------------
 -- gets instance data
-function FlexibleTools:GetToolInst( toolObj )
---	--print( "Getting tool data for tool ", tool:GetFullName() ) 
-	if not toolObj:FindFirstChild("ToolId") then
-		DebugXL:Error( "Can't find ToolId for "..toolObj:GetFullName() )
-		return nil
-	end
-	return FlexibleTools:GetToolInstFromId( toolObj.ToolId.Value )
+function FlexibleTools:GetToolInst( toolObj )  -- fixme, this was a terrible name. Should be called GetFlexTool, it doesn't return a Tool instance
+	return FlexibleToolsServer.getFlexTool( toolObj )
 end
 
-function FlexibleTools:GetToolInstFromId( toolId )
-	return serverToolDataT[ toolId ].flexToolInst
+function FlexibleTools:GetToolInstFromId( toolObj )
+	return FlexibleToolsServer.getFlexToolFromId( toolObj )
 end
 
 function FlexibleTools:GetToolBaseData( toolObj )
-	return FlexibleTools:GetFlexToolBaseData( FlexibleTools:GetToolInst( toolObj ) )
+	return FlexibleToolsServer.getToolBaseData( toolObj )
 end
 
 function FlexibleTools:GetFlexToolBaseData( flexToolInst )
-	return ToolData.dataT[ flexToolInst.baseDataS ]
+	return FlexibleToolsServer.getFlexToolBaseData( flexToolInst )
 end
 
 function FlexibleTools:GetToolLevelRequirement( toolO )
@@ -173,7 +168,10 @@ end
 -- destination can be a player or it can be a point in the world
 -- if point in the world the format is { parentO = parent, positionV3 = position } 
 function FlexibleTools:CreateTool( params )
+
 	DebugXL:Assert( self == FlexibleTools )
+	return FlexibleToolsServer.createTool( params )
+	--[[
 	local toolInstanceDatumT = params.toolInstanceDatumT
 	local destinationPlayer  = params.destinationPlayer
 	local destinationV3      = params.destinationV3
@@ -183,7 +181,7 @@ function FlexibleTools:CreateTool( params )
 --	--print( "Creating "..toolInstanceDatumT.baseDataS.." for "..destinationPlayer.Name )
 	
 	local toolId = ServeToolId()
-	serverToolDataT[ toolId ] = { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey }
+	FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey } )
 	
 	-- if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
 	if not toolInstanceDatumT.enhancementsA then toolInstanceDatumT.enhancementsA = {} end
@@ -282,26 +280,21 @@ function FlexibleTools:CreateTool( params )
 		DebugXL:Error("Need to specify a destination or player")
 	end
 	
---	newToolInstance.AncestryChanged:Connect( function( _, parent )
---		if not parent then
---			serverToolDataT[ toolId ] = nil
---		end
---	end)
-	
 	return newToolInstance
+	--]]
 end
 
 
 function FlexibleTools:RemoveToolWait( player, tool )
 	local toolId = tool.ToolId.Value
-	local toolServerData = serverToolDataT[ toolId ]
+	local toolServerData = FlexibleToolsServer.getFlexToolAccessor( toolId )
 	DebugXL:Assert( player == toolServerData.player )
 	
 	local pcData = CharacterI:GetPCDataWait( player )
 	-- possible the player has been killed since we threw a bomb, so check first:
 	if pcData then
-		DebugXL:Assert( pcData.itemsT[ toolServerData.possessionsKey ] == toolServerData.flexToolInst )		
-		pcData.itemsT[ toolServerData.possessionsKey ] = nil
+		DebugXL:Assert( pcData.gearPool:get( toolServerData.possessionsKey ) == toolServerData.flexToolInst )		
+		pcData.gearPool:delete( toolServerData.possessionsKey )
 	else
 		warn( "Couldn't find pcData for "..player.Name )
 	end
@@ -323,7 +316,7 @@ end
 function FlexibleTools:GetToolInstanceDatum( toolObject )
 	DebugXL:Assert( self == FlexibleTools )
 	local toolId = toolObject.ToolId.Value
-	return serverToolDataT[ toolId ].flexToolInst
+	return FlexibleToolsServer.getFlexToolAccessor( toolId ).flexToolInst
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -341,29 +334,6 @@ function FlexibleTools:GetDamageNs( toolObj, actualLevel, maxLevel )
 	local flexToolInst     = FlexibleTools:GetToolInst( toolObj )
 	return FlexEquipUtility:GetDamageNs( flexToolInst, actualLevel, maxLevel )
 
-end
-
-
-function FlexibleTools:GetCooldownN( toolObj )
-	DebugXL:Assert( self == FlexibleTools )
-	local toolData     = FlexibleTools:GetToolInst( toolObj )
-	local toolBaseData = FlexibleTools:GetToolBaseData( toolObj )
-
---  well, that's just a whole another way for weapons to drift apart in ability 
-	return toolBaseData.cooldownN
-end
-
-
--- giving these unique interfaces because I don't know which ones I'll want to be able to adjust
-function FlexibleTools:GetToolRangeN( toolObj )
-	DebugXL:Assert( self == FlexibleTools )
-	return FlexibleTools:GetToolBaseData( toolObj ).rangeN
-end
-
-
-function FlexibleTools:GetManaCostN( toolObj )
-	DebugXL:Assert( self == FlexibleTools )
-	return FlexEquipUtility:GetManaCost( FlexibleTools:GetToolInst( toolObj) )
 end
 
 
@@ -609,8 +579,8 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 	local toolBaseData = FlexibleTools:GetToolBaseData( tool )
 	local toolSkinType = toolBaseData.skinType
 	local activeSkin = _activeSkinsT[ toolSkinType ]
-	local _possessionsKey = serverToolDataT[ tool.ToolId.Value ].possessionsKey
-	DebugXL:Assert( serverToolDataT[ tool.ToolId.Value ].player == player )
+	local _possessionsKey = FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).possessionsKey
+	DebugXL:Assert( FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).player == player )
 	-- oh look, I can use local functions to avoid the hassle of passing parameters
 	local function RecreateTool()
 		local _toolInstanceDatum = FlexibleTools:GetToolInstanceDatum( tool )
@@ -620,7 +590,7 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 			end
 		end
 		tool:Destroy()
-		-- puts in your backpack and that's fine
+		-- puts in your backpack and that's fine 
 		FlexibleTools:CreateTool( {
 			toolInstanceDatumT = _toolInstanceDatum,
 			destinationPlayer  = player,

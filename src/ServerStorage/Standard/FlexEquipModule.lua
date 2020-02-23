@@ -18,7 +18,7 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 
 	local equippedItemModelsA = {}
 	local noAttachmentsSet = {}
-	for _, item in pairs( pcData.itemsT ) do
+	pcData.gearPool:forEach( function( item, _ )
 		if item.equippedB then
 			local equipDatum = ToolData.dataT[ item.baseDataS ]
 			if not item.hideItemB then
@@ -33,7 +33,7 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 				end
 			end
 		end
-	end
+	end )
 	Costumes:LoadCharacter( player, equippedItemModelsA, noAttachmentsSet, true, player.Character )
 	
 	-- loading a character erases the backpack, so:

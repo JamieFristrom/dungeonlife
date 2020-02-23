@@ -1,14 +1,15 @@
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local WeaponUtility     = require( game.ReplicatedStorage.Standard.WeaponUtility )
-
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
+
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
-local CharacterI   = require( game.ServerStorage.CharacterI )
-local FlexibleTools     = require( game.ServerStorage.FlexibleToolsModule )
+local CharacterI        = require( game.ServerStorage.CharacterI )
 local Mana              = require( game.ServerStorage.ManaModule )
 
 local WeaponServer      = require( game.ServerStorage.Standard.WeaponServerModule )
+
+local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 
 

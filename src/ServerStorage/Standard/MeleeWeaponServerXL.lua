@@ -6,7 +6,7 @@ local DebugXL       = require( game.ReplicatedStorage.Standard.DebugXL )
 local TableXL       = require( game.ReplicatedStorage.Standard.TableXL )
 
 local CharacterI    = require( game.ServerStorage.CharacterI )
-local FlexibleTools = require( game.ServerStorage.FlexibleToolsModule )
+local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 local CharacterXL   = require( game.ServerStorage.Standard.CharacterXL )
 local WeaponServer  = require( game.ServerStorage.Standard.WeaponServerModule )
@@ -74,7 +74,7 @@ function MeleeWeaponServerXL.new( Tool )
 		local bestTarget, bestFitN = unpack( WeaponUtility:FindClosestTargetInCone( Character, MeleeWeaponClient.swordSweepDot ) )
 		if bestTarget then
 --			--print( Character.Name.." found target "..bestTarget.Name )
-			if bestFitN <= FlexibleTools:GetToolRangeN( Tool ) then
+			if bestFitN <= Tool:FindFirstChild('Range').Value then
 --				--print( "In range" )
 				CharacterI:TakeFlexToolDamage( bestTarget, Player, flexToolInst )
 				PlayerServer.markHit( Player, "Melee" )

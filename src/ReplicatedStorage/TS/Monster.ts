@@ -1,5 +1,5 @@
 import { PC } from "./PCTS"
-import { FlexToolI } from 'ReplicatedStorage/TS/FlexToolTS'
+import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Teams } from "@rbxts/services";
 
 export class Monster extends PC
@@ -9,7 +9,7 @@ export class Monster extends PC
 //        imageId: string,
 //        walkSpeed: number,
 //        jumpPower: number,        
-        items: FlexToolI[],
+        items: FlexTool[],
         public monsterLevel: number )
         {
             super( id, items )
