@@ -147,10 +147,10 @@ export namespace FlexibleToolsServer
                                 const descendentScript = descendent as Script
                                 descendent.Disabled = false
                             }
-                            else if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire'))
+                            else if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire') || descendent.IsA('Trail'))
                             {
                                 // now *that's* a new idea to me. Any of these things have Enabled properties, so...
-                                const descendentEmitter = descendent as ParticleEmitter | Beam | Light | Fire
+                                const descendentEmitter = descendent as ParticleEmitter | Beam | Light | Fire | Trail
                                 descendentEmitter.Enabled = true
                                 nonDefaultFX = true
                             }
@@ -169,9 +169,9 @@ export namespace FlexibleToolsServer
                     {
                         if( descendent.Name === 'FXdefault' )
                         {
-                            if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire'))
+                            if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire') || descendent.IsA('Trail'))
                             {
-                                let effect = descendent as ParticleEmitter | Beam | Light | Fire
+                                let effect = descendent as ParticleEmitter | Beam | Light | Fire | Trail
                                 effect.Enabled = false
                             }
                             else
