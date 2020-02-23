@@ -59,12 +59,6 @@ function AssignCurrentToHotbarSlot( i )
 	end
 end
 
-function UnbindAssignActions()
-	for i = 1, 4 do
-		game.ContextActionService:UnbindAction( "assign"..i )
-	end
-end
-
 
 function ShowInfoFrame()
 	DebugXL:Assert( PCClient.pc )
@@ -155,21 +149,6 @@ function WireInfoFrame( flexToolIdx )
 			end
 		end	
 		ShowInfoFrame()
-	end
-end
-
-
-function AssignCurrentToHotbarSlot( i )
-	DebugXL:Assert( PCClient.pc )
-	if( PCClient.pc )then
-		audio.UIClick:Play()
-		local flexToolInst = PCClient.pc.gearPool:get( curGearPoolKey )
-		if flexToolInst then  -- it's possible to sell your item and click on it again in your inventory before it's updated, so we have to check
-			pcEvent:FireServer( "AssignItemToSlot", curGearPoolKey, i )  -- on server
-			CharacterClientI:AssignPossessionToSlot( PCClient.pc, curGearPoolKey, i )  -- on client for snap
-			GearUI.FillOutInfoFrame( itemInfoFrame, flexToolInst )			
-			WireInfoFrame( curGearPoolKey )			
-		end
 	end
 end
 
