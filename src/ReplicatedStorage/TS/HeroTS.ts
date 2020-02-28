@@ -76,6 +76,11 @@ export class Hero extends PC implements HeroI
                 hero.shopPool = new GearPool( hero.shopT )
                 hero.shopT = undefined
             }
+            else
+            {
+                // somehow this is possible
+                hero.shopPool = new GearPool({})
+            }
         }
         else
         {
