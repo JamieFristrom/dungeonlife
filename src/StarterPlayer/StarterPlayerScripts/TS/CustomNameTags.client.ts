@@ -51,14 +51,14 @@ while( true )
 						if( undercoverWerewolfB ) 
 						{
 							let arbitraryHeroLevel = 5
-							let arbitraryHero = heroesTeam.GetPlayers()[1]
+							let arbitraryHero = heroesTeam.GetPlayers()[0]
 							if( arbitraryHero )
 							{
 								let levelStr = PCMonitor.getPublishedLevel( arbitraryHero )
 								arbitraryHeroLevel = levelStr.match( '%d+' )[0] as unknown as number
 								arbitraryHeroLevel = arbitraryHeroLevel ? arbitraryHeroLevel : 5
 							}
-							theirLevel = math.min( theirLevel, arbitraryHeroLevel ) 
+							theirLevel = theirLevel ? math.min( theirLevel, arbitraryHeroLevel ) : arbitraryHeroLevel
 						}
 						if( theirLevel !== undefined ) 
 						{
