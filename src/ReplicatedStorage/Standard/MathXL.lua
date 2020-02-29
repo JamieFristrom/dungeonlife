@@ -29,7 +29,7 @@ end
 
 -- takes an array of weights and randomly chooses amongst them taking weight into account. 
 -- weight of 2 will be twice as likely to occur as 1
-function MathXL:RandomBiasedInteger( weightsA )
+function MathXL:RandomBiasedInteger1toN( weightsA )
 	DebugXL:Assert( self == MathXL )
 	DebugXL:Assert( #weightsA >= 1 )
 	local totalWeightN = 0
@@ -45,7 +45,7 @@ function MathXL:RandomBiasedInteger( weightsA )
 			return i
 		end
 	end 
-	DebugXL:Error( "Problem with RandomBiasedInteger. Total weight "..totalWeightN.." dieroll "..dieroll )
+	DebugXL:Error( "Problem with RandomBiasedInteger1toN. Total weight "..totalWeightN.." dieroll "..dieroll )
 	return 1
 end
 
@@ -61,7 +61,7 @@ function MathXL:RandomBiasedKey( tblOfWeightsT )
 		weightsA[ index ] = v
 		index = index + 1 
 	end
-	local x = MathXL:RandomBiasedInteger( weightsA )
+	local x = MathXL:RandomBiasedInteger1toN( weightsA )
 	return keyA[ x ]
 end
 

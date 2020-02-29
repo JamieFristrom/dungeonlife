@@ -10,7 +10,6 @@ local Inventory        = require( game.ServerStorage.InventoryModule )
 
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 local Heroes           = require( game.ServerStorage.Standard.HeroesModule )
-local RandomGear = require( game.ServerStorage.Standard.RandomGear )
 
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
@@ -27,6 +26,7 @@ local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService )
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local RandomGear = require( game.ServerStorage.TS.RandomGear ).RandomGear
 
 local itemDropRateModifierN  = BalanceData.itemDropRateModifierN -- 0.75
 local healthPotionDropChance = BalanceData.healthPotionBaseDropChance -- 0.4

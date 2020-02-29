@@ -5,11 +5,17 @@ interface MathXL
 
     RandomInteger( xmin: number, xmax: number ): number  // x1, x2 INCLUSIVE
 
+    RandomBiasedInteger1toN( weightsA: number[] ): number
+
+    RandomBiasedKey<keytype>( tblOfWeightsT: Map<keytype,number> ): keytype
+
     ShuffleArray( arr: number[] ): number[]
 
-    Lerp( x1: number, x2: number, k: number ) : number
+    Lerp( x1: number, x2: number, k: number ): number
 
     ApproxEqual( x1: number, x2: number, epsilon: number ): boolean
+
+    Round( x: number ) : number
 }
 
 declare let mathXL: MathXL
