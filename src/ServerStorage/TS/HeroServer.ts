@@ -1,4 +1,3 @@
-import * as RandomGear from "ServerStorage/Standard/RandomGear"
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
 
@@ -7,11 +6,14 @@ import { BadgeService, Teams, Workspace, Players } from "@rbxts/services";
 import * as HeroUtility from "ReplicatedStorage/Standard/HeroUtility"
 
 import { Analytics } from "ServerStorage/TS/Analytics"
+import { RandomGear } from "ServerStorage/TS/RandomGear"
+
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+
 import { PlayerServer } from "./PlayerServer";
 
 let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
@@ -57,7 +59,7 @@ export namespace HeroServer
                             // at least 900 checks by the time we're through. let's see if it's too slow, because I'm having problems iterating 
                             // through roblox-ts's map using any method but this which means I can't break. That said our best case scenario sucks
                             // even with break so maybe not that big a deal
-                            if( newItem.identical( storeItem! ) )  
+                            if( newItem!.identical( storeItem! ) )  
                             {
                                 print( "Duplicate" )
                                 duplicateCount++

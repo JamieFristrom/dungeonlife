@@ -84,7 +84,7 @@ local function GiveUniqueWeapon( character, player, potentialWeaponsA )
 	if TableXL:GetN( dropLikelihoods ) == 0 then
 		DebugXL:Error( character.Name.." has no drop likelihoods" )
 	end
-	local toolN = MathXL:RandomBiasedInteger( dropLikelihoods )
+	local toolN = MathXL:RandomBiasedInteger1toN( dropLikelihoods )
 	local weaponTemplate = toolData[ toolN ]
 	if not weaponTemplate then
 		DebugXL:Dump( potentialWeaponsA )

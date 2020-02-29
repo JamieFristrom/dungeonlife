@@ -159,7 +159,7 @@ function GrowFromGridCell( x, y, fromCompassDirectionN )
 	for i = 1, 4 do
 		tileWeights[ i ] = FloorData:CurrentFloor().tileProbabilitiesT[ MapTileData.masterDataA[ i ].modelName ] or 1 
 	end
-	tileN = MathXL:RandomBiasedInteger( tileWeights )
+	tileN = MathXL:RandomBiasedInteger1toN( tileWeights )
 	
 	local tile = MapTileData.masterDataA[tileN]
 
