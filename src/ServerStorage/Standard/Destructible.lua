@@ -66,11 +66,10 @@ function Destructible.new( destructibleInstance )
 		
 		
 		local lastValue = destructibleInstance.Humanoid.Health
+		local hitSoundEmitter = destructibleInstance.PrimaryPart.Hit
 		destructibleInstance.Humanoid.HealthChanged:Connect( function( value )
 			if value < lastValue then
-				if destructibleInstance.PrimaryPart then
-					destructibleInstance.PrimaryPart.Hit:Play()
-				end
+				hitSoundEmitter:Play()
 			end
 			lastValue = value
 		end)
