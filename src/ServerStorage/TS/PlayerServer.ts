@@ -1,247 +1,233 @@
 print('PlayerServer.ts executed')
-import { Players, Teams } from "@rbxts/services"
+import { Players, Teams, ServerStorage } from "@rbxts/services"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 print('PlayerServer: ReplicatedStorage/TS imports succesful')
 
-import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
-print('PlayerServer: FlexibleTools imported')
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 print('PlayerServer: GameAnalyticsServer imported')
-import * as Inventory from "ServerStorage/Standard/InventoryModule"
-print('PlayerServer: ServerStorage/Standard imports succesful')
 
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
-import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 print('PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
 print('PlayerServer: Analytics imports succesful')
 
-export namespace PlayerServer
-{
-    let characterAddedFuncs = new Map< Player, ( character: Model )=>void>()
-    let birthTicks = new Map< Player, number >()
+type Character = Model
 
-    export let pcs = new Map< Player, PC >()
+export namespace PlayerServer {
+    let characterAddedFuncs = new Map<Player, (character: Character) => void>()
+    let birthTicks = new Map<Player, number>()
 
-    interface HitTrackerI
+    let characterRecords = new Map<Character, CharacterRecord>()
+
+
+    let playerCharacterRecords = new Map<Player, CharacterRecord>()
+
+    // used when you know the player exists but aren't sure if their Roblox character is currently instantiated
+    export function getCharacterRecordFromPlayer(player: Player) 
     {
-        [k:string]: { hits: number, attacks: number }
+        return playerCharacterRecords.get(player)
     }
 
-    export let hitTrackers = new Map< Player, HitTrackerI>()
-
-    export function customCharacterAddedConnect( player: Player, charAddedFunc: ( character: Model )=>void )
+    export function getCharacterRecordFromPlayerWait(player: Player) 
     {
-        DebugXL.Assert( !characterAddedFuncs.has( player ))
-        characterAddedFuncs.set( player, charAddedFunc )
+        for(;;)
+        {
+            const record = playerCharacterRecords.get( player )
+            if( record !== undefined )
+                return record
+            wait()
+        }
     }
 
-    export function callCharacterAdded( player: Player, character: Model )
+    // used for AI mobs
+    export function getCharacterRecord(character: Character) 
     {
-        DebugXL.Assert( character.FindFirstChild("Humanoid") !== undefined )
-        let func = characterAddedFuncs.get( player )
-        DebugXL.Assert( func !== undefined )
-        if( func )
-            spawn( function() { func!( character ) } )
-        birthTicks.set( player, tick() )
+        DebugXL.Assert( character !== undefined )
+        if( character )
+        {
+            let characterRecord = characterRecords.get(character)
+            return characterRecord
+        }
+        return undefined
     }
 
-    export function recordCharacterDeath( player: Player, character: Model )
+    export function getCharacterRecordWait(character: Character) 
     {
-        let birthTick = birthTicks.get( player )
+        for(;;)
+        {
+            let characterRecord = characterRecords.get(character)
+            if( characterRecord )
+                return characterRecord
+            wait()
+        }
+    }
+
+    // doing assertions below because we're called from lua so can't always check at compile time
+
+    // this looks ugly having the double key maps but I think it's best because players get their character records before
+    // their character is instantiated but mobs never have players
+    export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecord)
+    {
+        DebugXL.Assert(player.IsA('Player'))
+        DebugXL.Assert(characterRecord!==undefined)
+        playerCharacterRecords.set( player, characterRecord )
+    }
+
+    export function setCharacterRecord(player: Player, character: Character, characterRecord: CharacterRecord)
+    {
+        DebugXL.Assert(player.IsA('Player'))
+        DebugXL.Assert(character.IsA('Model'))
+        DebugXL.Assert(characterRecord!==undefined)
+        characterRecords.set( character, characterRecord )
+        playerCharacterRecords.set( player, characterRecord )
+    }
+
+    export function deleteCharaterRecord(player: Player, character: Character)
+    {
+        DebugXL.Assert(player.IsA('Player'))
+        DebugXL.Assert(character.IsA('Model'))
+        characterRecords.delete( character )
+        playerCharacterRecords.delete( player )
+    }
+    
+    export function getCharacterRecords() { return characterRecords }
+    export function getPlayerCharacterRecords() { return playerCharacterRecords }
+
+
+    interface HitTrackerI {
+        [k: string]: { hits: number, attacks: number }
+    }
+
+    export let hitTrackers = new Map<Player, HitTrackerI>()
+
+    export function customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
+        DebugXL.Assert(!characterAddedFuncs.has(player))
+        characterAddedFuncs.set(player, charAddedFunc)
+    }
+
+    export function callCharacterAdded(player: Player, character: Character) {
+        DebugXL.Assert(character.FindFirstChild("Humanoid") !== undefined)
+        let func = characterAddedFuncs.get(player)
+        DebugXL.Assert(func !== undefined)
+        if (func)
+            spawn(function () { func!(character) })
+        birthTicks.set(player, tick())
+    }
+
+    export function recordCharacterDeath(player: Player, character: Character) {
+        let birthTick = birthTicks.get(player)
         let lifetime = 0
-        if( birthTick ) {
+        if (birthTick) {
             lifetime = tick() - birthTick
-            birthTicks.delete( player )
+            birthTicks.delete(player)
         }
 
-        let lastAttackingPlayer = CharacterUtility.GetLastAttackingPlayer( character );
-        
-        Analytics.ReportEvent( player, 
-            'Death', 
+        let lastAttackingPlayer = CharacterUtility.GetLastAttackingPlayer(character);
+
+        Analytics.ReportEvent(player,
+            'Death',
             lastAttackingPlayer ? tostring(lastAttackingPlayer.UserId) : "",
-            CharacterClientI.GetCharacterClass( player ),
-            lifetime )  // life will be a little easier if we include the attacking player's class here but we can determine that from sql
+            CharacterClientI.GetCharacterClass(player),
+            lifetime)  // life will be a little easier if we include the attacking player's class here but we can determine that from sql
 
         return lifetime
     }
 
-    export function publishPotions( player: Player, pc: PC )
-    {
-        let potions = pc.countPotions()
-        InstanceXL.CreateSingleton( "NumberValue", { Name: "NumHealthPotions", Value: potions, Parent: player })
-    }
-
-    export function updateBackpack( player: Player, pc: PC )
-    {
-       let allActiveSkins = Inventory.GetActiveSkinsWait( player )
-       let activeSkins = player.Team === Teams.FindFirstChild('Heroes') ? allActiveSkins.hero : allActiveSkins.monster
-        
-        for( let i=1; i<=CharacterClientI.maxSlots; i++ )
-        {
-            let possessionKey = pc.getPossessionKeyFromSlot( i )
-            if( possessionKey )
-            {
-                let flexTool = pc.getTool( possessionKey )!
-                if( flexTool.getUseType === undefined )
-                {
-                    DebugXL.Error( `flexTool ${flexTool.baseDataS} likely missing metatable`)
-                    continue
-                }
-                if( flexTool.getUseType() === "held" )
-                {
-                    let tool = PC.getToolInstanceFromPossessionKey( player, possessionKey )
-                    if( !tool )
-                        tool = FlexibleTools.CreateTool( { 
-                            toolInstanceDatumT: flexTool,
-                            destinationPlayer: player,
-                            activeSkinsT: activeSkins,
-                            possessionsKey: possessionKey } )
-                }
-            }
-        }
-        // remove any items that are no longer in hotbar; I could have just cleared your held tool and backpack first, but this
-        // lets you hold things when you change your hotbar
-        let playerModel = player.Character!
-        if( playerModel )
-        {
-            let heldTool = playerModel.FindFirstChildWhichIsA("Tool") as Tool
-            if( heldTool )
-            {
-                let possessionKey = PC.getToolPossessionKey( heldTool )!                
-                let flexTool = pc.getTool( possessionKey )!
-                if( !flexTool || !flexTool.slotN )
-                {
-                    heldTool.Destroy()
-                }
-            }
-        }
-        player.FindFirstChild('Backpack')!.GetChildren().forEach( function( inst: Instance )
-        {
-            let tool = inst as Tool
-            let possessionKey = PC.getToolPossessionKey( tool )!                
-            let flexTool = pc.getTool( possessionKey )  
-            if( !flexTool || !flexTool.slotN )  // might have been thrown away
-            {
-                tool.Destroy()
-            }
-        } )
-
-        publishPotions( player, pc )
-    }
-
-    export function markHit( player: Player, category: string )
-    {
-        if( player.Parent )
-        {
-            let hitTracker = hitTrackers.get( player )
-            DebugXL.Assert( hitTracker !== undefined )
-            if( hitTracker )
-            {
-                DebugXL.Assert( hitTracker[category] !== undefined )
-                if( hitTracker[category])
+    export function markHit(player: Player, category: string) {
+        if (player.Parent) {
+            let hitTracker = hitTrackers.get(player)
+            DebugXL.Assert(hitTracker !== undefined)
+            if (hitTracker) {
+                DebugXL.Assert(hitTracker[category] !== undefined)
+                if (hitTracker[category])
                     hitTracker[category].hits += 1
             }
         }
     }
 
-    export function markAttack( player: Player, category: string )
-    {
-        if( player.Parent )
-        {
-            let hitTracker = hitTrackers.get( player )
-            if( hitTracker )
-            {
-                DebugXL.Assert( hitTracker[category] !== undefined )
-                if( hitTracker[category])
-                {
+    export function markAttack(player: Player, category: string) {
+        if (player.Parent) {
+            let hitTracker = hitTrackers.get(player)
+            if (hitTracker) {
+                DebugXL.Assert(hitTracker[category] !== undefined)
+                if (hitTracker[category]) {
                     hitTracker[category].attacks += 1
                     //print( player.Name + " " + category + " hit ratio so far: " + hitTracker[category].hits + "/" + hitTracker[category].attacks )
                 }
             }
-            else
-            {
-                let newHitTracker: HitTrackerI = { Ranged: { hits: 0, attacks: 0}, Melee: { hits: 0, attacks: 0 }}
-                newHitTracker[category] = { hits: 0, attacks: 1 } 
-                hitTrackers.set( player, newHitTracker )
+            else {
+                let newHitTracker: HitTrackerI = { Ranged: { hits: 0, attacks: 0 }, Melee: { hits: 0, attacks: 0 } }
+                newHitTracker[category] = { hits: 0, attacks: 1 }
+                hitTrackers.set(player, newHitTracker)
             }
         }
     }
 
-    export function recordHitRatio( player: Player )
-    {
-        let hitTracker = hitTrackers.get( player )
-        if( hitTracker )
-        {
-            for( let k of Object.keys( hitTracker ) )
-                if( hitTracker[k].attacks >= 5 )    // if they've hardly attacked not really worth recording
-                    GameAnalyticsServer.RecordDesignEvent( player, "SessionHitRatio:" + k, hitTracker[k].hits / hitTracker[k].attacks, 0.1, "%" )
+    export function recordHitRatio(player: Player) {
+        let hitTracker = hitTrackers.get(player)
+        if (hitTracker) {
+            for (let k of Object.keys(hitTracker))
+                if (hitTracker[k].attacks >= 5)    // if they've hardly attacked not really worth recording
+                    GameAnalyticsServer.RecordDesignEvent(player, "SessionHitRatio:" + k, hitTracker[k].hits / hitTracker[k].attacks, 0.1, "%")
         }
-        hitTrackers.delete( player )
+        hitTrackers.delete(player)
     }
 
-    function playerAdded( player: Player ) 
-    {        
+    function playerAdded(player: Player) {
         let numPlayers = Players.GetPlayers().size()
-        warn( "Player count changed: " + numPlayers )
+        warn("Player count changed: " + numPlayers)
     }
 
-    export function getLocalLevel( player: Player )
-    {
-        let pcdata = pcs.get( player )
-        DebugXL.Assert( pcdata !== undefined )
-        if( pcdata )
+    export function getLocalLevel(character: Character) {
+        let pcdata = characterRecords.get(character)
+        DebugXL.Assert(pcdata !== undefined)
+        if (pcdata)
             return pcdata.getLocalLevel()
         else
             return undefined
     }
 
 
-    export function getActualLevel( player: Player )
-    {
-        let pcdata = pcs.get( player )
-        DebugXL.Assert( pcdata !== undefined )
-        if( pcdata )
+    export function getActualLevel(character: Character) {
+        let pcdata = characterRecords.get(character)
+        DebugXL.Assert(pcdata !== undefined)
+        if (pcdata)
             return pcdata.getActualLevel()
         else
             return undefined
     }
 
 
-    export function publishLevel( player: Player, localLevel: number, actualLevel: number )
-    {
+    export function publishLevel(player: Player, localLevel: number, actualLevel: number) {
         let levelLabel = player.FindFirstChild('leaderstats')!.FindFirstChild<StringValue>('Level') || new Instance('StringValue')
         levelLabel.Name = 'Level'
         levelLabel.Value = localLevel === actualLevel ? tostring(localLevel) : `${localLevel} (${actualLevel})`
         levelLabel.Parent = player.FindFirstChild('leaderstats')
-//        }
-//        InstanceXL.new( "StringValue", { Name = "Level", Value =  level, Parent = player.leaderstats }, true )
+        //        }
+        //        InstanceXL.new( "StringValue", { Name = "Level", Value =  level, Parent = player.leaderstats }, true )
     }
 
-    function playerRemoving( player: Player ) 
-    {        
+    function playerRemoving(player: Player) {
         let numPlayers = Players.GetPlayers().size()
-        warn( "Player count changed: " + numPlayers )
+        warn("Player count changed: " + numPlayers)
     }
 
-    export function pcExists( pc: PC ) {
-        for( let v of Object.values( pcs ) )
-        {
-            if( v===pc )
+    export function pcExists(characterRecord: CharacterRecord) {
+        for (let v of Object.values(characterRecords)) {
+            if (v === characterRecord)
                 return true
         }
         return false
     }
 
+    Players.GetPlayers().forEach(playerAdded)
+    Players.PlayerAdded.Connect(playerAdded)
 
-    Players.GetPlayers().forEach( playerAdded )
-    Players.PlayerAdded.Connect( playerAdded )
-
-    Players.PlayerRemoving.Connect( (player)=>{ playerRemoving( player ); recordHitRatio( player ) } )
+    Players.PlayerRemoving.Connect((player) => { playerRemoving(player); recordHitRatio(player) })
 }
 
 

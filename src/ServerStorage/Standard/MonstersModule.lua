@@ -17,26 +17,17 @@ local BalanceData      = require( game.ReplicatedStorage.TS.BalanceDataTS ).Bala
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local CharacterUtility = require( game.ReplicatedStorage.Standard.CharacterUtility )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local HeroUtility      = require( game.ReplicatedStorage.Standard.HeroUtility )
-local MonsterUtility   = require( game.ReplicatedStorage.MonsterUtility )
-local PossessionData   = require( game.ReplicatedStorage.PossessionData )
 
 local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
-local CharacterXL      = require( game.ServerStorage.Standard.CharacterXL )
 local CostumesServer   = require( game.ServerStorage.Standard.CostumesServer )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
-local PlayerXL         = require( game.ServerStorage.Standard.PlayerXL )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
-local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 
-local Analytics = require( game.ServerStorage.TS.Analytics).Analytics
-local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService ).GameplayTestService
-local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
@@ -45,10 +36,7 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 -- after the calibrate-level-for-number-of-players-plus-time-plus-depth change I tried 1.25 / 0.3 but that seemed too easy so took it back to 1.5 / 0.4
 
-local healthModifierN = BalanceData.monsterHealthMultiplierN
 local damageModifierN = BalanceData.monsterDamageMultiplierN   -- after the auto balancing change a level 4 skeleton was taking a lot of strikes to do in a level 1 warrior at 0.3
-
-local levelTimeDifficultyK = BalanceData.levelTimeDifficultyK
 
 local isHighLevelServer = Places:getCurrentPlace().maxGrowthLevel > 8
 local monsterHealthPerLevelN = isHighLevelServer and BalanceData.monsterHealthPerLevelHighLevelServerN or BalanceData.monsterHealthPerLevelN
@@ -64,14 +52,11 @@ local Monsters = {}
 
 --local playerCharactersT = {} 
 
-local function PCKey( player ) return player end
-
-
 local function GiveWeapon( character, player, flexToolPrototype )
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw ) 
 	flexTool.levelN = math.ceil( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
-	PlayerServer.pcs[ player ]:giveTool( flexTool )
+	PlayerServer.getCharacterRecord( character ):giveTool( flexTool )
 end
 
 
@@ -96,39 +81,30 @@ local function GiveUniqueWeapon( character, player, potentialWeaponsA )
 	-- slot here is hotbar slot
 	local _slotN = nil
 	if CharacterClientI:GetCharacterClass( player )~="Werewolf" then
-		_slotN = PlayerServer.pcs[ player ]:countTools() + 1
+		_slotN = PlayerServer.getCharacterRecord( character ):countTools() + 1
 	end
 	local flexToolInst = { baseDataS = weaponTemplate.idS, 
 		levelN = math.max( 1, math.floor( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN ) ), 
 		enhancementsA = {}, 
 		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
-	PlayerServer.pcs[ player ]:giveTool( flexTool )
+	PlayerServer.getCharacterRecord( character ):giveTool( flexTool )
 
 	TableXL:RemoveFirstElementFromA( potentialWeaponsA, weaponTemplate.idS )
 	return flexToolInst
 end 
 
 
-function Monsters:GetPCDataWait( player )
-	while not PlayerServer.pcs[ PCKey( player ) ] do wait() end
-	return PlayerServer.pcs[ PCKey( player ) ]			
+function Monsters:GetPCDataWait( character )
+	return PlayerServer.getCharacterRecordWait( character )
 end
-
-
--- can return nil
-function Monsters:GetPCData( player )
-	return PlayerServer.pcs[ PCKey( player ) ]
-end
-
 
 local monstersForHeroT = {}
 
 
-function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
+function Monsters:CharacterAddedWait( character, player )
 	DebugXL:Assert( self == Monsters )
---	CharacterXL:CharacterAdded( character )
---	--print("Waiting to load character "..character.Name.." appearance" )
+	print("Waiting to load character "..character.Name.." appearance" )
 
 	local humanoid = character.Humanoid
 	
@@ -179,14 +155,13 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	end
 
 	-- give the monster weapons in a bit; we need to adjust their starting levels
-	local pcData = Monster.new( monsterClass,
+	local characterRecord = Monster.new( monsterClass,
 		{},
 		monsterLevel )
 
-	Monsters:Initialize( character, player, pcData:getWalkSpeed(), monsterDatum, monsterLevel )
+	Monsters:Initialize( character, player, characterRecord:getWalkSpeed(), monsterDatum, monsterLevel )
 
-
-	PlayerServer.pcs[ PCKey( player ) ] = pcData
+	PlayerServer.setCharacterRecord( player, character, characterRecord )
 
 	-- starting gear
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
@@ -206,13 +181,13 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	if monsterClass == "Werewolf" then
 		local inventory = Inventory:GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
-		pcData:giveRandomArmor( hideAccessoriesB )
+		characterRecord:giveRandomArmor( hideAccessoriesB )
 	end
 	
 	-- make sure you don't just have a one-shot weapon
 	
-	if pcData:countTools() == 1 then  -- one for armor, one for the possible one shot
-		if pcData.gearPool:get("item1").baseDataS == "Bomb" then
+	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
+		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
 			GiveUniqueWeapon( character, player, potentialWeaponsA )			
 		end
 	end
@@ -220,7 +195,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	-- it's possible player has left or reset or whatever by the time they get here
 	if not humanoid.Parent then 
 		warn( "Aborting Monsters:CharacterAddedWait due to missing humanoid")
-		return pcData  -- avoiding crashes
+		return characterRecord  -- avoiding crashes
 	end
 
 	if monsterDatum.ghostifyB then
@@ -234,30 +209,30 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 	end
 	CostumesServer:Scale( character, monsterDatum.scaleN )
 			
-	workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
+	workspace.Signals.HotbarRE:FireClient( player, "Refresh", characterRecord )
 	-- it's possible that by the time we get here the character will have been tapped to be changed to a hero in which case
 	-- its class will be gone.  Bail if that happens.  Todo: rewrite game and player loops so they're sequential
 	if Monsters:GetClass( character )=="" then 
 		warn( "Aborting Monsters:CharacterAddedWait due to missing class")
-		return pcData
+		return characterRecord
 	end
 --	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
 	local totalDamageEstimate = 0
-	pcData.gearPool:forEach( function( possession ) 
+	characterRecord.gearPool:forEach( function( possession ) 
 		if ToolData.dataT[ possession.baseDataS ].damageNs then
 			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
 			local average = ( damageN1 + damageN2 ) / 2
 			totalDamageEstimate = totalDamageEstimate + average
 		end
 	end )
-	totalDamageEstimate = totalDamageEstimate / pcData:countTools()
+	totalDamageEstimate = totalDamageEstimate / characterRecord:countTools()
 	local damageBonusN = monsterDatum.baseDamageBonusN + monsterLevel * 0.15 -- monsterDatum.damageBonusPerLevelN  -- not using anymore to keep xp same after nerfing high level server monsters
 	totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN
 	 
 --	--print( "Estimate: "..damageEstimate )
 	-- ( dividing by healthModifier quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
 	-- ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
-	local xp = humanoid.MaxHealth + pcData:getWalkSpeed() + totalDamageEstimate / damageModifierN
+	local xp = humanoid.MaxHealth + characterRecord:getWalkSpeed() + totalDamageEstimate / damageModifierN
 	xp = xp * BalanceData.heroXPMultiplierN
 	
 	InstanceXL.new( "NumberValue", { Name = "ExperienceReward", Value = xp, Parent = character }, true )
@@ -275,7 +250,7 @@ function Monsters:CharacterAddedWait( character, player, timeSinceLevelStart )
 			wait( math.random( 15, 45 ) )
 		end
 	end)
-	return pcData
+	return characterRecord
 end
 
 
@@ -357,7 +332,7 @@ end
 
 function Monsters:Died( player )
 	local monster = player.Character
-	--print( "Monster "..monster.Name.." died" )
+	print( "Monster "..monster.Name.." died" )
 
 	Inventory:AdjustCount( player, "MonsterDeaths", 1 )
 
@@ -468,7 +443,7 @@ function Monsters:DoDirectDamage( character, damage, targetHumanoid, damageTagsT
 
 		-- while theoretically monsters only damage players this can throw an error because monsters can currently damage barriers
 		if targetPlayer then		
-			damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, CharacterI:GetPCDataWait( targetPlayer ), damage, damageTagsT )
+			damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, CharacterI:GetPCDataWait( targetPC ), damage, damageTagsT )
 		end
 --		--print( character.Name.." damage reduced to "..damage )
 		targetHumanoid:TakeDamage( damage )
@@ -513,10 +488,10 @@ end
 
 spawn( function()
 	while wait(1) do
-		for key, _ in pairs( PlayerServer.pcs ) do
-			if not key.Parent then
-				print( "Removing "..key.Name.." from PlayerServer.pcs" )
-				PlayerServer.pcs[ key ] = nil
+		for character, _ in pairs( PlayerServer.getCharacterRecords() ) do
+			if not character.Parent then
+				print( "Removing "..character.Name.." from PlayerServer.pcs" )
+				PlayerServer.deleteCharacterRecord( game.Players.GetPlayerFromCharacter( character ), character )				
 			end 
 		end		
 	end

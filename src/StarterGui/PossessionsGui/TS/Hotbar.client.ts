@@ -15,10 +15,10 @@ import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
-import { PC } from "ReplicatedStorage/TS/PCTS"
-import { DebugXL, LogLevel } from "ReplicatedStorage/TS/DebugXLTS";
 
-// local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
+import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+
 import { Localize } from "ReplicatedStorage/TS/Localize"
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
 
@@ -116,7 +116,7 @@ function Equip( slotN: number )
                         if( humanoid )
                         {
                             let heldTool = localCharacter.FindFirstChildWhichIsA("Tool") as Tool
-                            if( heldTool && PC.getToolPossessionKey( heldTool ) === possessionKey )
+                            if( heldTool && CharacterRecord.getToolPossessionKey( heldTool ) === possessionKey )
                             {
                                 // unequip
                                 DebugXL.logD( script.Name, 'Unequipping' )
@@ -125,7 +125,7 @@ function Equip( slotN: number )
                             }
                             else
                             {
-                                let tool = PC.getToolInstanceFromPossessionKey( localPlayer, possessionKey ) as Tool
+                                let tool = CharacterRecord.getToolInstanceFromPossessionKey( localCharacter, possessionKey ) as Tool
     //                            DebugXL.Assert( tool !== undefined )  // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
                                 if( tool )
                                 {
@@ -166,7 +166,7 @@ for( let i=1; i<=CharacterClientI.maxSlots; i++ )
 }
 
 
-function HotbarRefresh( pc: PC )
+function HotbarRefresh( pc: CharacterRecord )
 {
     print( "Refreshing hotbar" )
     let allActiveSkins = InventoryClient.inventory.activeSkinsT

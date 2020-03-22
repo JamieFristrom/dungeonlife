@@ -37,6 +37,7 @@ local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsSe
 print( 'GameManagementModule: GameAnalyticsServer included')
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
 print( 'GameManagementModule: ServerStorage.Standard includes succesful' )
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Destructible      = require( game.ServerStorage.Standard.Destructible )
@@ -115,6 +116,7 @@ local lastMonsterLevels = {}
 
 local function ChangeGameState( newState )
 	local lastState = workspace.GameManagement.GameState.Value
+	print("ChangeGameState from " .. lastState .. " to " .. newState )
 	Analytics.ReportServerEvent( "GameStateChange", lastState, newState, workspace.GameManagement.GameStateTime.Value )
 	workspace.GameManagement.GameState.Value = newState
 	workspace.GameManagement.GameStateTime.Value = 0
@@ -292,7 +294,8 @@ local function SetupCharacterWait( character, player )
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
 	end
 	player.Backpack:ClearAllChildren()
-	PlayerServer.updateBackpack( player, pcData )
+	ToolCaches.updateToolCache( player, pcData )
+
 
 	-- needs to come after costume applied or head gets replaced; apply costume probably sets it up for us, but not if dungeonlord
 	if not character:FindFirstChild("CharacterLight") then

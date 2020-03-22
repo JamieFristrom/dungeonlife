@@ -25,31 +25,19 @@
 print( script:GetFullName().." executed" )
 	
 
-local CharacterUtility  = require( game.ReplicatedStorage.Standard.CharacterUtility )
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL		    = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 local ToolXL            = require( game.ReplicatedStorage.Standard.ToolXL )
-local WeaponUtility     = require( game.ReplicatedStorage.Standard.WeaponUtility )
 print( 'FlexibleToolsModule: ReplicatedStorage.Standard imports succesful')
-
-local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
-local PossessionData    = require( game.ReplicatedStorage.PossessionData )
-print( 'FlexibleToolsModule: ReplicatedStorage imports succesful')
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Inventory         = require( game.ServerStorage.InventoryModule )
-local Mana              = require( game.ServerStorage.ManaModule )
 local MechanicalEffects = require( game.ServerStorage.Standard.MechanicalEffects )
 print( 'FlexibleToolsModule: ServerStorage imports succesful')
 
 local Enhancements = require( game.ReplicatedStorage.TS.EnhancementsTS ).Enhancements
-local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
-local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
-local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 print( 'FlexibleToolsModule: ReplicatedStorage imports succesful')
 

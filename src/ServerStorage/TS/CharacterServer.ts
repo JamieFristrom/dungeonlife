@@ -2,10 +2,11 @@ import { Teams, Players, RunService, Workspace } from "@rbxts/services"
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import InstanceXL = require("ReplicatedStorage/Standard/InstanceXL");
 import { PlayerServer } from "./PlayerServer";
 
+type Character = Model
 
 export namespace CharacterServer
 {
@@ -13,10 +14,15 @@ export namespace CharacterServer
         Is player playing with companions out of their league?
      */
     // had to keep this out of HeroServer because it needs to be used by CharacterXL ; couldn't include PlayerServer for same reason
-    export function IsDangerZoneForHero( pcs: Map< Player, PC >, player: Player ) : boolean
+    export function IsDangerZoneForHero( pcs: Map< Player, CharacterRecord >, player: Player ) : boolean
     {
         DebugXL.Assert( player.Team === Teams.FindFirstChild('Heroes'))
+        
         if( player.Team !== Teams.FindFirstChild('Heroes') ) return false
+        let character = player.Character
+        DebugXL.Assert( character !== undefined )
+        if( !character )
+            return false
 
         let playerPc = pcs.get( player )
         DebugXL.Assert( playerPc !== undefined )
@@ -68,7 +74,7 @@ end
                 DebugXL.Assert( player !== undefined )
                 if( player ) 
                 {
-                    if( time() > vectorValue.Value.Y || !CharacterServer.IsDangerZoneForHero( PlayerServer.pcs, player ) )
+                    if( time() > vectorValue.Value.Y || !CharacterServer.IsDangerZoneForHero( PlayerServer.getPlayerCharacterRecords(), player ) )
                     {
                         print('Dismissing aura of courage')
                         child.Parent = undefined

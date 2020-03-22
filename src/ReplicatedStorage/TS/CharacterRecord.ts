@@ -5,7 +5,7 @@ import { ToolData } from './ToolDataTS';
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 import { CharacterClasses } from './CharacterClasses';
-
+import { Players, ServerStorage } from '@rbxts/services';
 
 function strcmp( a: string, b: string )
 {
@@ -13,7 +13,7 @@ function strcmp( a: string, b: string )
 }
 
 // Player Character Interface
-export interface PCI
+export interface CharacterRecordI
 {
     idS: string
     getImageId() : string
@@ -222,11 +222,21 @@ export class GearPool
     }
 }
 
-export abstract class PC implements PCI
+export abstract class CharacterRecord implements CharacterRecordI
 {   
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
     protected gearPool: GearPool
     private toolKeyServerN = 1
+
+    private static mobToolCache : Folder
+
+    private static _initialize() 
+    {
+        const localMobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')
+        DebugXL.Assert( localMobToolCache !== undefined )
+        if( localMobToolCache )
+            CharacterRecord.mobToolCache = localMobToolCache        
+    }
 
     constructor(
         public idS: string,
@@ -264,9 +274,9 @@ export abstract class PC implements PCI
             }
         }
 
-    static convertFromRemote( rawPCData: PCI )
+    static convertFromRemote( rawPCData: CharacterRecordI )
     {        
-        let pc = setmetatable( rawPCData, PC as LuaMetatable<PCI> ) as PC
+        let pc = setmetatable( rawPCData, CharacterRecord as LuaMetatable<CharacterRecordI> ) as CharacterRecord
         DebugXL.Assert( pc.itemsT === undefined )
         setmetatable( pc.gearPool, GearPool as LuaMetatable<GearPool> )
         pc.gearPool.forEach( item => FlexTool.objectify(item) )
@@ -326,6 +336,11 @@ export abstract class PC implements PCI
         return this.gearPool.countIf( (item)=> item.baseDataS==='Healing' )
     }
 
+    /// possessionKey's are only unique per player; two different players might have tools with the same possession key. It is persistent, so
+    //  if we wanted to make them independent between different players we'd need one master server or to use GUID's. 
+    //  We *could* have another unique id per server, but it seems unnecessary as long as we have some way of identifying tools
+    //  uniquely.
+    //  We *do* have a unique id per roblox tool instance, the toolId, in FlexibleToolsServer
     getPossessionKeyFromSlot( slot: number )
     {
         let _key: string | undefined
@@ -360,21 +375,43 @@ export abstract class PC implements PCI
         return undefined
     }
 
-    static getToolInstanceFromPossessionKey( player: Player, possessionKey: string )
+    static getToolInstanceFromPossessionKey( character: Model, possessionKey: string )
     {
-        let playerModel = player.Character
-        DebugXL.Assert( playerModel !== undefined )
-        if( playerModel )
+        DebugXL.Assert( character !== undefined )        
+        let tool: Tool | undefined = undefined
+        if( character )
         {
-            let heldTool = playerModel.FindFirstChildWhichIsA('Tool') as Tool
+            let heldTool = character.FindFirstChildWhichIsA('Tool') as Tool
             if( heldTool )
             {
-                if( PC.getToolPossessionKey( heldTool )===possessionKey )
-                    return heldTool
+                if( CharacterRecord.getToolPossessionKey( heldTool )===possessionKey )
+                    tool = heldTool
+            }
+            else
+            {
+                let player = Players.GetPlayerFromCharacter( character )
+                if( player )
+                {
+                    let correctInstance = player.FindFirstChild('Backpack')!.GetChildren().find( ( inst )=> 
+                    {
+                        DebugXL.Assert( inst.IsA('Tool') )
+                        return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 
+                    } )
+                    tool = correctInstance as Tool
+                }
+                else
+                {
+                    // if player is undefined it's owned by a CPU player which has its own set of unique ids        
+                    let correctInstance = CharacterRecord.mobToolCache.GetChildren().find( ( inst )=> 
+                    {
+                        DebugXL.Assert( inst.IsA('Tool') )
+                        return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 
+                    } )
+                    tool = correctInstance as Tool
+                }
             }
         }
-        let tool = player.FindFirstChild('Backpack')!.GetChildren().find( ( inst )=> PC.getToolPossessionKey( inst as Tool )===possessionKey )
-        return tool as Tool
+        return tool
     }    
 
     giveRandomArmor( hideAccessoriesB: boolean )

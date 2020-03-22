@@ -1,5 +1,5 @@
 print('FlexibleToolServer.ts executed')
-import { ServerStorage } from '@rbxts/services';
+import { ServerStorage, Players } from '@rbxts/services';
 
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS';
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
@@ -23,18 +23,21 @@ print('FlexibleToolServer: imports succesful')
 const ToolsFolder = ServerStorage.WaitForChild<Folder>('Tools',10)!
 DebugXL.Assert( ToolsFolder !== undefined )
 
+type Character = Model
 
 export interface FlexToolAccessor 
 {
     flexToolInst: FlexTool,
-    player: Player,            // this is what we need to broaden to include CPU players
+    character: Character,            // this is what we need to broaden to include CPU players
     possessionsKey: string     // which tool in player's inventory it is
 }
 
 
 export namespace FlexibleToolsServer
 {
-    
+    let mobToolCache : Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+    DebugXL.Assert( mobToolCache !== undefined )
+
     let serverToolDataT = new Map<number, FlexToolAccessor>()
 
     export function getFlexToolAccessor( toolId : number ) 
@@ -88,14 +91,14 @@ export namespace FlexibleToolsServer
     export function createTool( params: CreateToolParamsI )
     {
         const flexTool = params.toolInstanceDatumT
-        const destinationPlayer = params.destinationPlayer
+        const destinationCharacter = params.destinationCharacter
         const activeSkins = params.activeSkinsT
         const itemPoolKey = params.possessionsKey
         
-        print( `Creating ${flexTool.baseDataS} for ${destinationPlayer.Name}` )
+        print( `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}` )
         
         const toolId = serveToolId()
-        FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst: flexTool, player: destinationPlayer, possessionsKey: itemPoolKey })
+        FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst: flexTool, character: destinationCharacter, possessionsKey: itemPoolKey })
         
         // if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
         if (!flexTool.enhancementsA) flexTool.enhancementsA = []
@@ -201,13 +204,16 @@ export namespace FlexibleToolsServer
                 ValueHelper.AddNumberValue( newToolInstance, 'ManaCost', flexTool.getManaCost() )
                 ValueHelper.AddNumberValue( newToolInstance, 'WalkSpeedMul', toolBaseDatum.walkSpeedMulN )
 
-                DebugXL.Assert( destinationPlayer !== undefined )
-
+                const destinationPlayer = Players.GetPlayerFromCharacter( destinationCharacter )
                 if( destinationPlayer )
                 {
                     // we're using Roblox's backpack as a holding space for tools to combat lag; if we equip a weapon that exists on
                     // the server
                     newToolInstance.Parent = destinationPlayer.FindFirstChild<Backpack>('Backpack')
+                }
+                else
+                {
+                    newToolInstance.Parent = mobToolCache
                 }
 
                 return newToolInstance

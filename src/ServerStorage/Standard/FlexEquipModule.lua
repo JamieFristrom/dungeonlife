@@ -3,12 +3,12 @@ local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
+
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
-local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local FlexEquip = {}
 
@@ -37,7 +37,7 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 	Costumes:LoadCharacter( player, equippedItemModelsA, noAttachmentsSet, true, player.Character )
 	
 	-- loading a character erases the backpack, so:
-	PlayerServer.updateBackpack( player, pcData )
+	ToolCaches.updateToolCache( player, pcData )
 end
 
 function FlexEquip:ApplyEntireCostumeIfNecessaryWait( player )
