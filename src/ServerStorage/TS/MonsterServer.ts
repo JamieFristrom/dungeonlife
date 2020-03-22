@@ -86,7 +86,7 @@ export namespace MonsterServer
             // we are on the server so we should be able to just use pcdata without consulting team stats and without worrying about latency
             // find heroes who still exist ATM
             const heroes: Array<Hero> = []
-            PlayerServer.pcs.forEach( (pc)=> { if( pc instanceof Hero) heroes.push(pc as Hero) } )
+            PlayerServer.getCharacterRecords().forEach( (c)=> { if( c instanceof Hero) heroes.push(c as Hero) } )  
             print( "Matching hero and monster: " + heroes.size() + " hero records found" )
             if( heroes.size()>0 ) 
             {
@@ -180,7 +180,7 @@ export namespace MonsterServer
         const thisTick = tick()
         const elapsedTicks = thisTick - lastTick
         const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
-        const heroLevelSum = PlayerServer.pcs.values().map( (pcdata)=>
+        const heroLevelSum = PlayerServer.getCharacterRecords().values().map( (pcdata)=>
         {
             const result = (pcdata instanceof Hero) ? pcdata.getLocalLevel() + BalanceData.effective0LevelStrength : 0
             return result 
@@ -212,7 +212,7 @@ export namespace MonsterServer
                 if( humanoid )
                 {
                     heroHealthSum += humanoid.MaxHealth
-                    const heroLevel = PlayerServer.getLocalLevel( heroPlayer )
+                    const heroLevel = PlayerServer.getLocalLevel( pc )
                     if( heroLevel )
                         heroLevelSum += heroLevel + BalanceData.effective0LevelStrength  // monster level; it's what we want rather than getLocalLevel
                 }

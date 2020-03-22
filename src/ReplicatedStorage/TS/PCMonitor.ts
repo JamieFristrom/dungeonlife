@@ -1,6 +1,6 @@
 import { DebugXL } from "./DebugXLTS";
 
-// PC monitor is for functions that monitor any PC
+// CharacterRecord monitor is for functions that monitor any PC
 // PCClient is just for the local player's pc
 export namespace PCMonitor
 {

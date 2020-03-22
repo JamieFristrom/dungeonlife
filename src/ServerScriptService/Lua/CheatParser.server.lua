@@ -5,7 +5,6 @@
 --
 local CheatUtilityXL  = require( game.ReplicatedStorage.TS.CheatUtility )
 
-local CharacterClientI = require( game.ReplicatedStorage.Standard.CharacterClientI )
 local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )

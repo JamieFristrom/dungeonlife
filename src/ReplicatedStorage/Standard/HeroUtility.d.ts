@@ -1,8 +1,8 @@
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 
 declare class HeroUtilityClass
 {
-    CountNonPotionGear( pcData: PC ) : number
+    CountNonPotionGear( pcData: CharacterRecord ) : number
 }
 
 declare let HeroUtility: HeroUtilityClass

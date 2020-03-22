@@ -12,22 +12,17 @@ local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL			= require( game.ReplicatedStorage.Standard.MathXL )
 local InstanceXL    	= require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
-local ToolXL            = require( game.ReplicatedStorage.Standard.ToolXL )
 
 local BalanceData       = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
-local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
-local AnalyticsXL       = require( game.ServerStorage.Standard.AnalyticsXL )
-local CharacterXL       = require( game.ServerStorage.Standard.CharacterXL )
 local DataStore2        = require( game.ServerStorage.Standard.DataStore2 )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 
@@ -35,21 +30,20 @@ local HeroUtility 		= require( game.ReplicatedStorage.Standard.HeroUtility )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
-local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility ).GameplayTestUtility
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local HeroStable = require( game.ReplicatedStorage.TS.HeroStableTS ).HeroStable
-local GearPool = require( game.ReplicatedStorage.TS.PCTS ).GearPool
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
+local GearPool = require( game.ReplicatedStorage.TS.CharacterRecord ).GearPool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
-local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService ).GameplayTestService
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
+
 
 
 local PhysicsService = game.PhysicsService
@@ -93,28 +87,13 @@ end
 
 function Heroes:GetPCDataWait( player )
 	DebugXL:Assert( player )
-	while not PlayerServer.pcs[ PCKey( player ) ] do wait() end
-	
-	-- PC data waits until player chooses class, so error checking no longer makes sense:
---	local startTimeout = time()
---	while not playerCharactersT[ PCKey( player ) ] do
---		wait()
---		if time() > startTimeout + 10 then
---			DebugXL:Error( "PC Data timeout" )
---		end
---	end
-	local pcData = PlayerServer.pcs[ PCKey( player ) ]			
-	if pcData.statsT then
-		return pcData
-	else
-		-- hero is now out of scope; I think it's probably better to throw an error than tweak a monster
-		return nil
-	end
+	return PlayerServer.getCharacterRecordFromPlayerWait( player )
+
 end
 
 -- can return nil
 function Heroes:GetPCData( player )
-	return PlayerServer.pcs[ PCKey( player ) ]
+	return PlayerServer.getPlayerCharacterRecords( player )
 end
 
 
@@ -125,9 +104,10 @@ function Heroes:SaveHeroesWait( player )
 	--Heroes:RecordPackContents( player )
 
 	-- this is a good opportunity to refresh the current hero if there is one
-	if( PlayerServer.pcs[PCKey( player )] )then
-		workspace.Signals.HeroesRE:FireClient( player, "RefreshSheet", PlayerServer.pcs[PCKey( player )] )
-		workspace.Signals.HotbarRE:FireClient( player, "Refresh", PlayerServer.pcs[PCKey( player )] )
+	local cr = PlayerServer.getCharacterRecordFromPlayer( player )
+	if( cr )then
+		workspace.Signals.HeroesRE:FireClient( player, "RefreshSheet", cr )
+		workspace.Signals.HotbarRE:FireClient( player, "Refresh", cr )
 	end
 
 
@@ -142,12 +122,12 @@ end
 function Heroes:ChooseClass( player, classNameS )
 	-- possible for player to pick a hero and have the choice made for them at same time, so check first
 	--print( player.Name.." chose class "..classNameS )
-	if PlayerServer.pcs[ PCKey( player ) ] then warn( player.Name.." data was already set up!?" ) end -- could happen if you come right back after a death I suppose
+	if PlayerServer.getCharacterRecordFromPlayer( player ) then warn( player.Name.." data was already set up!?" ) end -- could happen if you come right back after a death I suppose
 	local pcData = Hero.new( classNameS,
 		CharacterClasses.heroStartingStats[ classNameS ],
 		CharacterClasses.startingItems[ classNameS ] ) -- TableXL:DeepCopy( heroDatum )
 
-	PlayerServer.pcs[ PCKey( player ) ] = pcData
+	PlayerServer.setCharacterRecordForPlayer( player, pcData )
 	CharacterI:SetCharacterClass( player, classNameS )
 	HeroServer.calculateCurrentLevelCapWait()
 	HeroServer.republishAllHeroLevels()
@@ -175,8 +155,8 @@ end
 function Heroes:ChooseHero( player, slotN )
 	if player.Team == game.Teams.Heroes then                             	-- protect against hackage   
 		if CharacterClientI:GetCharacterClass( player )=="" then            -- protect against hackage
-			PlayerServer.pcs[ PCKey( player ) ] = savedPlayerCharactersT[ PCKey( player ) ].heroesA[ slotN ]			
-			local pcData = PlayerServer.pcs[ PCKey( player ) ]
+			PlayerServer.setCharacterRecordForPlayer( player, savedPlayerCharactersT[ PCKey( player ) ].heroesA[ slotN ] )
+			local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
 			pcData.slotN = slotN
 			CharacterI:SetCharacterClass( player, pcData.idS )
 			HeroServer.calculateCurrentLevelCapWait()
@@ -208,9 +188,9 @@ end
 function Heroes:CharacterAdded( character, player )
 	DebugXL:Assert( self == Heroes )
 	-- it can take longer to get the datastore than to spawn your first hero
-	while not PlayerServer.pcs[ PCKey( player ) ] do wait() end
+	local myPCData = PlayerServer.getCharacterRecordFromPlayerWait( player )
 	-- we might still be looking at our old monster data when we get here
-	while not PlayerServer.pcs[ PCKey( player ) ].statsT do wait() end
+	while not myPCData.statsT do wait() end
 
 	local playerHumanoid = character:WaitForChild("Humanoid")
 	
@@ -219,9 +199,7 @@ function Heroes:CharacterAdded( character, player )
 		wait( 5 )
 		forceField:Destroy() 
 	end )		
-	
-	local myPCData = PlayerServer.pcs[ PCKey( player ) ]
-	
+		
 	-- if hero doesn't have a potion, give them one
 	local level = Hero:levelForExperience( myPCData.statsT.experienceN )
 
@@ -289,7 +267,7 @@ end
 function GivePossession( player, myPCData, flexToolInst )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
 		myPCData:giveTool( flexToolInst )
-		PlayerServer.updateBackpack( player, myPCData )
+		ToolCaches.updateToolCache( player, myPCData )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
@@ -297,7 +275,7 @@ function GivePossession( player, myPCData, flexToolInst )
 			myPCData:giveTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
-			PlayerServer.updateBackpack( player, myPCData )
+			ToolCaches.updateToolCache( player, pcData )
 			givenB = true
 		end  
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
@@ -319,7 +297,7 @@ function Heroes:Died( player )
 	player.Backpack:ClearAllChildren()
 	player.StarterGear:ClearAllChildren()
 	
-	local myPCData = PlayerServer.pcs[ PCKey( player ) ]
+	local myPCData = PlayerServer.getCharacterRecordFromPlayer( player )
 	local noteS = "User "..player.UserId.."; "
 	if myPCData then
 		-- which PC are they using?
@@ -348,12 +326,12 @@ function Heroes:Died( player )
 	--  this can throw errors because the character is still active for a bit before the player is gone,
 	--  so instead we do a garbage collection step later
 	--  actually that makes it even worse...  
-	--  PlayerServer.pcs[ PCKey( player ) ] = nil	
+	--  PlayerServer.getCharacterRecordFromPlayer( player ) = nil	
 end
 
 
 function Heroes:HeroChosen( player )
-	return PlayerServer.pcs[ PCKey( player ) ]	
+	return PlayerServer.getCharacterRecordFromPlayer( player )	
 end
 
 
@@ -396,7 +374,7 @@ function ConfigureCharacter( player )
 	local humanoid  = character:FindFirstChild("Humanoid")
 	if not humanoid then return end
 		
-	local myPCData = PlayerServer.pcs[ PCKey( player ) ]	
+	local myPCData = PlayerServer.getCharacterRecordFromPlayer( player )	
 	
 	Heroes:ReconfigureDerivativeStats( character, myPCData )
 	 
@@ -553,7 +531,7 @@ function Heroes:AwardExperienceWait( player, experienceBonusN, analyticsItemType
 		local xpRate = 0.5  
 		experienceBonusN = experienceBonusN * xpRate
 		--print( "Awarding "..experienceBonusN.." xp to "..player.Name )	
-		local pcData = PlayerServer.pcs[ PCKey( player ) ]
+		local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
 		-- only if hero has chosen class yet
 		if pcData then			
 			
@@ -612,7 +590,7 @@ end
 
 function Heroes:NewDungeonLevel( player, newDungeonLevelN )
 	DebugXL:Assert( self == Heroes )
-	local pcData = PlayerServer.pcs[ PCKey( player ) ]
+	local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
 --	DebugXL:Assert( pcData )
 	if pcData then
 		pcData.statsT.deepestDungeonLevelN = math.max( pcData.statsT.deepestDungeonLevelN, newDungeonLevelN )
@@ -778,10 +756,10 @@ spawn( function()
 				savedPlayerCharactersT[ key ] = nil
 			end 
 		end
-		for key, _ in pairs( PlayerServer.pcs ) do
+		for key, _ in pairs( PlayerServer.getPlayerCharacterRecords() ) do
 			if not key.Parent then
-				print( "Removing "..key.Name.." from PlayerServer.pcs" )
-				PlayerServer.pcs[ key ] = nil
+				print( "Removing "..key.Name.." from PlayerServer.playerCharacterRecords" )
+				PlayerServer.setCharacterRecordForPlayer( key, nil )
 			end 
 		end		
 	end
@@ -883,7 +861,7 @@ end
 
 
 function HeroRemote.GetDatum( player )
-	return PlayerServer.pcs[ PCKey( player ) ] 
+	return PlayerServer.getCharacterRecordFromPlayer( player ) 
 end
 
 
@@ -930,7 +908,7 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 	if item then  -- it's possible to sell off a weapon and click on it in your inventory before it's gone and send other spurious commands
 		if HeroUtility:CanUseWeapon( pcData, item ) then
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
-			PlayerServer.updateBackpack( player, pcData )
+			ToolCaches.updateToolCache( player, pcData )
 			Heroes:SaveHeroesWait( player )
 		end
 	end
@@ -978,7 +956,7 @@ function HeroRemote.SellItem( player, itemKey )
 						end
 					end
 				end
-				PlayerServer.updateBackpack( player, pcData )
+				ToolCaches.updateToolCache( player, pcData )
 
 				Heroes:SaveHeroesWait( player )
 			end

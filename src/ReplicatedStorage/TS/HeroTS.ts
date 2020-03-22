@@ -5,7 +5,7 @@ import { HeroI } from "./HeroClassesTS"
 import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
-import { PC, GearPool } from "./PCTS"
+import { CharacterRecord, GearPool } from "./CharacterRecord"
 import { Enhancements } from "./EnhancementsTS";
 import { DebugXL } from "./DebugXLTS";
 
@@ -13,7 +13,7 @@ import { DebugXL } from "./DebugXLTS";
 let nerfTest = 100000  // test nerfing to this level
 
 
-export class Hero extends PC implements HeroI
+export class Hero extends CharacterRecord implements HeroI
 {   
     static readonly globalHeroLevelCap = 70
 

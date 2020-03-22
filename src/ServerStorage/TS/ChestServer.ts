@@ -14,6 +14,8 @@ import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { GameplayTestService } from "./GameplayTestService"
 import { BlueprintUtility } from "ReplicatedStorage/TS/BlueprintUtility"
 
+// wishlist - only works on players so can't work on mobs if we one decide to be able to allow the players to place chests
+
 export class Chest
 {
     // each player can only open once
@@ -33,7 +35,7 @@ export class Chest
 
     getLoot( player: Player )
     {        
-        let hero = PlayerServer.pcs.get( player )
+        let hero = PlayerServer.getCharacterRecordFromPlayer( player )
         DebugXL.Assert( hero instanceof Hero )
         if( hero && hero instanceof Hero ) 
         {
@@ -44,7 +46,7 @@ export class Chest
     activateTrap( player: Player )
     {
         let chestDatum = PossessionData.dataT[ BlueprintUtility.getPossessionName( this.chestInstance ) ]
-        let hero = PlayerServer.pcs.get( player )
+        let hero = PlayerServer.getCharacterRecordFromPlayer( player )
         DebugXL.Assert( hero instanceof Hero )
         if( hero && hero instanceof Hero ) 
         {

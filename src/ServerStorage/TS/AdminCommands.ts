@@ -2,7 +2,7 @@ import { Players, DataStoreService, HttpService } from "@rbxts/services";
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 
-import { PlayerServer } from "ServerStorage/TS/PlayerServer"
+import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 
 import * as AnalyticsXL from "ServerStorage/Standard/AnalyticsXL"
 import * as CheatUtility from "ReplicatedStorage/TS/CheatUtility";
@@ -15,26 +15,23 @@ import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS";
-import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 
 import { Analytics } from "./Analytics";
 import { GameplayTestService } from "./GameplayTestService";
 import { MessageServer } from "./MessageServer";
+import { MobServer } from "./MobServer";
 
 class AdminCommandsC
 {
   banListStore = DataStoreService.GetOrderedDataStore( "BanList" )
 
-  luaCommandHandlerFunc: ( player: Player, args: string[])=>void = function() { warn("Lua Command Handler Not Set")}
+  luaCommandHandlerFunc: ( player: Player, args: string[])=>void = function() { warn("Lua Command Handler Not Set") }
 
   setLuaCommandHandler( newFunc: ( player: Player, args: string[])=>void ) 
   {
     this.luaCommandHandlerFunc = newFunc
   }
 
-
-
-  
   isBanned( player: Player )
   {
     let banListStore = this.banListStore
@@ -78,9 +75,13 @@ let CommandList: {[k:string]:unknown} =
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
       {
+        let character = sender.Character
+        if( !character ) return
+
         print( "Equipping " + sender.Name + " with " + args[1] )
         DebugXL.Assert( args[0]==="equip")
         let myPC = CharacterI.GetPCDataWait( sender )      
+        
         let gearDef = HttpService.JSONDecode( args[1] ) as GearDefinition 
         if( gearDef )
         {          
@@ -95,7 +96,7 @@ let CommandList: {[k:string]:unknown} =
               gearDef.levelN ? gearDef.levelN : 1,
               gearDef.enhancementsA ? gearDef.enhancementsA : [] )
             myPC.giveTool( flexTool )
-            PlayerServer.updateBackpack( sender, myPC )
+            ToolCaches.updateToolCache( character, myPC )
           }
         }
         else
@@ -227,6 +228,11 @@ let CommandList: {[k:string]:unknown} =
       {
         warn( "Test group "+args[1]+" doesn't exist for player")
       }
+    },
+
+    spawnMob: function( sender: Player, args: string[] )
+    {
+      MobServer.spawnMob();
     },
       
     stressanalytics: function( sender: Player, args: string[] )
