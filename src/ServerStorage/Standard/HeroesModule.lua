@@ -275,7 +275,7 @@ function GivePossession( player, myPCData, flexToolInst )
 			myPCData:giveTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
-			ToolCaches.updateToolCache( player, pcData )
+			ToolCaches.updateToolCache( player, myPCData )
 			givenB = true
 		end  
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )

@@ -228,15 +228,7 @@ export abstract class CharacterRecord implements CharacterRecordI
     protected gearPool: GearPool
     private toolKeyServerN = 1
 
-    private static mobToolCache : Folder
-
-    private static _initialize() 
-    {
-        const localMobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')
-        DebugXL.Assert( localMobToolCache !== undefined )
-        if( localMobToolCache )
-            CharacterRecord.mobToolCache = localMobToolCache        
-    }
+    private static mobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')
 
     constructor(
         public idS: string,
@@ -402,7 +394,7 @@ export abstract class CharacterRecord implements CharacterRecordI
                 else
                 {
                     // if player is undefined it's owned by a CPU player which has its own set of unique ids        
-                    let correctInstance = CharacterRecord.mobToolCache.GetChildren().find( ( inst )=> 
+                    let correctInstance = CharacterRecord.mobToolCache!.GetChildren().find( ( inst )=> 
                     {
                         DebugXL.Assert( inst.IsA('Tool') )
                         return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 

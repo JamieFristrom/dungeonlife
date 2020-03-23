@@ -13,6 +13,7 @@ import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 print('PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
+
 print('PlayerServer: Analytics imports succesful')
 
 type Character = Model
@@ -86,13 +87,40 @@ export namespace PlayerServer {
         playerCharacterRecords.set( player, characterRecord )
     }
 
-    export function deleteCharaterRecord(player: Player, character: Character)
+    function collectRecordGarbage()
     {
-        DebugXL.Assert(player.IsA('Player'))
-        DebugXL.Assert(character.IsA('Model'))
-        characterRecords.delete( character )
-        playerCharacterRecords.delete( player )
+        for(;;)
+        {
+            wait(1.11)
+            {
+                // for( let [character,_] of characterRecords.entries() )
+                // {
+                //     if( !character.Parent )
+                //     {
+                //         print( "Removing "+character.Name+" from PlayerServer.characterRecords" )
+                //         characterRecords.delete(character)
+                //     }
+                // }
+                // for( let [player,_] of playerCharacterRecords.entries() )
+                // {
+                //     if( !player.Parent )
+                //     {
+                //         print( "Removing "+player.Name+" from PlayerServer.playerCharacterRecords" )
+                //         playerCharacterRecords.delete(player)
+                //     }
+                // }
+            }
+        }
     }
+
+    // export function deleteCharacterRecord(character: Character)
+    // {
+    //     DebugXL.Assert(player !== undefined || character !== undefined)
+    //     DebugXL.Assert(player ? player.IsA('Player') : true)
+    //     DebugXL.Assert(character ? character.IsA('Model') : true)
+    //     characterRecords.delete( character )
+    //     playerCharacterRecords.delete( player )
+    // }
     
     export function getCharacterRecords() { return characterRecords }
     export function getPlayerCharacterRecords() { return playerCharacterRecords }
@@ -183,6 +211,7 @@ export namespace PlayerServer {
     }
 
     export function getLocalLevel(character: Character) {
+        DebugXL.Assert(character.IsA('Model'))
         let pcdata = characterRecords.get(character)
         DebugXL.Assert(pcdata !== undefined)
         if (pcdata)
@@ -228,6 +257,8 @@ export namespace PlayerServer {
     Players.PlayerAdded.Connect(playerAdded)
 
     Players.PlayerRemoving.Connect((player) => { playerRemoving(player); recordHitRatio(player) })
+
+    spawn( collectRecordGarbage )
 }
 
 
