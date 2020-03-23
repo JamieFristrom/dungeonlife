@@ -69,7 +69,7 @@ export namespace ToolCaches {
     }
 
     export function publishPotions(player: Player, characterRecord: CharacterRecord) {
-        let potions = characterRecord.countPotions()
+        let potions = characterRecord.countBaseDataQuantity('Healing')
         InstanceXL.CreateSingleton("NumberValue", { Name: "NumHealthPotions", Value: potions, Parent: player })
     }
 }
