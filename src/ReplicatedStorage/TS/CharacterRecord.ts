@@ -322,10 +322,9 @@ export abstract class CharacterRecord implements CharacterRecordI
         return this.gearPool.size()
     }
 
-    // only counts healing potions for display purposes
-    countPotions()
+    countBaseDataQuantity(baseDataKind: string)
     {
-        return this.gearPool.countIf( (item)=> item.baseDataS==='Healing' )
+        return this.gearPool.countIf( (item)=> item.baseDataS===baseDataKind )
     }
 
     /// possessionKey's are only unique per player; two different players might have tools with the same possession key. It is persistent, so

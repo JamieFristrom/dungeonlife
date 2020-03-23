@@ -828,7 +828,7 @@ function HeroRemote.TakeBestHealthPotion( player )
 		pcData.gearPool:delete( k )
 		Heroes:SaveHeroesWait( player )
 
-		PlayerServer.publishPotions( player, pcData )		
+		ToolCaches.publishPotions( player, pcData )		
 	end
 end
 
