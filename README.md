@@ -10,9 +10,9 @@ And that said, there's more here I'm proud of than embarrassed of--for the most 
 
 And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know! A good place to ask would be on the Discord (https://discord.gg/7BQNSu which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
 
-# downloading / cloning
+# don't download, clone
 
-You'll need to use git-lfs; it should prompt you to set that up automatically. The RBLX and other large files use git-lfs.
+You must clone, you can't download, because Dungeon Life uses git-lfs. If you clone, it should prompt you to set git-lfs up automatically. (git-lfs is needed for the RBLX and other large files.)
 
 # building
 
