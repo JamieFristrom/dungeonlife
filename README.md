@@ -54,7 +54,7 @@ Now build roblox-ts using typescript:
 ```
 Now we need to be able to access roblox-ts from the command line. This should link it up:
 ```
-  >npx link
+  >npm link
 ```
 And now you should be able to build Dungeon Life:
 ```
