@@ -61,7 +61,7 @@ And now you should be able to build Dungeon Life:
   >cd ..
   >rbxtsc 
 ```
-(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>npx rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
+(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
 
 Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxl in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
 
