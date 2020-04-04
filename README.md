@@ -35,10 +35,6 @@ Now you need to get the version of roblox-ts that I use, which is an old version
   >cd dungeonlife
   >git submodule update --init --recursive
 ```
-Now install the version of typescript that I know Dungeon Life compiles with. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
-```
-  >npm install typescript@3.3.4000
-```
 Now install some packages that Dungeon Life uses:
 ```
   >npm install
@@ -47,6 +43,10 @@ And install some packages that roblox-ts (typescript for Roblox) uses:
 ```
   >cd roblox-ts
   >npm install
+```
+Now install the version of typescript that will work with our older roblox-ts. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
+```
+  >npm install typescript@3.3.4000
 ```
 Now build roblox-ts using typescript:
 ```
