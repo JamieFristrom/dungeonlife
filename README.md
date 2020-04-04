@@ -30,35 +30,13 @@ Once you've got those things, you're ready to start. From a dos command line clo
 ```
   >git clone https://github.com/JamieFristrom/dungeonlife.git
 ```
-Now you need to get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
+Now to setup the compiler you can either run the batch file I've made that _should_ set things up properly for you, or you can do thing step-by-step (which I've spelled out below.) If you use the batch file:
 ```
   >cd dungeonlife
-  >git submodule update --init --recursive
-```
-Now install some packages that Dungeon Life uses:
-```
-  >npm install
-```
-And install some packages that roblox-ts (typescript for Roblox) uses:
-```
-  >cd roblox-ts
-  >npm install
-```
-Now install the version of typescript that will work with our older roblox-ts. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
-```
-  >npm install typescript@3.3.4000
-```
-Now build roblox-ts using typescript:
-```
-  >npx tsc
-```
-Now we need to be able to access roblox-ts from the command line. This should link it up:
-```
-  >npm link
+  >setup.bat
 ```
 And now you should be able to build Dungeon Life:
 ```
-  >cd ..
   >rbxtsc 
 ```
 (As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
@@ -106,4 +84,35 @@ Known problem: the in-app purchases are still wired to the original Game; you'll
 
 If you spot other problems, it's probably because there are other issues running the code in a standalone place. You can check my test place https://www.roblox.com/games/4476008779: if the bug happens there too, it's not you, it's me. :) Let me know! 
 
-
+# setting up the roblox-ts compiler step-by-step:
+To get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
+```
+  >cd dungeonlife
+  >git submodule update --init --recursive
+```
+Now install some packages that Dungeon Life uses:
+```
+  >npm install
+```
+And install some packages that roblox-ts (typescript for Roblox) uses:
+```
+  >cd roblox-ts
+  >npm install
+```
+Now install the version of typescript that will work with our older roblox-ts. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
+```
+  >npm install typescript@3.3.4000
+```
+Now build roblox-ts using typescript:
+```
+  >npx tsc
+```
+Now we need to be able to access roblox-ts from the command line. This should link it up:
+```
+  >npm link
+```
+Return back to the top directory and you should be good to go.
+```
+  >cd ..
+```
+Note: on some accounts I've seen node.js fail to put `yourname/Roaming/npm` in your path. If that happens you won't be able to compile using the `rbxtsc` alias; you'll have to either add it to the path yourself or spell it out: `node roblox-ts\out\cli.js` (which means run the command-line interface for the compiler using node.)
