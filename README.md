@@ -19,8 +19,11 @@ You must clone, you can't download, because Dungeon Life uses git-lfs. If you cl
 Anyways, here's how to build for the first time. Some of these instructions are adapted from (https://roblox-ts.github.io/docs/guides/github-installation.)
 
 You'll need git. https://git-scm.com/
+
 You'll need NodeJS if you don't already have it. https://nodejs.org/en/ 
+
 You'll want to use VS Code for your text editor. https://code.visualstudio.com/
+
 And you'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
 
 Once you've got those things, you're ready to start. From a dos command line clone dungeon life:
@@ -29,6 +32,7 @@ Once you've got those things, you're ready to start. From a dos command line clo
 ```
 Now you need to get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
 ```
+  >cd dungeonlife
   >git submodule update --init --recursive
 ```
 Now install the version of typescript that I know Dungeon Life compiles with. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
