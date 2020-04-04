@@ -16,47 +16,52 @@ You must clone, you can't download, because Dungeon Life uses git-lfs. If you cl
 
 # building
 
-Anyways, here's how to build for the first time. Most of these instructions are adapted from (https://roblox-ts.github.io/docs/guides/github-installation) 
+Anyways, here's how to build for the first time. Some of these instructions are adapted from (https://roblox-ts.github.io/docs/guides/github-installation.)
 
-Open the rbxl/DungeonLifeOpenTemplate.rbxl in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
+You'll need git. https://git-scm.com/
+You'll need NodeJS if you don't already have it. https://nodejs.org/en/ 
+You'll want to use VS Code for your text editor. https://code.visualstudio.com/
+And you'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
+
+Once you've got those things, you're ready to start. From a dos command line clone dungeon life:
+
+  >git clone https://github.com/JamieFristrom/dungeonlife.git
+
+Now you need to get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
+
+  >git submodule update --init --recursive
+
+Now install the version of typescript that I know Dungeon Life compiles with. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
+
+  >npm install typescript@3.3.4000
+
+Now install some packages that Dungeon Life uses:
+
+  >npm install
+
+And install some packages that roblox-ts (typescript for Roblox) uses:
+
+  >cd roblox-ts
+  >npm install
+
+Now build roblox-ts using typescript:
+
+  >npx tsc
+
+Now that you've built roblox-ts you should be able to build Dungeon Life:
+
+  >cd ..
+  >npx rbxtsc 
+
+(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use >npx rbxtsc -w to see that 'success' message and then hit ctrl-break to get out.)
+
+Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxl in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
 
 Give me credit! Configure your place and in your description put: "Made with Dungeon Life by Jamie Fristrom: https://www.roblox.com/games/2184151436"
 
-The place won't do anything by itself; you still need to build the source and suck it in with Rojo. How to use Rojo is beyond the scope of this article. (https://github.com/rojo-rbx/rojo)
+The place won't do anything by itself; you still need to build the source and suck it in with Rojo. How to use Rojo is beyond the scope of this article. (https://github.com/rojo-rbx/rojo) The TL;DR is that you open the dungeonlife folder in VS Code and should then be able to use Rojo to transfer the files into Roblox.
 
-I made my own clone of roblox-ts and used a submodule partly for the practice with submodules and partly as a way to make my own local fixes. 
-
->git submodule update --init --recursive
-
-Overkill but that should get the roblox-ts branch to where I like
-
->npm install
-
->cd roblox-ts
-
->npm install typescript@3.3.4000
-
-The version of roblox-ts I'm using doesn't compile with the latest typescript
-
->npm install
-
-Gets the packages roblox-ts relies on
-
->npm link
-
-I'm not entirely clear on what this step does. But now you can compile dungeon life
-
->tsc
-
-(Might need to do npm link again here?  Not sure.)
-
-Compiles roblox-ts 
-
->cd ..
-
->rbxtsc 
-
-Then you should be able to use Rojo to transfer the source to the Place you've built, and it should work. 
+Run the game from within Roblox! If you did everything exactly right and there are no unforseen problems with your setup it should work!
 
 If you have problems let me know but I can't promise speedy answers!
 
