@@ -52,10 +52,14 @@ Now build roblox-ts using typescript:
 ```
   >npx tsc
 ```
-Now that you've built roblox-ts you should be able to build Dungeon Life:
+Now we need to be able to access roblox-ts from the command line. This should link it up:
+```
+  >npx link
+```
+And now you should be able to build Dungeon Life:
 ```
   >cd ..
-  >npx rbxtsc 
+  >rbxtsc 
 ```
 (As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>npx rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
 
