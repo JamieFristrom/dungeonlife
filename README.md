@@ -24,36 +24,36 @@ You'll want to use VS Code for your text editor. https://code.visualstudio.com/
 And you'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
 
 Once you've got those things, you're ready to start. From a dos command line clone dungeon life:
-
+```
   >git clone https://github.com/JamieFristrom/dungeonlife.git
-
+```
 Now you need to get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
-
+```
   >git submodule update --init --recursive
-
+```
 Now install the version of typescript that I know Dungeon Life compiles with. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
-
+```
   >npm install typescript@3.3.4000
-
+```
 Now install some packages that Dungeon Life uses:
-
+```
   >npm install
-
+```
 And install some packages that roblox-ts (typescript for Roblox) uses:
-
+```
   >cd roblox-ts
   >npm install
-
+```
 Now build roblox-ts using typescript:
-
+```
   >npx tsc
-
+```
 Now that you've built roblox-ts you should be able to build Dungeon Life:
-
+```
   >cd ..
   >npx rbxtsc 
-
-(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use >npx rbxtsc -w to see that 'success' message and then hit ctrl-break to get out.)
+```
+(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>npx rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
 
 Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxl in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
 
@@ -63,7 +63,7 @@ The place won't do anything by itself; you still need to build the source and su
 
 Run the game from within Roblox! If you did everything exactly right and there are no unforseen problems with your setup it should work!
 
-If you have problems let me know but I can't promise speedy answers!
+If you have problems let me know (join the Discord or message @happionlabs on twitter) but I can't promise speedy answers!
 
 # adding the localization table
 
