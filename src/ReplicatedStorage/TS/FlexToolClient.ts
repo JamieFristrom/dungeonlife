@@ -1,21 +1,21 @@
 import { LocalizationService } from "@rbxts/services"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-print( "FlexToolClient: DebugXL required" )
+DebugXL.logI(script.Name, "Loaded" )
 
 import { Enhancements } from "./EnhancementsTS"
-print( "FlexToolClient: Enhancements required" )
+DebugXL.logD(script.Name,  "Enhancements required" )
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
-print( "FlexToolClient: PCClient required" )
+DebugXL.logD(script.Name,  "PCClient required" )
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
-print( "FlexToolClient: FlexTool required" )
+DebugXL.logD(script.Name,  "FlexTool required" )
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
-print( "FlexToolClient: ToolData required" )
+DebugXL.logD(script.Name,  "ToolData required" )
 
 import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
-print( "FlexToolClient: SkinTypeEnum required" )
+DebugXL.logD(script.Name,  "SkinTypeEnum required" )
 import { Localize } from "ReplicatedStorage/TS/Localize"
-print( "FlexToolClient: Localize required" )
+DebugXL.logD(script.Name,  "Localize required" )
 
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 import { AnalyticsClient } from "./AnalyticsClient";

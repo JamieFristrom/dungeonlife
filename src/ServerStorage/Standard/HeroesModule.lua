@@ -937,35 +937,6 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 end
 
 
-function HeroRemote.Equip( player, itemKey, equipB )
-	local pcData = Heroes:GetPCDataWait( player )
-	if not pcData then return end
-
-	local item = pcData.gearPool:get( itemKey )
-	if not item then return end  -- I guess it's possible to click throw away and then rapidly quick equip
-	if item.equippedB ~= equipB then
-		if equipB then
-			if HeroUtility:CanUseWeapon( pcData, item ) then
-				local equipSlot = ToolData.dataT[ item.baseDataS ].equipSlot
-				local currentItem = CharacterClientI:GetEquipFromSlot( pcData, equipSlot )
-				if currentItem then
-					currentItem.equippedB = false
-				end
-			end
-		end
-		item.equippedB = equipB
-		if player.Character then
-			if player.Character.Parent then
-				Heroes:ReconfigureDerivativeStats( player, pcData )
-				HeroUtility:RecheckItemRequirements( pcData )
-				FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
-			end
-		end	
-		Heroes:SaveHeroesWait( player )
-	end
-end
-
-
 function HeroRemote.BuyItem( player, shopItemKey )
 	local pcData = Heroes:GetPCDataWait( player )	
 	if not pcData then return end
