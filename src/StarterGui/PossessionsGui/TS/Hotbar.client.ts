@@ -16,7 +16,7 @@ import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 import { PC } from "ReplicatedStorage/TS/PCTS"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogLevel } from "ReplicatedStorage/TS/DebugXLTS";
 
 // local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
 import { Localize } from "ReplicatedStorage/TS/Localize"
@@ -119,6 +119,7 @@ function Equip( slotN: number )
                             if( heldTool && PC.getToolPossessionKey( heldTool ) === possessionKey )
                             {
                                 // unequip
+                                DebugXL.logD( script.Name, 'Unequipping' )
                                 humanoid.UnequipTools()
                                 //SelectSlot(0)
                             }
@@ -127,7 +128,10 @@ function Equip( slotN: number )
                                 let tool = PC.getToolInstanceFromPossessionKey( localPlayer, possessionKey ) as Tool
     //                            DebugXL.Assert( tool !== undefined )  // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
                                 if( tool )
+                                {
+                                    DebugXL.logD( script.Name, 'Equipping' )
                                     humanoid.EquipTool( tool )  // error in EquipTool's type signature that has now been fixed
+                                }
                                 // put box around equipped tool in GUI
                                 //SelectSlot( slotN )
                             }
