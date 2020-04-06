@@ -126,7 +126,10 @@ function Equip( slotN: number )
                             else
                             {
                                 let tool = CharacterRecord.getToolInstanceFromPossessionKey( localCharacter, possessionKey ) as Tool
-    //                            DebugXL.Assert( tool !== undefined )  // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
+                                DebugXL.Assert( tool !== undefined )  
+                                // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
+                                // I could see false positives coming from equipping a weapon that the inventory replication
+                                // says you have before the instance actually gets replicated - perhaps waiting here is the right choice
                                 if( tool )
                                 {
                                     DebugXL.logD( script.Name, 'Equipping' )

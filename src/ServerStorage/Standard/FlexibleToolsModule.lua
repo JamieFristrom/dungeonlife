@@ -578,10 +578,9 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 			end
 		end
 		tool:Destroy()
-		-- puts in your backpack and that's fine 
 		FlexibleTools:CreateTool( {
 			toolInstanceDatumT = _toolInstanceDatum,
-			destinationPlayer  = player,
+			destinationCharacter = player.Character,
 			activeSkinsT       = _activeSkinsT,
 			possessionsKey     = _possessionsKey
 		} )

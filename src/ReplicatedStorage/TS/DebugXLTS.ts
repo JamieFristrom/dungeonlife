@@ -29,7 +29,7 @@ class DebugXLC
 {
     static readonly logLevelPrefixes: string[] = ['A','E','W','I','D','V']
 
-    private currentLogLevel = LogLevel.Debug
+    private currentLogLevel = LogLevel.Verbose
 
     Error( message: string )
     {

@@ -184,9 +184,10 @@ function Heroes:ChooseDefaultHeroWait( player )
 	end
 end
 
--- wishlist fix: choose hero before your character spawns so they're not sitting on the roof like that
+
 function Heroes:CharacterAdded( character, player )
 	DebugXL:Assert( self == Heroes )
+	DebugXL:logD( 'Character', 'Heroes:CharacterAdded '..player.Name )
 	-- it can take longer to get the datastore than to spawn your first hero
 	local myPCData = PlayerServer.getCharacterRecordFromPlayerWait( player )
 	-- we might still be looking at our old monster data when we get here
@@ -241,7 +242,7 @@ function Heroes:CharacterAdded( character, player )
 	-- high level doesn't count
 
 	local dangerRatio = HeroServer.calculateDangerRatio( myPCData:getLocalLevel() )
-	print( "Danger ratio for "..player.Name..": "..dangerRatio )
+	DebugXL:logI( 'Gameplay', "HeroesModule: Danger ratio for "..player.Name..": "..dangerRatio )
 	if dangerRatio >= 11/7 then
 		local x = (dangerRatio - 11/7) / ( 21 / 7 )
 		local dr = MathXL:Lerp( BalanceData.sidekickDamageReductionMin, BalanceData.sidekickDamageReductionMax, x )
@@ -260,14 +261,15 @@ function Heroes:CharacterAdded( character, player )
 
 	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Hero:"..CharacterClientI:GetCharacterClass( player ) )
 
-	return myPCData
+	return myPCData, PlayerServer.getCharacterKeyFromPlayer( player )
 end
 
 
 function GivePossession( player, myPCData, flexToolInst )
+	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
 		myPCData:giveTool( flexToolInst )
-		ToolCaches.updateToolCache( player, myPCData )
+		ToolCaches.updateToolCache( characterKey, myPCData )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
@@ -275,7 +277,7 @@ function GivePossession( player, myPCData, flexToolInst )
 			myPCData:giveTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
-			ToolCaches.updateToolCache( player, myPCData )
+			ToolCaches.updateToolCache( characterKey, myPCData )
 			givenB = true
 		end  
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
@@ -908,7 +910,10 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 	if item then  -- it's possible to sell off a weapon and click on it in your inventory before it's gone and send other spurious commands
 		if HeroUtility:CanUseWeapon( pcData, item ) then
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
-			ToolCaches.updateToolCache( player, pcData )
+			
+			local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+			ToolCaches.updateToolCache( characterKey, pcData )
+			
 			Heroes:SaveHeroesWait( player )
 		end
 	end
@@ -956,7 +961,9 @@ function HeroRemote.SellItem( player, itemKey )
 						end
 					end
 				end
-				ToolCaches.updateToolCache( player, pcData )
+
+				local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+				ToolCaches.updateToolCache( characterKey, pcData )
 
 				Heroes:SaveHeroesWait( player )
 			end

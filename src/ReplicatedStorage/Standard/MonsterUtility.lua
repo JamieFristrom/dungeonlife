@@ -14,17 +14,4 @@ function MonsterUtility:GetClassWait( monsterCharacter )
 	end
 end
 
---
---function MonsterUtility:GetLevel( monsterCharacter )
---	DebugXL:Assert( monsterCharacter:IsA("Model") )
---	local configurations = monsterCharacter:FindFirstChild("Configurations") 
---	if configurations then
---		local levelValueO = configurations:FindFirstChild("Level")
---		if levelValueO then
---			return levelValueO.Value
---		end
---	end
---	return 1
---end
-
 return MonsterUtility

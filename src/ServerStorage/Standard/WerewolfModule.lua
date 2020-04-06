@@ -14,6 +14,7 @@ local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local Werewolf = {}
@@ -34,7 +35,9 @@ function Werewolf:TakeHumanFormWait( player )
 		if heldTool then heldTool:Destroy() end
 --		warn( "Clearing "..player.Name.."'s backpack" )
 		
+		DebugXL:logD( 'CharacterModel', 'WerewolfModule - Costumes:LoadCharacter for '..player.Name )
 		Costumes:LoadCharacter( player, {}, {}, false, character )
+		DebugXL:logV( 'CharacterModel', 'WerewolfModule - character loaded for '..player.Name )
 
 		local pcData = CharacterI:GetPCDataWait( player )
 		pcData:equipAvailableArmor()		
@@ -57,6 +60,8 @@ function Werewolf:TakeHumanFormWait( player )
 				end
 			end
 		end )
+		
+		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 		ToolCaches.updateToolCache( player, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )		
@@ -117,6 +122,7 @@ function Werewolf:WolfOutWait( player )
 			end
 		end )
 		
+		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 		ToolCaches.updateToolCache( player, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )

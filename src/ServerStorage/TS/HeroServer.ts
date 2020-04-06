@@ -40,7 +40,7 @@ export namespace HeroServer
             hero.shopPool.clear()
             for( let i=0; i<25; i++ )
             {
-                //print( 'Shop item ' + i )
+                //DebugXL.logI( 'Items',( 'Shop item ' + i )
                 let gearItem = undefined
                 let duplicateCount = 0
                 while( !gearItem )
@@ -61,7 +61,7 @@ export namespace HeroServer
                             // even with break so maybe not that big a deal
                             if( newItem!.identical( storeItem! ) )  
                             {
-                                print( "Duplicate" )
+                                DebugXL.logI( 'Items', "HeroServer: Duplicate" )
                                 duplicateCount++
                                 duplicate = true
                             }

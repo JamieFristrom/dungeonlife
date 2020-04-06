@@ -1,20 +1,20 @@
-print('PlayerServer.ts executed')
 import { Players, Teams, ServerStorage } from "@rbxts/services"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
-print('PlayerServer: ReplicatedStorage/TS imports succesful')
+DebugXL.logI( "Executed", script.Name )
+import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
+DebugXL.logD( "Requires", 'PlayerServer: ReplicatedStorage/TS imports succesful')
 
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
-print('PlayerServer: GameAnalyticsServer imported')
+DebugXL.logD( "Requires", 'PlayerServer: GameAnalyticsServer imported')
 
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
-print('PlayerServer: Replicated/Standard imports succesful')
+DebugXL.logD( "Requires", 'PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
 
-print('PlayerServer: Analytics imports succesful')
+DebugXL.logD( "Requires", 'PlayerServer: Analytics imports succesful')
 
 type Character = Model
 
@@ -22,22 +22,46 @@ export namespace PlayerServer {
     let characterAddedFuncs = new Map<Player, (character: Character) => void>()
     let birthTicks = new Map<Player, number>()
 
-    let characterRecords = new Map<Character, CharacterRecord>()
+    let characterRecords = new Map<CharacterKey, CharacterRecordI>()
+    let currentPCKeys = new Map<Player, CharacterKey>()
+    let currentMobKeys = new Map<Character, CharacterKey>()
 
+    let characterKeyServer = 1;
 
-    let playerCharacterRecords = new Map<Player, CharacterRecord>()
+    export function getCharacterKeyFromPlayer(player: Player)
+    {
+        const key = currentPCKeys.get( player )
+        return key ? key : 0
+    }
 
-    // used when you know the player exists but aren't sure if their Roblox character is currently instantiated
+    export function getCharacterKeyFromCharacterModel(character: Character)
+    {
+        DebugXL.Assert( character.IsA('Model') )
+        DebugXL.Assert( character.Parent !== undefined )
+        const player = Players.GetPlayerFromCharacter( character )
+        if( player )
+        {
+            return getCharacterKeyFromPlayer( player )
+        }
+        else
+        {
+            const key = currentMobKeys.get( character )
+            return key ? key : 0
+        }
+    }
+
+    // used when you know the player exists but aren't sure if they currently have a character (between respawns and choosing heroes)
     export function getCharacterRecordFromPlayer(player: Player) 
     {
-        return playerCharacterRecords.get(player)
+        const currentCharacterKey = currentPCKeys.get(player)
+        return currentCharacterKey ? characterRecords.get(currentCharacterKey) : undefined
     }
 
     export function getCharacterRecordFromPlayerWait(player: Player) 
     {
         for(;;)
         {
-            const record = playerCharacterRecords.get( player )
+            const record = getCharacterRecordFromPlayer( player )
             if( record !== undefined )
                 return record
             wait()
@@ -45,22 +69,24 @@ export namespace PlayerServer {
     }
 
     // used for AI mobs
-    export function getCharacterRecord(character: Character) 
+    export function getCharacterRecord(characterKey: CharacterKey) : CharacterRecordI
     {
-        DebugXL.Assert( character !== undefined )
-        if( character )
+        DebugXL.Assert( characterKey !== undefined )
+        if( characterKey )
         {
-            let characterRecord = characterRecords.get(character)
-            return characterRecord
+            DebugXL.Assert( typeOf( characterKey )==='number' )
+            const characterRecord = characterRecords.get( characterKey )
+            DebugXL.Assert( characterRecord !== undefined )
+            return characterRecord!
         }
-        return undefined
+        return new CharacterRecordNull();
     }
 
-    export function getCharacterRecordWait(character: Character) 
+    export function getCharacterRecordWait(characterKey: CharacterKey) 
     {
         for(;;)
         {
-            let characterRecord = characterRecords.get(character)
+            let characterRecord = getCharacterRecord(characterKey)
             if( characterRecord )
                 return characterRecord
             wait()
@@ -68,62 +94,47 @@ export namespace PlayerServer {
     }
 
     // doing assertions below because we're called from lua so can't always check at compile time
-
-    // this looks ugly having the double key maps but I think it's best because players get their character records before
-    // their character is instantiated but mobs never have players
-    export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecord)
+    export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecordI)
     {
         DebugXL.Assert(player.IsA('Player'))
         DebugXL.Assert(characterRecord!==undefined)
-        playerCharacterRecords.set( player, characterRecord )
-    }
-
-    export function setCharacterRecord(player: Player, character: Character, characterRecord: CharacterRecord)
-    {
-        DebugXL.Assert(player.IsA('Player'))
-        DebugXL.Assert(character.IsA('Model'))
-        DebugXL.Assert(characterRecord!==undefined)
-        characterRecords.set( character, characterRecord )
-        playerCharacterRecords.set( player, characterRecord )
-    }
-
-    function collectRecordGarbage()
-    {
-        for(;;)
+        // clean garbage
+        const oldCharacterKey = currentPCKeys.get( player )
+        if( oldCharacterKey )
         {
-            wait(1.11)
-            {
-                // for( let [character,_] of characterRecords.entries() )
-                // {
-                //     if( !character.Parent )
-                //     {
-                //         print( "Removing "+character.Name+" from PlayerServer.characterRecords" )
-                //         characterRecords.delete(character)
-                //     }
-                // }
-                // for( let [player,_] of playerCharacterRecords.entries() )
-                // {
-                //     if( !player.Parent )
-                //     {
-                //         print( "Removing "+player.Name+" from PlayerServer.playerCharacterRecords" )
-                //         playerCharacterRecords.delete(player)
-                //     }
-                // }
-            }
+            characterRecords.delete( oldCharacterKey )
         }
+
+        // this is also when we assign a characterKey        
+        const newCharacterKey = instantiateCharacterRecord(characterRecord)        
+        currentPCKeys.set( player, newCharacterKey )
+        return newCharacterKey
     }
 
-    // export function deleteCharacterRecord(character: Character)
-    // {
-    //     DebugXL.Assert(player !== undefined || character !== undefined)
-    //     DebugXL.Assert(player ? player.IsA('Player') : true)
-    //     DebugXL.Assert(character ? character.IsA('Model') : true)
-    //     characterRecords.delete( character )
-    //     playerCharacterRecords.delete( player )
-    // }
-    
-    export function getCharacterRecords() { return characterRecords }
-    export function getPlayerCharacterRecords() { return playerCharacterRecords }
+    export function instantiateCharacterRecord(characterRecord: CharacterRecordI)
+    {
+        DebugXL.Assert(characterRecord !== undefined)
+        const newCharacterKey = characterKeyServer++
+        characterRecords.set( newCharacterKey, characterRecord )
+        return newCharacterKey
+    }
+
+    // gets all records for _instantiated_ characters: this is keyed off either player or character depending
+    // on whether a mob or not
+    export function getCharacterRecords() 
+    { 
+        return characterRecords
+    }
+
+    export function getPlayerCharacterRecords() 
+    { 
+        let pcRecords = new Map<Player,CharacterRecordI>()
+        for( let [k, v] of Object.entries( currentPCKeys ) )
+        {
+            pcRecords.set( k, getCharacterRecord( v ) )
+        }
+        return pcRecords
+    }
 
 
     interface HitTrackerI {
@@ -184,7 +195,7 @@ export namespace PlayerServer {
                 DebugXL.Assert(hitTracker[category] !== undefined)
                 if (hitTracker[category]) {
                     hitTracker[category].attacks += 1
-                    //print( player.Name + " " + category + " hit ratio so far: " + hitTracker[category].hits + "/" + hitTracker[category].attacks )
+                    DebugXL.logV( script.Name,  player.Name + " " + category + " hit ratio so far: " + hitTracker[category].hits + "/" + hitTracker[category].attacks )
                 }
             }
             else {
@@ -210,19 +221,20 @@ export namespace PlayerServer {
         warn("Player count changed: " + numPlayers)
     }
 
-    export function getLocalLevel(character: Character) {
-        DebugXL.Assert(character.IsA('Model'))
-        let pcdata = characterRecords.get(character)
+    export function getLocalLevel(characterKey: CharacterKey) {
+        DebugXL.Assert( typeOf( characterKey )==='number' )
+        let pcdata = getCharacterRecord(characterKey)
         DebugXL.Assert(pcdata !== undefined)
         if (pcdata)
             return pcdata.getLocalLevel()
         else
-            return undefined
+            return 0
     }
 
 
-    export function getActualLevel(character: Character) {
-        let pcdata = characterRecords.get(character)
+    export function getActualLevel(characterKey: CharacterKey) {
+        DebugXL.Assert( typeOf( characterKey )==='number' )
+        let pcdata = getCharacterRecord(characterKey)
         DebugXL.Assert(pcdata !== undefined)
         if (pcdata)
             return pcdata.getActualLevel()
@@ -245,20 +257,57 @@ export namespace PlayerServer {
         warn("Player count changed: " + numPlayers)
     }
 
-    export function pcExists(characterRecord: CharacterRecord) {
-        for (let v of Object.values(characterRecords)) {
+    export function pcExists(characterRecord: CharacterRecordI) 
+    {
+        for (let [k, v] of Object.entries(characterRecords)) 
+        {
             if (v === characterRecord)
                 return true
         }
         return false
     }
 
+    export function getPlayer( characterKey: CharacterKey )
+    {
+        for( let [k, v] of Object.entries( currentPCKeys ) )
+        {
+            if( v === characterKey )
+            {
+                return k
+            }
+        }
+        return undefined
+    }
+
+    export function getCharacterModel( characterKey: CharacterKey )
+    {
+        for( let [k, v] of Object.entries( currentMobKeys ) )
+        {
+            if( v === characterKey )
+            {
+                return k
+            }
+        }
+        let player = getPlayer( characterKey )
+        if( player )
+        {
+            return player.Character
+        }
+        return undefined
+    }
+
+    export function getName( characterKey: CharacterKey )
+    {
+        const player = getPlayer( characterKey )    
+        if( player ) { return player.Name }
+        const character = getCharacterModel( characterKey )
+        if( character ) { return character.Name }
+    }
+
     Players.GetPlayers().forEach(playerAdded)
     Players.PlayerAdded.Connect(playerAdded)
 
     Players.PlayerRemoving.Connect((player) => { playerRemoving(player); recordHitRatio(player) })
-
-    spawn( collectRecordGarbage )
 }
 
 

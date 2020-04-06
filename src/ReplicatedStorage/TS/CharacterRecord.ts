@@ -5,7 +5,10 @@ import { ToolData } from './ToolDataTS';
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 import { CharacterClasses } from './CharacterClasses';
-import { Players, ServerStorage } from '@rbxts/services';
+import { Players, ServerStorage, Teams } from '@rbxts/services';
+
+// we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
+export type CharacterKey = number
 
 function strcmp( a: string, b: string )
 {
@@ -19,6 +22,9 @@ export interface CharacterRecordI
     getImageId() : string
     getWalkSpeed() : number
     getJumpPower() : number
+    getLocalLevel() : number
+    getActualLevel() : number
+    getTeam() : Team
 }
 
 
@@ -366,6 +372,8 @@ export abstract class CharacterRecord implements CharacterRecordI
         return undefined
     }
 
+    // this is awkward because we want to be able to call it from the client or the server, it might be in a character's hand, a player's backpack,
+    // or a mob's tool cache. so far characterKeys are server-side only, though that will probably change
     static getToolInstanceFromPossessionKey( character: Model, possessionKey: string )
     {
         DebugXL.Assert( character !== undefined )        
@@ -373,12 +381,11 @@ export abstract class CharacterRecord implements CharacterRecordI
         if( character )
         {
             let heldTool = character.FindFirstChildWhichIsA('Tool') as Tool
-            if( heldTool )
+            if( heldTool && CharacterRecord.getToolPossessionKey( heldTool )===possessionKey )
             {
-                if( CharacterRecord.getToolPossessionKey( heldTool )===possessionKey )
-                    tool = heldTool
+                tool = heldTool
             }
-            else
+            else  // tool not in hand; is it in cache?
             {
                 let player = Players.GetPlayerFromCharacter( character )
                 if( player )
@@ -457,5 +464,14 @@ export abstract class CharacterRecord implements CharacterRecordI
     abstract getActualLevel() : number
 
     // not data-driving this so we aren't duplicating data
-    abstract getTeam(): Object
+    abstract getTeam(): Team
+}
+
+
+export class CharacterRecordNull extends CharacterRecord
+{
+    constructor() { super("",[]) }
+    getLocalLevel() { return 0 }
+    getActualLevel() { return 0 }
+    getTeam() { return Teams.GetTeams()[0] }
 }

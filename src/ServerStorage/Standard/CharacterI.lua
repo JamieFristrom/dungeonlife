@@ -17,6 +17,7 @@ local CharacterI = {}
 
 function CharacterI:SetLastAttackingPlayer( character, player )
 	DebugXL:Assert( character:IsA("Model"))
+	DebugXL:Assert( character.Parent ~= nil )
 	DebugXL:Assert( player:IsA("Player"))
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then

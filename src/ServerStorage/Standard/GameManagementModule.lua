@@ -221,9 +221,9 @@ end
 
 -- player loops
 local function HeroAdded( character, player )
-	local pcData = Heroes:CharacterAdded( character, player )
+	local pcData, characterKey = Heroes:CharacterAdded( character, player )
 	local character = player.Character   -- CharacterAdded calls costume change which destroys old character. 
-	print("Checking for courage auras for "..character.Name)
+	DebugXL:logI( 'Gameplay', "Checking for courage auras for "..character.Name )
 	if( Places.getCurrentPlace() ~= Places.places.Underhaven )then
 		if character:FindFirstChild("AuraOfCourage") then
 			print("Aura found")
@@ -240,13 +240,13 @@ local function HeroAdded( character, player )
 				"MsgWelcomeHero" )
 		end	
 	end
-	return pcData
+	return pcData, characterKey
 end
 
 
 local function MonsterAddedWait( character, player )
 --	--print( "Monster added "..player.Name )
-	local pcData = Monsters:CharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
+	local pcData, characterKey = Monsters:CharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not Inventory:PlayerInTutorial( player ) then
@@ -264,7 +264,7 @@ local function MonsterAddedWait( character, player )
 					return
 				end
 				local lastLevel = lastMonsterLevels[ player ]
-				local thisLevel = Monsters:GetLevelN( character )
+				local thisLevel = Monsters:GetLevelN( characterKey )
 				if lastLevel then
 					if thisLevel > lastLevel then
 						MessageServer.PostMessageByKey( player, "LevelUp" )
@@ -277,29 +277,31 @@ local function MonsterAddedWait( character, player )
 			end
 		end
 	end
-	return pcData
+	return pcData, characterKey
 end
 
 
-local function SetupCharacterWait( character, player )
+local function SetupCharacterWait( startingCharacterModel, player )
+	local characterKey = 0
 	local pcData 
 	if player.Team == game.Teams.Heroes then
-		--print("Adding hero character")
-		pcData = HeroAdded( character, player )
+		DebugXL:logD('Character','Adding hero character')
+		pcData, characterKey = HeroAdded( startingCharacterModel, player )
 	else
-		--print("Adding monster character")
-		pcData = MonsterAddedWait( character, player )
+		DebugXL:logD('Character','Adding monster character')
+		pcData, characterKey = MonsterAddedWait( startingCharacterModel, player )
 	end
 	if not pcData then
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
 	end
-	player.Backpack:ClearAllChildren()
-	ToolCaches.updateToolCache( player, pcData )
+	startingCharacterModel = nil  -- because it could be invalid at this point; the costume may have changed
+	local character = player.Character
 
+	player.Backpack:ClearAllChildren()
+	ToolCaches.updateToolCache( characterKey, pcData )
 
 	-- needs to come after costume applied or head gets replaced; apply costume probably sets it up for us, but not if dungeonlord
 	if not character:FindFirstChild("CharacterLight") then
-		local player = game.Players:GetPlayerFromCharacter( character )
 		if FloorData:CurrentFloor().characterLightN > 0 then
 			local characterLight = game.ServerStorage.CharacterLight:Clone()
 			characterLight.Handle.PointLight.Range = 	FloorData:CurrentFloor().characterLightN
@@ -891,7 +893,9 @@ local function PlayerAdded( player )
 	-- hack: we need to spawn your avatar once right away to initialize the UI
 	--print( "Begin initial LoadCharacter for "..player.Name )	
 	local status, err = pcall( function()
+		DebugXL:logI('CharacterModel', "Loading character model for "..player.Name)
 		player:LoadCharacter()  -- this seems to still be throwing an error even though we check on the previous line. thanks Roblox
+		DebugXL:logI('CharacterModel', "Character model load returned for "..player.Name)
 	end )	
 	if not status then
 		if not player.Parent then 
