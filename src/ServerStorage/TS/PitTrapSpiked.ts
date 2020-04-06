@@ -1,4 +1,3 @@
-import { GameplayTestService } from 'ServerStorage/TS/GameplayTestService'
 import { PitTrap } from 'ServerStorage/TS/PitTrap'
 
 import * as CharacterI from 'ServerStorage/Standard/CharacterI'
@@ -35,7 +34,7 @@ export class PitTrapSpiked extends PitTrap
 							let damagePerLevel = 1.5 // GameplayTestService.getServerTestGroup('ChestTrapDamage') * 0.5 + 1  // 0-4 => 1-3
 
 							CharacterI.TakeDirectDamage( character, 
-								trapDatum.baseDamageN! + damagePerLevel * PlayerServer.getLocalLevel( character )!,
+								trapDatum.baseDamageN! + damagePerLevel * PlayerServer.getLocalLevel( PlayerServer.getCharacterKeyFromCharacterModel( character ) )!,
 								creator.Value as Player, { spell: true } )  // wishlist fix;  if( rogues get detect traps there'd be something to be said for 				
 							whoAmIHurting.add( player )
 						}

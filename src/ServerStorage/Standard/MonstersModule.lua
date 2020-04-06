@@ -1,8 +1,7 @@
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-print( script:GetFullName().." executed" )
-
 local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI( 'Executed', script.Name )
 local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
@@ -54,22 +53,22 @@ local Monsters = {}
 
 --local playerCharactersT = {}
 
-local function GiveWeapon( character, player, flexToolPrototype )
+local function GiveWeapon( characterKey, player, flexToolPrototype )	
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw )
-	flexTool.levelN = math.ceil( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
-	PlayerServer.getCharacterRecord( character ):giveTool( flexTool )
+	flexTool.levelN = math.ceil( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
+	PlayerServer.getCharacterRecord( characterKey ):giveTool( flexTool )
 end
 
 
-local function GiveUniqueWeapon( character, player, potentialWeaponsA )
+local function GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
 	if #potentialWeaponsA == 0 then
-		DebugXL:Error( character.Name.." of class "..CharacterClientI:GetCharacterClass( player ).." has no potential weapons" )
+		DebugXL:logE( 'Items', PlayerServer.getName( characterKey ).." | "..PlayerServer.getCharacterRecord( characterKey ).idS.." has no potential weapons" )
 	end
 	local toolData        = TableXL:Map( potentialWeaponsA, function( weaponNameS ) return ToolData.dataT[ weaponNameS ] end )
 	local dropLikelihoods = TableXL:Map( toolData, function( x ) return x.monsterStartGearBiasN end )
 	if TableXL:GetN( dropLikelihoods ) == 0 then
-		DebugXL:Error( character.Name.." has no drop likelihoods" )
+		DebugXL:logE( 'Items', PlayerServer.getName( characterKey ).." has no drop likelihoods" )
 	end
 	local toolN = MathXL:RandomBiasedInteger1toN( dropLikelihoods )
 	local weaponTemplate = toolData[ toolN ]
@@ -77,28 +76,28 @@ local function GiveUniqueWeapon( character, player, potentialWeaponsA )
 		DebugXL:Dump( potentialWeaponsA )
 		DebugXL:Dump( toolData )
 		DebugXL:Dump( dropLikelihoods )
-		DebugXL:Error( character.Name.." weapon template nil.")
+		DebugXL:Error( PlayerServer.getName( characterKey ).." weapon template nil.")
 	end
 
 	-- slot here is hotbar slot
 	local _slotN = nil
 	if CharacterClientI:GetCharacterClass( player )~="Werewolf" then
-		_slotN = PlayerServer.getCharacterRecord( character ):countTools() + 1
+		_slotN = PlayerServer.getCharacterRecord( characterKey ):countTools() + 1
 	end
 	local flexToolInst = { baseDataS = weaponTemplate.idS,
-		levelN = math.max( 1, math.floor( Monsters:GetLevelN( character ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
+		levelN = math.max( 1, math.floor( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
 		enhancementsA = {},
 		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
-	PlayerServer.getCharacterRecord( character ):giveTool( flexTool )
+	PlayerServer.getCharacterRecord( characterKey ):giveTool( flexTool )
 
 	TableXL:RemoveFirstElementFromA( potentialWeaponsA, weaponTemplate.idS )
 	return flexToolInst
 end
 
 
-function Monsters:GetPCDataWait( character )
-	return PlayerServer.getCharacterRecordWait( character )
+function Monsters:GetPCDataWait( characterKey )
+	return PlayerServer.getCharacterRecordWait( characterKey )
 end
 
 local monstersForHeroT = {}
@@ -114,11 +113,7 @@ function Monsters:CharacterAddedWait( character, player )
 	player.Backpack:ClearAllChildren()
 --	warn( "Clearing "..player.Name.."'s backpack" )
 
-	-- not sure why we need this before AppearanceLoadedWait
---	local monstersT = PossessionData:GetDataAOfFlavor( PossessionData.FlavorEnum.Monster )
---	local monsterDatum = PossessionData.dataT.Orc
 	local monsterClass = CharacterClientI:GetCharacterClass( player )
---	local monsterClass = MathXL:RandomKey( legalMonsterClassesSet )
 	DebugXL:Assert( monsterClass ~= "" )
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	DebugXL:Assert( monsterDatum )
@@ -127,19 +122,6 @@ function Monsters:CharacterAddedWait( character, player )
 	if not monsterDatum.invulnerableB then
 		game.Debris:AddItem( forceField, 2 )
 	end
-
-
-
-	-- if they outnumber us 3 to 1 we want them to not be next level
-	-- if it's one on one we want thpem to be level 3 to our level 1
-
-	-- so chance of being next level = 1 - ( ratio - 1 ) / 2
---	local upgradeLevel = 0
---	if #game.Teams.Heroes:GetPlayers() >= 1 then
---		local monsterRatio = #game.Teams.Monsters:GetPlayers() / #game.Teams.Heroes:GetPlayers()
---		local chanceOfNextLevel = 1 - ( monsterRatio - 1 ) / 2
---		if MathXL:RandomNumber() < chanceOfNextLevel then upgradeLevel = 1 end
---	end
 
 	-- say you have a level 2, level 10, and level 15 player in the same level
 	-- you can't just have a bunch of monsters around level 11
@@ -163,19 +145,19 @@ function Monsters:CharacterAddedWait( character, player )
 
 	Monsters:Initialize( character, player, characterRecord:getWalkSpeed(), monsterDatum, monsterLevel )
 
-	PlayerServer.setCharacterRecord( player, character, characterRecord )
+	local characterKey = PlayerServer.setCharacterRecordForPlayer( player, characterRecord )
 
 	-- starting gear
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
-			GiveWeapon( character, player, weapon )
+			GiveWeapon( characterKey, player, weapon )
 		end
 	end
 
 	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
 	for i = 1, monsterDatum.numWeaponsN do
-		GiveUniqueWeapon( character, player, potentialWeaponsA )
+		GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
 	end
 
 	--actually giving monsters armor was a bad idea:  it makes bigger slower weapons OP, makes your damage bubbles look smaller, better to just
@@ -190,14 +172,14 @@ function Monsters:CharacterAddedWait( character, player )
 
 	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
 		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
-			GiveUniqueWeapon( character, player, potentialWeaponsA )
+			GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
 		end
 	end
 
 	-- it's possible player has left or reset or whatever by the time they get here
 	if not humanoid.Parent then
 		warn( "Aborting Monsters:CharacterAddedWait due to missing humanoid")
-		return characterRecord  -- avoiding crashes
+		return characterRecord, characterKey  -- avoiding crashes
 	end
 
 	if monsterDatum.ghostifyB then
@@ -216,7 +198,7 @@ function Monsters:CharacterAddedWait( character, player )
 	-- its class will be gone.  Bail if that happens.  Todo: rewrite game and player loops so they're sequential
 	if Monsters:GetClass( character )=="" then
 		warn( "Aborting Monsters:CharacterAddedWait due to missing class")
-		return characterRecord
+		return characterRecord, characterKey
 	end
 --	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
 	local totalDamageEstimate = 0
@@ -252,7 +234,7 @@ function Monsters:CharacterAddedWait( character, player )
 			wait( math.random( 15, 45 ) )
 		end
 	end)
-	return characterRecord
+	return characterRecord, characterKey
 end
 
 
@@ -260,6 +242,7 @@ end
 function Monsters:GetClass( monsterCharacter )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:Assert( monsterCharacter:IsA("Model") )
+	DebugXL:Assert( monsterCharacter.Parent ~= nil )
 	local player = game.Players:GetPlayerFromCharacter( monsterCharacter )
 	-- it's possible for this to just fail ... maybe player leaves while character still referenced?
 	if player then
@@ -318,12 +301,13 @@ end
 -- returns { damageN, critB } pair
 function Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
 	DebugXL:Assert( self == Monsters )
-	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), Monsters:GetLevelN( monsterCharacter ), flexToolInst )
+	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monsterCharacter )
+	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), Monsters:GetLevelN( characterKey ), flexToolInst )
 end
 
 
-function Monsters:GetLevelN( monster )
-	return PlayerServer.getLocalLevel( monster )
+function Monsters:GetLevelN( characterKey )
+	return PlayerServer.getLocalLevel( characterKey )
 end
 
 

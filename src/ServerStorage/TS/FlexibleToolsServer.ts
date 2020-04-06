@@ -1,10 +1,10 @@
-print('FlexibleToolServer.ts executed')
 import { ServerStorage, Players } from '@rbxts/services';
 
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS';
+DebugXL.logI( script.Name, 'Executed' )
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS';
-print('FlexibleToolServer: ReplicatedStorage/TS imports succesful')
+DebugXL.logD( script.Name, 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
 
 import { Enhancements } from 'ReplicatedStorage/TS/EnhancementsTS';
 import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper';
@@ -12,7 +12,7 @@ import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper';
 import { CreateToolParamsI } from 'ServerStorage/TS/CreateToolParamsI'
 
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd';
-print('FlexibleToolServer: imports succesful')
+DebugXL.logD( script.Name, 'FlexibleToolServer: imports succesful')
 
 
 // thinking about things which can hold weapons
@@ -62,7 +62,7 @@ export namespace FlexibleToolsServer
         const toolId = toolObj.FindFirstChild<NumberValue>('ToolId')
         if( !toolId )
         {
-            DebugXL.Error(`Can't find ToolId for ${toolObj.GetFullName()}`)
+            DebugXL.logE( script.Name, `Can't find ToolId for ${toolObj.GetFullName()}`)
             return FlexTool.nullTool
         }
         return getFlexToolFromId( toolId.Value )
@@ -94,8 +94,12 @@ export namespace FlexibleToolsServer
         const destinationCharacter = params.destinationCharacter
         const activeSkins = params.activeSkinsT
         const itemPoolKey = params.possessionsKey
-        
-        print( `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}` )
+
+        // validate parameters so calling from Lua is safer
+        DebugXL.Assert( destinationCharacter.IsA('Model') )
+        DebugXL.Assert( destinationCharacter.Parent !== undefined )
+
+        DebugXL.logI( script.Name, `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}` )
         
         const toolId = serveToolId()
         FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst: flexTool, character: destinationCharacter, possessionsKey: itemPoolKey })
@@ -104,7 +108,7 @@ export namespace FlexibleToolsServer
         if (!flexTool.enhancementsA) flexTool.enhancementsA = []
         
         const toolBaseDatum = ToolData.dataT[ flexTool.baseDataS ]
-        if (!toolBaseDatum) DebugXL.Error( `Unable to find possession ${flexTool.baseDataS}` ) 
+        if (!toolBaseDatum) DebugXL.logE( script.Name, `Unable to find possession ${flexTool.baseDataS}` ) 
         
         let baseToolId = toolBaseDatum.baseToolS
         DebugXL.Assert( baseToolId !== undefined )
@@ -113,7 +117,7 @@ export namespace FlexibleToolsServer
             let textureSwapId = undefined
             if (!toolBaseDatum.skinType) 
             {
-                DebugXL.Error( `${toolBaseDatum.idS} has no skinType`)
+                DebugXL.logE( script.Name, `${toolBaseDatum.idS} has no skinType`)
             }
             else
             {
@@ -138,7 +142,6 @@ export namespace FlexibleToolsServer
                 for( let i=0; i<flexTool.enhancementsA.size(); i++ )
                 {
                     const enhancement = flexTool.enhancementsA[i]
-                    const enhancementFlavorDatum = Enhancements.enhancementFlavorInfos[ enhancement.flavorS ] // FlexibleTools.enhancementFlavorsT[ enhancement.flavorS ]
 
                     // enable enhancement related effects
                     for( let descendent of newToolInstance.GetDescendants() )
@@ -147,7 +150,6 @@ export namespace FlexibleToolsServer
                         {
                             if( descendent.IsA('Script') )
                             {
-                                const descendentScript = descendent as Script
                                 descendent.Disabled = false
                             }
                             else if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire') || descendent.IsA('Trail'))
@@ -159,7 +161,7 @@ export namespace FlexibleToolsServer
                             }
                             else
                             {
-                                DebugXL.Error( `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
+                                DebugXL.logE( script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
                             }
                         }
                     }
@@ -179,7 +181,7 @@ export namespace FlexibleToolsServer
                             }
                             else
                             {
-                                DebugXL.Error( `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
+                                DebugXL.logE( script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
                             }
                             // delibaretely not enabling something already enabled because I think there's a perf hit
                             // and who knows, there may be tools with disabled default fx that were there for temp or testing

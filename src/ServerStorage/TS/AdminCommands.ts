@@ -20,6 +20,7 @@ import { Analytics } from "./Analytics";
 import { GameplayTestService } from "./GameplayTestService";
 import { MessageServer } from "./MessageServer";
 import { MobServer } from "./MobServer";
+import { PlayerServer } from "./PlayerServer";
 
 class AdminCommandsC
 {
@@ -75,9 +76,6 @@ let CommandList: {[k:string]:unknown} =
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
       {
-        let character = sender.Character
-        if( !character ) return
-
         print( "Equipping " + sender.Name + " with " + args[1] )
         DebugXL.Assert( args[0]==="equip")
         let myPC = CharacterI.GetPCDataWait( sender )      
@@ -96,7 +94,8 @@ let CommandList: {[k:string]:unknown} =
               gearDef.levelN ? gearDef.levelN : 1,
               gearDef.enhancementsA ? gearDef.enhancementsA : [] )
             myPC.giveTool( flexTool )
-            ToolCaches.updateToolCache( character, myPC )
+            const characterKey = PlayerServer.getCharacterKeyFromPlayer( sender )
+            ToolCaches.updateToolCache( characterKey, myPC )
           }
         }
         else
