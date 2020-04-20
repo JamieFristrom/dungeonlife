@@ -62,7 +62,7 @@ function Werewolf:TakeHumanFormWait( player )
 		end )
 		
 		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		ToolCaches.updateToolCache( player, pcData )
+		ToolCaches.updateToolCache( characterKey, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )		
 		
@@ -123,7 +123,7 @@ function Werewolf:WolfOutWait( player )
 		end )
 		
 		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		ToolCaches.updateToolCache( player, pcData )
+		ToolCaches.updateToolCache( characterKey, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
 	end

@@ -93,65 +93,63 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 			return
 		end
 		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
-		if Tool.Enabled then  -- this may be redundant with new cooldown system
-			if WeaponUtility:IsCoolingDown( Player ) then return end
-			-- guess it's possible to get a shot off when dead?
-			local manaValueObj = Character:FindFirstChild("ManaValue") 
-			if not manaValueObj then
-				DebugXL:Error( Character:GetFullName().." missing ManaValue." )
-				return 
-			end
-			DebugXL:Assert( Character.ManaValue.Value >= 0 )
-			if Character.ManaValue.Value >= Tool.ManaCost.Value then 
-				Tool.Enabled = false
-				if BoltDisplay then
-					BoltDisplay.Transparency = 1
-				end
-				Sounds.Fire:Play()
-				local serverBoltCodeName = "Bolt"..MathXL:RandomInteger( 1, 100000 )  -- this will fail mostly harmlessly every once in a great while
-				--print( "BoltWeaponRE:FireServer" )
-				
-				-- can't use mouse hit because it collides with transparent objects
-				local clickPart, clickHitV3 = RangedWeaponUtility:MouseHitNontransparent( mouse, { Character } )
-				
-				Tool.BoltWeaponRE:FireServer( "OnActivated", clickHitV3, serverBoltCodeName )
-				if lagHidingB then
-					if animTrack then
-						animTrack:AdjustSpeed( 1 )
-					end
 
-					-- making the bolt go slower on the client is a poor man's way of doing lag compensation
-					-- 0.5 was too slow, though, people noticed - 10/29					
-					local bolt = BoltWeaponUtilityXL:Fire( Tool, Bolt, clickHitV3, 0.75 )
-					bolt.Name = "ClientBolt"
-					bolt.Parent = Tool
-					-- why both is client and is not server?  Because when playing from studio both are true
-					if game["Run Service"]:IsClient() and not game["Run Service"]:IsServer() then
-						--print( "Spawning boltwatch function" )
-						spawn( function()
-							----print( "Waiting for bolt" )
-							local serverBolt = workspace.ActiveServerProjectiles:WaitForChild( serverBoltCodeName )
-							serverBolt:Destroy()
-							--print "Destroyed server bolt" )
-						end)
-					end
-				end
-				local walkSpeedMulN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
-				--print "Beginning cooldown" )
-				WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, walkSpeedMulN )
-				--print "Cooldown finished" )
+		if WeaponUtility:IsCoolingDown( Player ) then return end
+
+		-- guess it's possible to get a shot off when dead?
+		local manaValueObj = Character:FindFirstChild("ManaValue") 
+		if not manaValueObj then
+			DebugXL:Error( Character:GetFullName().." missing ManaValue." )
+			return 
+		end
+		DebugXL:Assert( Character.ManaValue.Value >= 0 )
+		if Character.ManaValue.Value >= Tool.ManaCost.Value then 
+			Tool.Enabled = false
+			if BoltDisplay then
+				BoltDisplay.Transparency = 1
+			end
+			Sounds.Fire:Play()
+			local serverBoltCodeName = "Bolt"..MathXL:RandomInteger( 1, 100000 )  -- this will fail mostly harmlessly every once in a great while
+			--print( "BoltWeaponRE:FireServer" )
+			
+			-- can't use mouse hit because it collides with transparent objects
+			local clickPart, clickHitV3 = RangedWeaponUtility:MouseHitNontransparent( mouse, { Character } )
+			
+			Tool.BoltWeaponRE:FireServer( "OnActivated", clickHitV3, serverBoltCodeName )
+			if lagHidingB then
 				if animTrack then
-					animTrack:Play()
-					animTrack:AdjustSpeed( 0 )
-				end
-				if BoltDisplay then
-					BoltDisplay.Transparency = 0
+					animTrack:AdjustSpeed( 1 )
 				end
 
-				Tool.Enabled = true
-			else
-				messageFunc( "OutOfMana" , false )				
+				-- making the bolt go slower on the client is a poor man's way of doing lag compensation
+				-- 0.5 was too slow, though, people noticed - 10/29					
+				local bolt = BoltWeaponUtilityXL:Fire( Tool, Bolt, clickHitV3, 0.75 )
+				bolt.Name = "ClientBolt"
+				bolt.Parent = Tool
+				-- why both is client and is not server?  Because when playing from studio both are true
+				if game["Run Service"]:IsClient() and not game["Run Service"]:IsServer() then
+					--print( "Spawning boltwatch function" )
+					spawn( function()
+						----print( "Waiting for bolt" )
+						local serverBolt = workspace.ActiveServerProjectiles:WaitForChild( serverBoltCodeName )
+						serverBolt:Destroy()
+						--print "Destroyed server bolt" )
+					end)
+				end
 			end
+			local walkSpeedMulN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
+			--print "Beginning cooldown" )
+			WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, walkSpeedMulN )
+			--print "Cooldown finished" )
+			if animTrack then
+				animTrack:Play()
+				animTrack:AdjustSpeed( 0 )
+			end
+			if BoltDisplay then
+				BoltDisplay.Transparency = 0
+			end
+		else
+			messageFunc( "OutOfMana" , false )				
 		end
 	end
 	

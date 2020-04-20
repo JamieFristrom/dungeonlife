@@ -311,13 +311,18 @@ function Monsters:GetLevelN( characterKey )
 end
 
 
-function Monsters:Died( player )
-	local monster = player.Character
-	print( "Monster "..monster.Name.." died" )
+function Monsters:Died( monster )
+	DebugXL:Assert( monster:IsA( 'Model' ) )
+	DebugXL:logI( "Monster "..monster.Name.." died" )
 
-	Inventory:AdjustCount( player, "MonsterDeaths", 1 )
+	local player = game.Players:GetPlayerFromCharacter( monster )
+	if player then
+		Inventory:AdjustCount( player, "MonsterDeaths", 1 )
+	end
 
-	local monsterLevel = PlayerServer.getLocalLevel( player )
+	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monster )
+	DebugXL:Assert( characterKey ~= 0 )
+	local monsterLevel = PlayerServer.getLocalLevel( characterKey )
 
 	-- drop item
 	local monsterClass = Monsters:GetClass( monster )
@@ -342,7 +347,7 @@ function Monsters:Died( player )
 		end
 	end
 
-	local lifetime = PlayerServer.recordCharacterDeath( player, player.Character )
+	PlayerServer.recordCharacterDeath( player, player.Character )
 
 	if monsterDatum.tagsT.Superboss then
 		-- everybody gets credit & loot for the superboss but xp shared as usual
@@ -416,17 +421,23 @@ end
 
 function Monsters:DoDirectDamage( character, damage, targetHumanoid, damageTagsT, critB )
 	DebugXL:Assert( self == Monsters )
+	DebugXL:logD('Combat', 'Monsters:DoDirectDamage( '..character.Name..','..damage..','..targetHumanoid:getFullName()..')' )
 	if targetHumanoid.Health > 0 then
---		--print( "Base damage: "..damage )
--- got messy
+		DebugXL:logV( 'Combat', "Base damage: "..damage )
+		
 		local targetPC = targetHumanoid.Parent
 		local targetPlayer = game.Players:GetPlayerFromCharacter( targetPC )
+		DebugXL:logV( 'Combat', 'targetPlayer = '..targetPlayer.Name )
 
 		-- while theoretically monsters only damage players this can throw an error because monsters can currently damage barriers
-		if targetPlayer then
-			damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, CharacterI:GetPCDataWait( targetPC ), damage, damageTagsT )
+		if targetPlayer and targetPlayer.Parent then
+			local characterRecord = PlayerServer.getCharacterRecordFromPlayer( targetPlayer )
+			DebugXL:Assert( characterRecord )  -- seriously, if the target player and their character is still around then there should be no way this can happen
+			if characterRecord then
+				damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, characterRecord, damage, damageTagsT )
+			end
 		end
---		--print( character.Name.." damage reduced to "..damage )
+		DebugXL:logV( 'Combat', targetHumanoid.Name..'humanoid:TakeDamage('..damage..')' )
 		targetHumanoid:TakeDamage( damage )
 		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( targetPC, -damage, critB )
 
@@ -448,6 +459,7 @@ end
 -- yes, this became a fucking mess
 function Monsters:DoFlexToolDamage( character, flexTool, targetHumanoid )
 	DebugXL:Assert( self == Monsters )
+	DebugXL:logI('Combat', 'Monsters:DoFlexToolDamage')
 	if targetHumanoid.Health > 0 then
 		local damageN, critB = unpack( Monsters:DetermineFlexToolDamageN( character, flexTool ) )
 		local weaponTypeS = flexTool:getBaseData().equipType

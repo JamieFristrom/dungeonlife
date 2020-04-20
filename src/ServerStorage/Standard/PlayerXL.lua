@@ -109,10 +109,16 @@ function PlayerAdded( player )
 					-- keeping in two dimensions so falling won't violate
 					local dis = math.sqrt((newLoc.X - location.X)^2 + (newLoc.Z - location.Z)^2)
 					
-					local speed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) ) * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
-					DebugXL:Assert( speed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
+					-- we might not have a pc sheet right now, it might be before we've spawned or during intermission
+					local characterSpeed = 12
+					local characterRecord = PlayerServer.getCharacterRecordFromPlayer( player )
+					if characterRecord then
+						characterSpeed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) )
+					end
+					local antiteleportSpeed = characterSpeed * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
+					DebugXL:Assert( antiteleportSpeed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
 
-					if dis > speed  then
+					if dis > antiteleportSpeed  then
 						Punish( player )   -- punishing here because they can still get treasure with the teleportation hack
 						character:SetPrimaryPartCFrame( CFrame.new( location ) )
 						character.PrimaryPart.Velocity = Vector3.new(0,0,0)

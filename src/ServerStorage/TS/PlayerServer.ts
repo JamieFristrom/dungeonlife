@@ -57,15 +57,18 @@ export namespace PlayerServer {
         return currentCharacterKey ? characterRecords.get(currentCharacterKey) : undefined
     }
 
+    const timeoutSeconds = 10 
     export function getCharacterRecordFromPlayerWait(player: Player) 
     {
-        for(;;)
+        const timeout = tick() + timeoutSeconds
+        while( tick() < timeout )
         {
             const record = getCharacterRecordFromPlayer( player )
             if( record !== undefined )
                 return record
             wait()
         }
+        DebugXL.logE( 'Players', 'PlayerServer.getCharacterRecrodFromPlayerWait timed out on '+player.Name )
     }
 
     // used for AI mobs
@@ -308,6 +311,24 @@ export namespace PlayerServer {
     Players.PlayerAdded.Connect(playerAdded)
 
     Players.PlayerRemoving.Connect((player) => { playerRemoving(player); recordHitRatio(player) })
+
+    spawn( ()=>
+    {
+        // garbage collection
+        while(true) 
+        {
+            wait(1.1) 
+            for( let [player, characterKey] of currentPCKeys.entries() ) 
+            {
+                if( !player.Parent ) 
+                {
+                    characterRecords.delete( characterKey )
+                    currentPCKeys.delete( player )
+                }
+            }
+        }
+    })
+
 }
 
 
