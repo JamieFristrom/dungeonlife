@@ -56,17 +56,20 @@ end
 
 function CharacterI:TakeFlexToolDamage( hitCharacter, attackingPlayer, flexTool )
 	DebugXL:Assert( self == CharacterI )
+	DebugXL:logD( 'Combat', 'TakeFlexToolDamage attackingPlayer: '..attackingPlayer.Name..' hitCharacter: '..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
 			CharacterI:SetLastAttackingPlayer( hitCharacter, attackingPlayer )
 			
-			if attackingPlayer.Team == game.Teams.Heroes then		
+			if attackingPlayer.Team == game.Teams.Heroes then	
+				DebugXL:logV( 'Combat', 'Hero damaging monster' )	
 				require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
 			else
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
+				DebugXL:logV( 'Combat', 'Monster damaging hero' )	
 				local attackingCharacter = attackingPlayer.Character
 				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
 			end

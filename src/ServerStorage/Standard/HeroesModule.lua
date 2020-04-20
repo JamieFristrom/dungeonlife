@@ -758,12 +758,6 @@ spawn( function()
 				savedPlayerCharactersT[ key ] = nil
 			end 
 		end
-		for key, _ in pairs( PlayerServer.getPlayerCharacterRecords() ) do
-			if not key.Parent then
-				print( "Removing "..key.Name.." from PlayerServer.playerCharacterRecords" )
-				PlayerServer.setCharacterRecordForPlayer( key, nil )
-			end 
-		end		
 	end
 end)
 --------------------------------------------------------------------------------------------------------------------
