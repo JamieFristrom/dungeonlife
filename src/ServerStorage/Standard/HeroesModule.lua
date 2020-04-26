@@ -211,7 +211,7 @@ function Heroes:CharacterAdded( character, player )
 	
 	-- if hero doesn't have a usable melee weapon, give them one
 	local meleeWeaponCount = myPCData.gearPool:countIf( function( possession ) 
-		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and HeroUtility:CanUseWeapon( myPCData, possession ) end )
+		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and HeroUtility:CanUseGear( myPCData, possession ) end )
 	if meleeWeaponCount==0 then
 		-- a weak melee weapon. a 1st level wizard could chuck their staff and rejoin and do all right... 
 		GivePossession( player, myPCData, FlexTool.new( "Shortsword", math.max( 1, level-1 ), {} ) ) 
@@ -774,8 +774,38 @@ function HeroRemote.GetStatsWait( ... )
 	return Heroes:GetPCDataWait( ... )
 end
 
+
 function HeroRemote.ChooseClass( ... )
 	Heroes:ChooseClass( ... )
+end
+
+
+function HeroRemote.Wear( player, itemKey, equipB )
+	local pcData = Heroes:GetPCDataWait( player )
+	if not pcData then return end
+
+	local item = pcData.gearPool:get( itemKey )
+	if not item then return end  -- I guess it's possible to click throw away and then rapidly quick equip
+	if item.equippedB ~= equipB then
+		if equipB then
+			if HeroUtility:CanUseGear( pcData, item ) then
+				local equipSlot = ToolData.dataT[ item.baseDataS ].equipSlot
+				local currentItem = CharacterClientI:GetEquipFromSlot( pcData, equipSlot )
+				if currentItem then
+					currentItem.equippedB = false
+				end
+			end
+		end
+		item.equippedB = equipB
+		if player.Character then
+			if player.Character.Parent then
+				Heroes:ReconfigureDerivativeStats( player, pcData )
+				HeroUtility:RecheckItemRequirements( pcData )
+				FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+			end
+		end	
+		Heroes:SaveHeroesWait( player )
+	end
 end
 
 
@@ -883,7 +913,8 @@ end
 
 function HeroRemote.AwardExperienceWait( player )
 	if CheatUtilityXL:PlayerWhitelisted( player ) then
-		Heroes:AwardExperienceWait( player, PlayerServer.getActualLevel( player ) * 500, "Cheat", "Cheat" )
+		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+		Heroes:AwardExperienceWait( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
 	end
 end
 
@@ -902,7 +933,7 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 
 	local item = pcData.gearPool:get( itemKey )
 	if item then  -- it's possible to sell off a weapon and click on it in your inventory before it's gone and send other spurious commands
-		if HeroUtility:CanUseWeapon( pcData, item ) then
+		if HeroUtility:CanUseGear( pcData, item ) then
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
 			
 			local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )

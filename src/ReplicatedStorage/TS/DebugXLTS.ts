@@ -77,7 +77,11 @@ class DebugXLC
 
     log( logLevel: LogLevel, tag: string, message: string )
     {
-        if( logLevel <= this.currentLogLevel)
+        if( !message )
+        {
+            error( `E/${tag}: MISSING MESSAGE` )
+        }
+        else if( logLevel <= this.currentLogLevel)
         {
             let prefix = DebugXLC.logLevelPrefixes[ logLevel ]
             if( logLevel <= LogLevel.Error )

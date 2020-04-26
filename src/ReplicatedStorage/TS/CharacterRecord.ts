@@ -230,8 +230,9 @@ export class GearPool
 
 export abstract class CharacterRecord implements CharacterRecordI
 {   
+    gearPool: GearPool
+
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
-    protected gearPool: GearPool
     private toolKeyServerN = 1
 
     private static mobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')

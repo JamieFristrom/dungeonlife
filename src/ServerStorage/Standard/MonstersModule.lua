@@ -313,7 +313,7 @@ end
 
 function Monsters:Died( monster )
 	DebugXL:Assert( monster:IsA( 'Model' ) )
-	DebugXL:logI( "Monster "..monster.Name.." died" )
+	DebugXL:logI( "Character", "Monster "..monster.Name.." died" )
 
 	local player = game.Players:GetPlayerFromCharacter( monster )
 	if player then

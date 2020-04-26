@@ -99,7 +99,7 @@ function WireInfoFrame( flexToolIdx )
 				local assignmentButtonFrame = assignBar:WaitForChild( "Slot"..i )
 				assignmentButtonFrame.ImageLabel.Visible = currentAssignedSlot == i
 			end
-			local weaponGood = HeroUtility:CanUseWeapon( PCClient.pc, flexToolInst )
+			local weaponGood = HeroUtility:CanUseGear( PCClient.pc, flexToolInst )
 			if not weaponGood then
 				itemInfoFrame.Requires.TextColor3 = Color3.new( 1, 0, 0 )
 				assignBar.Visible = false
@@ -115,7 +115,7 @@ function WireInfoFrame( flexToolIdx )
 		end
 
 		if baseData.useTypeS == "worn" then
-			local weaponGood = HeroUtility:CanUseWeapon( PCClient.pc, flexToolInst )
+			local weaponGood = HeroUtility:CanUseGear( PCClient.pc, flexToolInst )
 			if weaponGood then
 				itemInfoFrame.Wear.Visible = true
 				if CharacterClientI:GetEquipped( flexToolInst ) then
@@ -205,7 +205,7 @@ itemInfoFrame.Wear.MouseButton1Click:Connect( function()
 		InstanceXL:CreateSingleton( "BoolValue", { Name= "ChangingCostume", Parent= game.Players.LocalPlayer.Character, Value= true })
 		local item = PCClient.pc.gearPool:get( curGearPoolKey )
 		if item then  -- it's possible to sell your item and then rapidly click on it in inventory before it's gone
-			pcEvent:FireServer( "Equip", curGearPoolKey, not CharacterClientI:GetEquipped( PCClient.pc.gearPool:get( curGearPoolKey ) ) )
+			pcEvent:FireServer( 'Wear', curGearPoolKey, not CharacterClientI:GetEquipped( PCClient.pc.gearPool:get( curGearPoolKey ) ) )
 		end
 		HideInfoFrame()
 	end
@@ -393,7 +393,7 @@ while wait(0.1) do
 				local usableWeapons = PCClient.pc.gearPool:findAllWhere( function( item ) 
 					return not CharacterClientI:GetPossessionSlot( PCClient.pc, item ) and
 						( ToolData.dataT[ item.baseDataS ].useTypeS == "held" or ToolData.dataT[ item.baseDataS ].useTypeS == "power" ) and
-						HeroUtility:CanUseWeapon( PCClient.pc, item ) 
+						HeroUtility:CanUseGear( PCClient.pc, item ) 
 				end )
 				
 				local item, _, itemId = TableXL:FindBestFitMax( usableWeapons, function( item )
@@ -422,7 +422,7 @@ while wait(0.1) do
 					if not equipInSlot then
 						local usableArmor = PCClient.pc.gearPool:findAllWhere( function( item )
 							return ToolData.dataT[ item.baseDataS ].equipSlot == slot and
-								HeroUtility:CanUseWeapon( PCClient.pc, item)
+								HeroUtility:CanUseGear( PCClient.pc, item)
 						end )
 						local item, _, itemId = TableXL:FindBestFitMax( usableArmor, function( item ) 
 							return item:getActualLevel()
