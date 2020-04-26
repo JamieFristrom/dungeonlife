@@ -66,27 +66,27 @@ end
 
 
 -- also used for armor, bad name
-function HeroUtility:CanUseWeapon( pcData, flexTool )
-	local weaponGood = false
+function HeroUtility:CanUseGear( pcData, flexTool )
+	local gearGood = false
 	local statReqN, statName = FlexEquipUtility:GetStatRequirement( flexTool )
 	local levelReqN = flexTool:getLevelRequirement()
 	if not statReqN then
-		weaponGood = true
+		gearGood = true
 	elseif levelReqN <= Hero:levelForExperience( pcData.statsT.experienceN ) then 
-		weaponGood = true 
+		gearGood = true 
 	else
 		if not pcData.statsT[ statName ] then
-			DebugXL:Error( "Weapon "..flexTool.baseDataS.." looking for stat "..statName )
+			DebugXL:Error( "gear "..flexTool.baseDataS.." looking for stat "..statName )
 		end
 		-- by not passing our held weapon in here, you can't use a +strength weapon to equip a higher level weapon than required	
-		-- and by ignoring the current equip slot you can't use your current item to help wear a higher level item	
+		-- and by ignoring the current equip slot you can't use your current gear to help wear a higher level gear	
 		local adjBaseStatN = pcData:getActualAdjBaseStat( statName, flexTool.equipSlot )		
 		--local adjBaseStatN = HeroUtility:GetAdjBaseStat( pcData, statName )
 		if adjBaseStatN >= statReqN then 
-			weaponGood = true
+			gearGood = true
 		end
 	end
-	return weaponGood
+	return gearGood
 end
 
 
@@ -96,7 +96,7 @@ function HeroUtility:RecheckItemRequirements( pcData )
 		dirtyB = false
 		pcData.gearPool:forEach( function( item, _ )
 			if item.equippedB or item.slotN then
-				if not HeroUtility:CanUseWeapon( pcData, item ) then
+				if not HeroUtility:CanUseGear( pcData, item ) then
 					item.equippedB = nil
 					item.slotN = nil
 					dirtyB = true

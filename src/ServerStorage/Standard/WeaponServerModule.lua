@@ -20,7 +20,7 @@ function WeaponServer:CheckRequirements( tool, player )
 	
 	local flexToolInst     = FlexibleTools:GetToolInst( tool )
 	local pcData = Heroes:GetPCDataWait( player )
-	if HeroUtility:CanUseWeapon( pcData, flexToolInst ) then return true end
+	if HeroUtility:CanUseGear( pcData, flexToolInst ) then return true end
 	local humanoid = player.Character:FindFirstChild("Humanoid")
 		-- not sure we need this now that we have custom inventory:
 	delay( 0.1, function() if humanoid then humanoid:UnequipTools() end end )

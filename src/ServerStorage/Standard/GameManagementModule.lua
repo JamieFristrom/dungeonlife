@@ -600,7 +600,7 @@ local function MonitorPlayer( player )
 	local monitorCyclesN = 0
 	local beDungeonlordB = false 
 	while not myDungeonPlayerT.playerRemovingB do
-		local status, err = pcall( function()                                          -- this function is too important to let die due to some roblox or lua quirk
+		local status, err = DisableablePcall( function()
 			DebugXL:logI( 'MonitorPlayer',  player.Name.." monitoring lifetime" )
 			myDungeonPlayerT.pcState = PCState.Limbo
 			--while not GameManagement:LevelReady() do wait() end
@@ -796,7 +796,12 @@ local function MonitorPlayer( player )
 		if not status then
 			-- things really fucked up!  emergency!
 			-- clean up the best we can
-			DebugXL:Error( "Monitor failure: "..err )
+			if( err )then
+				DebugXL:Error( "Monitor failure: "..err )
+			else
+				DebugXL:Error( "Monitor failure: UNKNOWN ERR" )
+			end
+
 			wait()  -- we need this otherwise it's possible to get stuck in a loop without any waits and lock the server 
 			if player.Parent then
 				if player.Character then
@@ -1216,10 +1221,11 @@ local function HeroesChooseCharactersWait()
 end
 
 
-local protectionDisabled = false
+local protectionDisabled = true  -- DO NOT SHIP true
 function DisableablePcall( func )
 	if protectionDisabled then
-		return func()
+		func()
+		return true, ""
 	else
 		return pcall( func )
 	end
