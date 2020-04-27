@@ -205,9 +205,12 @@ function Loot:MonsterDrop( monsterLevel, monsterClassS, lastAttackingPlayer, wor
 		end
 		local dieRoll = playerLootRandomishers[ player ]:next0to1()	
 		if dieRoll <= odds then
-			local averageLevel = ( monsterLevel + PlayerServer.getActualLevel( player ) ) / 2
---			--print( "Loot:MonsterDrop HIT: "..player.Name..": odds: "..odds.."; dieRoll: "..dieRoll )
-			Loot:Drop( averageLevel, player, false, worldPosV3, boostInPlay and ( dieRoll >= odds / 2 ) )		
+			local playerCharacterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+			if playerCharacterKey then
+				local averageLevel = ( monsterLevel + PlayerServer.getActualLevel( playerCharacterKey ) ) / 2
+	--			--print( "Loot:MonsterDrop HIT: "..player.Name..": odds: "..odds.."; dieRoll: "..dieRoll )
+				Loot:Drop( averageLevel, player, false, worldPosV3, boostInPlay and ( dieRoll >= odds / 2 ) )		
+			end
 	--			return   -- 			
 		else
 --			--print( "Loot:MonsterDrop miss: "..player.Name..": odds: "..odds.."; dieRoll: "..dieRoll )

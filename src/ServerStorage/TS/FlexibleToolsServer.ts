@@ -97,7 +97,6 @@ export namespace FlexibleToolsServer
 
         // validate parameters so calling from Lua is safer
         DebugXL.Assert( destinationCharacter.IsA('Model') )
-        DebugXL.Assert( destinationCharacter.Parent !== undefined )
 
         DebugXL.logI( script.Name, `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}` )
         

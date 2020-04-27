@@ -19,7 +19,10 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local CheatParser = {}
 
 function CheatParser:DropLoot( player )
-	Loot:MonsterDrop( PlayerServer.getActualLevel( player ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+	if characterKey then
+		Loot:MonsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+	end
 end
 
 function CheatParser:FurnishPower( player )
