@@ -1221,7 +1221,7 @@ local function HeroesChooseCharactersWait()
 end
 
 
-local protectionDisabled = true  -- DO NOT SHIP true
+local protectionDisabled = false
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()
