@@ -24,9 +24,6 @@ function Destructible:FlyApart( destructibleInstance, timeLength )
 				descendent.Velocity = Vector3.new( MathXL:RandomNumber( -20, 20 ),
 					MathXL:RandomNumber( 20, 40 ),
 					MathXL:RandomNumber( -20, 20 ) )	
---				if descendent:FindFirstChild("SoundOnCollide") then
---					descendent.SoundOnCollide.Disabled = false
---				end			
 				game.TweenService:Create( descendent, TweenInfo.new( timeLength ), { Transparency = 1 } ):Play()
 			else
 				-- I have a theory that despite the Roblox docs this is a preferable way to destroy objects, because
@@ -40,8 +37,7 @@ function Destructible:FlyApart( destructibleInstance, timeLength )
 end
 
 function Destructible.new( destructibleInstance )
-	
-	--local TimeLengthValue = destructibleInstance.PrimaryPart.Destroyed:FindFirstChild("TimeLength")
+	DebugXL:logD('Gameplay','Destructible.new called for '..destructibleInstance:GetFullName())
 	local timeLength = 1
 	
 	game.CollectionService:AddTag( destructibleInstance, "Character" )
@@ -57,13 +53,13 @@ function Destructible.new( destructibleInstance )
 		DestructibleServer.calibrateHealth( destructibleInstance, averageHeroLocalLevel, numHeroes, dungeonDepth )
 	
 		destructibleInstance.Humanoid.Died:Connect( function()
+			DebugXL:logI('Gameplay', destructibleInstance:GetFullName()..' died')		
 			destructibleInstance.PrimaryPart.Destroyed:Play()
 			Destructible:FlyApart( destructibleInstance, timeLength )
 			wait( timeLength )
 			destructibleInstance.Parent = nil
-			--destructibleInstance:Destroy()
 		end )
-		
+		DebugXL:logD('Gameplay', destructibleInstance.Humanoid:GetFullName()..' died connected')		
 		
 		local lastValue = destructibleInstance.Humanoid.Health
 		local hitSoundEmitter = destructibleInstance.PrimaryPart.Hit
