@@ -37,6 +37,7 @@ local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsSe
 print( 'GameManagementModule: GameAnalyticsServer included')
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
 print( 'GameManagementModule: ServerStorage.Standard includes succesful' )
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Destructible      = require( game.ServerStorage.Standard.Destructible )
@@ -115,6 +116,7 @@ local lastMonsterLevels = {}
 
 local function ChangeGameState( newState )
 	local lastState = workspace.GameManagement.GameState.Value
+	print("ChangeGameState from " .. lastState .. " to " .. newState )
 	Analytics.ReportServerEvent( "GameStateChange", lastState, newState, workspace.GameManagement.GameStateTime.Value )
 	workspace.GameManagement.GameState.Value = newState
 	workspace.GameManagement.GameStateTime.Value = 0
@@ -219,9 +221,9 @@ end
 
 -- player loops
 local function HeroAdded( character, player )
-	local pcData = Heroes:CharacterAdded( character, player )
+	local pcData, characterKey = Heroes:CharacterAdded( character, player )
 	local character = player.Character   -- CharacterAdded calls costume change which destroys old character. 
-	print("Checking for courage auras for "..character.Name)
+	DebugXL:logI( 'Gameplay', "Checking for courage auras for "..character.Name )
 	if( Places.getCurrentPlace() ~= Places.places.Underhaven )then
 		if character:FindFirstChild("AuraOfCourage") then
 			print("Aura found")
@@ -238,13 +240,13 @@ local function HeroAdded( character, player )
 				"MsgWelcomeHero" )
 		end	
 	end
-	return pcData
+	return pcData, characterKey
 end
 
 
 local function MonsterAddedWait( character, player )
 --	--print( "Monster added "..player.Name )
-	local pcData = Monsters:CharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
+	local pcData, characterKey = Monsters:CharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not Inventory:PlayerInTutorial( player ) then
@@ -262,7 +264,7 @@ local function MonsterAddedWait( character, player )
 					return
 				end
 				local lastLevel = lastMonsterLevels[ player ]
-				local thisLevel = Monsters:GetLevelN( character )
+				local thisLevel = Monsters:GetLevelN( characterKey )
 				if lastLevel then
 					if thisLevel > lastLevel then
 						MessageServer.PostMessageByKey( player, "LevelUp" )
@@ -275,28 +277,31 @@ local function MonsterAddedWait( character, player )
 			end
 		end
 	end
-	return pcData
+	return pcData, characterKey
 end
 
 
-local function SetupCharacterWait( character, player )
+local function SetupCharacterWait( startingCharacterModel, player )
+	local characterKey = 0
 	local pcData 
 	if player.Team == game.Teams.Heroes then
-		--print("Adding hero character")
-		pcData = HeroAdded( character, player )
+		DebugXL:logD('Character','Adding hero character')
+		pcData, characterKey = HeroAdded( startingCharacterModel, player )
 	else
-		--print("Adding monster character")
-		pcData = MonsterAddedWait( character, player )
+		DebugXL:logD('Character','Adding monster character')
+		pcData, characterKey = MonsterAddedWait( startingCharacterModel, player )
 	end
 	if not pcData then
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
 	end
+	startingCharacterModel = nil  -- because it could be invalid at this point; the costume may have changed
+	local character = player.Character
+
 	player.Backpack:ClearAllChildren()
-	PlayerServer.updateBackpack( player, pcData )
+	ToolCaches.updateToolCache( characterKey, pcData )
 
 	-- needs to come after costume applied or head gets replaced; apply costume probably sets it up for us, but not if dungeonlord
 	if not character:FindFirstChild("CharacterLight") then
-		local player = game.Players:GetPlayerFromCharacter( character )
 		if FloorData:CurrentFloor().characterLightN > 0 then
 			local characterLight = game.ServerStorage.CharacterLight:Clone()
 			characterLight.Handle.PointLight.Range = 	FloorData:CurrentFloor().characterLightN
@@ -595,8 +600,8 @@ local function MonitorPlayer( player )
 	local monitorCyclesN = 0
 	local beDungeonlordB = false 
 	while not myDungeonPlayerT.playerRemovingB do
-		local status, err = pcall( function()                                          -- this function is too important to let die due to some roblox or lua quirk
-			print( player.Name.." monitoring lifetime" )
+		local status, err = DisableablePcall( function()
+			DebugXL:logI( 'MonitorPlayer',  player.Name.." monitoring lifetime" )
 			myDungeonPlayerT.pcState = PCState.Limbo
 			--while not GameManagement:LevelReady() do wait() end
 			-- if time to be a hero
@@ -604,13 +609,13 @@ local function MonitorPlayer( player )
 			while myDungeonPlayerT.pcStateRequest ~= PCStateRequest.NeedsRespawn do wait() end
 			myDungeonPlayerT.pcStateRequest = PCStateRequest.None
 			local levelSessionN = levelSessionCounterN  -- for testing purposes
-			print( player.Name.." beginning respawn" )
+			DebugXL:logI( 'MonitorPlayer', player.Name.." beginning respawn" )
 			myDungeonPlayerT.pcState = PCState.Respawning
 			if not GameManagement:LevelReady() then
 				DebugXL:Error( "Level not ready when "..player.Name.." triggered respawn" )
 			end
 			while not GameManagement:LevelReady() do wait() end
-			--print( player.Name.." can respawn because level is ready" )
+			DebugXL:logV( 'MonitorPlayer', player.Name.." can respawn because level is ready" )
 			local spawnPart = myDungeonPlayerT.respawnPart
 			--myDungeonPlayerT.respawnPart = nil
 			
@@ -702,7 +707,7 @@ local function MonitorPlayer( player )
 					levelSessionCounterN.." levelSessionN: "..levelSessionN.." monitorCyclesN: "..monitorCyclesN.." gameStateDesc: "..workspace.GameManagement.GameState.Value
 				DebugXL:Error( diagS )
 			end
-			print( player.Name.." calling LoadCharacterWait" )
+			DebugXL:logI( 'MonitorPlayer', player.Name.." calling LoadCharacterWait" )
 			
 			PlayerXL:LoadCharacterWait( player, 
 				nil, 
@@ -712,12 +717,13 @@ local function MonitorPlayer( player )
 			-- possible respawn failed here
 			if player.Character then
 				myDungeonPlayerT.pcState = PCState.Exists
-				print( player.Name.." spawned character" )
+				DebugXL:logI( 'MonitorPlayer', player.Name.." spawned character" )
 
 			--		-- wait until time to change
 				
 				while wait() do
-					if player.Character then  
+					local playerCharacter = player.Character
+					if playerCharacter then  
 						local humanoid = player.Character:FindFirstChild("Humanoid")
 						-- test what happens if monitor crashes
 						if crashPlayer == player then
@@ -735,45 +741,41 @@ local function MonitorPlayer( player )
 								Inventory:AdjustCount( player, "HeroDeaths", 1 )
 								local localTick = time()
 --								GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Fail:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
-								Heroes:Died( player )
+								Heroes:Died( player )  
 								-- if the rest of the characters die while we're lying in pieces
 								while GameManagement:LevelReady() and time() < localTick + 2 do
 									wait()
 								end
-								if player.Character then
-									player.Character:Destroy()
-								end
+								playerCharacter.Parent = nil
 
 								ChangeHeroToMonster( player )
 								-- we don't need to keep heroes as dungeon lords if we're constantly churning
 								beDungeonlordB = true
 							else
 								local localTick = time()
-								Monsters:Died( player )
+								Monsters:Died( playerCharacter )  -- fixme: this needs to be called for AI NPC mobs as well
 								-- if the rest of the characters die while we're lying in pieces
 								while GameManagement:LevelReady() and time() < localTick + 2 do
 									wait()
 								end
 								-- character might be gone by now
-								if player.Character then
-									player.Character:Destroy()
-								end
+								playerCharacter.Parent = nil
 							end
 							-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
 							if GameManagement:LevelReady() then
 								GameManagement:MarkPlayersCharacterForRespawn( player )
 							end
-							print( player.Name.." lifetime ended in death" ) 
+							DebugXL:logI( 'MonitorPlayer', player.Name.." lifetime ended in death" ) 
 							break
 						end
 						if myDungeonPlayerT.pcStateRequest == PCStateRequest.NeedsDestruction then
 							player.Character:Destroy()
-							print( player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
+							DebugXL:logI( 'MonitorPlayer', player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
 							break				
 						end
 						if  myDungeonPlayerT.pcStateRequest == PCStateRequest.NeedsRespawn then
 							player.Character:Destroy()
-							print( player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
+							DebugXL:logI( 'MonitorPlayer', player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
 							break
 						end
 						-- not promotion requested
@@ -781,12 +783,12 @@ local function MonitorPlayer( player )
 						-- not end-of-level 
 						wait()
 					else
-						print( player.Name.." character nil, recycling monitor.")
+						DebugXL:logI( 'MonitorPlayer', player.Name.." character nil, recycling monitor.")
 						break
 					end
 				end
 			else
-				print( player.Name.." spawn failed, recycling monitor." )
+				DebugXL:logI( 'MonitorPlayer', player.Name.." spawn failed, recycling monitor." )
 			end
 			monitorCyclesN = monitorCyclesN + 1
 		end )  -- end pcall
@@ -794,7 +796,12 @@ local function MonitorPlayer( player )
 		if not status then
 			-- things really fucked up!  emergency!
 			-- clean up the best we can
-			DebugXL:Error( "Monitor failure: "..err )
+			if( err )then
+				DebugXL:Error( "Monitor failure: "..err )
+			else
+				DebugXL:Error( "Monitor failure: UNKNOWN ERR" )
+			end
+
 			wait()  -- we need this otherwise it's possible to get stuck in a loop without any waits and lock the server 
 			if player.Parent then
 				if player.Character then
@@ -837,7 +844,7 @@ local function PlayerCharactersExist()
 		DebugXL:Assert( DungeonPlayer:Get( player ).pcState )
 		if DungeonPlayer:Get( player ).pcState then
 			if DungeonPlayer:Get( player ).pcState ~= PCState.Limbo then
-				print( player.Name.." still exists state "..DungeonPlayer:Get( player ).pcState.."; request "..DungeonPlayer:Get( player ).pcStateRequest )
+				DebugXL:logI( "Players", player.Name.." still exists state "..DungeonPlayer:Get( player ).pcState.."; request "..DungeonPlayer:Get( player ).pcStateRequest )
 				pcsExist = true
 				break
 			end 
@@ -888,7 +895,9 @@ local function PlayerAdded( player )
 	-- hack: we need to spawn your avatar once right away to initialize the UI
 	--print( "Begin initial LoadCharacter for "..player.Name )	
 	local status, err = pcall( function()
+		DebugXL:logI('CharacterModel', "Loading character model for "..player.Name)
 		player:LoadCharacter()  -- this seems to still be throwing an error even though we check on the previous line. thanks Roblox
+		DebugXL:logI('CharacterModel', "Character model load returned for "..player.Name)
 	end )	
 	if not status then
 		if not player.Parent then 
@@ -1215,7 +1224,8 @@ end
 local protectionDisabled = false
 function DisableablePcall( func )
 	if protectionDisabled then
-		return func()
+		func()
+		return true, ""
 	else
 		return pcall( func )
 	end

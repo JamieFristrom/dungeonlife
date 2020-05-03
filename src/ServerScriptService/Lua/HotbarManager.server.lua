@@ -14,7 +14,7 @@ function HotbarRemote:Equip( player, hotbarSlotN )
 	local flexToolInst = CharacterI:GetHotbarToolDatum( player, hotbarSlotN )
 	if flexToolInst then
 		local possessionDatum = ToolData.dataT[ flexToolInst.baseDataS ]
-	if possessionDatum.useTypeS == "power" then
+		if possessionDatum.useTypeS == "power" then
 			PowerServer.activatePower( player, flexToolInst )
 		end
 	end		

@@ -2,7 +2,7 @@ import { Players, DataStoreService, HttpService } from "@rbxts/services";
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 
-import { PlayerServer } from "ServerStorage/TS/PlayerServer"
+import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 
 import * as AnalyticsXL from "ServerStorage/Standard/AnalyticsXL"
 import * as CheatUtility from "ReplicatedStorage/TS/CheatUtility";
@@ -15,26 +15,24 @@ import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS";
-import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 
 import { Analytics } from "./Analytics";
 import { GameplayTestService } from "./GameplayTestService";
 import { MessageServer } from "./MessageServer";
+import { MobServer } from "./MobServer";
+import { PlayerServer } from "./PlayerServer";
 
 class AdminCommandsC
 {
   banListStore = DataStoreService.GetOrderedDataStore( "BanList" )
 
-  luaCommandHandlerFunc: ( player: Player, args: string[])=>void = function() { warn("Lua Command Handler Not Set")}
+  luaCommandHandlerFunc: ( player: Player, args: string[])=>void = function() { warn("Lua Command Handler Not Set") }
 
   setLuaCommandHandler( newFunc: ( player: Player, args: string[])=>void ) 
   {
     this.luaCommandHandlerFunc = newFunc
   }
 
-
-
-  
   isBanned( player: Player )
   {
     let banListStore = this.banListStore
@@ -55,8 +53,6 @@ export let AdminCommands = new AdminCommandsC()
   
 let CommandList: {[k:string]:unknown} =
 {
-    print: function( sender: Player, args: string[] ) { print( args ) },
-
     ban: function( sender: Player, args: string[] ) 
     {
       // takes user id
@@ -65,36 +61,6 @@ let CommandList: {[k:string]:unknown} =
       AdminCommands.banListStore.SetAsync( bannedPlayerId, tonumber(bannedPlayerId) )
       warn( bannedPlayerId + " banned" )
       AnalyticsXL.ReportEvent( sender, "Ban", bannedPlayerId, sender.Name, 0, true )
-    },
-
-    kick: function( sender: Player, args: string[] )
-    {
-      DebugXL.Assert( args[0]==="kick" )
-      let kickedPlayer = Players.GetPlayers().find( (p)=> p.Name === args[1] )
-      if( kickedPlayer )
-      {
-        kickedPlayer.Kick()
-        warn( kickedPlayer.Name + " kicked" )
-        AnalyticsXL.ReportEvent( sender, "Kick", kickedPlayer.Name, sender.Name, 0, true )
-      }
-    },
-
-    gold: function( sender: Player, args: string[] )
-    {
-      if( CheatUtility.PlayerWhitelisted( sender ) )
-      {
-        DebugXL.Assert( args[0]==="gold" )
-        Heroes.AdjustGold( sender, tonumber(args[1])!, "Cheat", "Cheat" )
-      }
-    },
-
-    get: function( sender: Player, args: string[] )
-    {
-      if( CheatUtility.PlayerWhitelisted( sender ) )
-      {
-        DebugXL.Assert( args[0]==="get" )
-        Inventory.AdjustCount( sender, args[1], 1, "Cheat", "Cheat" )
-      }
     },
 
     // for cut and paste -
@@ -113,6 +79,7 @@ let CommandList: {[k:string]:unknown} =
         print( "Equipping " + sender.Name + " with " + args[1] )
         DebugXL.Assert( args[0]==="equip")
         let myPC = CharacterI.GetPCDataWait( sender )      
+        
         let gearDef = HttpService.JSONDecode( args[1] ) as GearDefinition 
         if( gearDef )
         {          
@@ -127,7 +94,8 @@ let CommandList: {[k:string]:unknown} =
               gearDef.levelN ? gearDef.levelN : 1,
               gearDef.enhancementsA ? gearDef.enhancementsA : [] )
             myPC.giveTool( flexTool )
-            PlayerServer.updateBackpack( sender, myPC )
+            const characterKey = PlayerServer.getCharacterKeyFromPlayer( sender )
+            ToolCaches.updateToolCache( characterKey, myPC )
           }
         }
         else
@@ -151,26 +119,24 @@ let CommandList: {[k:string]:unknown} =
       }
     },
 
-    setTestGroup: function( sender: Player, args: string[] ) {
-      let inventory = Inventory.GetWait( sender )
-      if( inventory.testGroups.has( args[1] ) )
+    gold: function( sender: Player, args: string[] )
+    {
+      if( CheatUtility.PlayerWhitelisted( sender ) )
       {
-        let newGroupNum = tonumber( args[2] )
-        newGroupNum = newGroupNum ? newGroupNum: 1
-        inventory.testGroups.set( args[1], newGroupNum )
-      }
-      else
-      {
-        warn( "Test group "+args[1]+" doesn't exist for player")
+        DebugXL.Assert( args[0]==="gold" )
+        Heroes.AdjustGold( sender, tonumber(args[1])!, "Cheat", "Cheat" )
       }
     },
 
-    setServerTestGroup: function( sender: Player, args: string[] ) {
-      let newGroupNum = tonumber( args[2] )
-      newGroupNum = newGroupNum ? newGroupNum: 1
-      GameplayTestService.setServerTestGroup( args[1], newGroupNum )
+    get: function( sender: Player, args: string[] )
+    {
+      if( CheatUtility.PlayerWhitelisted( sender ) )
+      {
+        DebugXL.Assert( args[0]==="get" )
+        Inventory.AdjustCount( sender, args[1], 1, "Cheat", "Cheat" )
+      }
     },
-
+    
     hurt: function( sender: Player, args: string[] )
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
@@ -184,7 +150,19 @@ let CommandList: {[k:string]:unknown} =
         }
       }
     },
-    
+
+    kick: function( sender: Player, args: string[] )
+    {
+      DebugXL.Assert( args[0]==="kick" )
+      let kickedPlayer = Players.GetPlayers().find( (p)=> p.Name === args[1] )
+      if( kickedPlayer )
+      {
+        kickedPlayer.Kick()
+        warn( kickedPlayer.Name + " kicked" )
+        AnalyticsXL.ReportEvent( sender, "Kick", kickedPlayer.Name, sender.Name, 0, true )
+      }
+    },
+
     kill: function( sender: Player, args: string[] )
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
@@ -194,7 +172,7 @@ let CommandList: {[k:string]:unknown} =
           humanoid.Health = 0
       }
     },
-    
+
     potions: function( sender: Player, args: string[] )
     {
       if( CheatUtility.PlayerWhitelisted( sender ) )
@@ -218,6 +196,44 @@ let CommandList: {[k:string]:unknown} =
       }
     },
 
+    print: function( sender: Player, args: string[] ) { print( args ) },
+
+    resetanalytics: function( sender: Player )
+    {
+      let analyticsDataStore = DataStoreService.GetDataStore( "Analytics" )  
+      let [ success, err ] = pcall( ()=>{
+        analyticsDataStore.RemoveAsync( "user_" + sender.UserId ) } )
+      if( success )
+        print( "Reset analytics" )
+      else
+        print( "Failure: "+err )
+    },
+
+    setServerTestGroup: function( sender: Player, args: string[] ) {
+      let newGroupNum = tonumber( args[2] )
+      newGroupNum = newGroupNum ? newGroupNum: 1
+      GameplayTestService.setServerTestGroup( args[1], newGroupNum )
+    },
+
+    setTestGroup: function( sender: Player, args: string[] ) {
+      let inventory = Inventory.GetWait( sender )
+      if( inventory.testGroups.has( args[1] ) )
+      {
+        let newGroupNum = tonumber( args[2] )
+        newGroupNum = newGroupNum ? newGroupNum: 1
+        inventory.testGroups.set( args[1], newGroupNum )
+      }
+      else
+      {
+        warn( "Test group "+args[1]+" doesn't exist for player")
+      }
+    },
+
+    spawnMob: function( sender: Player, args: string[] )
+    {
+      MobServer.spawnMob();
+    },
+      
     stressanalytics: function( sender: Player, args: string[] )
     {
       let numFrames = tonumber(args[1]) || 1
@@ -238,17 +254,6 @@ let CommandList: {[k:string]:unknown} =
       let messageKey = args[1]
       MessageServer.PostMessageByKey( sender, messageKey, true, 0.0001, true )
     },
-
-    resetanalytics: function( sender: Player )
-    {
-      let analyticsDataStore = DataStoreService.GetDataStore( "Analytics" )  
-      let [ success, err ] = pcall( ()=>{
-        analyticsDataStore.RemoveAsync( "user_" + sender.UserId ) } )
-      if( success )
-        print( "Reset analytics" )
-      else
-        print( "Failure: "+err )
-    }
 }
 
 function playerAdded( player: Player )

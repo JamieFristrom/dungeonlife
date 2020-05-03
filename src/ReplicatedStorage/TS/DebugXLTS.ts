@@ -29,7 +29,7 @@ class DebugXLC
 {
     static readonly logLevelPrefixes: string[] = ['A','E','W','I','D','V']
 
-    private currentLogLevel = LogLevel.Debug
+    private currentLogLevel = LogLevel.Verbose
 
     Error( message: string )
     {
@@ -77,7 +77,11 @@ class DebugXLC
 
     log( logLevel: LogLevel, tag: string, message: string )
     {
-        if( logLevel <= this.currentLogLevel)
+        if( !message )
+        {
+            error( `E/${tag}: MISSING MESSAGE` )
+        }
+        else if( logLevel <= this.currentLogLevel)
         {
             let prefix = DebugXLC.logLevelPrefixes[ logLevel ]
             if( logLevel <= LogLevel.Error )

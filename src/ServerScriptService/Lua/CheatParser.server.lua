@@ -5,7 +5,6 @@
 --
 local CheatUtilityXL  = require( game.ReplicatedStorage.TS.CheatUtility )
 
-local CharacterClientI = require( game.ReplicatedStorage.Standard.CharacterClientI )
 local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )
@@ -20,7 +19,10 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local CheatParser = {}
 
 function CheatParser:DropLoot( player )
-	Loot:MonsterDrop( PlayerServer.getActualLevel( player ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+	if characterKey then
+		Loot:MonsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+	end
 end
 
 function CheatParser:FurnishPower( player )

@@ -1,26 +1,28 @@
-print( script:GetFullName().." executed" )
 
 local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI( 'Executed', script.Name )
+
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
-local PossessionData   = require( game.ReplicatedStorage.Standard.PossessionDataStd )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 local CharacterPhysics = require( game.ReplicatedStorage.Standard.CharacterPhysics )
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-print( 'PlayerXL: ReplicatedStorage includes succesful' )
-
+DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage require succesful' )
 local CharacterI       = require( game.ServerStorage.CharacterI )
-
+DebugXL:logD( 'Requires', 'PlayerXL: CharacterI require succesful' )
 local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
+DebugXL:logD( 'Requires', 'PlayerXL: AnalyticxXL require succesful' )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
+DebugXL:logD( 'Requires', 'PlayerXL: GameAnalyticsServer require succesful' )
 local Costumes         = require( game.ServerStorage.Standard.CostumesServer )
+DebugXL:logD( 'Requires', 'PlayerXL: Costumes require succesful' )
 local Inventory        = require( game.ServerStorage.Standard.InventoryModule )
-print( 'PlayerXL: ReplicatedStorage includes succesful' )
+DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage require succesful' )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
-print( 'PlayerXL: ReplicatedStorage.TS includes succesful' )
+DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage.TS require succesful' )
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
-print( 'PlayerXL: ServerStorage.TS includes succesful' )
+DebugXL:logD( 'Requires', 'PlayerXL: ServerStorage.TS require succesful' )
 
 local PlayerXL = {}
 
@@ -107,10 +109,16 @@ function PlayerAdded( player )
 					-- keeping in two dimensions so falling won't violate
 					local dis = math.sqrt((newLoc.X - location.X)^2 + (newLoc.Z - location.Z)^2)
 					
-					local speed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) ) * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
-					DebugXL:Assert( speed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
+					-- we might not have a pc sheet right now, it might be before we've spawned or during intermission
+					local characterSpeed = 12
+					local characterRecord = PlayerServer.getCharacterRecordFromPlayer( player )
+					if characterRecord then
+						characterSpeed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) )
+					end
+					local antiteleportSpeed = characterSpeed * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
+					DebugXL:Assert( antiteleportSpeed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
 
-					if dis > speed  then
+					if dis > antiteleportSpeed  then
 						Punish( player )   -- punishing here because they can still get treasure with the teleportation hack
 						character:SetPrimaryPartCFrame( CFrame.new( location ) )
 						character.PrimaryPart.Velocity = Vector3.new(0,0,0)
@@ -133,7 +141,7 @@ function PlayerAdded( player )
 	local ultimateTeamChangeTime
 	
 	player.Changed:Connect( function( property )
-		print( "Player changed")
+		DebugXL:logI( 'Player', player.Name.." player changed property "..property )
 		if property == "Team" then
 			if ultimateTeamChangeTime then  -- ignore first team change
 				GameAnalyticsServer.RecordDesignEvent( player, "TeamChange:"..player.Team.Name, time() - ultimateTeamChangeTime, 30, "secs" )
@@ -177,9 +185,25 @@ local loadingCharacterBT = {}
 local loadingCharacterCallstackT = {}
 
 
+--[[
+
+The flow for loading a charater is different from typical Roblox - we don't rely on their character added events
+Instead, the flow looks like this:
+
+	MonitorPlayer (from GameManagementModule)
+		PlayerXL:LoadCharacterWait  -- your character model is created the first time here
+			PlayerServer.callCharacterAdded 
+				-- calls all the listeners on independent threads, which includes the very important:
+				SetupCharacterWait (from GameManagementModule)
+					HeroAdded   
+						ApplyEntireCostumeWait -- likely resets your character model to put armor on you 
+					or 
+					MonsterAddedWait  -- if you're a werewolf probably resets your character model
+					
+--]]
 
 function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart, levelSessionN, levelSessionFunc )
-	print( "LoadCharacterWait "..player.Name )
+	DebugXL:logD( 'Requires', "LoadCharacterWait "..player.Name )
 	DebugXL:Assert( not ( optionalSpawnCF and optionalSpawnPart ) ) -- pass in a CF or a part (or neither), not both
 	if loadingCharacterBT[ player ] then
 		DebugXL:Error( "LoadCharacterWait called for "..player.Name.." when load is already in progress. Traceback: "..loadingCharacterCallstackT[ player ])
@@ -256,7 +280,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 		-- 	DebugXL:Error( chosenSpawn.Name.." no longer in workspace. "..(levelSessionN == levelSessionFunc() and "but session didn't change" or "and sesssion changed" ) ) 
 		-- end		
 
---		--print( "Player "..player.Name.." cframe will be set to spawn point "..chosenSpawn.Name )
+--		--DebugXL:logD( 'Requires', "Player "..player.Name.." cframe will be set to spawn point "..chosenSpawn.Name )
 		
 		-- doesn't support rotated spawns yet
 		local minX = chosenSpawn.Position.X - chosenSpawn.Size.X / 2
@@ -269,7 +293,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 		spawnCF = CFrame.new( myX, myY, myZ )
 	end
 
-	--print( "About to LoadCharacter "..player.Name ) 	
+	--DebugXL:logD( 'Requires', "About to LoadCharacter "..player.Name ) 	
 	local srcCharacter
 	local noAttachSet = Costumes.allAttachmentsSet
 	if player.Team == game.Teams.Monsters then
@@ -294,14 +318,14 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 	-- end
 	DebugXL:Assert( player.Character )	
 
-	--print( "Character loaded "..player.Name ) 	
+	--DebugXL:logD( 'Requires', "Character loaded "..player.Name ) 	
 
 	if characterClassS ~= "DungeonLord" then  	-- don't let dungeonlord use up thingy
 		DebugXL:Assert( chosenSpawn )
 		if chosenSpawn then
 			local chosenSpawnLastCharacterValue = chosenSpawn:FindFirstChild("LastPlayer")
 			if chosenSpawnLastCharacterValue then
-	--			--print( "Marking spawn "..chosenSpawn:GetFullName().." used by "..player.Name )
+	--			--DebugXL:logD( 'Requires', "Marking spawn "..chosenSpawn:GetFullName().." used by "..player.Name )
 				chosenSpawnLastCharacterValue.Value = player
 			end
 		end
@@ -313,7 +337,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 
 	loadingCharacterBT[ player ] = nil  -- less leaky than false	
 
-	print( "LoadCharacterWait finished "..player.Name ) 	
+	DebugXL:logD( 'Character', "LoadCharacterWait finished "..player.Name ) 	
 			
 	return player.Character
 end

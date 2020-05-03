@@ -40,7 +40,7 @@ export namespace HeroServer
             hero.shopPool.clear()
             for( let i=0; i<25; i++ )
             {
-                //print( 'Shop item ' + i )
+                //DebugXL.logI( 'Items',( 'Shop item ' + i )
                 let gearItem = undefined
                 let duplicateCount = 0
                 while( !gearItem )
@@ -61,7 +61,7 @@ export namespace HeroServer
                             // even with break so maybe not that big a deal
                             if( newItem!.identical( storeItem! ) )  
                             {
-                                print( "Duplicate" )
+                                DebugXL.logI( 'Items', "HeroServer: Duplicate" )
                                 duplicateCount++
                                 duplicate = true
                             }
@@ -128,7 +128,7 @@ export namespace HeroServer
         if( heroTeam )
         {
             let minLevel = 1000
-            PlayerServer.pcs.forEach( (pcData)=>
+            PlayerServer.getPlayerCharacterRecords().forEach( (pcData)=>
             {
                 if( pcData instanceof Hero ) {
                     minLevel = math.min( minLevel, pcData.getActualLevel() )
@@ -145,7 +145,7 @@ export namespace HeroServer
     export function calculateDangerRatio( myLevel: number )
     {
         let dangerRatio = 1
-        PlayerServer.pcs.forEach( (pcData)=>
+        PlayerServer.getPlayerCharacterRecords().forEach( (pcData)=>
             {
                 if( pcData instanceof Hero ) {
                     dangerRatio = math.max( ( pcData.getLocalLevel() + BalanceData.effective0LevelStrength ) / ( myLevel + BalanceData.effective0LevelStrength ), dangerRatio )                 }
@@ -170,7 +170,7 @@ export namespace HeroServer
     export function getTotalHeroEffectiveLocalLevels()
     {
         let pcLevelSum = 0
-        PlayerServer.pcs.forEach( (pcData)=>
+        PlayerServer.getPlayerCharacterRecords().forEach( (pcData)=>
         {
             if( pcData instanceof Hero ) 
             {
@@ -184,7 +184,7 @@ export namespace HeroServer
     {
         let pcLevelSum = 0
         let numHeroes = 0
-        PlayerServer.pcs.forEach( (pcData)=>
+        PlayerServer.getPlayerCharacterRecords().forEach( (pcData)=>
         {
             if( pcData instanceof Hero ) 
             {
@@ -200,7 +200,7 @@ export namespace HeroServer
     {
         heroTeam.GetPlayers().forEach( (heroPlayer)=>
         {
-            let heroData = PlayerServer.pcs.get(heroPlayer)
+            let heroData = PlayerServer.getCharacterRecordFromPlayer( heroPlayer )
             // someone on hero team may not have picked their hero yet; check
             if( heroData ) 
             {

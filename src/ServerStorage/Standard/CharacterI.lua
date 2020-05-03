@@ -1,14 +1,12 @@
 print( script:GetFullName().." executed" )
 
-local CharacterUtility  = require( game.ReplicatedStorage.Standard.CharacterUtility )
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
-local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
-local ToolXL            = require( game.ReplicatedStorage.Standard.ToolXL )
-
-local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
+print( "CharacterI: CharacterClientI required succesfully" )
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+print( "CharacterI: PlayerServer required succesfully" )
 
 -- *** deliberately does not require heroes or monsters in the header to avoid circular requires ***
 
@@ -19,6 +17,7 @@ local CharacterI = {}
 
 function CharacterI:SetLastAttackingPlayer( character, player )
 	DebugXL:Assert( character:IsA("Model"))
+	DebugXL:Assert( character.Parent ~= nil )
 	DebugXL:Assert( player:IsA("Player"))
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then
@@ -57,17 +56,20 @@ end
 
 function CharacterI:TakeFlexToolDamage( hitCharacter, attackingPlayer, flexTool )
 	DebugXL:Assert( self == CharacterI )
+	DebugXL:logD( 'Combat', 'TakeFlexToolDamage attackingPlayer: '..attackingPlayer.Name..' hitCharacter: '..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
 			CharacterI:SetLastAttackingPlayer( hitCharacter, attackingPlayer )
 			
-			if attackingPlayer.Team == game.Teams.Heroes then		
+			if attackingPlayer.Team == game.Teams.Heroes then	
+				DebugXL:logV( 'Combat', 'Hero damaging monster' )	
 				require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
 			else
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
+				DebugXL:logV( 'Combat', 'Monster damaging hero' )	
 				local attackingCharacter = attackingPlayer.Character
 				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
 			end
@@ -159,23 +161,13 @@ end
 
 
 function CharacterI:GetPCDataWait( player )
-	if player.Team == game.Teams.Heroes then
-		-- hackity hack hack
-		local pcData = require( game.ServerStorage.Standard.HeroesModule ):GetPCDataWait( player )
-		-- it's possible hero went out of scope while we were waiting, in which case it will be nil. let's return the monster data instead in that case
-		if pcData then return pcData end
-	end
-	return require( game.ServerStorage.MonstersModule ):GetPCDataWait( player )
+	return PlayerServer.getCharacterRecordFromPlayerWait( player )
 end
 
 
 -- can return nil
 function CharacterI:GetPCData( player )
-	if player.Team == game.Teams.Heroes then
-		return require( game.ServerStorage.Standard.HeroesModule ):GetPCData( player )
-	else
-		return require( game.ServerStorage.MonstersModule ):GetPCData( player )
-	end
+	return PlayerServer.getCharacterRecordFromPlayer( player )
 end
 
 

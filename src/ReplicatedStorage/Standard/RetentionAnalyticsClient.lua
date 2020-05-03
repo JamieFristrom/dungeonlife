@@ -21,7 +21,7 @@ function Analytics.ClientInit()
 
 		local Platform 			=	"windows";
 	
-		-- If touch enabled we have either an Phone, Tablet or an PC (future)
+		-- If touch enabled we have either an Phone, Tablet or an CharacterRecord (future)
 		if userInputService.TouchEnabled then
 			
 			-- Computers don't have Gyroscopes or Accelerometers.

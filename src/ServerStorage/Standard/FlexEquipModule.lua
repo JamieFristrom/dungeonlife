@@ -1,14 +1,18 @@
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+DebugXL:logI( 'Executed', script.Name )
+
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
+
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
-local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local FlexEquip = {}
 
@@ -34,10 +38,14 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 			end
 		end
 	end )
+	
+	DebugXL:logD( 'CharacterModel', 'FlexEquipModule - Costumes:LoadCharacter for '..player.Name )
 	Costumes:LoadCharacter( player, equippedItemModelsA, noAttachmentsSet, true, player.Character )
+	DebugXL:logV( 'CharacterModel', 'FlexEquipModule - character loaded for '..player.Name )
 	
 	-- loading a character erases the backpack, so:
-	PlayerServer.updateBackpack( player, pcData )
+	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+	ToolCaches.updateToolCache( characterKey, pcData )
 end
 
 function FlexEquip:ApplyEntireCostumeIfNecessaryWait( player )

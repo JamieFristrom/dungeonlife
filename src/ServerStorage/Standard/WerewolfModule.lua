@@ -1,26 +1,21 @@
 print( script:GetFullName().." executed" )
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
-local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
-local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
-local Monsters          = require( game.ServerStorage.MonstersModule )
 
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
-local FloorData         = require( game.ReplicatedStorage.FloorData )
-local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
-local WerewolfUtility   = require( game.ReplicatedStorage.WerewolfUtility )
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local Werewolf = {}
 
@@ -40,7 +35,9 @@ function Werewolf:TakeHumanFormWait( player )
 		if heldTool then heldTool:Destroy() end
 --		warn( "Clearing "..player.Name.."'s backpack" )
 		
+		DebugXL:logD( 'CharacterModel', 'WerewolfModule - Costumes:LoadCharacter for '..player.Name )
 		Costumes:LoadCharacter( player, {}, {}, false, character )
+		DebugXL:logV( 'CharacterModel', 'WerewolfModule - character loaded for '..player.Name )
 
 		local pcData = CharacterI:GetPCDataWait( player )
 		pcData:equipAvailableArmor()		
@@ -63,8 +60,10 @@ function Werewolf:TakeHumanFormWait( player )
 				end
 			end
 		end )
-		PlayerServer.updateBackpack( player, pcData )
-				
+		
+		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+		ToolCaches.updateToolCache( characterKey, pcData )
+
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )		
 		
 		local humanoid = player.Character:FindFirstChild("Humanoid")
@@ -123,7 +122,8 @@ function Werewolf:WolfOutWait( player )
 			end
 		end )
 		
-		PlayerServer.updateBackpack( player, pcData )
+		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+		ToolCaches.updateToolCache( characterKey, pcData )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
 	end

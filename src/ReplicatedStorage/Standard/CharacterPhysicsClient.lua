@@ -1,5 +1,5 @@
 local CharacterPhysics = require( game.ReplicatedStorage.Standard.CharacterPhysics )
-local PC = require( game.ReplicatedStorage.TS.PCTS ).PC
+local CharacterRecord = require( game.ReplicatedStorage.TS.CharacterRecord ).CharacterRecord
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 
 --[[
