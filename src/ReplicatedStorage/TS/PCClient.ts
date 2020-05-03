@@ -1,5 +1,5 @@
 print( script.GetFullName() + " executed" )
-import { PC, PCI } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord, CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { Workspace } from "@rbxts/services";
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
@@ -10,7 +10,7 @@ export namespace PCClient
 {
 
    
-//    pc:  undefined,// PC.objectify( RemoteXL.RemoteFuncCarefulInvokeServerWait( hotbarRF, 5, "GetPCData") as unknown ),
+//    pc:  undefined,// CharacterRecord.objectify( RemoteXL.RemoteFuncCarefulInvokeServerWait( hotbarRF, 5, "GetPCData") as unknown ),
     //refreshWait: function() {}
 
     // well, this is ugly
@@ -28,19 +28,19 @@ export namespace PCClient
         else
         {
             //print( "Local player pcdata is monster")
-            return PC.convertFromRemote( pcData as unknown as PC )
+            return CharacterRecord.convertFromRemote( pcData as unknown as CharacterRecord )
         }
     }
 
     //let pcDataRaw = hotbarRF.InvokeServer( "GetPCData") as { [k:string]:unknown }
-    export let pc: PC | undefined
-    //print( "PC client aquired initial pc data" )
+    export let pc: CharacterRecord | undefined
+    //print( "CharacterRecord client aquired initial pc data" )
 
     let defaultConnection = hotbarRE.OnClientEvent.Connect( function( ...args: unknown[] )
     {
         //print( "hotbarre called")
         let funcName = args[0] as string
-        let pcData = args[1] as PCI | Hero
+        let pcData = args[1] as CharacterRecordI | Hero
         if( funcName === "Refresh" )
         {            
             PCClient.pc = virtuallyObjectify( pcData as unknown as {[k:string]:number})
@@ -48,13 +48,13 @@ export namespace PCClient
         }
     })
 
-    export function pcUpdatedConnect( func: ( pc: PC )=>void )
+    export function pcUpdatedConnect( func: ( pc: CharacterRecord )=>void )
     {
 	    defaultConnection.Disconnect()
         return hotbarRE.OnClientEvent.Connect( function( ...args: unknown[] )
         {
             let funcName = args[0] as string
-            let pcData = args[1] as PC
+            let pcData = args[1] as CharacterRecord
             if( funcName === "Refresh" )
             {
                 // if we connect multiple functions it just means that pcData gets overwritten several times

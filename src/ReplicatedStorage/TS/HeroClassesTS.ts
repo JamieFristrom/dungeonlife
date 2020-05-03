@@ -1,5 +1,5 @@
 import { FlexTool } from ".\\FlexToolTS"
-import { GearPool, PCI } from ".\\PCTS"
+import { GearPool, CharacterRecordI } from "./CharacterRecord"
 import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
 //import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
@@ -8,7 +8,7 @@ import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
 //
 
 
-export interface HeroI extends PCI
+export interface HeroI extends CharacterRecordI
 {
 	statsT: HeroStatBlockI
 }

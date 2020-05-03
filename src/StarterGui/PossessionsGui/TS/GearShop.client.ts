@@ -6,7 +6,7 @@ import * as GearUI from "ReplicatedStorage/Standard/GearUI"
 import * as HeroUtility from "ReplicatedStorage/Standard/HeroUtility"
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { Localize } from "ReplicatedStorage/TS/Localize"
 import { MessageGui } from "ReplicatedStorage/TS/MessageGui"
@@ -32,7 +32,7 @@ shopButton.MouseButton1Click.Connect( ()=>
 } )
 
 
-function RefreshGearShop( pc: PC )
+function RefreshGearShop( pc: CharacterRecord )
 {
     let hero = pc as Hero
     if( !hero.statsT )
@@ -59,7 +59,7 @@ function RefreshGearShop( pc: PC )
 }
 
 
-PCClient.pcUpdatedConnect( ( pc: PC ) =>
+PCClient.pcUpdatedConnect( ( pc: CharacterRecord ) =>
 {
 	print('Refreshing shop sheet due to pc update')
     RefreshGearShop( pc )

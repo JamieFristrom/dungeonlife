@@ -212,7 +212,7 @@ FloorData.floorsA =
 			FogStart = 70,
 			FogEnd = 250,
 		},		
-		characterLightN = 0,
+		characterLightN = 6,
 		fixedFloorDecorations = 
 		{
 			"StairEntrance"

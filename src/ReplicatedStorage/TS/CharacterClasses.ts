@@ -1,8 +1,6 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
-
-import { FlexTool, GearDefinition } from "./FlexToolTS"
+import { GearDefinition } from "./FlexToolTS"
 
 export interface HeroStatBlockI
 {

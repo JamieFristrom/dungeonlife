@@ -10,7 +10,7 @@ import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { Localize } from "ReplicatedStorage/TS/Localize"
 import { MessageGui } from "ReplicatedStorage/TS/MessageGui"
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
 import InstanceXL = require("ReplicatedStorage/Standard/InstanceXL");
 
@@ -120,7 +120,7 @@ class ServerGuiC
 export let ServerGui = new ServerGuiC()
 
 // during play, we only have to check if the *current* hero is good enough
-PCClient.pcUpdatedConnect( function( pc: PC )
+PCClient.pcUpdatedConnect( function( pc: CharacterRecord )
 {
     let hero = pc as Hero
     if( hero.statsT )

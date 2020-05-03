@@ -5,7 +5,10 @@ import { ToolData } from './ToolDataTS';
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 import { CharacterClasses } from './CharacterClasses';
+import { Players, ServerStorage, Teams } from '@rbxts/services';
 
+// we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
+export type CharacterKey = number
 
 function strcmp( a: string, b: string )
 {
@@ -13,12 +16,15 @@ function strcmp( a: string, b: string )
 }
 
 // Player Character Interface
-export interface PCI
+export interface CharacterRecordI
 {
     idS: string
     getImageId() : string
     getWalkSpeed() : number
     getJumpPower() : number
+    getLocalLevel() : number
+    getActualLevel() : number
+    getTeam() : Team
 }
 
 
@@ -222,11 +228,14 @@ export class GearPool
     }
 }
 
-export abstract class PC implements PCI
+export abstract class CharacterRecord implements CharacterRecordI
 {   
+    gearPool: GearPool
+
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
-    protected gearPool: GearPool
     private toolKeyServerN = 1
+
+    private static mobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')
 
     constructor(
         public idS: string,
@@ -264,9 +273,9 @@ export abstract class PC implements PCI
             }
         }
 
-    static convertFromRemote( rawPCData: PCI )
+    static convertFromRemote( rawPCData: CharacterRecordI )
     {        
-        let pc = setmetatable( rawPCData, PC as LuaMetatable<PCI> ) as PC
+        let pc = setmetatable( rawPCData, CharacterRecord as LuaMetatable<CharacterRecordI> ) as CharacterRecord
         DebugXL.Assert( pc.itemsT === undefined )
         setmetatable( pc.gearPool, GearPool as LuaMetatable<GearPool> )
         pc.gearPool.forEach( item => FlexTool.objectify(item) )
@@ -320,12 +329,16 @@ export abstract class PC implements PCI
         return this.gearPool.size()
     }
 
-    // only counts healing potions for display purposes
-    countPotions()
+    countBaseDataQuantity(baseDataKind: string)
     {
-        return this.gearPool.countIf( (item)=> item.baseDataS==='Healing' )
+        return this.gearPool.countIf( (item)=> item.baseDataS===baseDataKind )
     }
 
+    /// possessionKey's are only unique per player; two different players might have tools with the same possession key. It is persistent, so
+    //  if we wanted to make them independent between different players we'd need one master server or to use GUID's. 
+    //  We *could* have another unique id per server, but it seems unnecessary as long as we have some way of identifying tools
+    //  uniquely.
+    //  We *do* have a unique id per roblox tool instance, the toolId, in FlexibleToolsServer
     getPossessionKeyFromSlot( slot: number )
     {
         let _key: string | undefined
@@ -360,21 +373,44 @@ export abstract class PC implements PCI
         return undefined
     }
 
-    static getToolInstanceFromPossessionKey( player: Player, possessionKey: string )
+    // this is awkward because we want to be able to call it from the client or the server, it might be in a character's hand, a player's backpack,
+    // or a mob's tool cache. so far characterKeys are server-side only, though that will probably change
+    static getToolInstanceFromPossessionKey( character: Model, possessionKey: string )
     {
-        let playerModel = player.Character
-        DebugXL.Assert( playerModel !== undefined )
-        if( playerModel )
+        DebugXL.Assert( character !== undefined )        
+        let tool: Tool | undefined = undefined
+        if( character )
         {
-            let heldTool = playerModel.FindFirstChildWhichIsA('Tool') as Tool
-            if( heldTool )
+            let heldTool = character.FindFirstChildWhichIsA('Tool') as Tool
+            if( heldTool && CharacterRecord.getToolPossessionKey( heldTool )===possessionKey )
             {
-                if( PC.getToolPossessionKey( heldTool )===possessionKey )
-                    return heldTool
+                tool = heldTool
+            }
+            else  // tool not in hand; is it in cache?
+            {
+                let player = Players.GetPlayerFromCharacter( character )
+                if( player )
+                {
+                    let correctInstance = player.FindFirstChild('Backpack')!.GetChildren().find( ( inst )=> 
+                    {
+                        DebugXL.Assert( inst.IsA('Tool') )
+                        return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 
+                    } )
+                    tool = correctInstance as Tool
+                }
+                else
+                {
+                    // if player is undefined it's owned by a CPU player which has its own set of unique ids        
+                    let correctInstance = CharacterRecord.mobToolCache!.GetChildren().find( ( inst )=> 
+                    {
+                        DebugXL.Assert( inst.IsA('Tool') )
+                        return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 
+                    } )
+                    tool = correctInstance as Tool
+                }
             }
         }
-        let tool = player.FindFirstChild('Backpack')!.GetChildren().find( ( inst )=> PC.getToolPossessionKey( inst as Tool )===possessionKey )
-        return tool as Tool
+        return tool
     }    
 
     giveRandomArmor( hideAccessoriesB: boolean )
@@ -429,5 +465,14 @@ export abstract class PC implements PCI
     abstract getActualLevel() : number
 
     // not data-driving this so we aren't duplicating data
-    abstract getTeam(): Object
+    abstract getTeam(): Team
+}
+
+
+export class CharacterRecordNull extends CharacterRecord
+{
+    constructor() { super("",[]) }
+    getLocalLevel() { return 0 }
+    getActualLevel() { return 0 }
+    getTeam() { return Teams.GetTeams()[0] }
 }

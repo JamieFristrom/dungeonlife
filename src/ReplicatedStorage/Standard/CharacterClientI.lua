@@ -1,14 +1,7 @@
 print( script:GetFullName().." executed" )
 
 local DebugXL         = require( game.ReplicatedStorage.Standard.DebugXL )
-local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL         = require( game.ReplicatedStorage.Standard.TableXL )
-
-local BalanceData     = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
-local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local PossessionData  = require( game.ReplicatedStorage.PossessionData )
-
-local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 

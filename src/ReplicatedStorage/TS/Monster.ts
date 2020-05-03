@@ -1,8 +1,8 @@
-import { PC } from "./PCTS"
+import { CharacterRecord } from "./CharacterRecord"
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Teams } from "@rbxts/services";
 
-export class Monster extends PC
+export class Monster extends CharacterRecord
 {   
     constructor(
         id: string,

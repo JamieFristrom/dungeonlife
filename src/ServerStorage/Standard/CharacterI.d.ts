@@ -1,4 +1,4 @@
-import { PC } from "ReplicatedStorage/TS/PCTS"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 
 declare interface DamageTags
@@ -14,7 +14,7 @@ declare class CharacterIClass
     TakeDirectDamage( hitCharacter: Model, damage: number, attackingPlayer: Player, damageTagsT: DamageTags ) : void
     TakeFlexToolDamage( hitCharacter: Model, attackingPlayer: Player, flexTool: FlexTool ) : void
 //    TakeToolDamage( hitCharacter: Model, tool: Tool ): void
-    GetPCDataWait( player: Player ): PC
+    GetPCDataWait( player: Player ): CharacterRecord
 }
 
 declare let CharacterI:  CharacterIClass

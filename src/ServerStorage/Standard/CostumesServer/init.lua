@@ -1,10 +1,3 @@
-local DebugXL  = require( game.ReplicatedStorage.Standard.DebugXL )
-local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
---local RemoteXL = require( game.ReplicatedStorage.Standard.RemoteXL )
-local FloorData = require( game.ReplicatedStorage.Standard.FloorData )
-local CostumesClient = require( game.ReplicatedStorage.Standard.CostumesClient )
-
-local rescaleAccessories = require(script:WaitForChild("RescaleAccessories"))
 -------------------------------------------------------------------------------------------------------------------------------
 -- CostumesModule
 -- @Jamie_Fristrom, 2018
@@ -14,6 +7,13 @@ local rescaleAccessories = require(script:WaitForChild("RescaleAccessories"))
 -- Only supports R15
 --
 -------------------------------------------------------------------------------------------------------------------------------
+local DebugXL  = require( game.ReplicatedStorage.Standard.DebugXL )
+local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
+local FloorData = require( game.ReplicatedStorage.Standard.FloorData )
+local CostumesClient = require( game.ReplicatedStorage.Standard.CostumesClient )
+
+local rescaleAccessories = require(script:WaitForChild("RescaleAccessories"))
+
 local Costumes = {}
 
 
@@ -33,85 +33,12 @@ local cookie = 1  -- for debugging; seems like some messages are not getting thr
 --        so we have a per-humanoid array
 --        surely not the most elegant way to do this
 local disableDeathRemoteFuncAcknowledgedB = {}
---local verifyJointsRemoteFuncAcknowledgedB = {}
+
 local applyingCostumeB = {}
 
 local function CostumeKey( player )
 	return "Costume"..player.UserId
 end
-
-
--- local function setDeathEnabledWait( humanoid, value )
--- --	print( humanoid.Parent.Name.." server setDeathEnabled "..tostring(value) )
--- 	humanoid:SetStateEnabled("Dead",value)
--- --		print( "Found setDeathEnabled" )
--- 	local char = humanoid.Parent
--- 	local player = game.Players:GetPlayerFromCharacter(char)
--- 	if player then
-
--- -- in theory doen't need anymore - invoke won't return until function attached
--- -- in practice it seems we do
--- 		if disableDeathRemoteFuncAcknowledgedB[ humanoid ] then 
--- 			print( player.Name.." disable death remote immediately acked" ) 
---  		end
---  		while not disableDeathRemoteFuncAcknowledgedB[ humanoid ] do wait() end
-
--- 		if humanoid:FindFirstChild("SetDeathEnabled") then
--- 			-- possible that we died in the last line, so
--- --			print( player.Name.. " invoking client "..cookie )
--- 			RemoteXL:RemoteFuncCarefulInvokeClientWait( humanoid.SetDeathEnabled, player, 10, value, cookie )
--- 			--humanoid.SetDeathEnabled:InvokeClient(player,value,cookie)
--- 			cookie = cookie + 1
--- 		end
--- 	end
--- --	print( humanoid.Parent.Name.." death enabled "..tostring( value ) )
--- end
-
--- local function prepareClient(humanoid)
--- -- 	local verifyJoints = humanoid:FindFirstChild("VerifyJoints")
--- -- 	if not verifyJoints then
--- -- 		disableDeathRemoteFuncAcknowledgedB[ humanoid ] = nil
--- -- 		verifyJointsRemoteFuncAcknowledgedB[ humanoid ] = nil
--- 	if not humanoid:FindFirstChild("SetDeathEnabled") then
--- 		disableDeathRemoteFuncAcknowledgedB[ humanoid ] = nil		
--- -- 		DebugXL:Assert( not humanoid:FindFirstChild("SetDeathEnabled") )
--- 		local disableDeath = Instance.new("RemoteFunction")
-
--- 		-- it is possible for the humanoid to have been destroyed in that window 
--- 		if not humanoid.Parent then return end
-
---  		disableDeath.Name = "SetDeathEnabled"
---  		disableDeath.Parent = humanoid
---  		disableDeath.OnServerInvoke = function() 
--- 		 	--print( humanoid.Parent.Name.." disableDeathRemoteFuncAcknowledged "..cookie )
---  		 	disableDeathRemoteFuncAcknowledgedB[ humanoid ] = true
---  		end
-		
---  		local validator = validatorSrc:Clone()
---  		validator.Parent = humanoid	
-		
--- -- 		verifyJoints = Instance.new("RemoteFunction")
--- -- 		verifyJoints.Name = "VerifyJoints"/
--- -- 		verifyJoints.Parent = humanoid
--- -- 		verifyJoints.OnServerInvoke = function() 
--- -- --			print("verifyJointsRemoteFuncAcknowledgedB "..cookie )
--- -- 			verifyJointsRemoteFuncAcknowledgedB[ humanoid ] = true
--- -- 		end
-		
---  		validator.Disabled = false
-		
---  		humanoid.AncestryChanged:Connect( function( child, parent )
---  			if parent==nil then
---  				disableDeathRemoteFuncAcknowledgedB[ humanoid ] = nil
--- -- 				verifyJointsRemoteFuncAcknowledgedB[ humanoid ] = nil
---  			end
---  		end)
--- -- 	else
--- -- --		print( "Joint verifier already established" )
---  	end
--- -- 	return verifyJoints
--- end
-
 
 function Costumes:ApplyNewFace( destCharacter, srcFaceImage )
 	DebugXL:Assert( self == Costumes )
@@ -119,23 +46,6 @@ function Costumes:ApplyNewFace( destCharacter, srcFaceImage )
 		destCharacter.Head.face.Texture = srcFaceImage
 	end
 end
-
-
--- -- doesn't do face
--- function Costumes:ApplyNewHead( destCharacter, srcHead )
--- 	DebugXL:Assert( self == Costumes )
--- 	local head = destCharacter:FindFirstChild("Head")   -- once in a while there isn't one... could be a character reset happening at wrong moment
--- 	if head then
--- 		head.Mesh:Destroy()
--- 		local newHeadMesh = srcHead.Mesh:Clone()
--- 		newHeadMesh.Parent = head
--- 		head.Size = srcHead.Size
--- 		head.Color = srcHead.Color
--- 		head.Material = srcHead.Material
--- 		head.Reflectance = srcHead.Reflectance
--- 		head.Transparency = srcHead.Transparency		
--- 	end	
--- end
 
 
 local function CopyScale( srcCharacter, destHumanoid, scaleParamS )
@@ -159,32 +69,6 @@ local function CopyInstance( srcCharacter, destCharacter, instanceName )
 		srcCharacter[ instanceName ]:Clone().Parent = destCharacter
 	end 
 end
---
---
--- local function RecalculateHipHeight( character )
--- 	-- quick and dirty method which will fail if you say are in the long part of your walk stride
--- --	local bottomOfHumanoidRootPart = character.HumanoidRootPart.Position.Y - (1/2 * character.HumanoidRootPart.Size.Y)
--- --	local bottomOfLFoot = character.LeftFoot.Position.Y - (1/2 * character.LeftFoot.Size.Y) 
--- --	local bottomOfRFoot = character.RightFoot.Position.Y - (1/2 * character.RightFoot.Size.Y) 
--- --	local bottomOfFoot = ( bottomOfLFoot + bottomOfRFoot ) / 2
--- --	local newHipHeight = bottomOfHumanoidRootPart - bottomOfFoot
--- --	return newHipHeight
--- 	character:WaitForChild("LeftFoot")
--- 	character:WaitForChild("LeftLowerLeg")
--- 	character:WaitForChild("LeftUpperLeg")
--- 	character:WaitForChild("LowerTorso")
--- 	character:WaitForChild("HumanoidRootPart")
--- 	local soleToAnkle  = character.LeftFoot.LeftAnkleRigAttachment.Position.Y + character.LeftFoot.Size.Y / 2
--- 	local ankleToKnee  = character.LeftLowerLeg.LeftKneeRigAttachment.Position.Y - character.LeftLowerLeg.LeftAnkleRigAttachment.Position.Y
--- 	local kneeToHip    = character.LeftUpperLeg.LeftHipRigAttachment.Position.Y - character.LeftUpperLeg.LeftKneeRigAttachment.Position.Y
--- 	local hipToRoot    = character.LowerTorso.RootRigAttachment.Position.Y - character.LowerTorso.LeftHipRigAttachment.Position.Y
--- 	local rootToHRPFloor = -character.HumanoidRootPart.Size.Y / 2 - character.HumanoidRootPart.RootRigAttachment.Position.Y
-	
--- 	-- according to the docs, hipHeight "Sets how many studs off the ground the Humanoid�s RootPart should be when standing on a floor."
--- 	-- and therefore isn't tied to the hipRigAttachments directly
--- 	local hipHeight = soleToAnkle + ankleToKnee + kneeToHip + hipToRoot + rootToHRPFloor
--- 	return hipHeight
--- end
 
 Costumes.attachmentsForEquipSlotT = {
 	Torso  = { "LeftGripAttachment", "LeftShoulderAttachment", "WaistBackAttachment", "WaistCenterAttachment", "WaistFrontAttachment", "RightGripAttachment", "RightShoulderAttachment",
@@ -329,6 +213,7 @@ function Costumes:LoadCharacter( player, srcCharactersA, noAttachmentsSet, alsoC
 		destCharacter.Name = player.Name
 		player.Character = destCharacter
 		destCharacter.Parent = workspace
+		DebugXL:logD( 'Character', 'New character '..destCharacter.Name..' placed in workspace')
 		return destCharacter
 	end
 end
@@ -360,40 +245,9 @@ function Costumes:ApplyCharacterCostumeWait( destCharacter, srcCharacter, alsoCl
 					local newLimb = limb:Clone()
 					humanoid:ReplaceBodyPartR15( bodypartR15, newLimb )
 				end
-				-- if limb:IsA("MeshPart") then
-				-- 	local newLimb = limb:Clone()
-				-- 	local oldLimb = destCharacter:FindFirstChild(newLimb.Name)
-				-- 	if oldLimb then
-				-- 		--newLimb.BrickColor = oldLimb.BrickColor
-				-- 		newLimb.CFrame = oldLimb.CFrame
-				-- 		oldLimb:Destroy()
-				-- 	end
-				-- 	newLimb.Parent = destCharacter
-				-- end
 			end
 --		print( "Limbs replaced" )
 
-		-- if srcCharacter:FindFirstChild("Head") then		
-		-- 	-- straight up replace method - doesn't get confused by scaling changes, but more likely for charater to die or mess up in the
-		-- 	-- transforming process. It does seem to be better when not part of the above loop
-		-- 	-- local newLimb = srcCharacter.Head:Clone()
-		-- 	-- local oldLimb = destCharacter:FindFirstChild("Head")
-		-- 	-- if oldLimb then
-		-- 	-- 	--newLimb.BrickColor = oldLimb.BrickColor
-		-- 	-- 	newLimb.CFrame = oldLimb.CFrame
-		-- 	-- 	oldLimb:Destroy()
-		-- 	-- end
-		-- 	-- newLimb.Parent = destCharacter
-			
-		-- 	-- old method seemed to bring back some issues with sinking into the ground and didn't work with head-tracking antiexploit
-		-- 	Costumes:ApplyNewHead( destCharacter, srcCharacter.Head )
-		-- 	if srcCharacter.Head:FindFirstChild("face") then
-		-- 		Costumes:ApplyNewFace( destCharacter, srcCharacter.Head.face.Texture )
-		-- 	else
-		-- 		destCharacter.Head.face:Destroy()
-		-- 	end
-		-- end
---		
 			-- copy proportions from costume  
 			CopyScale( srcCharacter, humanoid, "BodyDepthScale" )
 			CopyScale( srcCharacter, humanoid, "BodyHeightScale" )
@@ -404,73 +258,12 @@ function Costumes:ApplyCharacterCostumeWait( destCharacter, srcCharacter, alsoCl
 		end
 
 		if not humanoid.Parent then return end
---		humanoid:BuildRigFromAttachments()
-		
-
-				
-		-- I do not know what's going on with humanoid root part.
-		--wait()
-		--humanoid.HipHeight = RecalculateHipHeight( destCharacter )  
---			local hipHeight = srcCharacter.Humanoid.HipHeight - destCharacter.HumanoidRootPart.RootRigAttachment.Position.Y
-	--		local hipHeight = RecalculateHipHeight( srcCharacter )  -- I don't know why this is necessary. I also don't know why what looks right in studio doesn't look right elsewhere
-	--		local humanoid = destCharacter:FindFirstChildOfClass("Humanoid")
---			humanoid.HipHeight = hipHeight
---			print( "Set "..humanoid:GetFullName().." hipHeight to "..hipHeight )
---		end
---		
---		print( "Rig rebuilt" )
-		-- have to do head bit-by-bit; destroying the whole head kills the character
-	--	destCharacter.Head.Mesh:Destroy()
-	--	local newHeadMesh = srcCharacter.Head.Mesh:Clone()
-	--	newHeadMesh.Parent = destCharacter.Head
-	--	
-	--	destCharacter.Head.face:Destroy()
-	--	local newFace = srcCharacter.Head.face:Clone()
-	--	newFace.Parent = destCharacter.Head
-	--		
-	--	destCharacter.Head.Color = srcCharacter.Head.Color
---		
---		if player then
---			pcall(function ()
---				local attempts = 0
---				while not verifyJointsRemoteFuncAcknowledgedB[ humanoid ] do wait() end			
---				while attempts < 10 do
---					local success = RemoteXL:RemoteFuncCarefulInvokeClientWait( verifyJoints, player, 10 )
---					if success then
---						break
---					else
---						attempts = attempts + 1
---					end
---				end
---				if attempts == 10 then
---					DebugXL:Error("Failed to apply package to "..player.Name)
---				end
---			end)
---		end
 		
 		-- add accessories from new costume
 		for _, accessory in pairs(srcCharacter:GetChildren()) do
 			if accessory:IsA("Accoutrement") then
 				local newAccessory = accessory:Clone()
-				-- -- if there's already an accessory on that slot lose it, even if we have 'keep accessories' set to tru
-				-- -- do I attach or am I a hat?
-				-- if not leaveExistingAccessoriesB then
-				-- 	local attachment = newAccessory.Handle:FindFirstChildWhichIsA("Attachment")
-				-- 	if attachment then
-				-- 		for _, oldAcc in pairs( destCharacter:GetChildren() ) do
-				-- 			if oldAcc:IsA("Accoutrement") then
-				-- 				local oldAttachment = oldAcc.Handle:FindFirstChildWhichIsA("Attachment")
-				-- 				if oldAttachment then 
-				-- 					if attachment.Name == oldAttachment.Name then
-				-- 						oldAcc:Destroy()
-				-- 					end
-				-- 				end
-				-- 			end
-				-- 		end
-				-- 	end
-				-- end
 				destCharacter.Humanoid:AddAccessory( newAccessory )
-				-- newAccessory.Parent = destCharacter
 			end
 		end
 		
