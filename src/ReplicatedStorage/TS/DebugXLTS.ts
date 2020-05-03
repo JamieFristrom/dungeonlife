@@ -14,17 +14,30 @@
 --  So I can put TS on the end, which seems redundant here but isn't on the Roblox side
 
 */
-
+// borrowing from Android
+export enum LogLevel
+{
+    Assert,
+    Error,
+    Warning,
+    Info,
+    Debug,
+    Verbose
+}
 
 class DebugXLC
 {
+    static readonly logLevelPrefixes: string[] = ['A','E','W','I','D','V']
+
+    private currentLogLevel = LogLevel.Debug
+
     Error( message: string )
     {
         let callstackS = debug.traceback()
         if( false ) //--game["Run Service"]:IsStudio() )
             error( message )
         else
-            spawn( function() { error( message+" "+callstackS ) } ) // -- so analytics will pick it up
+            spawn( () => { this.log( LogLevel.Error, script.Name, message+" "+callstackS ) } ) // -- so analytics will pick it up
     }
 
     Assert( conditionB: boolean )
@@ -54,54 +67,57 @@ class DebugXLC
 
     Dump( variable: unknown )
     {
-        print( this.DumpToStr( variable ))
+        this.log( LogLevel.Info, script.Name, this.DumpToStr( variable ))
+    }
+
+    setCurrentLogLevel( newLogLevel: LogLevel )
+    {
+        this.currentLogLevel = newLogLevel
+    }
+
+    log( logLevel: LogLevel, tag: string, message: string )
+    {
+        if( logLevel <= this.currentLogLevel)
+        {
+            let prefix = DebugXLC.logLevelPrefixes[ logLevel ]
+            if( logLevel <= LogLevel.Error )
+                error( `${prefix}/${tag}: ${message}` )
+            else if( logLevel <= LogLevel.Warning )
+                warn( `${prefix}/${tag}: ${message}` )
+            else
+                print( `${prefix}/${tag}: ${message}`)
+        }
+    }
+
+    logA( tag: string, message: string )
+    {
+        this.log( LogLevel.Assert, tag, message )
+    }
+
+    logE( tag: string, message: string )
+    {
+        this.log( LogLevel.Error, tag, message )
+    }
+
+    logW( tag: string, message: string )
+    {
+        this.log( LogLevel.Warning, tag, message )
+    }
+
+    logI( tag: string, message: string )
+    {
+        this.log( LogLevel.Info, tag, message )
+    }
+
+    logD( tag: string, message: string )
+    {
+        this.log( LogLevel.Debug, tag, message )
+    }
+
+    logV( tag: string, message: string )
+    {
+        this.log( LogLevel.Verbose, tag, message )
     }
 }
 
 export let DebugXL = new DebugXLC()
-
-/*
---
---  DebugXL
---
---  Debug eXtended Library. It excels. It's extra large.
---
---  Additional debug functions to augment lua.
---
---  Jamie_Fristrom @happionlabs
-
-local DebugXL = {}
-
-function DebugXL:Error( message )
-	DebugXL:Assert( self == DebugXL )
-	local callstackS = debug.traceback()
-	if false then --game["Run Service"]:IsStudio() then
-		error( message )
-	else
-		spawn( function() error( message.." "..callstackS ) end )  -- so analytics will pick it up
-	end
-end
-
-
-function DebugXL:Assert( conditionB )
-	if self ~= DebugXL then error( ". instead of :" ) end
-	if not conditionB then
-		DebugXL:Error( "Assertion failed" )
-	end
-end
-
-
-function DebugXL:Dump( variable )
-	DebugXL:Assert( self == DebugXL )
-	if type(variable)=="table" then
-		for k, v in pairs( variable ) do
-			print( k..": "..tostring( v ) )
-			DebugXL:Dump( v )
-		end
-	else
-		print( tostring( variable ) )
-	end
-end
-
-
-return DebugXL*/
