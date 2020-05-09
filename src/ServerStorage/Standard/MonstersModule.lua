@@ -419,9 +419,10 @@ function Monsters:AdjustBuildPoints( player, amountN )
 end
 
 
-function Monsters:DoDirectDamage( character, damage, targetHumanoid, damageTagsT, critB )
+function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid, damageTagsT, critB )
 	DebugXL:Assert( self == Monsters )
-	DebugXL:logD('Combat', 'Monsters:DoDirectDamage( '..character.Name..','..damage..','..targetHumanoid:getFullName()..')' )
+	DebugXL:logD('Combat', 'Monsters:DoDirectDamage('..( optionalDamagingPlayer and optionalDamagingPlayer.Name or 'null damaging player' )..
+		','..damage..','..targetHumanoid:GetFullName()..')' )
 	if targetHumanoid.Health > 0 then
 		DebugXL:logV( 'Combat', "Base damage: "..damage )
 		
@@ -443,14 +444,14 @@ function Monsters:DoDirectDamage( character, damage, targetHumanoid, damageTagsT
 
 		-- build points for damage done; promotes killstealing unfortunately but I didn't want the UI clutter
 		-- for giving you stuff every hit, plus that would get you too much income, but I also don't want to give you points silently
-		local player = game.Players:GetPlayerFromCharacter( character )
-		if player then  -- it was somehow getting here from doing fire damage even though that checked; maybe there's a wait or yield between here and there
-			MonsterServer.recordMonsterDamageDone( player, damage )
+		-- it's possible a mob or source of damage from a player who has left 
+		if optionalDamagingPlayer then  -- it was somehow getting here from doing fire damage even though that checked; maybe there's a wait or yield between here and there
+			MonsterServer.recordMonsterDamageDone( optionalDamagingPlayer, damage )
 			if targetHumanoid.Health <= 0 then
-				Monsters:AdjustBuildPoints( player, 30 )
-				Inventory:AdjustCount( player, "Stars", 5, "Kill", "Hero" )
-				Inventory:EarnRubies( player, 5, "Kill", "Hero" )
-				Inventory:AdjustCount( player, "HeroKills", 1 )
+				Monsters:AdjustBuildPoints( optionalDamagingPlayer, 30 )
+				Inventory:AdjustCount( optionalDamagingPlayer, "Stars", 5, "Kill", "Hero" )
+				Inventory:EarnRubies( optionalDamagingPlayer, 5, "Kill", "Hero" )
+				Inventory:AdjustCount( optionalDamagingPlayer, "HeroKills", 1 )
 			end
 		end
 	end
@@ -463,7 +464,8 @@ function Monsters:DoFlexToolDamage( character, flexTool, targetHumanoid )
 	if targetHumanoid.Health > 0 then
 		local damageN, critB = unpack( Monsters:DetermineFlexToolDamageN( character, flexTool ) )
 		local weaponTypeS = flexTool:getBaseData().equipType
-		Monsters:DoDirectDamage( character, damageN, targetHumanoid, { [weaponTypeS]=true }, critB )
+		local optionalMonsterPlayer = game.Players:GetPlayerFromCharacter( character )
+		Monsters:DoDirectDamage( optionalMonsterPlayer, damageN, targetHumanoid, { [weaponTypeS]=true }, critB )
 	end
 end
 

@@ -42,30 +42,6 @@ export class PitTrapSpiked extends PitTrap
 				}
 			}	
 		})
-/*
-		local trapDatum = PossessionData.dataT[ script.Parent.Name ] 
-
-		script.Parent.OuchZone.Transparency = 1
-		
-		local whoAmIHurting = {}
-		
-		script.Parent.OuchZone.Touched:Connect( function( toucher )
-			if( toucher.Parent:FindFirstChild("Humanoid") ) {
-				local character = toucher.Parent 
-				local player = game.Players:GetPlayerFromCharacter( character )
-				if player ) {
-					if player.Team == game.Teams.Heroes ) {
-						if not whoAmIHurting[ player ] ) {
-							CharacterI:TakeDirectDamage( character, 
-								trapDatum.baseDamageN + trapDatum.damagePerLevelN * CharacterClientI:GetLevel( player ),
-								script.Parent.creator.Value, {} )  -- wishlist fix;  if rogues get detect traps there'd be something to be said for 				
-							whoAmIHurting[ player ] = true
-						end
-					end
-				end
-			end	
-		end)
-		*/
 	}
 
 }
