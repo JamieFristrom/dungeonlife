@@ -1,6 +1,6 @@
 import { Players, DataStoreService, HttpService } from "@rbxts/services";
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogLevel } from "ReplicatedStorage/TS/DebugXLTS"
 
 import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 
@@ -198,8 +198,7 @@ let CommandList: {[k:string]:unknown} =
 
     print: function( sender: Player, args: string[] ) { print( args ) },
 
-    resetanalytics: function( sender: Player )
-    {
+    resetanalytics: function( sender: Player ) {
       let analyticsDataStore = DataStoreService.GetDataStore( "Analytics" )  
       let [ success, err ] = pcall( ()=>{
         analyticsDataStore.RemoveAsync( "user_" + sender.UserId ) } )
@@ -207,6 +206,23 @@ let CommandList: {[k:string]:unknown} =
         print( "Reset analytics" )
       else
         print( "Failure: "+err )
+    },
+
+    // setLogLevel level optionaltag
+    setLogLevel: function( sender: Player, args: string[] ) {
+      if( !args[1] ) {
+        DebugXL.logW('Admin', 'Missing log level')
+        return
+      }
+      type LogLevelType = keyof typeof LogLevel
+      const logLevelString = args[1] as LogLevelType
+      if( !logLevelString )
+      {
+        DebugXL.logW('Admin', 'Unknown log level '+args[1])
+        return
+      }
+      const logLevel = LogLevel[logLevelString]
+      DebugXL.setLogLevel( logLevel, args[2] )
     },
 
     setServerTestGroup: function( sender: Player, args: string[] ) {

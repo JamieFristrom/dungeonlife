@@ -29,7 +29,9 @@ class DebugXLC
 {
     static readonly logLevelPrefixes: string[] = ['A','E','W','I','D','V']
 
-    private currentLogLevel = LogLevel.Debug
+    private defaultLogLevel = LogLevel.Info
+
+    private logLevelForTag = new Map<string,LogLevel>()
 
     Error( message: string )
     {
@@ -70,9 +72,22 @@ class DebugXLC
         this.log( LogLevel.Info, script.Name, this.DumpToStr( variable ))
     }
 
-    setCurrentLogLevel( newLogLevel: LogLevel )
+    setLogLevel( newLogLevel: LogLevel, tag?: string )
     {
-        this.currentLogLevel = newLogLevel
+        if( tag ) 
+        {
+            this.logLevelForTag.set( tag, newLogLevel )
+        }
+        else
+        {
+            this.defaultLogLevel = newLogLevel
+        }
+    }
+
+    getLogLevelForTag( tag: string )
+    {
+        const logLevelForTag = this.logLevelForTag.get(tag)
+        return logLevelForTag ? logLevelForTag : this.defaultLogLevel
     }
 
     log( logLevel: LogLevel, tag: string, message: string )
@@ -81,7 +96,7 @@ class DebugXLC
         {
             error( `E/${tag}: MISSING MESSAGE` )
         }
-        else if( logLevel <= this.currentLogLevel)
+        else if( logLevel <= this.getLogLevelForTag(tag))
         {
             let prefix = DebugXLC.logLevelPrefixes[ logLevel ]
             if( logLevel <= LogLevel.Error )
@@ -121,6 +136,11 @@ class DebugXLC
     logV( tag: string, message: string )
     {
         this.log( LogLevel.Verbose, tag, message )
+    }
+
+    setDefaultLogLevel( logLevel: LogLevel ) 
+    {
+        this.defaultLogLevel = logLevel
     }
 }
 
