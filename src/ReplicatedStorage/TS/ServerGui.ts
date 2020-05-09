@@ -21,7 +21,6 @@ let noResetGui = playerGui.WaitForChild("NoResetGui") as ScreenGui
 let serverButton = noResetGui.WaitForChild("LeftButtonColumn").WaitForChild<GuiButton>("Server")
 serverButton.Visible = false
 
-/*
 let heroesRF = Workspace.WaitForChild('Signals').WaitForChild('HeroesRF') as RemoteFunction
 let heroesRE = Workspace.WaitForChild('Signals').WaitForChild('HeroesRE') as RemoteEvent
 
@@ -120,18 +119,18 @@ class ServerGuiC
 
 export let ServerGui = new ServerGuiC()
 
-// during play, we only have to check if the *current* hero is good enough
-PCClient.pcUpdatedConnect( function( pc: CharacterRecord )
-{
-    let hero = pc as Hero
-    if( hero.statsT )
-    {
-        if( PlacesManifest.getCurrentPlace() === PlacesManifest.places.HighLevelServer || hero.getActualLevel() >= PlacesManifest.getCurrentPlace().maxGrowthLevel * 0.75 ) 
-        { 
-            serverButton.Visible = true 
-        }
-    }
-})
+// // during play, we only have to check if the *current* hero is good enough
+// PCClient.pcUpdatedConnect( function( pc: CharacterRecord )
+// {
+//     let hero = pc as Hero
+//     if( hero.statsT )
+//     {
+//         if( PlacesManifest.getCurrentPlace() === PlacesManifest.places.HighLevelServer || hero.getActualLevel() >= PlacesManifest.getCurrentPlace().maxGrowthLevel * 0.75 ) 
+//         { 
+//             serverButton.Visible = true 
+//         }
+//     }
+// })
 
 
 function ChoosePlace( placeKey: string )
@@ -189,15 +188,14 @@ choosePlaceCloseButton.MouseButton1Click.Connect( function()
 })
 
 // delay the reveal of the place button so new players don't wander off - statistically proven :)
-spawn( ()=>{
-    for(;;)
-    {
-        wait(0.1)
-        if( InventoryClient.inventory.itemsT.HeroDeaths >= 1 )
-        {
-            serverButton.Visible = true
-            break
-        }
-    }
-})
-*/
+// spawn( ()=>{
+//     for(;;)
+//     {
+//         wait(0.1)
+//         if( InventoryClient.inventory.itemsT.HeroDeaths >= 1 )
+//         {
+//             serverButton.Visible = true
+//             break
+//         }
+//     }
+// })
