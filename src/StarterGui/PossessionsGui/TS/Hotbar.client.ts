@@ -111,6 +111,11 @@ function Equip( slotN: number )
                     {
                         let uiClick = playerGui.WaitForChild('Audio').WaitForChild('UIClick') as Sound
                         uiClick.Play()	
+                        if( !localCharacter.Parent ) 
+                        {
+                            // if we're on the character outfitting screen our tools won't have been instantiated
+                            return
+                        }
 
                         let humanoid = localCharacter.FindFirstChild("Humanoid") as Humanoid
                         if( humanoid )
