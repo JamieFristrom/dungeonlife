@@ -1,7 +1,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
 warn( "DUNGEON LIFE 5/9/2020" )
-warn( "Fix death on jump through exit, destructible barrels, fixed pit trap after someone leaves" )
+warn( "Disable high-level server, fix death on jump through exit, destructible barrels, fixed pit trap after someone leaves" )
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
