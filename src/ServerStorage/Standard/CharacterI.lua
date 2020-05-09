@@ -83,6 +83,7 @@ function CharacterI:TakeDirectDamage( hitCharacter, damage, attackingPlayer, dam
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	DebugXL:Assert( hitHumanoid )
 	if hitHumanoid then
+		DebugXL:logV( 'Combat', 'CharacterI:TakeDirectDamage - hitHumanoid '..hitHumanoid:GetFullName()..','..damage..','..attackingPlayer.Name )
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
 --			--print( attackingPlayer.Name.." hits "..hitCharacter.Name.." for "..damage )
@@ -91,8 +92,7 @@ function CharacterI:TakeDirectDamage( hitCharacter, damage, attackingPlayer, dam
 			else
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
-				local attackingCharacter = attackingPlayer.Character
-				require( game.ServerStorage.MonstersModule ):DoDirectDamage( attackingCharacter, damage, hitHumanoid, damageTagsT, false ) 
+				require( game.ServerStorage.MonstersModule ):DoDirectDamage( attackingPlayer, damage, hitHumanoid, damageTagsT, false ) 
 			end
 		end
 	end
