@@ -1,11 +1,9 @@
 import { TeleportService, Players, Workspace } from "@rbxts/services"
 
-import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
-import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
 import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { Localize } from "ReplicatedStorage/TS/Localize"
@@ -21,6 +19,9 @@ let playerGui = localPlayer.WaitForChild("PlayerGui") as PlayerGui
 let noResetGui = playerGui.WaitForChild("NoResetGui") as ScreenGui
 
 let serverButton = noResetGui.WaitForChild("LeftButtonColumn").WaitForChild<GuiButton>("Server")
+serverButton.Visible = false
+
+/*
 let heroesRF = Workspace.WaitForChild('Signals').WaitForChild('HeroesRF') as RemoteFunction
 let heroesRE = Workspace.WaitForChild('Signals').WaitForChild('HeroesRE') as RemoteEvent
 
@@ -199,3 +200,4 @@ spawn( ()=>{
         }
     }
 })
+*/
