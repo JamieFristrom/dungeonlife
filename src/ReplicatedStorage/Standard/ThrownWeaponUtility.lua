@@ -1,9 +1,9 @@
 local DebugXL  = require( game.ReplicatedStorage.Standard.DebugXL )
-local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
-local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local RangedWeaponUtility = require( game.ReplicatedStorage.Standard.RangedWeaponUtility )
-local WeaponUtility       = require( game.ReplicatedStorage.Standard.WeaponUtility )
+DebugXL:logI('Executed', script.Name)
 
+local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
+local RangedWeaponUtility = require( game.ReplicatedStorage.Standard.RangedWeaponUtility )
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 --local RangedWeaponClient = require( game.ReplicatedStorage.StandardModules.RangedWeaponClientModule )
 --local Raycast = require( game.ReplicatedStorage.StandardModules.RaycastModule )
 --local RemoteX = require( game.ReplicatedStorage.StandardModules.RemoteXModule )
@@ -115,7 +115,7 @@ function ThrownWeaponClient.new( tool )
 	local function onButton1Down(mouse)
 		local character = tool.Parent
 		local player = game.Players:GetPlayerFromCharacter( character )
-		if WeaponUtility:IsCoolingDown( player ) then return end
+		if GeneralWeaponUtility.isCoolingDown( character ) then return end
 		if not enabled then
 			return
 		end
@@ -148,7 +148,7 @@ function ThrownWeaponClient.new( tool )
 			missile.Parent = game.Players.LocalPlayer.Character
 		end
 		
-		WeaponUtility:CooldownWait( player, cooldownN, nil )
+		GeneralWeaponUtility.cooldownWait( character, cooldownN, nil )
 		enabled = true
 	end
 	

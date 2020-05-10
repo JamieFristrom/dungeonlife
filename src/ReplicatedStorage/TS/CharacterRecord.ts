@@ -1,5 +1,5 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-import { FlexTool, GearDefinition } from 'ReplicatedStorage/TS/FlexToolTS'
+import { FlexTool, GearDefinition, HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from './ToolDataTS';
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
@@ -9,6 +9,8 @@ import { Players, ServerStorage, Teams } from '@rbxts/services';
 
 // we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
 export type CharacterKey = number
+
+type Character = Model
 
 function strcmp( a: string, b: string )
 {
@@ -86,7 +88,7 @@ export class GearPool
         return [ foundItem, foundKey ]
     }
 
-    assignToSlot( itemKey: string, slot: number )
+    assignToSlot( itemKey: string, slot: HotbarSlot )
     {
         // clear previous item from slot
         let currentItemInSlot = this.getFromSlot( slot )[0]
@@ -301,13 +303,13 @@ export abstract class CharacterRecord implements CharacterRecordI
         return sum
     }
 
-    getTool( itemKey: string )
+    getFlexTool( itemKey: string )
     {
         DebugXL.Assert( itemKey.sub( 0, 3 ) === 'item' )
         return this.gearPool.get( itemKey )
     }
 
-    giveTool( flexTool: FlexTool )
+    giveFlexTool( flexTool: FlexTool )
     {        
         let key = 'item' + this.toolKeyServerN
         DebugXL.Assert( !this.gearPool.has( key ) )
@@ -339,7 +341,7 @@ export abstract class CharacterRecord implements CharacterRecordI
     //  We *could* have another unique id per server, but it seems unnecessary as long as we have some way of identifying tools
     //  uniquely.
     //  We *do* have a unique id per roblox tool instance, the toolId, in FlexibleToolsServer
-    getPossessionKeyFromSlot( slot: number )
+    getPossessionKeyFromSlot( slot: HotbarSlot )
     {
         let _key: string | undefined
         this.gearPool.forEach( function( flexTool: FlexTool, key: string )
@@ -375,7 +377,7 @@ export abstract class CharacterRecord implements CharacterRecordI
 
     // this is awkward because we want to be able to call it from the client or the server, it might be in a character's hand, a player's backpack,
     // or a mob's tool cache. so far characterKeys are server-side only, though that will probably change
-    static getToolInstanceFromPossessionKey( character: Model, possessionKey: string )
+    static getToolInstanceFromPossessionKey( character: Character, possessionKey: string )
     {
         DebugXL.Assert( character !== undefined )        
         let tool: Tool | undefined = undefined
@@ -421,7 +423,7 @@ export abstract class CharacterRecord implements CharacterRecordI
             let equipIdx = MathXL.RandomInteger( 0, equipPool.size()-1 )
             let equip = equipPool[ equipIdx ]
             let flexTool = new FlexTool( equip.idS, 0, [], undefined, false, false, false, hideAccessoriesB )
-            this.giveTool( flexTool )
+            this.giveFlexTool( flexTool )
         }
     }
 

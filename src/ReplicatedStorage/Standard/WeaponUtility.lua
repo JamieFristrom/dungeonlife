@@ -6,61 +6,6 @@ local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 
 local WeaponUtility = {}
 
--- it is nonobvious how to both have IsCoolingDown check IsFrozen and have this not mess things
--- up when playing from studio without messy code. From the local/client scripts we could pass in something
--- different than a player except for IsCoolingDown, so we could have a flag or something that tells
--- us to save to a different variable ...
-	
--- it's redundant having these be tables on the client side
-local cooldownDurationN = {}
-local walkSpeedMulsN = {}
-local cooldownFinishTime = {}
-	
-function WeaponUtility:GetAdjustedCooldown( player, cooldownDurationN )
-	local adjCooldown = cooldownDurationN / CharacterUtility:GetSlowCooldownPct( player.Character )
-	DebugXL:Assert( adjCooldown < 1000 )
-	return adjCooldown
-end
-
-
-function WeaponUtility:StartCooldown( player, _cooldownDurationN, walkSpeedMulN )
-	if not cooldownFinishTime[ player ] or ( time() + _cooldownDurationN > cooldownFinishTime[ player ] ) then
-		-- wishlist; update cooldown on the fly, so when you thaw you go back to full speed
-		_cooldownDurationN = WeaponUtility:GetAdjustedCooldown( player, _cooldownDurationN )
-		cooldownFinishTime[ player ] = time() + _cooldownDurationN 
-		cooldownDurationN[ player ] = _cooldownDurationN
-		walkSpeedMulsN[ player ] = walkSpeedMulN
-	end
-end
-
-
-function WeaponUtility:CooldownPctRemaining( player )
-	DebugXL:Assert( player:IsA("Player") )
-	if cooldownFinishTime[ player ] then
-		return math.max( ( cooldownFinishTime[ player ] - time() ) / cooldownDurationN[ player ], 0 )		
-	else
-		return 0
-	end
-end
-
-
-function WeaponUtility:LastWeaponWalkSpeedMul( player )
-	return walkSpeedMulsN[ player ]
-end
-
-
-function WeaponUtility:IsCoolingDown( player )
-	return CharacterUtility:IsFrozen( player.Character ) or WeaponUtility:CooldownPctRemaining( player ) > 0
-end
-
-
-function WeaponUtility:CooldownWait( player, cooldownDurationN, walkSpeedMulN )
-	local startTime = time()
-	WeaponUtility:StartCooldown( player, cooldownDurationN, walkSpeedMulN )
-	while WeaponUtility:IsCoolingDown( player ) do wait() end
---	--print( player.Name.." took "..time()-startTime.." seconds to cool down" )
-end
-
 
 function WeaponUtility:GetTargetPoint( targetCharacter )
 	if targetCharacter.PrimaryPart then
@@ -97,18 +42,18 @@ end
 -- end
 
 
--- garbage collection
-spawn( function()
-	while wait(1) do
-		for player, _ in pairs( cooldownFinishTime ) do
-			if not player.Parent then 
-				cooldownFinishTime[ player ] = nil
-				cooldownDurationN[ player ] = nil
-				walkSpeedMulsN[ player ] = nil
-			end
-		end
-	end
-end)
+-- -- garbage collection
+-- spawn( function()
+-- 	while wait(1) do
+-- 		for player, _ in pairs( cooldownFinishTime ) do
+-- 			if not player.Parent then 
+-- 				cooldownFinishTime[ player ] = nil
+-- 				cooldownDurationN[ player ] = nil
+-- 				walkSpeedMulsN[ player ] = nil
+-- 			end
+-- 		end
+-- 	end
+-- end)
 
 
 return WeaponUtility

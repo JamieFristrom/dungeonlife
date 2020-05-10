@@ -268,13 +268,13 @@ end
 function GivePossession( player, myPCData, flexToolInst )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
-		myPCData:giveTool( flexToolInst )
+		myPCData:giveFlexTool( flexToolInst )
 		ToolCaches.updateToolCache( characterKey, myPCData )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
 		if gearCount < Inventory:GetCount( player, "GearSlots" ) then	
-			myPCData:giveTool( flexToolInst )
+			myPCData:giveFlexTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
 			ToolCaches.updateToolCache( characterKey, myPCData )

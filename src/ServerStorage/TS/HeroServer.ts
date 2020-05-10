@@ -98,7 +98,7 @@ export namespace HeroServer
                 if( gearCount < Inventory.GetCount( player, "GearSlots"))
                 {
                     HeroServer.adjustGold( player, hero, -shopItem.getPurchasePrice(), "Buy", shopItem.baseDataS )
-                    hero.giveTool( shopItem )
+                    hero.giveFlexTool( shopItem )
                     let totalPossessions = HeroUtility.CountNonPotionGear( hero )
                     Analytics.ReportEvent( player, 'BuyTool', shopItem.baseDataS, tostring(shopItem.levelN), totalPossessions )        
                     hero.shopPool.delete( shopItemKey )

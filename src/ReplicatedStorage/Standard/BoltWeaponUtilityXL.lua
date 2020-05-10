@@ -7,11 +7,8 @@ local WeaponUtility        = require( game.ReplicatedStorage.Standard.WeaponUtil
 
 local FlexEquipUtility     = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
-local HeroUtility          = require( game.ReplicatedStorage.Standard.HeroUtility )
-
 local AnimationManifestService = require( game.ReplicatedFirst.TS.AnimationManifestService ).AnimationManifestService
-
-local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
 local BoltWeaponUtilityXL = {}
 
@@ -83,7 +80,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 	local animTrack 
 
 	local function CheckIfAlive()
-		return (((Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0 and Player and Player.Parent) and true) or false)
+		return Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0
 	end
 	
 	local function Activated( )
@@ -94,7 +91,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 		end
 		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
 
-		if WeaponUtility:IsCoolingDown( Player ) then return end
+		if GeneralWeaponUtility.isCoolingDown( Character ) then return end
 
 		-- guess it's possible to get a shot off when dead?
 		local manaValueObj = Character:FindFirstChild("ManaValue") 
@@ -139,7 +136,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 			end
 			local walkSpeedMulN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
 			--print "Beginning cooldown" )
-			WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, walkSpeedMulN )
+			GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, walkSpeedMulN )
 			--print "Cooldown finished" )
 			if animTrack then
 				animTrack:Play()

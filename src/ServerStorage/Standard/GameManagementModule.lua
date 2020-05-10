@@ -281,7 +281,7 @@ local function MonsterAddedWait( character, player )
 end
 
 
-local function SetupCharacterWait( startingCharacterModel, player )
+local function SetupPCWait( startingCharacterModel, player )
 	local characterKey = 0
 	local pcData 
 	if player.Team == game.Teams.Heroes then
@@ -933,7 +933,7 @@ local function PlayerAdded( player )
 	
 	PlayerServer.customCharacterAddedConnect( player, function( character )
 		--print( "Character added: "..character.Name )
-		SetupCharacterWait( character, player )
+		SetupPCWait( character, player )
 	end)
 		
 	pcall( function()
