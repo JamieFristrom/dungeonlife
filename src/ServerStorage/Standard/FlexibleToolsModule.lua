@@ -133,12 +133,8 @@ end
 -- Flexible Tool Functions
 --------------------------------------------------------------------------------------------------------------------
 -- gets instance data
-function FlexibleTools:GetToolInst( toolObj )  -- fixme, this was a terrible name. Should be called GetFlexTool, it doesn't return a Tool instance
+function FlexibleTools:GetFlexToolFromInstance( toolObj ) 
 	return FlexibleToolsServer.getFlexTool( toolObj )
-end
-
-function FlexibleTools:GetToolInstFromId( toolObj )
-	return FlexibleToolsServer.getFlexToolFromId( toolObj )
 end
 
 function FlexibleTools:GetToolBaseData( toolObj )
@@ -150,7 +146,7 @@ function FlexibleTools:GetFlexToolBaseData( flexToolInst )
 end
 
 function FlexibleTools:GetToolLevelRequirement( toolO )
-	return FlexibleTools:GetToolInst( toolO ):getLevelRequirement()
+	return FlexibleTools:GetFlexToolFromInstance( toolO ):getLevelRequirement()
 end
 
 -- destination can be a player or it can be a point in the world
@@ -159,117 +155,6 @@ function FlexibleTools:CreateTool( params )
 
 	DebugXL:Assert( self == FlexibleTools )
 	return FlexibleToolsServer.createTool( params )
-	--[[
-	local toolInstanceDatumT = params.toolInstanceDatumT
-	local destinationPlayer  = params.destinationPlayer
-	local destinationV3      = params.destinationV3
-	local activeSkinsT       = params.activeSkinsT
-	local _possessionsKey     = params.possessionsKey
-	
---	--print( "Creating "..toolInstanceDatumT.baseDataS.." for "..destinationPlayer.Name )
-	
-	local toolId = ServeToolId()
-	FlexibleToolsServer.setFlexToolInst( toolId, { flexToolInst = toolInstanceDatumT, player = destinationPlayer, possessionsKey = _possessionsKey } )
-	
-	-- if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
-	if not toolInstanceDatumT.enhancementsA then toolInstanceDatumT.enhancementsA = {} end
-	
-	local toolBaseDatum = ToolData.dataT[ toolInstanceDatumT.baseDataS ]
-	if not toolBaseDatum then DebugXL:Error( "Unable to find possession "..toolInstanceDatumT.baseDataS ) end
-	
-	local baseToolS = toolBaseDatum.baseToolS
-	local textureSwapId 
-	if not toolBaseDatum.skinType then
-		DebugXL:Error( toolBaseDatum.idS .. " has no skinType" )
-	else
-		if activeSkinsT[ toolBaseDatum.skinType ] then
-			local reskin = PossessionData.dataT[ activeSkinsT[ toolBaseDatum.skinType ] ]
-			if reskin then
-				baseToolS = reskin.baseToolS
-				textureSwapId = reskin.textureSwapId
-			end
-		end
-	end
-	
-	local newToolInstance = game.ServerStorage.Tools[ baseToolS ]:Clone()
-	FlexTool:retexture( newToolInstance, textureSwapId )
-	
-	local nonDefaultFX = false
-	for i, enhancement in ipairs( toolInstanceDatumT.enhancementsA ) do
---		local enhancementFlavorDatum = FlexibleTools.enhancementFlavorsT[ enhancement.flavorS ]
---		if i%2 == 1 or not enhancementFlavorDatum.suffixS then
---			baseNameS = enhancementFlavorDatum.prefixS .. " " .. baseNameS
---		else
---			if i <= 2 then
---				baseNameS = baseNameS .. " of " .. enhancementFlavorDatum.suffixS
---			else
---				baseNameS = baseNameS .. " and " .. enhancementFlavorDatum.suffixS
---			end
---		end
-		
-		for _, descendant in pairs( newToolInstance:GetDescendants() ) do
-			if descendant.Name == "FX"..enhancement.flavorS then
-				if descendant:IsA("Script") then
-					descendant.Disabled = false
-				else
-					descendant.Enabled = true
-					nonDefaultFX = true
-				end
-			end
-		end				
-	end
-	
-	if nonDefaultFX then
-		-- remove default effects
-		for _, descendant in pairs( newToolInstance:GetDescendants() ) do
-			if descendant.Name == "FXdefault" then
-				descendant.Enabled = false
-			end
-		end			
-	end
-
-	newToolInstance.CanBeDropped = false
-	
-	-- attach tool id to tool 
-	InstanceXL.new( "NumberValue", { Name="ToolId", Parent=newToolInstance, Value=toolId } )
-	-- attach inventory slot so we can find it on the client
-	InstanceXL.new( "StringValue", { Name="PossessionKey", Parent=newToolInstance, Value=_possessionsKey })
-	
-	-- we'll need to be able to adjust these for heroes with buffs
-	InstanceXL.new( "NumberValue", { Name="Range", Parent=newToolInstance, Value=FlexibleTools:GetToolRangeN( newToolInstance ) } )
-	InstanceXL.new( "NumberValue", { Name="Cooldown", Parent=newToolInstance, Value=FlexibleTools:GetCooldownN( newToolInstance ) } )
-	InstanceXL.new( "NumberValue", { Name="ManaCost", Parent=newToolInstance, Value=FlexibleTools:GetManaCostN( newToolInstance ) } )
-	InstanceXL.new( "NumberValue", { Name="WalkSpeedMul", Parent=newToolInstance, Value=toolBaseDatum.walkSpeedMulN } )
-	
-	if destinationPlayer then
---		local toolA  = newToolInstance
---		toolA.Parent = destinationPlayer:WaitForChild("StarterGear")
-
-		-- we're using Roblox's backpack as a holding space for tools to combat lag; if we equip a weapon that exists on
-		-- the server
--- 		if destinationPlayer.Character then
--- 			local humanoid = destinationPlayer.Character:FindFirstChild("Humanoid")
--- 			if humanoid then
--- 				humanoid:UnequipTools()
--- 				-- for _, tool in pairs( destinationPlayer.Character:GetChildren()) do
--- 				-- 	if tool:IsA("Tool") then
--- 				-- 		tool:Destroy()
--- 				-- 	end
--- 				-- end
--- 				-- wait()
-							
--- --				humanoid:EquipTool( newToolInstance )
--- 	--			--print( "Tool equipped" )
--- 			end 
--- 		end
-		newToolInstance.Parent = destinationPlayer.Backpack
-		--		newToolInstance:Clone().Parent = destinationPlayer:WaitForChild("StarterGear")
-	else
-		DebugXL:Error("Need to specify a destination or player")
-	end
-	
-	return newToolInstance
-	--]]
 end
 
 
@@ -319,7 +204,7 @@ end
 
 function FlexibleTools:GetDamageNs( toolObj, actualLevel, maxLevel )
 	DebugXL:Assert( self == FlexibleTools )
-	local flexToolInst     = FlexibleTools:GetToolInst( toolObj )
+	local flexToolInst     = FlexibleTools:GetFlexToolFromInstance( toolObj )
 	return FlexEquipUtility:GetDamageNs( flexToolInst, actualLevel, maxLevel )
 
 end
@@ -328,7 +213,7 @@ end
 -- returns entire array of enhancements
 function FlexibleTools:GetEnhancements( toolObj ) 
 	DebugXL:Assert( self == FlexibleTools )
-	return FlexibleTools:GetToolInst( toolObj ).enhancementsA or {}
+	return FlexibleTools:GetFlexToolFromInstance( toolObj ).enhancementsA or {}
 end
 
 
@@ -360,8 +245,8 @@ function FlexibleTools:CreateExplosionIfNecessary( toolObj, positionV3 )
 			local localLevel = pcData:getLocalLevel()
 	
 			MechanicalEffects.Explosion( positionV3,  
-				FlexibleTools:GetEnhancementDamage( FlexibleTools:GetToolInst( toolObj ), explosiveEnhancementIdx, actualLevel, localLevel ),
-				Enhancements.enhancementFlavorInfos.explosive.radiusFunc( FlexibleTools:GetToolInst( toolObj ):getLocalLevel( actualLevel, localLevel ) ),
+				FlexibleTools:GetEnhancementDamage( FlexibleTools:GetFlexToolFromInstance( toolObj ), explosiveEnhancementIdx, actualLevel, localLevel ),
+				Enhancements.enhancementFlavorInfos.explosive.radiusFunc( FlexibleTools:GetFlexToolFromInstance( toolObj ):getLocalLevel( actualLevel, localLevel ) ),
 				ToolXL:GetOwningPlayer( toolObj ) )
 		end
 	end
@@ -556,7 +441,7 @@ end
 function FlexibleTools:ResolveEffects( tool, targetHumanoid, owningPlayer )
 	--print( "Determining damage enhancements. tool is ", tool:GetFullName() )	
 	-- just damage enhancements; skip explosive, stat buffs 
-	local toolInstanceDatum = FlexibleTools:GetToolInst( tool )
+	local toolInstanceDatum = FlexibleTools:GetFlexToolFromInstance( tool )
 	--DebugX.Dump( enhancements )
 	return FlexibleTools:ResolveFlexToolEffects( toolInstanceDatum, targetHumanoid, owningPlayer )	
 end

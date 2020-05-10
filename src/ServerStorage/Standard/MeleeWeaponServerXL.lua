@@ -12,14 +12,14 @@ local WeaponServer  = require( game.ServerStorage.Standard.WeaponServerModule )
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local WeaponUtility    = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
+local MeleeWeaponUtility = require( game.ReplicatedStorage.TS.MeleeWeaponUtility).MeleeWeaponUtility
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
-local MeleeWeaponClient    = require( game.ReplicatedStorage.TS.MeleeWeaponClient ).MeleeWeaponClient
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local MeleeWeaponServerXL = {}
 
-function MeleeWeaponServerXL.new( Tool )
+function MeleeWeaponServerXL.new( Tool, fullBodyAttackAnimNames, upperBodyAttackAnimNames, windUpAnimName )
 	DebugXL:Assert( Tool )
 	DebugXL:logI( 'Items', 'MeleeWeaponServerXL.new('..Tool:GetFullName()..')' )
 	local Handle = Tool:FindFirstChild("Handle")
@@ -41,7 +41,7 @@ function MeleeWeaponServerXL.new( Tool )
 	local SlashSound = Handle:WaitForChild("Slash")
 	SlashSound.Volume = 1
 	
-	local LastAttack = 0
+	local mobWeaponUtility = nil
 	
 	local function OnActivated()		
 		DebugXL:logD( 'Combat', 'MeleeWeaponServerXL::OnActivated')
@@ -49,7 +49,7 @@ function MeleeWeaponServerXL.new( Tool )
 			DebugXL:logD( 'Combat', Player.Name.." does not meet requirements for "..Tool.Name ) 
 			return 
 		end
-		if WeaponUtility:IsCoolingDown( Player ) then 
+		if GeneralWeaponUtility.isCoolingDown( Character ) then 
 			DebugXL:logV( 'Combat', Player.Name.."'s weapon still cooling down" ) 
 			return 
 		end
@@ -60,7 +60,7 @@ function MeleeWeaponServerXL.new( Tool )
 			return 
 		end
 
-		if WeaponUtility:IsCoolingDown( Player ) then
+		if GeneralWeaponUtility.isCoolingDown( Character ) then
 			DebugXL:logV( 'Combat', Player.Name.."'s "..Tool.Name.." is still cooling" )
 			return 
 		end
@@ -79,16 +79,22 @@ function MeleeWeaponServerXL.new( Tool )
 			end
 		end
 
-		WeaponUtility:CooldownWait( Player, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+		GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
 	end
 	
 	local function OnEquipped()
 		Character = Tool.Parent
-		flexToolInst = FlexibleTools:GetToolInst( Tool )
+		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
 		Humanoid = Character:FindFirstChildOfClass('Humanoid')
 		Player = game.Players:GetPlayerFromCharacter(Character)
 		if WeaponServer:CheckRequirements( Tool, Player ) then
 			UnsheathSound:Play()
+		end
+		if not Player then -- players play their own animations on their clients; mobs play here
+			if not mobWeaponUtility then
+				mobWeaponUtility = MeleeWeaponUtility.new( Tool, fullBodyAttackAnimNames, upperBodyAttackAnimNames, windUpAnimName )
+			end
+			mobWeaponUtility:drawWeapon(Character)
 		end
 	end
 	

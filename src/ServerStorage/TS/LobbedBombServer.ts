@@ -1,10 +1,13 @@
-import * as CharacterI from "ServerStorage/Standard/CharacterI"
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.Name)
 
-import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
+import * as CharacterI from 'ServerStorage/Standard/CharacterI'
+import * as FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule'
+import * as MechanicalEffects from 'ServerStorage/Standard/MechanicalEffects'
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { FlexibleToolsServer } from 'ServerStorage/TS/FlexibleToolsServer'
 
-import * as MechanicalEffects from "ServerStorage/Standard/MechanicalEffects"
+
 
 export namespace LobbedBombServer
 {
@@ -22,7 +25,7 @@ export namespace LobbedBombServer
                 DebugXL.Assert( flexToolIdObj !== undefined )
                 if( flexToolIdObj )
                 {
-                    let flexTool = FlexibleTools.GetToolInstFromId( flexToolIdObj.Value )
+                    let flexTool = FlexibleToolsServer.getFlexToolFromId( flexToolIdObj.Value )
                     let toolDamage = CharacterI.DetermineFlexToolDamage( attackingPlayer, flexTool )
                     let hitCharacters = MechanicalEffects.Explosion( thrownObjPart.Position, 
                         toolDamage[0],

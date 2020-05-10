@@ -5,8 +5,8 @@ import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 declare class FlexibleToolsClass
 {
     AddRandomEnhancements( flexTool: FlexTool, boostB: boolean ): void
-    GetToolInst( toolObj: Tool ): FlexTool
-    GetToolInstFromId( toolId: number ): FlexTool
+    GetFlexToolFromInstance( toolObj: Tool ): FlexTool
+    GetFlexToolFromId( toolId: number ): FlexTool
     CreateTool( params: CreateToolParamsI ): Tool
     GetAdjFlexToolStat( flexTool: FlexTool, statName: string ): number
     ResolveFlexToolEffects( flexTool: FlexTool, humanoid: Humanoid, attackingPlayer: Player ): void

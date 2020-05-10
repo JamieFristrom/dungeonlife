@@ -1,4 +1,6 @@
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI('Executed', script.Name)
+
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
@@ -14,8 +16,8 @@ import * as Werewolf from "ServerStorage/Standard/WerewolfModule"
 
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 
-import { ServerStorage, Debris, Workspace, TweenService, Teams } from "@rbxts/services";
-import CharacterI = require("ServerStorage/Standard/CharacterI");
+import { ServerStorage, Workspace, TweenService, Teams } from "@rbxts/services"
+import * as CharacterI from "ServerStorage/Standard/CharacterI"
 
 interface Activateable
 {
