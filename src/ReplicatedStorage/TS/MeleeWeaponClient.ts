@@ -9,7 +9,9 @@ import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
 
 import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestService'
 
+import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
 
+type Character = Model
 
 /**
     Code for the client side behavior of melee weapons.
@@ -52,14 +54,13 @@ export class MeleeWeaponClient
             
             slashSound.Play()
 
-            const [ bestTarget, bestFitN ] = WeaponUtility.FindClosestTargetInCone( character, MeleeWeaponClient.swordSweepDot )
-	
             let foundTargetB = false
+            const [bestTarget, bestFit] = GeneralWeaponUtility.findClosestTarget( character )
             if( bestTarget )
             {
-                if( bestFitN <= range )
+                if( bestFit <= range )
                 {
-    //				//print( 'Found target' )
+                    DebugXL.logD('Combat', bestTarget.Name+" in range")
                     foundTargetB = true
                     const targetV3 = bestTarget.GetPrimaryPartCFrame().p
                     const targetV3InMyPlane = new Vector3( targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z )
@@ -67,7 +68,7 @@ export class MeleeWeaponClient
                     character.SetPrimaryPartCFrame( facingTargetCF )
                 }
             }
-                        
+                            
             const humanoid = character.FindFirstChildOfClass('Humanoid')
             if( humanoid )
             {
