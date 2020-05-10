@@ -180,10 +180,10 @@ end
 -- we want this to be called every time costume changes so we can use Roblox CharacterAdded
 local function TagPlayer( player )
 	player.CharacterAdded:Connect( function( character )
-		game.CollectionService:AddTag( character, "Character" )		
+		game.CollectionService:AddTag( character, "CharacterTag" )		
 	end)
 	if player.Character then 
-		game.CollectionService:AddTag( player.Character, "Character" )
+		game.CollectionService:AddTag( player.Character, "CharacterTag" )
 	end	
 end
 

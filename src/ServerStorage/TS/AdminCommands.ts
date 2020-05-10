@@ -1,6 +1,7 @@
 import { Players, DataStoreService, HttpService } from "@rbxts/services";
 
 import { DebugXL, LogLevel } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI( "Executed", script.Name )
 
 import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 

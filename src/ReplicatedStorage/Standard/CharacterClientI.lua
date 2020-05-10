@@ -31,7 +31,7 @@ end
 
 function CharacterClientI:GetValidTargets( attackingCharacter )
 	DebugXL:Assert( self == CharacterClientI )
-	return TableXL:FindAllInAWhere( game.CollectionService:GetTagged("Character"),
+	return TableXL:FindAllInAWhere( game.CollectionService:GetTagged("CharacterTag"),
 		function( character ) return CharacterClientI:ValidTarget( attackingCharacter, character ) end )
 end
 

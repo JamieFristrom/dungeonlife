@@ -246,7 +246,7 @@ end
 
 local function MonsterAddedWait( character, player )
 --	--print( "Monster added "..player.Name )
-	local pcData, characterKey = Monsters:CharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
+	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not Inventory:PlayerInTutorial( player ) then
