@@ -94,7 +94,7 @@ let CommandList: {[k:string]:unknown} =
               gearDef.baseDataS,
               gearDef.levelN ? gearDef.levelN : 1,
               gearDef.enhancementsA ? gearDef.enhancementsA : [] )
-            myPC.giveTool( flexTool )
+            myPC.giveFlexTool( flexTool )
             const characterKey = PlayerServer.getCharacterKeyFromPlayer( sender )
             ToolCaches.updateToolCache( characterKey, myPC )
           }

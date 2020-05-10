@@ -57,11 +57,11 @@ local function GiveWeapon( characterKey, flexToolPrototype )
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw )
 	flexTool.levelN = math.ceil( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
-	PlayerServer.getCharacterRecord( characterKey ):giveTool( flexTool )
+	PlayerServer.getCharacterRecord( characterKey ):giveFlexTool( flexTool )
 end
 
 
-local function GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
+local function GiveUniqueWeapon( characterKey, potentialWeaponsA )
 	if #potentialWeaponsA == 0 then
 		DebugXL:logE( 'Items', PlayerServer.getName( characterKey ).." | "..PlayerServer.getCharacterRecord( characterKey ).idS.." has no potential weapons" )
 	end
@@ -81,15 +81,19 @@ local function GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
 
 	-- slot here is hotbar slot
 	local _slotN = nil
-	if CharacterClientI:GetCharacterClass( player )~="Werewolf" then
+
+	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
+	-- hack to keep werewolf alternate weapons out of hotbar slot
+	if characterRecord.idS~="Werewolf" then
 		_slotN = PlayerServer.getCharacterRecord( characterKey ):countTools() + 1
 	end
+
 	local flexToolInst = { baseDataS = weaponTemplate.idS,
 		levelN = math.max( 1, math.floor( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
 		enhancementsA = {},
 		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
-	PlayerServer.getCharacterRecord( characterKey ):giveTool( flexTool )
+	characterRecord:giveFlexTool( flexTool )
 
 	TableXL:RemoveFirstElementFromA( potentialWeaponsA, weaponTemplate.idS )
 	return flexToolInst
@@ -145,30 +149,13 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 
 	PlayerServer.publishLevel( player, monsterLevel, monsterLevel )
 	local characterKey = PlayerServer.setCharacterRecordForPlayer( player, characterRecord )
-	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterDatum, monsterLevel )
-
-
-	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
-	for i = 1, monsterDatum.numWeaponsN do
-		GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
-	end
-
-	--actually giving monsters armor was a bad idea:  it makes bigger slower weapons OP, makes your damage bubbles look smaller, better to just
-	--increase their hit points
+	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterClass, monsterLevel )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
 		local inventory = Inventory:GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
 		characterRecord:giveRandomArmor( hideAccessoriesB )
-	end
-
-	-- make sure you don't just have a one-shot weapon
-
-	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
-		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
-			GiveUniqueWeapon( characterKey, player, potentialWeaponsA )
-		end
 	end
 
 	-- it's possible player has left or reset or whatever by the time they get here
@@ -278,7 +265,7 @@ end
 -- unlike heroes, monsters have a generic damage bonus they apply to everything
 -- function Monsters:DetermineDamageN( monsterCharacter, toolO )
 -- 	DebugXL:Assert( self == Monsters )
--- 	local flexToolInst = FlexibleTools:GetToolInst( toolO )
+-- 	local flexToolInst = FlexibleTools:GetFlexToolFromInstance( toolO )
 -- 	return Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
 -- end
 
@@ -360,9 +347,11 @@ function Monsters:Died( monster )
 end
 
 
-function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterDatum, level )
+function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterClass, level )
 	DebugXL:Assert( self == Monsters )
 
+	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
+	DebugXL:Assert( monsterDatum )
 	-- wishlist, don't use Configurations, it's just one more object that might get unattached
 --	InstanceXL.new( "Folder", { Parent = monster, Name = "Configurations" }, true )
 --	InstanceXL.new( "NumberValue", { Parent = monster.Configurations, Name = "Level", Value = level }, true )
@@ -386,13 +375,24 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 		InstanceXL.new( "BoolValue", { Name = tag, Value = true, Parent = monsterCharacterModel }, true )
 	end
 
-	local monsterClass = monsterDatum.idS
-
 	-- starting gear
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
 			GiveWeapon( characterKey, weapon )
+		end
+	end
+
+	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
+	for i = 1, monsterDatum.numWeaponsN do
+		GiveUniqueWeapon( characterKey, potentialWeaponsA )
+	end
+
+	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
+	-- make sure you don't just have a one-shot weapon
+	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
+		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
+			GiveUniqueWeapon( characterKey, potentialWeaponsA )
 		end
 	end
 	

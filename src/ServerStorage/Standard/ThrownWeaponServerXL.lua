@@ -13,6 +13,8 @@ local CharacterI          = require( game.ServerStorage.CharacterI )
 local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Mana                = require( game.ServerStorage.ManaModule )
 
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
+
 local showThrownObjOnServerB = true
 
 local ThrownWeaponServer = {}
@@ -40,12 +42,12 @@ function ThrownWeaponServer.new( tool )
 
 	local function onThrow( player, mouseHitV3 )
 		if thrown == true then return end
-		if WeaponUtility:IsCoolingDown( player ) then return end
+		local character = player.Character
+		if GeneralWeaponUtility.isCoolingDown( character ) then return end
 		if tool.Remaining.Value <= 0 then return end
 
 		-- to do; if lobbed items are ever spells they need mana cost
 		thrown = true  -- redundant but theoretically harmless
-		local character = player.Character
 		local humanoid = character.Humanoid
 		if humanoid == nil then return end
 	--	local targetPos = humanoid.TargetPoint
@@ -71,14 +73,14 @@ function ThrownWeaponServer.new( tool )
 			FlexibleTools:RemoveToolWait( player, tool )
 		end
 		
-		WeaponUtility:CooldownWait( player, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+		GeneralWeaponUtility.cooldownWait( character, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
 		
 
 		thrown = false
 	end
 		
 	local function onEquipped()
-		flexToolInst = FlexibleTools:GetToolInst( tool )
+		flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
 		Weld(tool)
 		local player = game.Players:GetPlayerFromCharacter( tool.Parent )
 		if player then

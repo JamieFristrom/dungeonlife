@@ -16,7 +16,7 @@ export namespace BoltServerUtility
 
     export function hitCharacter( character: Model, tool: Tool )
     {
-        let flexToolInst = FlexibleTools.GetToolInst( tool )
+        let flexToolInst = FlexibleTools.GetFlexToolFromInstance( tool )
         let attackingPlayer = ToolXL.GetOwningPlayer( tool )        
         CharacterI.TakeFlexToolDamage( character, attackingPlayer, flexToolInst )
         if( attackingPlayer !== undefined )

@@ -3,6 +3,8 @@ import { Teams, ServerStorage } from "@rbxts/services"
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { CharacterKey, CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 
+import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
+
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
@@ -29,10 +31,10 @@ export namespace ToolCaches {
         DebugXL.Assert( characterModel !== undefined ) // character should be instantiated if we're building its cache
         if( characterModel )
         {
-            for (let i = 1; i <= CharacterClientI.maxSlots; i++) {
+            for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
                 let possessionKey = characterRecord.getPossessionKeyFromSlot(i)
                 if (possessionKey) {
-                    let flexTool = characterRecord.getTool(possessionKey)!
+                    let flexTool = characterRecord.getFlexTool(possessionKey)!
                     if (flexTool.getUseType === undefined) {
                         DebugXL.Error(`flexTool ${flexTool.baseDataS} likely missing metatable`)
                         continue
@@ -54,7 +56,7 @@ export namespace ToolCaches {
             let heldTool = characterModel.FindFirstChildWhichIsA("Tool") as Tool
             if (heldTool) {
                 let possessionKey = CharacterRecord.getToolPossessionKey(heldTool)!
-                let flexTool = characterRecord.getTool(possessionKey)!
+                let flexTool = characterRecord.getFlexTool(possessionKey)!
                 if (!flexTool || !flexTool.slotN) {
                     heldTool.Destroy()
                 }
@@ -64,7 +66,7 @@ export namespace ToolCaches {
             toolCache.GetChildren().forEach(function (inst: Instance) {
                 let tool = inst as Tool
                 let possessionKey = CharacterRecord.getToolPossessionKey(tool)!
-                let flexTool = characterRecord.getTool(possessionKey)
+                let flexTool = characterRecord.getFlexTool(possessionKey)
                 if (!flexTool || !flexTool.slotN)  // might have been thrown away
                 {
                     tool.Destroy()
