@@ -106,7 +106,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 				local humanoid = character:FindFirstChild("Humanoid")
 				if humanoid and humanoid.Health > 0 then			
 					--print( "Has a humanoid. Executing hit func" )
-					local flexToolInst = FlexibleTools:GetToolInst( tool )
+					local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
 					CharacterI:TakeFlexToolDamage( character, CreatorPlayer, flexToolInst )
 				end
 			end

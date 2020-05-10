@@ -24,19 +24,19 @@ export namespace FlexToolClient
 {
     export function getFlexTool( tool: Tool )
     {        
-        let inventorySlotValObj = tool.WaitForChild("PossessionKey",1) as StringValue
-        DebugXL.Assert( inventorySlotValObj !== undefined )
-        if( inventorySlotValObj )
+        let possessionKeyValObj = tool.WaitForChild("PossessionKey",1) as StringValue
+        DebugXL.Assert( possessionKeyValObj !== undefined )
+        if( possessionKeyValObj )
         {
-            let inventorySlot = inventorySlotValObj.Value          
+            let possessionKey = possessionKeyValObj.Value          
             DebugXL.Assert( PCClient.pc !== undefined )  
             if( !PCClient.pc ) return undefined
 
-            let flexTool = PCClient.pc.getTool( inventorySlot )
+            let flexTool = PCClient.pc.getFlexTool( possessionKey )
             DebugXL.Assert( flexTool !== undefined )
             if( !flexTool )
             {
-                let errStr = "Couldn't find flextool "+inventorySlot+"\n"
+                let errStr = "Couldn't find flextool "+possessionKey+"\n"
                 errStr += DebugXL.DumpToStr( PCClient.pc )
                 DebugXL.Error( errStr )
             }

@@ -7,3 +7,4 @@ node_modules/*
 start_ssh.sh
 *.map
 *.lock
+/.vscode/*

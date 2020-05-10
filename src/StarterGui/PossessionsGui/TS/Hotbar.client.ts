@@ -14,6 +14,7 @@ import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
+import { HotbarSlot } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
@@ -34,7 +35,7 @@ let playerGui = localPlayer.WaitForChild('PlayerGui')
 // use 0 for none
 function SelectSlot( slotN: number )
 {
-    for( let i=1; i<=CharacterClientI.maxSlots; i++ )
+    for( let i=1; i<=HotbarSlot.Max; i++ )
     {
         let inst = hotbar.FindFirstChild( "Item"+i ) as Frame
         let border = inst.WaitForChild('SelectedBorder') as ImageLabel
@@ -67,7 +68,7 @@ function WhatSlotCurrentlyEquipped( )
 }
 
 
-function Equip( slotN: number )
+function Equip( slotN: HotbarSlot )
 {
     //print( "Equip "..slotN )
     DebugXL.Assert( PCClient.pc !== undefined )
@@ -82,7 +83,7 @@ function Equip( slotN: number )
                 hotbarRE.FireServer( "Equip", slotN )		
 
                 // get tool for hotbar slot
-                let flexToolInst = PCClient.pc.getTool( possessionKey )
+                let flexToolInst = PCClient.pc.getFlexTool( possessionKey )
                 if( flexToolInst )  // possible you've thrown out the tool and the hotbar is late on updating
                 {
                     if( flexToolInst.getUseType() === "power" )
@@ -151,7 +152,7 @@ function Equip( slotN: number )
     }
 }
 
-for( let i=1; i<=CharacterClientI.maxSlots; i++ )
+for( let i: HotbarSlot=1; i<=HotbarSlot.Max; i++ )
 {
     let hotbarItem = hotbar.WaitForChild("Item" + i )
     let hotbarButton = hotbarItem.WaitForChild('Button') as TextButton
@@ -179,7 +180,7 @@ function HotbarRefresh( pc: CharacterRecord )
     print( "Refreshing hotbar" )
     let allActiveSkins = InventoryClient.inventory.activeSkinsT
     let activeSkinsT = localPlayer.Team === Teams.WaitForChild('Heroes') ? allActiveSkins.hero : allActiveSkins.monster
-    for( let i=1; i<=CharacterClientI.maxSlots; i++ )
+    for( let i=1; i<=HotbarSlot.Max; i++ )
     {
         let itemDatum = CharacterClientI.GetPossessionFromSlot( pc, i )
         let newItem = hotbar.WaitForChild( "Item" + i ) as Frame
@@ -231,7 +232,7 @@ let equipKeyCodes =
 ]
 
 // I believe it is fine that this is called every time your character is reset, because new action binds overwrite the old.
-for( let i=0; i<CharacterClientI.maxSlots; i++ )
+for( let i=0; i<HotbarSlot.Max; i++ )
 {
     let slot = i+1  // necessary to put this in a variable because i will be incremented outside of the closure
 //     ContextActionService.BindAction( "equip"+i, 
@@ -249,7 +250,7 @@ RunService.RenderStepped.Connect( function()
 {
     if( PCClient.pc )
     {
-        for( let i=1; i<=CharacterClientI.maxSlots; i++ )
+        for( let i: HotbarSlot=1; i<=HotbarSlot.Max; i++ )
         {
             // get tool for hotbar slot
             let hotbarItem = hotbar.WaitForChild("Item"+i) as Frame
@@ -263,7 +264,7 @@ RunService.RenderStepped.Connect( function()
                 let cooldownSecs = 0
                 if( possessionKey )
                 {
-                    let flexToolInst = PCClient.pc.getTool( possessionKey )
+                    let flexToolInst = PCClient.pc.getFlexTool( possessionKey )
                     if( flexToolInst )  // possible you've thrown out the tool and the hotbar is late on updating
                     {
                         if( flexToolInst.getUseType() === "power" )

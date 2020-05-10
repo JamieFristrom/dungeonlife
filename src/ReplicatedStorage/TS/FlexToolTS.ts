@@ -13,17 +13,29 @@ print( "FlexTool: Players required")
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
+// disappointed to discover after converting this from a number to an enum that typescript allows you to assign
+// any number to it
+export enum HotbarSlot
+{
+    Slot1=1,
+    Slot2,
+    Slot3,
+    Slot4,
+    Max=Slot4
+} 
+
 export interface GearDefinition
 {
     readonly baseDataS: string
     readonly levelN: number
     readonly enhancementsA: Array<Enhancements.EnhancementI>
-    readonly slotN?: number
+    readonly slotN?: HotbarSlot
     readonly equippedB?: boolean
     readonly boostedB?: boolean
     readonly hideItemB?: boolean
     readonly hideAccessoriesB?: boolean
 }
+
 export interface GlobalToolInfo
 {
     cooldownFinishTime: number
@@ -43,7 +55,7 @@ export class FlexTool
         public readonly baseDataS: string,
         public levelN: number,                                   // can't make readonly because we modify obsolete data on load
         incomingEnhancementsA: Array<Enhancements.EnhancementI>,  
-        public slotN?: number,
+        public slotN?: HotbarSlot,
         public equippedB?: boolean,
         public readonly boostedB?: boolean,
         public hideItemB?: boolean,

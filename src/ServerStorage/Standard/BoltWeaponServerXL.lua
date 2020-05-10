@@ -1,11 +1,11 @@
 print( script:GetFullName().." executed" )
 
 -- a 'bolt' is a projectile that travels at a fixed speed in a straight line; this code works for crossbows, arrows, fireballs, etc
-local InstanceXL          = require( game.ReplicatedStorage.Standard.InstanceXL )
 local BoltWeaponUtilityXL = require( game.ReplicatedStorage.Standard.BoltWeaponUtilityXL )
 local WeaponUtility       = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
 local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
 
@@ -68,8 +68,8 @@ function BoltWeaponServerXL.new( Tool )
 --			--print( Character.Name.." not alive, can't fire" )
 			return
 		end
-		local player = Players:GetPlayerFromCharacter( Character )
-		if WeaponUtility:IsCoolingDown( player ) then return end
+
+		if GeneralWeaponUtility.isCoolingDown( Character ) then return end
 		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
 		if enabled then
 			if Mana:SpendMana( Character, Tool.ManaCost.Value ) then				
@@ -85,7 +85,7 @@ function BoltWeaponServerXL.new( Tool )
 				if Handle:FindFirstChild("Draw") then
 					Handle.Draw:Play()
 				end
-				WeaponUtility:CooldownWait( player, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+				GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
 				if BoltDisplay then
 					BoltDisplay.Transparency = 0
 				end
@@ -100,7 +100,7 @@ function BoltWeaponServerXL.new( Tool )
 
 	local function Equipped(Mouse)
 		Character = Tool.Parent
-		flexToolInst = FlexibleTools:GetToolInst( Tool )
+		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
 		owningHumanoid = Character:FindFirstChild("Humanoid")
 		Player = Players:GetPlayerFromCharacter(Character)
 		if WeaponServer:CheckRequirements( Tool, Player ) then		
