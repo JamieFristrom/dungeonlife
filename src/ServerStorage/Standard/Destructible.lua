@@ -40,7 +40,7 @@ function Destructible.new( destructibleInstance )
 	DebugXL:logD('Gameplay','Destructible.new called for '..destructibleInstance:GetFullName())
 	local timeLength = 1
 	
-	game.CollectionService:AddTag( destructibleInstance, "Character" )
+	game.CollectionService:AddTag( destructibleInstance, "CharacterTag" )
 	game.CollectionService:AddTag( destructibleInstance, "Destructible" )
 	
 	local humanoid = destructibleInstance:FindFirstChild("Humanoid")

@@ -109,8 +109,18 @@ export namespace PlayerServer {
         }
 
         // this is also when we assign a characterKey        
-        const newCharacterKey = instantiateCharacterRecord(characterRecord)        
+        const newCharacterKey = instantiateCharacterRecord( characterRecord )        
         currentPCKeys.set( player, newCharacterKey )
+        return newCharacterKey
+    }
+
+    export function setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI)
+    {        
+        // make sure we're not adding twice
+        DebugXL.Assert( currentMobKeys.get( characterModel ) === undefined )
+        
+        const newCharacterKey = instantiateCharacterRecord( characterRecord )
+        currentMobKeys.set( characterModel, newCharacterKey )
         return newCharacterKey
     }
 

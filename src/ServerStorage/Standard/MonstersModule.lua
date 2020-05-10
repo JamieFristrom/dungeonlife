@@ -53,7 +53,7 @@ local Monsters = {}
 
 --local playerCharactersT = {}
 
-local function GiveWeapon( characterKey, player, flexToolPrototype )	
+local function GiveWeapon( characterKey, flexToolPrototype )	
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw )
 	flexTool.levelN = math.ceil( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
@@ -103,17 +103,17 @@ end
 local monstersForHeroT = {}
 
 
-function Monsters:CharacterAddedWait( character, player )
+function Monsters:PlayerCharacterAddedWait( character, player )
 	DebugXL:Assert( self == Monsters )
 	print("Waiting to load character "..character.Name.." appearance" )
-
-	local humanoid = character.Humanoid
 
 	player.StarterGear:ClearAllChildren()
 	player.Backpack:ClearAllChildren()
 --	warn( "Clearing "..player.Name.."'s backpack" )
 
 	local monsterClass = CharacterClientI:GetCharacterClass( player )
+
+	local humanoid = character.Humanoid
 	DebugXL:Assert( monsterClass ~= "" )
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	DebugXL:Assert( monsterDatum )
@@ -143,17 +143,10 @@ function Monsters:CharacterAddedWait( character, player )
 		{},
 		monsterLevel )
 
-	Monsters:Initialize( character, player, characterRecord:getWalkSpeed(), monsterDatum, monsterLevel )
-
+	PlayerServer.publishLevel( player, monsterLevel, monsterLevel )
 	local characterKey = PlayerServer.setCharacterRecordForPlayer( player, characterRecord )
+	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterDatum, monsterLevel )
 
-	-- starting gear
-	local startingItems = CharacterClasses.startingItems[ monsterClass ]
-	if startingItems then
-		for _, weapon in pairs( startingItems ) do
-			GiveWeapon( characterKey, player, weapon )
-		end
-	end
 
 	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
 	for i = 1, monsterDatum.numWeaponsN do
@@ -162,6 +155,8 @@ function Monsters:CharacterAddedWait( character, player )
 
 	--actually giving monsters armor was a bad idea:  it makes bigger slower weapons OP, makes your damage bubbles look smaller, better to just
 	--increase their hit points
+
+	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
 		local inventory = Inventory:GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
@@ -178,26 +173,15 @@ function Monsters:CharacterAddedWait( character, player )
 
 	-- it's possible player has left or reset or whatever by the time they get here
 	if not humanoid.Parent then
-		warn( "Aborting Monsters:CharacterAddedWait due to missing humanoid")
+		warn( "Aborting Monsters:PlayerCharacterAddedWait due to missing humanoid")
 		return characterRecord, characterKey  -- avoiding crashes
 	end
-
-	if monsterDatum.ghostifyB then
-		Ghost:Ghostify( character )
-	end
-	if monsterDatum.auraColor3 then
-		require( game.ServerStorage.CharacterFX.AuraGlow ):Activate( character, MathXL.hugeish, monsterDatum.auraColor3 )
-	end
-	if monsterDatum.colorify3 then
-		CostumesServer:Colorify( character, monsterDatum.colorify3 )
-	end
-	CostumesServer:Scale( character, monsterDatum.scaleN )
 
 	workspace.Signals.HotbarRE:FireClient( player, "Refresh", characterRecord )
 	-- it's possible that by the time we get here the character will have been tapped to be changed to a hero in which case
 	-- its class will be gone.  Bail if that happens.  Todo: rewrite game and player loops so they're sequential
 	if Monsters:GetClass( character )=="" then
-		warn( "Aborting Monsters:CharacterAddedWait due to missing class")
+		warn( "Aborting Monsters:PlayerCharacterAddedWait due to missing class")
 		return characterRecord, characterKey
 	end
 --	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
@@ -376,35 +360,52 @@ function Monsters:Died( monster )
 end
 
 
-function Monsters:Initialize( monster, player, walkSpeedN, enemyData, level )
+function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterDatum, level )
 	DebugXL:Assert( self == Monsters )
-	local AI
 
 	-- wishlist, don't use Configurations, it's just one more object that might get unattached
 --	InstanceXL.new( "Folder", { Parent = monster, Name = "Configurations" }, true )
 --	InstanceXL.new( "NumberValue", { Parent = monster.Configurations, Name = "Level", Value = level }, true )
-	PlayerServer.publishLevel( player, level, level )
 	--local standardHealth = enemyData.baseHealthN + enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
-	local standardHealth = enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
+	local standardHealth = monsterDatum.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
 
-	monster.Humanoid.MaxHealth	= standardHealth
+	monsterCharacterModel.Humanoid.MaxHealth	= standardHealth
 
 	--local standardMana = enemyData.baseManaN + enemyData.manaPerLevelN * level
 
 	-- monsters have effectively infinite mana (their spells cost 0) but we still need the fields so there
 	-- are no edge cases
-	InstanceXL.new( "NumberValue", { Parent = monster, Name = "ManaValue",    Value = 0 }, true )
-	InstanceXL.new( "NumberValue", { Parent = monster, Name = "MaxManaValue", Value = 0 }, true )
+	InstanceXL.new( "NumberValue", { Parent = monsterCharacterModel, Name = "ManaValue",    Value = 0 }, true )
+	InstanceXL.new( "NumberValue", { Parent = monsterCharacterModel, Name = "MaxManaValue", Value = 0 }, true )
 
-	monster.Humanoid.WalkSpeed   = walkSpeedN
+	monsterCharacterModel.Humanoid.WalkSpeed   = walkSpeedN
 
-	monster.Humanoid.Health		= monster.Humanoid.MaxHealth
+	monsterCharacterModel.Humanoid.Health		= monsterCharacterModel.Humanoid.MaxHealth
 
-	for tag, _ in pairs( enemyData.tagsT ) do
-		InstanceXL.new( "BoolValue", { Name = tag, Value = true, Parent = monster }, true )
+	for tag, _ in pairs( monsterDatum.tagsT ) do
+		InstanceXL.new( "BoolValue", { Name = tag, Value = true, Parent = monsterCharacterModel }, true )
 	end
 
+	local monsterClass = monsterDatum.idS
 
+	-- starting gear
+	local startingItems = CharacterClasses.startingItems[ monsterClass ]
+	if startingItems then
+		for _, weapon in pairs( startingItems ) do
+			GiveWeapon( characterKey, weapon )
+		end
+	end
+	
+	if monsterDatum.ghostifyB then
+		Ghost:Ghostify( monsterCharacterModel )
+	end
+	if monsterDatum.auraColor3 then
+		require( game.ServerStorage.CharacterFX.AuraGlow ):Activate( monsterCharacterModel, MathXL.hugeish, monsterDatum.auraColor3 )
+	end
+	if monsterDatum.colorify3 then
+		CostumesServer:Colorify( monsterCharacterModel, monsterDatum.colorify3 )
+	end
+	CostumesServer:Scale( monsterCharacterModel, monsterDatum.scaleN )
 	-- wait( 0.5 ) -- sometimes there's a delay in getting that teamcolor going
 end
 

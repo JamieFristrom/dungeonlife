@@ -14,6 +14,9 @@
 --  So I can put TS on the end, which seems redundant here but isn't on the Roblox side
 
 */
+
+import { RunService } from "@rbxts/services"
+
 // borrowing from Android
 export enum LogLevel {
     Assert,
@@ -78,17 +81,18 @@ class DebugXLC {
     }
 
     log(logLevel: LogLevel, tag: string, message: string) {
+        const cliSrvPrefix = (RunService.IsServer()?'Srv':'')+(RunService.IsClient()?'Cli':'')  // in run mode they can both be true
         if (!message) {
-            error(`E/${tag}: MISSING MESSAGE`)
+            error( `${cliSrvPrefix}-E/${tag}: MISSING MESSAGE` )
         }
         else if (logLevel <= this.getLogLevelForTag(tag)) {
             let prefix = DebugXLC.logLevelPrefixes[logLevel]
             if (logLevel <= LogLevel.Error)
-                error(`${prefix}/${tag}: ${message}`)
+                error( `${cliSrvPrefix}-${prefix}/${tag}: ${message}` )
             else if (logLevel <= LogLevel.Warning)
-                warn(`${prefix}/${tag}: ${message}`)
+                warn( `${cliSrvPrefix}-${prefix}/${tag}: ${message}` )
             else
-                print(`${prefix}/${tag}: ${message}`)
+                print( `${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
         }
     }
 
@@ -119,6 +123,19 @@ class DebugXLC {
     setDefaultLogLevel(logLevel: LogLevel) {
         this.defaultLogLevel = logLevel
     }
+
+    stringifyInstance( inst: Instance | undefined )
+    {
+        return inst ? inst.Name : '(nil)'
+    }
+
+    stringifyInstanceArray( instArray: Instance[] )
+    {
+        return instArray.isEmpty() ? '[]' :
+            '['+instArray.map( (inst)=>this.stringifyInstance(inst) ).reduce( (a, b)=>a+','+b )+']'
+    }
 }
+
+
 
 export let DebugXL = new DebugXLC()
