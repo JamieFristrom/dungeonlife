@@ -1,5 +1,7 @@
 # dungeon life
 
+Here's everything you need to build and run your own shard of Dungeon Life (https://www.roblox.com/games/2184151436/Dungeon-Life)!
+
 Let me get this out of the way: I'm embarrassed to let people look at this code. My main excuse for the state it's in is that building up tech debt is a good idea for indies who don't know how long they're going to stick with a project, because it's a debt you probably never have to pay back. For me, the *most* embarrassing part are the Hero and Monster classes themselves; there is a lot of duplicate code in there. :scream:
 
 The second most embarrassing part is that I switched to typescript partway through, learning typescript as I went, and the project is part lua, part n00b typescript.
