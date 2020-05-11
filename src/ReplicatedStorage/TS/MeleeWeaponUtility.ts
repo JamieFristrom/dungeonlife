@@ -5,12 +5,11 @@ import { Players, Debris } from '@rbxts/services'
 import { DebugXL } from './DebugXLTS'
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
-import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
 
 import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestService'
 
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
-import { ToolData } from './ToolDataTS'
+import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
 
 type Character = Model
 
@@ -34,21 +33,23 @@ export class MeleeWeaponUtility
     hitVol: number
     hitSoundSpeed: number
 
+    baseData: ToolData.ToolDatumI
+
     getRange() : number
     {
-        const range = ToolData.dataT[this.tool.Name].rangeN
+        const range = this.baseData.rangeN
         DebugXL.Assert( range !== undefined )
         return range ? range : 5
     }
 
     getCooldown() : number
     {
-        const cooldown = ToolData.dataT[this.tool.Name].cooldownN
+        const cooldown = this.baseData.cooldownN
         DebugXL.Assert( cooldown !== undefined )
         return cooldown ? cooldown : 1
     }
 
-    constructor( public tool: Tool, public fullBodyAttackAnimNames: string[], public upperBodyAttackAnimNames: string[], windUpAnimName?: string )
+    constructor( public tool: Tool, baseDataName: string )  // I'd prefer to access the appropriate flextool but it's hard to do from client or mob
     {
         this.handle = tool.WaitForChild<BasePart>('Handle')
         this.unsheathSound = this.handle.WaitForChild<Sound>('Unsheath')
@@ -57,6 +58,8 @@ export class MeleeWeaponUtility
         this.hitVol = this.hitSound.Volume
         this.hitSoundSpeed = this.hitSound.PlaybackSpeed
 
+        this.baseData = ToolData.dataT[baseDataName]
+        const windUpAnimName = this.baseData.windUpAttackAnimName
         if( windUpAnimName )
         {
             this.windUpAnim = AnimationManifestService.getAnimInstance( windUpAnimName )
@@ -70,8 +73,6 @@ export class MeleeWeaponUtility
         if( !wielderPrimaryPart ) return
         const player = Players.GetPlayerFromCharacter( character )
 
-        if( GeneralWeaponUtility.isCoolingDown( character ) ) return
-        
         this.slashSound.Play()
 
         let foundTargetB = false
@@ -131,7 +132,7 @@ export class MeleeWeaponUtility
                 } )
             }
 
-            GeneralWeaponUtility.cooldownWait( character, adjCooldown )  
+            GeneralWeaponUtility.cooldownWait( character, adjCooldown )  // on server for mob, cooldown will already be started; on client it won't
     
             this.handle.GetChildren().forEach( (child)=>
             {
@@ -155,13 +156,17 @@ export class MeleeWeaponUtility
                 wait( this.windUpAnimTrack.Length * 0.9 )
                 this.windUpAnimTrack.AdjustSpeed( 0 )
             }
-            for( let i = 0; i < this.fullBodyAttackAnimNames.size(); i++ )
+            const fullBodyAttackAnimNames = this.baseData.fullBodyAttackAnimNames
+            for( let i = 0; i < fullBodyAttackAnimNames.size(); i++ )
             {
-                const attackAnim = AnimationManifestService.getAnimInstance( this.fullBodyAttackAnimNames[i] )
+                const attackAnim = AnimationManifestService.getAnimInstance( fullBodyAttackAnimNames[i] )
                 this.attackAnimTracks[i] = humanoid.LoadAnimation( attackAnim )
                 this.attackAnimTracks[i].Looped = false
-                // just assuming you provide the upper body version. do it
-                const attackUpperBodyAnim = AnimationManifestService.getAnimInstance( this.upperBodyAttackAnimNames[i] )
+            }
+            const upperBodyAttackAnimNames = this.baseData.upperBodyAttackAnimNames
+            for( let i = 0; i < upperBodyAttackAnimNames.size(); i++ )
+            {
+                const attackUpperBodyAnim = AnimationManifestService.getAnimInstance( upperBodyAttackAnimNames[i]! )
                 this.attackUpperBodyAnimTracks[i] = humanoid.LoadAnimation( attackUpperBodyAnim )
                 this.attackUpperBodyAnimTracks[i].Looped = false 
             }

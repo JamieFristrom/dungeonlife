@@ -16,10 +16,6 @@ export class BoltWeaponClient
     constructor( tool: Tool, animName: string | undefined )
     {
         let flexTool = FlexToolClient.getFlexTool( tool )
-        DebugXL.Assert( flexTool !== undefined )
-        if( flexTool )
-        {
-            BoltWeaponUtility.Create( tool, messageFunc, flexTool, animName )
-        }
+        BoltWeaponUtility.Create( tool, messageFunc, flexTool, animName )
     }
 }

@@ -1,4 +1,4 @@
-import { ReplicatedStorage, ReplicatedFirst } from "@rbxts/services"
+import { ReplicatedFirst } from "@rbxts/services"
 import { DebugXL } from "../../ReplicatedStorage/TS/DebugXLTS"
 import { AnimationManifest } from "./AnimationManifest"
 /**
