@@ -1,5 +1,5 @@
 import { DebugXL } from "./DebugXLTS"
-import { CollectionService } from "@rbxts/services"
+import { CollectionService, Players, Teams } from "@rbxts/services"
 
 import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
 import * as CharacterUtility from 'ReplicatedStorage/Standard/CharacterUtility'
@@ -22,7 +22,9 @@ export namespace GeneralWeaponUtility
         DebugXL.logV('Combat', 'All characters: '+DebugXL.stringifyInstanceArray(characters) )
         characters.forEach( (char)=>DebugXL.Assert( char.IsA('Model')) )
         const modelCharacters = characters as Model[]
-        const validTargetCharacters = modelCharacters.filter( (char)=>CharacterClientI.ValidTarget( attackingCharacter, char ))
+        const attackingPlayer = Players.GetPlayerFromCharacter( attackingCharacter )
+        const attackingTeam = attackingPlayer ? attackingPlayer.Team : Teams.FindFirstChild<Team>('Monsters')
+        const validTargetCharacters = modelCharacters.filter( (char)=>CharacterClientI.ValidTarget( attackingTeam!, char ))
         DebugXL.logV('Combat', 'Valid targets: '+DebugXL.stringifyInstanceArray(validTargetCharacters) )
         const primaryPartCharacters = validTargetCharacters.filter( (char)=>char.PrimaryPart !== undefined)
         DebugXL.logV('Combat', 'Targets with primary parts: '+DebugXL.stringifyInstanceArray(primaryPartCharacters) )

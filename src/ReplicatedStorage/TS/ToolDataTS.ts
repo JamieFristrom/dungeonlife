@@ -75,13 +75,15 @@ export namespace ToolData
         manaCostN?: number
         manaCostPerLevelN?: number
         effectDurationN?: number
+        upperBodyAttackAnimNames: string[]
+        fullBodyAttackAnimNames: string[]
+        windUpAttackAnimName?: string
 
         // potions
         effectStrengthN?: number
         effectBonusPerLevelN?: number
         descriptionArgs?: ( me:ToolDatumI, level:number ) => (number | string)[]
         durationFunc?: ( me:ToolDatumI, level:number ) => number
-
     }
 
     export let dataA: ToolDatumI[] =
@@ -106,6 +108,8 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1,
             imageId : "rbxassetid://124987047",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {
             idS : "PlateTorso",
@@ -124,6 +128,8 @@ export namespace ToolData
             skinType : SkinTypeEnum.ArmorHeavyTorso,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486613528&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {
             idS  : "PlateLegs",
@@ -142,6 +148,8 @@ export namespace ToolData
             skinType : SkinTypeEnum.ArmorHeavyLegs,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486619131&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },		
         {
             idS : "ScaleTorso",
@@ -160,6 +168,8 @@ export namespace ToolData
             skinType : SkinTypeEnum.ArmorLightTorso,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2477662190&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {
             idS : "ScaleLegs",
@@ -179,6 +189,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486622421&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {
             idS : "ChainTorso",
@@ -198,6 +210,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486802775&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {
             idS : "ChainLegs",
@@ -217,6 +231,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486666881&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },				
         {
             idS : "LeatherTorso",
@@ -236,6 +252,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2477615338&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },		
         {
             idS : "LeatherLegs",
@@ -255,6 +273,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2477475862&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {
             idS : "ClothTorso",
@@ -275,6 +295,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486671858&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },		
         {
             idS : "ClothLegs",
@@ -294,6 +316,8 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486800832&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
             },		
         {
             idS : "HelmetHalf",
@@ -313,6 +337,8 @@ export namespace ToolData
             priceMulN: 0.5,
             dropLikelihoodN : 1.5,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486677488&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },					
         {
             idS : "HelmetFull",
@@ -332,6 +358,8 @@ export namespace ToolData
             priceMulN: 0.5,
             dropLikelihoodN : 1.5,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486679291&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },				
         {
             idS : "HatCloth",
@@ -351,6 +379,8 @@ export namespace ToolData
             priceMulN: 0.4,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486682345&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },				
         {
             idS : "HoodLeather",
@@ -370,6 +400,8 @@ export namespace ToolData
             priceMulN: 0.4,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486705176&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },				
         {   
             idS            : "Claws",
@@ -395,6 +427,8 @@ export namespace ToolData
             rangeN         : 6,			
             priceMulN: 1,
             imageId : AssetManifest.ImageToolClaws,
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {   
             idS            : "DaggersDual",
@@ -417,6 +451,8 @@ export namespace ToolData
             priceMulN: 1.5,
             rangeN         : 6,			
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2674833686&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {   
             idS            : "ClawsWerewolf",
@@ -443,6 +479,8 @@ export namespace ToolData
 
             rangeN         : 6,			
             imageId : AssetManifest.ImageToolClaws,
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },			
         {   
             idS            : "ClawsDragon",
@@ -466,6 +504,8 @@ export namespace ToolData
 
             rangeN         : 10,			
             imageId : AssetManifest.ImageToolClaws,			
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },				
         {
             idS            : "Crossbow", 
@@ -489,6 +529,8 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://16215840",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         }, 
         {
             idS            : "Longbow", 
@@ -512,6 +554,8 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2574560933&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: ['BowFire'],
+            fullBodyAttackAnimNames: ['BowFire']
         }, // 2 hits to kill z        
         {   
             idS            : "Bomb",
@@ -534,9 +578,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 0.2,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2347448422&width=420&height=420&format=png",
-
-            
-            }, // 2 hits to kill z		
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
+        }, // 2 hits to kill z		
         // Beams require less skill; immediately hits and does splash damage - 
         // Death ray damage used to be 24 / 36 - OP, you could create an unstoppable defense
         //		BeamWeapon :  {
@@ -586,8 +630,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "rbxassetid://124987047",
-
-
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
         },
         {
             idS            : "Broadsword",
@@ -610,6 +655,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://11440361",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	
         },	
         {
@@ -633,6 +681,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://2319980778",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	
         },			
         {
@@ -665,6 +716,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "rbxassetid://49367564",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	
         },					
         // 'one handed' axe
@@ -689,6 +743,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2266973230&width=420&height=420&format=png",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 
         },
         // 'two handed' axe
@@ -713,6 +770,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://12768177",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 
         },		
         {   
@@ -736,6 +796,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "http://www.roblox.com/asset/?id=12215459",
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 
         },			
         {   
@@ -759,6 +822,9 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "http://www.roblox.com/asset/?id=18409033",  // tarnished mace thumbnail
+            upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+            fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+            windUpAttackAnimName: 'WindUpOneHandUpperBody'
 
         },	
         // aka scythes, Axes are good for threshing creeps
@@ -829,6 +895,8 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",			
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {
             idS : "NecroBolt",
@@ -853,6 +921,8 @@ export namespace ToolData
             dropLikelihoodN : 0,
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",			
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },        
         {
             idS             : "MagicBolt",
@@ -878,6 +948,8 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
 
         },
         {
@@ -911,6 +983,8 @@ export namespace ToolData
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
             imageId : "rbxassetid://1498812207",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
 
         },
         {
@@ -944,6 +1018,8 @@ export namespace ToolData
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
             imageId : "rbxassetid://1498812207",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
 
         },        
         //	
@@ -983,7 +1059,9 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 7 + 7 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level), me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591784"
+            imageId : "rbxassetid://2908591784",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {   
             idS            : "HasteWisp",		
@@ -1007,7 +1085,9 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level)*100, me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591670"
+            imageId : "rbxassetid://2908591670",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },
         {   
             idS            : "CurseWisp",		
@@ -1031,7 +1111,10 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level)*100, me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591476"
+            imageId : "rbxassetid://2908591476",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
+
         },
         // {   
         //     idS            : "MagicHealing",		
@@ -1089,6 +1172,8 @@ export namespace ToolData
             durationFunc : ( me, level ) => 8 * ( 1 - ( 1 / ( level / 4 + 1 ) ) ),  // level 1: 1.6, level 2: 2.6, level 3: 3.4, level 4: 4, level 30: 7
 
             imageId : "rbxassetid://2685885503",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {   
             idS            : "MonsterSprint",		
@@ -1119,6 +1204,8 @@ export namespace ToolData
             durationFunc : ( me, level ) => 8 * ( 1 - ( 1 / ( level / 4 + 1 ) ) ),  // level 1: 1.6, level 2: 2.6, level 3: 3.4, level 4: 4, level 30: 7
 
             imageId : "rbxassetid://2685885503",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         {   
             idS            : "TransformWerewolf",		
@@ -1134,6 +1221,8 @@ export namespace ToolData
             jumpPowerMulN: 1,
             priceMulN: 2,
             imageId : "rbxassetid://2688472960",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
         },	
         // potions //
         {   // one use
@@ -1158,10 +1247,12 @@ export namespace ToolData
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744360",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
 
         },
         {
-            idS             : "Mana",             // one use
+            idS: "Mana",             // one use
             // 11/29: increased from 24/6 because we increased mana / arcane from 4 to 6
             effectStrengthN : 36, 
             effectBonusPerLevelN : 9,   // it's character level, not item level with potions 
@@ -1180,6 +1271,8 @@ export namespace ToolData
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744355",
+            upperBodyAttackAnimNames: [],
+            fullBodyAttackAnimNames: []
 
         },
     ]
