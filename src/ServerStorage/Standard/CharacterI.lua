@@ -14,11 +14,10 @@ print( "CharacterI: PlayerServer required succesfully" )
 -- it needs to be modified for every game
 local CharacterI = {}
 
-
+-- it's ok to pass nil player. at some point we'll want certain mobs (magical creations) to pass their owner player for xp purposes
 function CharacterI:SetLastAttackingPlayer( character, player )
 	DebugXL:Assert( character:IsA("Model"))
 	DebugXL:Assert( character.Parent ~= nil )
-	DebugXL:Assert( player:IsA("Player"))
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then
 		InstanceXL:CreateSingleton( "ObjectValue", { Name = "creator", Parent = humanoid, Value = player } )
@@ -27,50 +26,28 @@ end
 
 
 
--- function CharacterI:TakeToolDamage( hitCharacter, tool )
--- 	DebugXL:Assert( self == CharacterI )
--- 	local attackingPlayer = ToolXL:GetOwningPlayer( tool )
--- 	--DebugXL:Assert( attackingPlayer )  -- no npcs for now, but it's quite possible character has destroyed and player is inaccessible
--- 	if attackingPlayer then	
--- 		--print( "TakeToolDamage attackingPlayer "..attackingPlayer.Name )
--- 		local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
--- 		if hitHumanoid then
--- 			--print( "TakeToolDamage hitHumanoid "..hitCharacter.Name )
--- 			local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
--- 			if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
--- 				CharacterI:SetLastAttackingPlayer( hitCharacter, attackingPlayer )
-				
--- 				if attackingPlayer.Team == game.Teams.Heroes then		
--- 					require( game.ServerStorage.Standard.HeroesModule ):DoDamage( attackingPlayer, tool, hitHumanoid )
--- 				else
--- 					-- can't just use tool's parent to determine attacking character because it might be lingering
--- 					-- damage from a tool that has been put away
--- 					local attackingCharacter = attackingPlayer.Character
--- 					require( game.ServerStorage.MonstersModule ):DoDamage( attackingCharacter, tool, hitHumanoid ) 
--- 				end
--- 			end
--- 		end
--- 	end
--- end
-
-
-function CharacterI:TakeFlexToolDamage( hitCharacter, attackingPlayer, flexTool )
+function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attackingTeam, flexTool )
 	DebugXL:Assert( self == CharacterI )
-	DebugXL:logD( 'Combat', 'TakeFlexToolDamage attackingPlayer: '..attackingPlayer.Name..' hitCharacter: '..hitCharacter.Name )
+	DebugXL:Assert( attackingCharacter:IsA('Model') )
+	DebugXL:Assert( attackingTeam:IsA('Team') )
+	DebugXL:logD( 'Combat', 'TakeFlexToolDamage attackingPlayer: '..attackingCharacter.Name..' hitCharacter: '..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
-		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
+		if not hitPlayer or hitPlayer.Team ~= attackingTeam then
+			local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
 			CharacterI:SetLastAttackingPlayer( hitCharacter, attackingPlayer )
 			
-			if attackingPlayer.Team == game.Teams.Heroes then	
+			if attackingTeam == game.Teams.Heroes then	
 				DebugXL:logV( 'Combat', 'Hero damaging monster' )	
-				require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
+				DebugXL:Assert( attackingPlayer )
+				if( attackingPlayer )then
+					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
+				end
 			else
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
 				DebugXL:logV( 'Combat', 'Monster damaging hero' )	
-				local attackingCharacter = attackingPlayer.Character
 				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
 			end
 		end

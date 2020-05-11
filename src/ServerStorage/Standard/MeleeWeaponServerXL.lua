@@ -12,14 +12,13 @@ local WeaponServer  = require( game.ServerStorage.Standard.WeaponServerModule )
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local WeaponUtility    = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
-local MeleeWeaponUtility = require( game.ReplicatedStorage.TS.MeleeWeaponUtility).MeleeWeaponUtility
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local MeleeWeaponServerXL = {}
 
-function MeleeWeaponServerXL.new( Tool, fullBodyAttackAnimNames, upperBodyAttackAnimNames, windUpAnimName )
+function MeleeWeaponServerXL.new( Tool )
 	DebugXL:Assert( Tool )
 	DebugXL:logI( 'Items', 'MeleeWeaponServerXL.new('..Tool:GetFullName()..')' )
 	local Handle = Tool:FindFirstChild("Handle")
@@ -41,39 +40,36 @@ function MeleeWeaponServerXL.new( Tool, fullBodyAttackAnimNames, upperBodyAttack
 	local SlashSound = Handle:WaitForChild("Slash")
 	SlashSound.Volume = 1
 	
-	local mobWeaponUtility = nil
-	
 	local function OnActivated()		
 		DebugXL:logD( 'Combat', 'MeleeWeaponServerXL::OnActivated')
 		if not WeaponServer:CheckRequirements( Tool, Player ) then
-			DebugXL:logD( 'Combat', Player.Name.." does not meet requirements for "..Tool.Name ) 
+			DebugXL:logD( 'Combat', Character.Name.." does not meet requirements for "..Tool.Name ) 
 			return 
 		end
 		if GeneralWeaponUtility.isCoolingDown( Character ) then 
-			DebugXL:logV( 'Combat', Player.Name.."'s weapon still cooling down" ) 
+			DebugXL:logV( 'Combat', Character.Name.."'s weapon still cooling down" ) 
 			return 
 		end
 		
 		-- had trouble deciding whether to put this in cooldown or not
 		if Humanoid.Health <= 0 then 
-			DebugXL:logV( 'Combat', Player.Name.." attacking while dead" ) 
-			return 
-		end
-
-		if GeneralWeaponUtility.isCoolingDown( Character ) then
-			DebugXL:logV( 'Combat', Player.Name.."'s "..Tool.Name.." is still cooling" )
+			DebugXL:logV( 'Combat', Character.Name.." attacking while dead" ) 
 			return 
 		end
 --		
-		PlayerServer.markAttack( Player, "Melee" )
+		if Player then
+			PlayerServer.markAttack( Player, "Melee" )
+		end
+
 		local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestTarget( Character ) )
 		if bestTarget then
 --			--print( Character.Name.." found target "..bestTarget.Name )
 			if bestFitN <= Tool:FindFirstChild('Range').Value then
-				DebugXL:logI( 'Combat', Player.Name.." in range. Applying damage to "..bestTarget.Name )
-				CharacterI:TakeFlexToolDamage( bestTarget, Player, flexToolInst )
-				PlayerServer.markHit( Player, "Melee" )
-				
+				DebugXL:logI( 'Combat', Character.Name.." in range. Applying damage to "..bestTarget.Name )
+				CharacterI:TakeFlexToolDamage( bestTarget, Character, Player and Player.Team or game.Teams.Monsters, flexToolInst )
+				if Player then
+					PlayerServer.markHit( Player, "Melee" )
+				end			
 
 				FlexibleTools:CreateExplosionIfNecessary( Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
 			end
@@ -90,15 +86,9 @@ function MeleeWeaponServerXL.new( Tool, fullBodyAttackAnimNames, upperBodyAttack
 		if WeaponServer:CheckRequirements( Tool, Player ) then
 			UnsheathSound:Play()
 		end
-		if not Player then -- players play their own animations on their clients; mobs play here
-			if not mobWeaponUtility then
-				mobWeaponUtility = MeleeWeaponUtility.new( Tool, fullBodyAttackAnimNames, upperBodyAttackAnimNames, windUpAnimName )
-			end
-			mobWeaponUtility:drawWeapon(Character)
-		end
 	end
 	
-		
+	
 	Tool.Activated:Connect(OnActivated)
 	Tool.Equipped:Connect(OnEquipped)
 	DebugXL:logD( 'Items', Tool:GetFullName()..' events connected' )
