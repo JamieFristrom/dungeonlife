@@ -17,8 +17,8 @@ export namespace BoltServerUtility
     export function hitCharacter( character: Model, tool: Tool )
     {
         let flexToolInst = FlexibleTools.GetFlexToolFromInstance( tool )
-        let attackingPlayer = ToolXL.GetOwningPlayer( tool )        
-        CharacterI.TakeFlexToolDamage( character, attackingPlayer, flexToolInst )
+        let attackingPlayer = ToolXL.GetOwningPlayer( tool )        // fixme: needs to be get owning character
+        CharacterI.TakeFlexToolDamage( character, attackingPlayer.Character!, attackingPlayer.Team!, flexToolInst )
         if( attackingPlayer !== undefined )
         {
             PlayerServer.markHit( attackingPlayer, "Ranged" )

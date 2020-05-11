@@ -1,15 +1,9 @@
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { Players, Debris } from '@rbxts/services'
-
 import { DebugXL } from './DebugXLTS'
 
-import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
-import * as WeaponUtility from 'ReplicatedStorage/Standard/WeaponUtility'
-
-import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestService'
-
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
+
 import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
 
 type Character = Model
@@ -20,10 +14,17 @@ type Character = Model
 */
 export class MeleeWeaponClient
 {
-    constructor( tool: Tool, fullBodyAttackAnimNames: string[], upperBodyAttackAnimNames: string[], windUpAnimName?: string )
+    constructor( tool: Tool, baseDataName: string )
     {
-        const meleeWeaponUtility = new MeleeWeaponUtility( tool, fullBodyAttackAnimNames, upperBodyAttackAnimNames, windUpAnimName )
+        const meleeWeaponUtility = new MeleeWeaponUtility( tool, baseDataName )
  
+        function onActivated(character: Character)
+        {
+            if( GeneralWeaponUtility.isCoolingDown( character ) ) return
+        
+            meleeWeaponUtility.showAttack(character) 
+        }
+
         function OnEquippedLocal(mouse: Mouse)
         {
             if( !mouse )
@@ -36,7 +37,7 @@ export class MeleeWeaponClient
             DebugXL.Assert( character !== undefined )
             if( !character ) return
 
-            mouse.Button1Down.Connect( ()=>{ meleeWeaponUtility.showAttack(character) } )
+            mouse.Button1Down.Connect( ()=> onActivated(character) )
 
             meleeWeaponUtility.drawWeapon(character)
         }

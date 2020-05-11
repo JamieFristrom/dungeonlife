@@ -21,6 +21,7 @@ local barrierFolder = game.ServerStorage.CharacterFX.Barrier
 
 local fire = barrierFolder:WaitForChild("BarrierSegment"):Clone()
 
+-- fixme: needs to be attackingCharacter
 
 function onTouched( part, attackingPlayer, flexTool, burntStuff )	
 	if part.Parent:FindFirstChild("Humanoid") then

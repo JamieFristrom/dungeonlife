@@ -9,9 +9,10 @@ import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
 import { CharacterRecord } from 'ReplicatedStorage/TS/CharacterRecord'
-import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
+
+import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
 
 const mobIdleAnims: Animation[] = ServerStorage.WaitForChild('MobAnimations').WaitForChild('idle').GetChildren()
 
@@ -45,15 +46,27 @@ export namespace MobServer
         const idleAnim = humanoid.LoadAnimation(mobIdleAnims[0])
         idleAnim.Play()
         wait(3)
-
+        
         // have them draw their sword
+        let mobWeaponUtility : MeleeWeaponUtility
         const weaponKey = characterRecord.getPossessionKeyFromSlot(HotbarSlot.Slot1)
         if( weaponKey )
         {
             const tool = CharacterRecord.getToolInstanceFromPossessionKey(mob, weaponKey)
             if( tool )
             {
-                humanoid.EquipTool(tool)
+                humanoid.EquipTool(tool)                             // do server stuff
+                const toolBaseDataName = characterRecord.getFlexTool(weaponKey)!.baseDataS
+                mobWeaponUtility = new MeleeWeaponUtility( tool, toolBaseDataName )    // do 'client' stuff
+                mobWeaponUtility.drawWeapon(mob)
+                // have them hit things
+                wait(1)
+                for(;;)
+                {
+                    tool.Activate()                                  // do server stuff
+                    mobWeaponUtility.showAttack(mob)                 // do 'client' stuff
+                    wait()
+                }
             }
         }
 

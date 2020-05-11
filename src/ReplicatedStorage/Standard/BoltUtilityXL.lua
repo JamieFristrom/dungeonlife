@@ -68,20 +68,22 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 		
 		-- a lot of destructible objects don't have flat hierarchies, so we need to search more than
 		-- one parent up to find if it's a character
-		local character = InstanceXL:FindFirstAncestorThat( Hit, function( ancestor ) return ancestor:FindFirstChild("Humanoid") end )		
+		local hitCharacter = InstanceXL:FindFirstAncestorThat( Hit, function( ancestor ) return ancestor:FindFirstChild("Humanoid") end )		
 --		if character:IsA("Hat") or character:IsA("Tool") then
 --			character = character.Parent
 --		end
+
+-- fixme: figure this shit out and make it gud: need 'creator character' it seems
 		local CreatorPlayer
 		if Creator and Creator.Value and Creator.Value:IsA("Player") then
 			CreatorPlayer = Creator.Value
 		end
-		if CreatorPlayer and CreatorPlayer.Character == character then
+		if CreatorPlayer and CreatorPlayer.Character == hitCharacter then
 			return
 		end
-		if character then
-			local player = Players:GetPlayerFromCharacter(character)
-			if not CharacterClientI:ValidTarget( CreatorPlayer.Character, character ) then
+		if hitCharacter then
+			local player = Players:GetPlayerFromCharacter(hitCharacter)
+			if not CharacterClientI:ValidTarget( CreatorPlayer.Team, hitCharacter ) then
 				return
 			end
 		end
@@ -102,12 +104,12 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 			local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 			FlexibleTools:CreateExplosionIfNecessary( tool, projectileObj.Position )
-			if character then
-				local humanoid = character:FindFirstChild("Humanoid")
+			if hitCharacter then
+				local humanoid = hitCharacter:FindFirstChild("Humanoid")
 				if humanoid and humanoid.Health > 0 then			
 					--print( "Has a humanoid. Executing hit func" )
 					local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
-					CharacterI:TakeFlexToolDamage( character, CreatorPlayer, flexToolInst )
+					CharacterI:TakeFlexToolDamage( hitCharacter, CreatorPlayer.Character, CreatorPlayer.Team, flexToolInst )
 				end
 			end
 		end
