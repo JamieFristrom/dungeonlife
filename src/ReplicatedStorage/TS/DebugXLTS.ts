@@ -32,7 +32,7 @@ class DebugXLC {
 
     private defaultLogLevel = LogLevel.Warning
 
-    private logLevelForTag = new Map<string, LogLevel>()
+    private logLevelForTag = new Map<string,LogLevel>([['Combat',LogLevel.Debug]])
 
     Error(message: string) {
         let callstackS = debug.traceback()
