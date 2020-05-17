@@ -100,7 +100,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 			return 
 		end
 		DebugXL:Assert( Character.ManaValue.Value >= 0 )
-		if Character.ManaValue.Value >= Tool.ManaCost.Value then 
+		if Character.ManaValue.Value >= flexTool:getManaCost() then 
 			Tool.Enabled = false
 			if BoltDisplay then
 				BoltDisplay.Transparency = 1
@@ -136,7 +136,7 @@ function BoltWeaponUtilityXL.Create( Tool, messageFunc, flexTool, animName )
 			end
 			local walkSpeedMulN = FlexEquipUtility:GetAdjStat( flexTool, "walkSpeedMulN" )
 			--print "Beginning cooldown" )
-			GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, walkSpeedMulN )
+			GeneralWeaponUtility.cooldownWait( Character, flexTool:getBaseData().cooldownN, walkSpeedMulN )
 			--print "Cooldown finished" )
 			if animTrack then
 				animTrack:Play()

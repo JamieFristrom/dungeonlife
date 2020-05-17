@@ -7,7 +7,10 @@ export declare interface SkinInfoI
     idS: string
     readableNameS: string
     imageId: string
-    tagsT: { [k:string]: boolean }
+	tagsT: { [k:string]: boolean }
+	upperBodyAttackAnimNames: string[]
+	fullBodyAttackAnimNames: string[]
+	windUpAttackAnimName?: string
 }
 
 
@@ -46,6 +49,9 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS : "One Handed Sword",
 		imageId       : "http://www.roblox.com/asset/?id=124987047",
 		tagsT:{ monster:true, hero:true, held:true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},
 	Sword2H     :
 	{
@@ -53,6 +59,9 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Two Handed Sword",
 		imageId      : AssetManifest.ImageToolGreatsword,
 		tagsT:{ monster:true, hero:true, held:true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},
 	Axe1H       :
 	{
@@ -60,6 +69,9 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS:"One Handed Axe",
 		imageId      :"https://www.roblox.com/asset-thumbnail/image?assetId=2266973230&width=420&height=420&format=png",
 		tagsT:{ monster:true, hero:true, held:true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},
 	Axe2H       : 
 	{
@@ -67,6 +79,9 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Two Handed Axe",
 		imageId      : "rbxassetid://12768177",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},
 	Claws:
 	{
@@ -74,6 +89,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Dual Weapon",
 		imageId      : AssetManifest.ImageToolClaws,
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: ['AttackBothHands1'],
+		fullBodyAttackAnimNames: ['AttackBothHands1'],		
 	},
 	Bow    : 
 	{
@@ -81,6 +98,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Bow",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2574560933&width=420&height=420&format=png",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: ['BowFire'],
+		fullBodyAttackAnimNames: ['BowFire']
 	},	
 	Crossbow    : 
 	{
@@ -88,6 +107,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Crossbow",
 		imageId      : "rbxassetid://16215840",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},	
 	Bomb        : 
 	{
@@ -95,6 +116,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Bomb",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2347448422&width=420&height=420&format=png",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	Maul        : 
 	{
@@ -102,13 +125,19 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Maul",
 		imageId      : "rbxassetid://18409033",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},
 	Staff       : 
 	{
-		idS          : "Staff",  // includes hammer and mace.  always one handed for now
+		idS          : "Staff",  
 		readableNameS: "Staff",
 		imageId      : "http://www.roblox.com/asset/?id=49367564",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: ['AttackOneHandUpperBody1', 'AttackOneHandUpperBody2'],
+		fullBodyAttackAnimNames: ['AttackOneHand1','AttackOneHand2'],
+		windUpAttackAnimName: 'WindUpOneHandUpperBody'
 	},	
 	MagicBolt        : 
 	{
@@ -116,6 +145,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Magic Bolt",
 		imageId      : "rbxassetid://1495371626",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	MagicBarrier:
 	{
@@ -123,6 +154,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Magic Barrier",
 		imageId      : "rbxassetid://1498812207",
 		tagsT: { monster: true, hero: true, held: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ClothTorso:
 	{
@@ -130,6 +163,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Cloth Shirt",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2486671858&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ClothLegs:
 	{
@@ -137,6 +172,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Cloth Pants",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2486800832&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},	
 	LeatherTorso:
 	{
@@ -144,6 +181,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Leather Shirt",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2477615338&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	LeatherLegs:
 	{
@@ -151,6 +190,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Leather Pants",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2477475862&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ArmorLightTorso:
 	{
@@ -158,6 +199,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Light Chest Armor",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2477662190&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ArmorLightLegs:
 	{
@@ -165,6 +208,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Light Leg Armor",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2486666881&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ArmorHeavyTorso:
 	{
@@ -172,6 +217,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Heavy Chest Armor",
 		imageId      : "https://www.roblox.com/asset-thumbnail/image?assetId=2486613528&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	ArmorHeavyLegs:
 	{
@@ -179,6 +226,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Heavy Leg Armor",
 		imageId: "https://www.roblox.com/asset-thumbnail/image?assetId=2486619131&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},	
 	Hat:
 	{
@@ -186,6 +235,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Hat",
 		imageId: "https://www.roblox.com/asset-thumbnail/image?assetId=2486682345&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},
 	Helmet:
 	{
@@ -193,6 +244,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		readableNameS: "Helmet",
 		imageId: "https://www.roblox.com/asset-thumbnail/image?assetId=2486677488&width=420&height=420&format=png",
 		tagsT: { hero: true, worn: true },
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	},			
 //	MagicBeam:
 //	{ 
@@ -205,6 +258,8 @@ export let SkinTypes: { [k:string]:SkinInfoI} =
 		idS          : "Unskinnable",
 		readableNameS: "",
 		imageId      : "",
-		tagsT: {}
+		tagsT: {},
+		upperBodyAttackAnimNames: [],
+		fullBodyAttackAnimNames: [],		
 	}
 }
