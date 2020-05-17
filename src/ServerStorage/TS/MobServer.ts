@@ -5,42 +5,92 @@ import { ServerStorage, Workspace, CollectionService, RunService } from '@rbxts/
 
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
+import * as MapTileData from 'ReplicatedStorage/Standard/MapTileDataModule'
+
 import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
 import { CharacterRecord } from 'ReplicatedStorage/TS/CharacterRecord'
+import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
 
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
 import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
-import mathXL from 'ReplicatedStorage/Standard/MathXL'
+
+import MathXL from 'ReplicatedStorage/Standard/MathXL'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
+import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
+import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 
 type Character = Model
 
 const mobAnimationsFolder = ServerStorage.FindFirstChild<Folder>('MobAnimations')!
 DebugXL.Assert( mobAnimationsFolder!==undefined )
+const mobFolder = Workspace.FindFirstChild<Folder>('Mobs')!
+DebugXL.Assert( mobFolder!==undefined )
 
 const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('idle')!.GetChildren()
 const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('walk')!.GetChildren()
 const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('run')!.GetChildren()
 
 export namespace MobServer {
-    
-    let mobs: Mob[] = []
+    const mobCap = 20
+    let mobPush = 15
 
-    export function spawnMob() {
-        const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
-        const mobTemplate = monsterFolder.FindFirstChild<Model>('Orc')!
+    export let mobs = new Set<Mob>()
 
-        mobs.push(new Mob(mobTemplate))        
+    export function setMobPush( newMobPush: number ) {
+        mobPush = newMobPush
+    }
+
+    export function spawnMob(characterClass: string, position?: Vector3, areaPart?: BasePart ) {
+        mobs.add(new Mob(characterClass, position, areaPart))        
     }
 
     RunService.Stepped.Connect( (time, step)=>
-    {
-        mobs.forEach( (mob)=>mob.mobUpdate() )
+    {            
+        mobs.forEach( (mob)=>{
+            if( mob.humanoid.Health <= 0 ) {
+                mobs.delete(mob)
+                delay( 2, ()=>{
+                    mob.character.Parent = undefined
+                })
+            }
+            else
+            {
+                mob.mobUpdate()
+            }
+         })
     })
+
+
+    export function spawnMobs()
+    {
+        DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
+        if( mobs.size() < mobCap )
+        {
+            DebugXL.logV('Mobs', 'below cap')
+            const monsterSpawns = FurnishServer.GetMonsterSpawners()
+            if( !monsterSpawns.isEmpty()) 
+            {
+                DebugXL.logD('Mobs', 'Spawners available')
+                // for now mobs will not be bosses or superbosses
+                const minionSpawners = monsterSpawns.filter( (spawner)=>
+                    spawner.FindFirstChild<BoolValue>('OneUse')!.Value===false )
+                if( !minionSpawners.isEmpty()) 
+                {
+                    DebugXL.logV('Mobs', 'Minion spawners available')
+                    const distantSpawners = minionSpawners.filter( (spawner)=>
+                        Hero.distanceToNearestHeroXZ( spawner.Position ) > MapTileData.tileWidthN * 2.5 )
+                    const acceptableSpawners = distantSpawners.isEmpty() ? minionSpawners : distantSpawners            
+                    const desiredSpawn = acceptableSpawners[MathXL.RandomInteger(0,acceptableSpawners.size()-1)]
+                    const characterClass = desiredSpawn.FindFirstChild<StringValue>('CharacterClass')!.Value
+                    spawnMob( characterClass, undefined, desiredSpawn )
+                }
+            }
+        }
+    }
 
     class Mob {
         character: Character
@@ -53,16 +103,38 @@ export namespace MobServer {
             return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.character))
         }
     
-        constructor(mobTemplate: Character) {
+        constructor(characterClass: string, position?: Vector3, spawnPart?: BasePart ) {
+            const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
+            const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
+            const modelName = prototypeObj?prototypeObj:characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
+            const mobTemplate = monsterFolder.FindFirstChild<Model>(modelName)!
+            if( !mobTemplate ) {
+                DebugXL.logW('Mobs','No model for '+modelName)
+            }
             this.character = mobTemplate.Clone()
-    
             this.humanoid = this.character.FindFirstChild<Humanoid>('Humanoid')!
-            this.character.SetPrimaryPartCFrame(new CFrame(8, 4, 0))
-            const mobFolder = Workspace.FindFirstChild<Folder>('Mobs')
-            if (!mobFolder)
-                DebugXL.Error('No Mobs folder in Workspace')
-            else
-                this.character.Parent = mobFolder
+
+            // position mob
+            let spawnPosition : Vector3 = new Vector3(8,0,0)
+            if( spawnPart )
+            {
+                // doesn't support rotated spawns yet
+                const minX = spawnPart.Position.X - spawnPart.Size.X / 2
+                const maxX = spawnPart.Position.X + spawnPart.Size.X / 2
+                const minZ = spawnPart.Position.Z - spawnPart.Size.Z / 2
+                const maxZ = spawnPart.Position.Z + spawnPart.Size.Z / 2
+                const myX = MathXL.RandomNumber( minX, maxX )
+                const myZ = MathXL.RandomNumber( minZ, maxZ )
+                spawnPosition = new Vector3( myX, 0, myZ )
+            }
+            else if( position )
+            {
+                spawnPosition = position
+            }
+            const adjustedSpawnPosition = spawnPosition.add( new Vector3(0,6,0) )
+            this.character.SetPrimaryPartCFrame(new CFrame(adjustedSpawnPosition))
+
+            this.character.Parent = mobFolder
     
             CollectionService.AddTag(this.character, 'CharacterTag')
     
@@ -71,7 +143,7 @@ export namespace MobServer {
                 [],
                 10)
             const characterKey = PlayerServer.setCharacterRecordForMob(this.character, characterRecord)
-            Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), 'Orc', 1)
+            Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, 1)
             this.character.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
     
             ToolCaches.updateToolCache(characterKey, characterRecord)
@@ -81,8 +153,9 @@ export namespace MobServer {
             if (weaponKey) {
                 const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
                 if (tool) {
-                    const toolBaseDataName = characterRecord.getFlexTool(weaponKey)!.baseDataS
-                    this.weaponUtility = new MeleeWeaponUtility(tool)    // do 'client' stuff
+                    if( tool.FindFirstChild<Script>('MeleeClientScript')) {
+                        this.weaponUtility = new MeleeWeaponUtility(tool)    // do 'client' stuff
+                    }
                 }
             }
     
@@ -110,7 +183,7 @@ export namespace MobServer {
                 if( this.currentAnimationTrack ) {
                     this.currentAnimationTrack.Stop(transitionTime)
                 }
-                const animation = animationSet[mathXL.RandomInteger(0, animationSet.size()-1)]
+                const animation = animationSet[MathXL.RandomInteger(0, animationSet.size()-1)]
                 this.currentAnimationTrack = this.humanoid.LoadAnimation(animation)
                 this.currentAnimationTrack.Play(transitionTime)
                 this.currentAnimationSet = animationSet
@@ -149,15 +222,26 @@ export namespace MobServer {
                         else {
                             // if enemy in aggro range approach
                             // todo: and LOS?
-                            if (bestFit <= 80) {
+                            if (bestFit <= 60) {
                                 // a laggy client will keep extrapolating your movement, not sure why, even when we've told it we want to stop
                                 // so to be safe we tell it to MoveTo the point we do want to stop, instead of moving all the way
                                 // so destination is a little less than range minus 
     
+                                // the antimagnet trick: poll your friends and push away from them
+                                // the antimagnet trick is O(n^2) wipth sqrts so I'm a bit leery
+                                const zeroVec = new Vector3(0,0,0)
+                                const myPos = this.character.GetPrimaryPartCFrame().p
+                                const mobs : Character[] = mobFolder.GetChildren()                                
+                                const pushForces = mobs.map( (mob)=>myPos.sub( mob.GetPrimaryPartCFrame().p ) )
+                                const scaledForces = pushForces.map( (pushForce)=>pushForce.Magnitude>0.001?pushForce.Unit.div(pushForce.Magnitude):zeroVec )
+                                const totalPush = scaledForces.reduce( (forceA, forceB)=>forceA.add( forceB ) )
+
                                 const destinationVec = closestTarget.GetPrimaryPartCFrame().p.sub( this.character.GetPrimaryPartCFrame().p )
+                                const totalVec = totalPush.mul( mobPush ).add( destinationVec )
                                 //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
                                 //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
-                                this.humanoid.Move( destinationVec.Unit )
+                                this.humanoid.Move( totalVec.Unit )
+                                this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
                                 // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client
                                 // and server if it's following a player's parts
                                 return
