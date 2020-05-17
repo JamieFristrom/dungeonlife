@@ -10,7 +10,6 @@ local GameManagement = {
 game.Players.CharacterAutoLoads = false
 
 local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
-local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
@@ -40,7 +39,6 @@ print( 'GameManagementModule: ServerStorage.Standard includes succesful' )
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
-local Destructible      = require( game.ServerStorage.Standard.Destructible )
 local Dungeon           = require( game.ServerStorage.DungeonModule )
 local FurnishServer     = require( game.ServerStorage.FurnishServerModule )
 local Heroes            = require( game.ServerStorage.Standard.HeroesModule )
@@ -51,8 +49,7 @@ print( 'GameManagementModule: ServerStorage includes succesful' )
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
-local DungeonVoteUtility = require( game.ReplicatedStorage.TS.DungeonVoteUtility ).DungeonVoteUtility
-local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
+local Hero = require( game.ReplicatedStorage.TS.HeroTS).Hero
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 print( 'GameManagementModule: ReplicatedStorage.TS includes succesful' )
 
@@ -62,9 +59,9 @@ local DungeonDeck = require( game.ServerStorage.TS.DungeonDeck ).DungeonDeck
 local GameServer = require( game.ServerStorage.TS.GameServer ).GameServer
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
+local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
-local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService ).GameplayTestService
 print( 'GameManagementModule: ServerStorage.TS includes succesful' )
 
 print( 'GameManagementModule processing')
@@ -576,19 +573,6 @@ end
 local crashPlayer
 
 
-local function DistanceToNearestHeroXZ( v3 )
-	local heroCharacters = TableXL:FindAllInAWhere( game.Teams.Heroes:GetPlayers(), function( player )
-		return player.Character and player.Character.PrimaryPart end )
-
-	local bestFit, bestFitness = TableXL:FindBestFitMin( heroCharacters, function( player )
-		local deltaV3 = player.Character.PrimaryPart.Position - v3
-		deltaV3 = Vector3.new( deltaV3.X, 0, deltaV3.Z )
-		return deltaV3.Magnitude
-	end)
-	
-	return bestFit and bestFitness or math.huge
-end
-
 -- what happens if there's a TPK while player is choosing their hero, you ask?
 -- answer: there can't be.
 	
@@ -677,7 +661,7 @@ local function MonitorPlayer( player )
 									break
 								end								
 								table.remove( monsterSpawns, i )
-							elseif DistanceToNearestHeroXZ( spawner.Position ) > MapTileData.tileWidthN * 2.5 then
+							elseif Hero.distanceToNearestHeroXZ( spawner.Position ) > MapTileData.tileWidthN * 2.5 then
 								table.insert( acceptableSpawns, spawner )
 							else
 								--print( "Spawner at "..tostring(spawner.Position).." too close to hero" )
@@ -1110,6 +1094,7 @@ local function PlayLevelWait()
 	lastMonsterLevels = {}
 	while wait() do 
 		workspace.GameManagement.LevelTimeElapsed.Value = time() - GameManagement.levelStartTime	
+		MobServer.spawnMobs()
 		MonsterServer.awardTeamXPForTimeElapsed()
 
 		if timeToThrowARodB then
@@ -1161,6 +1146,7 @@ end
 
 local function SpawnMonsters()
 	DebugXL:Assert( GameManagement:LevelReady() )
+	DebugXL:logV('Gamestate', 'GameManagementModule SpawnMonsters()')
 	for _, player in pairs( game.Teams.Monsters:GetPlayers() ) do
 		GameManagement:MarkPlayersCharacterForRespawn( player )
 	end	

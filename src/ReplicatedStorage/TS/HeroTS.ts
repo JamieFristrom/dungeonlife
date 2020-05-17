@@ -12,9 +12,11 @@ import { DebugXL } from "./DebugXLTS";
 
 let nerfTest = 100000  // test nerfing to this level
 
+type Character = Model
 
 export class Hero extends CharacterRecord implements HeroI
 {   
+    static readonly Heroes: Team = Teams.WaitForChild('Heroes')
     static readonly globalHeroLevelCap = 70
 
     static readonly xpForLevelMultiplier = 1.5
@@ -300,5 +302,23 @@ export class Hero extends CharacterRecord implements HeroI
     {
         let currentMaxHeroLevelNumberValue = Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!
         return currentMaxHeroLevelNumberValue.Value 
+    }
+
+    static distanceToNearestHeroXZ( v3: Vector3 )
+    {        
+        const zeroY = new Vector3(1,0,1)
+        const validHeroPlayers = Hero.Heroes.GetPlayers().filter( (player)=>player.Character!==undefined && 
+            player.Character.FindFirstChild('PrimaryPart')!==undefined )
+        if( !validHeroPlayers.isEmpty())
+        {
+            const heroesAndRanges: [Character,number][] = validHeroPlayers.map( (player)=>
+                [player.Character!, player.Character!.PrimaryPart!.Position.sub( v3 ).mul(zeroY).Magnitude] )  // magnitude of y-zeroed distances             
+            const heroAndRange = heroesAndRanges.reduce( (pairA, pairB)=>pairA[1] < pairB[1] ? pairA : pairB )
+            return heroAndRange[1]
+        }
+        else
+        {
+            return math.huge
+        }
     }
 }
