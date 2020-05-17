@@ -10,6 +10,7 @@ import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestSe
 
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
+import { SkinTypeEnum, SkinTypes } from './SkinTypes'
 
 type Character = Model
 
@@ -34,6 +35,7 @@ export class MeleeWeaponUtility
     hitSoundSpeed: number
 
     baseData: ToolData.ToolDatumI
+    tool: Tool
 
     getRange() : number
     {
@@ -49,17 +51,25 @@ export class MeleeWeaponUtility
         return cooldown ? cooldown : 1
     }
 
-    constructor( public tool: Tool, baseDataName: string )  // I'd prefer to access the appropriate flextool but it's hard to do from client or mob
+    constructor( tool: Tool )  // I'd prefer to access the appropriate flextool but it's hard to do from client or mob
     {
+        this.tool = tool
         this.handle = tool.WaitForChild<BasePart>('Handle')
         this.unsheathSound = this.handle.WaitForChild<Sound>('Unsheath')
         this.slashSound = this.handle.WaitForChild<Sound>('Slash')
         this.hitSound = this.handle.WaitForChild<Sound>('Hit')
         this.hitVol = this.hitSound.Volume
         this.hitSoundSpeed = this.hitSound.PlaybackSpeed
-
+        const baseDataObject = tool.WaitForChild<StringValue>('BaseData')
+        const baseDataName = baseDataObject.Value
         this.baseData = ToolData.dataT[baseDataName]
-        const windUpAnimName = this.baseData.windUpAttackAnimName
+        if( !this.baseData ) {
+            DebugXL.Error('Could not find baseData for '+baseDataName)
+        }
+        if( !SkinTypes[this.baseData.skinType] ) { 
+            DebugXL.Error('Could not find skinType for '+this.baseData.skinType)
+        }
+        const windUpAnimName = SkinTypes[this.baseData.skinType].windUpAttackAnimName
         if( windUpAnimName )
         {
             this.windUpAnim = AnimationManifestService.getAnimInstance( windUpAnimName )
@@ -166,14 +176,17 @@ export class MeleeWeaponUtility
                 wait( this.windUpAnimTrack.Length * 0.9 )
                 this.windUpAnimTrack.AdjustSpeed( 0 )
             }
-            const fullBodyAttackAnimNames = this.baseData.fullBodyAttackAnimNames
+            const fullBodyAttackAnimNames = SkinTypes[this.baseData.skinType].fullBodyAttackAnimNames
+            if( !fullBodyAttackAnimNames ) {
+                DebugXL.Error('Could not find fullBodyAttackAnimNames for '+this.baseData.skinType)
+            }
             for( let i = 0; i < fullBodyAttackAnimNames.size(); i++ )
             {
                 const attackAnim = AnimationManifestService.getAnimInstance( fullBodyAttackAnimNames[i] )
                 this.attackAnimTracks[i] = humanoid.LoadAnimation( attackAnim )
                 this.attackAnimTracks[i].Looped = false
             }
-            const upperBodyAttackAnimNames = this.baseData.upperBodyAttackAnimNames
+            const upperBodyAttackAnimNames = SkinTypes[this.baseData.skinType].upperBodyAttackAnimNames
             for( let i = 0; i < upperBodyAttackAnimNames.size(); i++ )
             {
                 const attackUpperBodyAnim = AnimationManifestService.getAnimInstance( upperBodyAttackAnimNames[i]! )

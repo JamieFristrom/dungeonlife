@@ -22,7 +22,6 @@ function BoltWeaponServerXL.new( Tool )
 --	--print( Tool:GetFullName().." found Handle" )
 	
 	local Players = game:GetService("Players")
-	local Debris = game:GetService("Debris")
 	
 --	BaseUrl = "http://www.roblox.com/asset/?id="
 	
@@ -72,7 +71,7 @@ function BoltWeaponServerXL.new( Tool )
 		if GeneralWeaponUtility.isCoolingDown( Character ) then return end
 		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
 		if enabled then
-			if Mana:SpendMana( Character, Tool.ManaCost.Value ) then				
+			if Mana:SpendMana( Character, flexToolInst:getManaCost() ) then				
 				-- enabled = false  -- relying on Cooldown system instead because bolts sometimes stopped working
 				if BoltDisplay then
 					BoltDisplay.Transparency = 1
@@ -85,7 +84,7 @@ function BoltWeaponServerXL.new( Tool )
 				if Handle:FindFirstChild("Draw") then
 					Handle.Draw:Play()
 				end
-				GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+				GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
 				if BoltDisplay then
 					BoltDisplay.Transparency = 0
 				end
