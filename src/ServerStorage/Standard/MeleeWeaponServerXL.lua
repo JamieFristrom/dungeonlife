@@ -64,7 +64,7 @@ function MeleeWeaponServerXL.new( Tool )
 		local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestTarget( Character ) )
 		if bestTarget then
 --			--print( Character.Name.." found target "..bestTarget.Name )
-			if bestFitN <= Tool:FindFirstChild('Range').Value then
+			if bestFitN <= flexToolInst:getBaseData().rangeN then
 				DebugXL:logI( 'Combat', Character.Name.." in range. Applying damage to "..bestTarget.Name )
 				CharacterI:TakeFlexToolDamage( bestTarget, Character, Player and Player.Team or game.Teams.Monsters, flexToolInst )
 				if Player then
@@ -75,7 +75,7 @@ function MeleeWeaponServerXL.new( Tool )
 			end
 		end
 
-		GeneralWeaponUtility.cooldownWait( Character, Tool.Cooldown.Value, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+		GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
 	end
 	
 	local function OnEquipped()

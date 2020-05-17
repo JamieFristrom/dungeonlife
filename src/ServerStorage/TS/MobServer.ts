@@ -15,6 +15,7 @@ import { Monster } from 'ReplicatedStorage/TS/Monster'
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
 import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
 import mathXL from 'ReplicatedStorage/Standard/MathXL'
+import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
 
 type Character = Model
 
@@ -81,7 +82,7 @@ export namespace MobServer {
                 const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
                 if (tool) {
                     const toolBaseDataName = characterRecord.getFlexTool(weaponKey)!.baseDataS
-                    this.weaponUtility = new MeleeWeaponUtility(tool, toolBaseDataName)    // do 'client' stuff
+                    this.weaponUtility = new MeleeWeaponUtility(tool)    // do 'client' stuff
                 }
             }
     
