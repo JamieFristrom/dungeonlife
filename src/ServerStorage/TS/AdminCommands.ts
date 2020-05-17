@@ -22,6 +22,7 @@ import { GameplayTestService } from "./GameplayTestService";
 import { MessageServer } from "./MessageServer";
 import { MobServer } from "./MobServer";
 import { PlayerServer } from "./PlayerServer";
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
 
 class AdminCommandsC
 {
@@ -226,6 +227,16 @@ let CommandList: {[k:string]:unknown} =
       DebugXL.setLogLevel( logLevel, args[2] )
     },
 
+    setMobPush: function( sender: Player, args: string[] ) {
+      let mobPush = tonumber( args[1] )
+      if( !mobPush ) {
+        DebugXL.logW('Admin', 'mobPush requires number parameter')
+      }
+      else {
+        MobServer.setMobPush( mobPush )
+      }
+    },
+
     setServerTestGroup: function( sender: Player, args: string[] ) {
       let newGroupNum = tonumber( args[2] )
       newGroupNum = newGroupNum ? newGroupNum: 1
@@ -248,7 +259,18 @@ let CommandList: {[k:string]:unknown} =
 
     spawnMob: function( sender: Player, args: string[] )
     {
-      MobServer.spawnMob();
+      const characterClass = tostring(args[1]) || 'Orc'
+      if( !CharacterClasses.monsterStats[characterClass] )
+      {
+        DebugXL.logW('Admin','No character class '+characterClass)
+      }
+      else
+      {
+        const x = tonumber(args[2]) 
+        const z = tonumber(args[3])
+        const position = x && z ? new Vector3(x,0,z) : undefined
+        MobServer.spawnMob( characterClass, position )
+      }
     },
       
     stressanalytics: function( sender: Player, args: string[] )

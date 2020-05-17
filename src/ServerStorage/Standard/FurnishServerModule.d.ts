@@ -1,6 +1,7 @@
 declare class FurnishServerClass
 {
-    FurnishWithRandomSpawns():void
+    FurnishWithRandomSpawns(): void
+    GetMonsterSpawners(): Part[]
 }
 
 declare let FurnishServer: FurnishServerClass
