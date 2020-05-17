@@ -71,6 +71,10 @@ export class MeleeWeaponUtility
     {
         const wielderPrimaryPart = character.PrimaryPart
         if( !wielderPrimaryPart ) return
+
+        const humanoid = character.FindFirstChildOfClass('Humanoid')
+        if (!humanoid) return 
+
         const player = Players.GetPlayerFromCharacter( character )
 
         this.slashSound.Play()
@@ -84,62 +88,68 @@ export class MeleeWeaponUtility
                 DebugXL.logD('Combat', bestTarget.Name+" in range")
                 foundTargetB = true
                 const targetV3 = bestTarget.GetPrimaryPartCFrame().p
-                const targetV3InMyPlane = new Vector3( targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z )
-                const facingTargetCF = new CFrame( character.GetPrimaryPartCFrame().p, targetV3InMyPlane )
-                character.SetPrimaryPartCFrame( facingTargetCF )
+                if( player ) {
+                    const targetV3InMyPlane = new Vector3( targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z )
+                    const facingTargetCF = new CFrame( character.GetPrimaryPartCFrame().p, targetV3InMyPlane )
+                    character.SetPrimaryPartCFrame( facingTargetCF )
+                }
+                else
+                {
+                    const targetVec = bestTarget.GetPrimaryPartCFrame().p.sub( character.GetPrimaryPartCFrame().p )
+                    const moveVec = new Vector3( targetVec.X, 0, targetVec.Z )
+                    humanoid.Move( moveVec.Unit )
+                    wait()
+                    humanoid.Move( new Vector3(0,0,0) )
+                }
             }
         }
                         
-        const humanoid = character.FindFirstChildOfClass('Humanoid')
-        if( humanoid )
+        this.handle.GetChildren().forEach( (child)=>
         {
-            this.handle.GetChildren().forEach( (child)=>
-            {
-                if( child.IsA('Trail') )
-                    child.Enabled = true
-            } )
-            const adjCooldown = GeneralWeaponUtility.getAdjustedCooldown( character, this.getCooldown() )
-            if( this.attackAnimTracks[ this.attackIndex ] ) 
-            {
-                const speed = wielderPrimaryPart!.Velocity.Magnitude
-                DebugXL.logV( 'Combat', 'Speed is '+speed )
-                if( speed > 0.5 )
-                    this.attackUpperBodyAnimTracks[ this.attackIndex ].Play( 0.1, 1, 0.6/adjCooldown ) 
-                else
-                    this.attackAnimTracks[ this.attackIndex ].Play( 0.1, 1, 0.6/adjCooldown )
-                
-                this.attackIndex = ( this.attackIndex + 1 ) % this.attackAnimTracks.size()
-                DebugXL.logV( 'Combat', "Attack index is "+this.attackIndex )
-            }
+            if( child.IsA('Trail') )
+                child.Enabled = true
+        } )
+        const adjCooldown = GeneralWeaponUtility.getAdjustedCooldown( character, this.getCooldown() )
+        if( this.attackAnimTracks[ this.attackIndex ] ) 
+        {
+            const speed = wielderPrimaryPart!.Velocity.Magnitude
+            DebugXL.logV( 'Combat', 'Speed is '+speed )
+            if( speed > 0.5 )
+                this.attackUpperBodyAnimTracks[ this.attackIndex ].Play( 0.1, 1, 0.6/adjCooldown ) 
             else
-            {
-                DebugXL.logD( 'Combat', 'Playing default slash animation' )
-//              old default Roblox way to do this when our custom animation is missing
-                const Animation = new Instance('StringValue')
-                Animation.Name = 'toolanim'
-                Animation.Value = 'Slash'
-                Animation.Parent = this.tool
-                Debris.AddItem(Animation, 2)
-            }
+                this.attackAnimTracks[ this.attackIndex ].Play( 0.1, 1, 0.6/adjCooldown )
             
-            if( foundTargetB ) 
+            this.attackIndex = ( this.attackIndex + 1 ) % this.attackAnimTracks.size()
+            DebugXL.logV( 'Combat', "Attack index is "+this.attackIndex )
+        }
+        else
+        {
+            DebugXL.logD( 'Combat', 'Playing default slash animation' )
+//              old default Roblox way to do this when our custom animation is missing
+            const Animation = new Instance('StringValue')
+            Animation.Name = 'toolanim'
+            Animation.Value = 'Slash'
+            Animation.Parent = this.tool
+            Debris.AddItem(Animation, 2)
+        }
+        
+        if( foundTargetB ) 
+        {
+            delay( adjCooldown / 2, ()=>
             {
-                delay( adjCooldown / 2, ()=>
-                {
-                    this.hitSound.PlaybackSpeed = this.hitSoundSpeed * MathXL.RandomNumber( 0.8, 1.2 )
-                    this.hitSound.Volume = this.hitVol * MathXL.RandomNumber( 0.7, 1.3 )
-                    this.hitSound.Play() 
-                } )
-            }
-
-            GeneralWeaponUtility.cooldownWait( character, adjCooldown )  // on server for mob, cooldown will already be started; on client it won't
-    
-            this.handle.GetChildren().forEach( (child)=>
-            {
-                if( child.IsA('Trail') )
-                    child.Enabled = false
+                this.hitSound.PlaybackSpeed = this.hitSoundSpeed * MathXL.RandomNumber( 0.8, 1.2 )
+                this.hitSound.Volume = this.hitVol * MathXL.RandomNumber( 0.7, 1.3 )
+                this.hitSound.Play() 
             } )
         }
+
+        GeneralWeaponUtility.cooldownWait( character, adjCooldown )  // on server for mob, cooldown will already be started; on client it won't
+
+        this.handle.GetChildren().forEach( (child)=>
+        {
+            if( child.IsA('Trail') )
+                child.Enabled = false
+        } )
     }
     
     drawWeapon(character: Character)

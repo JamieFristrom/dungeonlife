@@ -82,6 +82,12 @@ export namespace GeneralWeaponUtility
             walkSpeedMuls.set( character, walkSpeedMul )
         }
     }
+
+    export function isEquippedBy( tool: Tool, character: Character )
+    {
+        // more reliable than an equipped flag
+        return tool.Parent === character;
+    }
     
     export function cooldownPctRemaining( character: Character )
     {
