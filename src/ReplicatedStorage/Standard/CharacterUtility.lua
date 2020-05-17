@@ -49,15 +49,17 @@ function CharacterUtility:GetSlowCooldownPct( character )
 			if( wisp.PrimaryPart )then
 				if(( wisp.PrimaryPart.Position - primaryPart.Position ).Magnitude <= wisp.Range.Value )then
 					local player = game.Players:GetPlayerFromCharacter( character )
-					if wisp.Name == "HasteWisp" then
-						if( player.Team == game.Teams.Heroes )then
-							-- they don't stack
-							haste = math.max( 1+wisp.EffectStrength.Value, haste )
-						end
-					elseif wisp.Name == "CurseWisp" then
-						if( player.Team ~= game.Teams.Heroes )then
-							-- they don't stack
-							minSlow = math.min( 1-wisp.EffectStrength.Value, minSlow )
+					if player then 
+						if wisp.Name == "HasteWisp" then
+							if( player.Team == game.Teams.Heroes )then
+								-- they don't stack
+								haste = math.max( 1+wisp.EffectStrength.Value, haste )
+							end
+						elseif wisp.Name == "CurseWisp" then
+							if( player.Team ~= game.Teams.Heroes )then
+								-- they don't stack
+								minSlow = math.min( 1-wisp.EffectStrength.Value, minSlow )
+							end
 						end
 					end
 				end
