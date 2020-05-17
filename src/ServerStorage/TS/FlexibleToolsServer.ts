@@ -169,13 +169,20 @@ export namespace FlexibleToolsServer {
                 // attach inventory slot so we can find it on the client
                 ValueHelper.AddStringValue(newToolInstance, 'PossessionKey', itemPoolKey)
 
-                // we'll need to be able to adjust these for heroes with buffs. fixme
-                if (toolBaseDatum.rangeN)  // unintuitively, ranged weapons are the weapons that *don't* have range - their range is infinite
-                    ValueHelper.AddNumberValue(newToolInstance, 'Range', toolBaseDatum.rangeN)
+                // and if you're having trouble looking up its stats, maybe because you're on the client and haven't loaded the character
+                // record yet, then you can look up its base data:
+                ValueHelper.AddStringValue( newToolInstance, 'BaseData', toolBaseDatum.idS )
 
-                ValueHelper.AddNumberValue(newToolInstance, 'Cooldown', flexTool.getCooldown())
-                ValueHelper.AddNumberValue(newToolInstance, 'ManaCost', flexTool.getManaCost())
-                ValueHelper.AddNumberValue(newToolInstance, 'WalkSpeedMul', toolBaseDatum.walkSpeedMulN)
+                // ditto with costs:
+                // ValueHelper.AddNumberValue( newToolInstance, 'Cooldown', flexTool.getCooldown() )
+                // ValueHelper.AddNumberValue( newToolInstance, 'ManaCost', flexTool.getManaCost() )
+
+                // // we'll need to be able to adjust these for heroes with buffs. fixme
+                // if( toolBaseDatum.rangeN )  // unintuitively, ranged weapons are the weapons that *don't* have range - their range is infinite
+                //     ValueHelper.AddNumberValue( newToolInstance, 'Range', toolBaseDatum.rangeN )
+
+
+                // ValueHelper.AddNumberValue( newToolInstance, 'WalkSpeedMul', toolBaseDatum.walkSpeedMulN )
 
                 const destinationPlayer = Players.GetPlayerFromCharacter(destinationCharacter)
                 if (destinationPlayer) {

@@ -14,9 +14,9 @@ type Character = Model
 */
 export class MeleeWeaponClient
 {
-    constructor( tool: Tool, baseDataName: string )
+    constructor( tool: Tool )
     {
-        const meleeWeaponUtility = new MeleeWeaponUtility( tool, baseDataName )
+        const meleeWeaponUtility = new MeleeWeaponUtility( tool )
  
         function onActivated(character: Character)
         {
