@@ -22,6 +22,7 @@ import MathXL from 'ReplicatedStorage/Standard/MathXL'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
+import { BoltWeaponUtility } from 'ReplicatedStorage/TS/BoltWeaponUtility'
 
 type Character = Model
 
@@ -36,12 +37,12 @@ const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringV
 
 export namespace MobServer {
     const mobCap = 20
-    let mobPush = 15
+    let mobPushApart = 10
 
     export let mobs = new Set<Mob>()
 
     export function setMobPush( newMobPush: number ) {
-        mobPush = newMobPush
+        mobPushApart = newMobPush
     }
 
     export function spawnMob(characterClass: string, position?: Vector3, areaPart?: BasePart ) {
@@ -49,10 +50,17 @@ export namespace MobServer {
     }
 
     RunService.Stepped.Connect( (time, step)=>
-    {            
+    {          
+        // collect garbage
+        mobs.forEach( (mob)=>{
+            if( mob.character.Parent === undefined ) {
+                mobs.delete( mob )
+            }
+        })
+
+        // dispose of bodies and act
         mobs.forEach( (mob)=>{
             if( mob.humanoid.Health <= 0 ) {
-                mobs.delete(mob)
                 delay( 2, ()=>{
                     mob.character.Parent = undefined
                 })
@@ -95,7 +103,7 @@ export namespace MobServer {
     class Mob {
         character: Character
         humanoid: Humanoid
-        weaponUtility?: MeleeWeaponUtility
+        weaponUtility?: MeleeWeaponUtility | BoltWeaponUtility
         currentAnimationTrack?: AnimationTrack
         currentAnimationSet?: Animation[]
     
@@ -148,13 +156,24 @@ export namespace MobServer {
     
             ToolCaches.updateToolCache(characterKey, characterRecord)
     
-            // have them draw their sword
+            // prepare their main weapon
             const weaponKey = characterRecord.getPossessionKeyFromSlot(HotbarSlot.Slot1)
-            if (weaponKey) {
+            DebugXL.Assert( weaponKey!==undefined )
+            if( weaponKey ) {
                 const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
-                if (tool) {
-                    if( tool.FindFirstChild<Script>('MeleeClientScript')) {
-                        this.weaponUtility = new MeleeWeaponUtility(tool)    // do 'client' stuff
+                if (!tool) { 
+                    DebugXL.logW( 'Items', "Couldn't find tool for "+this.character.Name )
+                }
+                else {
+                    const flexTool = characterRecord.getFlexTool(weaponKey)
+                    DebugXL.Assert( flexTool !== undefined )
+                    if( flexTool ) {
+                        if( tool.FindFirstChild<Script>('MeleeClientScript')) {
+                            this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
+                        }
+                        else if( tool.FindFirstChild<Script>('BoltClient')) {
+                            this.weaponUtility = new BoltWeaponUtility(tool, flexTool)
+                        }
                     }
                 }
             }
@@ -210,8 +229,8 @@ export namespace MobServer {
                             // unless already attacking
                             if (!GeneralWeaponUtility.isCoolingDown(this.character)) {
                                 this.stopMoving()
-                                this.weaponUtility.tool.Activate()   // server side
-                                spawn( ()=>{ this.weaponUtility!.showAttack(this.character) } )  // 'client' side, blocking
+                                this.weaponUtility.mobActivate(closestTarget)
+                                spawn( ()=>{ this.weaponUtility!.showAttack(this.character, closestTarget) } )  // 'client' side, blocking
                                 return
                             }
                             else {
@@ -237,7 +256,7 @@ export namespace MobServer {
                                 const totalPush = scaledForces.reduce( (forceA, forceB)=>forceA.add( forceB ) )
 
                                 const destinationVec = closestTarget.GetPrimaryPartCFrame().p.sub( this.character.GetPrimaryPartCFrame().p )
-                                const totalVec = totalPush.mul( mobPush ).add( destinationVec )
+                                const totalVec = totalPush.mul( mobPushApart ).add( destinationVec )
                                 //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
                                 //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
                                 this.humanoid.Move( totalVec.Unit )

@@ -37,8 +37,6 @@ function MeleeWeaponServerXL.new( Tool )
 	
 	local UnsheathSound = Handle:WaitForChild("Unsheath")
 	UnsheathSound.Volume = 1
-	local SlashSound = Handle:WaitForChild("Slash")
-	SlashSound.Volume = 1
 	
 	local function OnActivated()		
 		DebugXL:logD( 'Combat', 'MeleeWeaponServerXL::OnActivated')
@@ -79,6 +77,7 @@ function MeleeWeaponServerXL.new( Tool )
 	end
 	
 	local function OnEquipped()
+		DebugXL:logD( 'Items', Tool:GetFullName()..' MeleeWeaponServerXL OnEquipped' )
 		Character = Tool.Parent
 		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
 		Humanoid = Character:FindFirstChildOfClass('Humanoid')
