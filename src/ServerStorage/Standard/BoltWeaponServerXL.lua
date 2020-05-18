@@ -1,8 +1,8 @@
-print( script:GetFullName().." executed" )
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+DebugXL:logI( 'Executed', script:GetFullName())
 
 -- a 'bolt' is a projectile that travels at a fixed speed in a straight line; this code works for crossbows, arrows, fireballs, etc
 local BoltWeaponUtilityXL = require( game.ReplicatedStorage.Standard.BoltWeaponUtilityXL )
-local WeaponUtility       = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
@@ -32,8 +32,6 @@ function BoltWeaponServerXL.new( Tool )
 	
 	local owningHumanoid = nil
 
-	local ToolEquipped = false
-	
 	Tool.Enabled = true
 
 	local Character = nil
@@ -41,10 +39,8 @@ function BoltWeaponServerXL.new( Tool )
 	local flexToolInst
 
 	local function CheckIfAlive()
-		return (((Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0 and Player and Player.Parent) and true) or false)
+		return (((Character and Character.Parent and owningHumanoid and owningHumanoid.Parent and owningHumanoid.Health > 0 ) and true) or false)
 	end
-	
-	local enabled = true
 	
 	local RemoteFunctions = {}	
 	
@@ -57,68 +53,71 @@ function BoltWeaponServerXL.new( Tool )
 	
 	function RemoteFunctions.OnActivated( _, targetV3, boltCodeName )
 	--	if not Tool.Enabled or not CheckIfAlive() or not ToolEquipped then	
---		warn( Character.Name.." activated bolt" )		-- was checking why bolt failed but it seems it doesn't even get here
-		if not ToolEquipped then  
-	--			--print( Character.Name.." unequipped, can't fire" )  -- not only that, variables might not be set up
+		if not Character then
+			DebugXL:logW( 'Combat', 'Firing '..Tool:GetFullName()..' before Character set')
+			return
+		end
+		DebugXL:logD( 'Combat', Character.Name..' activated bolt' )
+		if not GeneralWeaponUtility.isEquippedBy( Tool, Character ) then  
+			DebugXL:logV( 'Combat', Character.Name.." unequipped, can't fire" )  -- not only that, variables might not be set up
 			return			
 		end
 		if not WeaponServer:CheckRequirements( Tool, Player ) then return end
 		if not CheckIfAlive() then
---			--print( Character.Name.." not alive, can't fire" )
+			DebugXL:logI( 'Combat', Character.Name.." not alive, can't fire" )
 			return
 		end
 
-		if GeneralWeaponUtility.isCoolingDown( Character ) then return end
-		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
-		if enabled then
-			if Mana:SpendMana( Character, flexToolInst:getManaCost() ) then				
-				-- enabled = false  -- relying on Cooldown system instead because bolts sometimes stopped working
-				if BoltDisplay then
-					BoltDisplay.Transparency = 1
-				end
-			--	Sounds.Fire:Play()  -- sound comes from client
-				local bolt = BoltWeaponUtilityXL:Fire( Tool, Bolt, targetV3 )
-				bolt.Name = boltCodeName
-				bolt.Parent = workspace.ActiveServerProjectiles   -- can't put this in Tool because then the client will destroy it on the server as well
-				bolt:SetNetworkOwner( nil )
-				if Handle:FindFirstChild("Draw") then
-					Handle.Draw:Play()
-				end
-				GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
-				if BoltDisplay then
-					BoltDisplay.Transparency = 0
-				end
-			end
-		else
---			--print( Character.Name.." bolt not enabled, can't fire" )
+		if GeneralWeaponUtility.isCoolingDown( Character ) then 
+			DebugXL:logI( 'Combat', Character.Name.." attempted to activate bolt while uncool")
+			return 
 		end
-	
-		enabled = true
+		
+		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
+
+		if Mana:SpendMana( Character, flexToolInst:getManaCost() ) then				
+			DebugXL:logI( 'Combat', Character.Name.." firing bolt")
+			if BoltDisplay then
+				BoltDisplay.Transparency = 1
+			end
+		--	Sounds.Fire:Play()  -- sound comes from client
+			local bolt = BoltWeaponUtilityXL.Fire( Tool, Bolt, targetV3 )
+			bolt.Name = boltCodeName
+			bolt.Parent = workspace.ActiveServerProjectiles   -- can't put this in Tool because then the client will destroy it on the server as well
+			bolt:SetNetworkOwner( nil )
+			if Handle:FindFirstChild("Draw") then
+				Handle.Draw:Play()
+			end
+			GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+			if BoltDisplay then
+				BoltDisplay.Transparency = 0
+			end
+		end
 	end
 	
 
 	local function Equipped(Mouse)
+		DebugXL:logD( 'Items', Tool:GetFullName()..' BoltWeaponServerXL OnEquipped' )
 		Character = Tool.Parent
 		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
 		owningHumanoid = Character:FindFirstChild("Humanoid")
 		Player = Players:GetPlayerFromCharacter(Character)
-		if WeaponServer:CheckRequirements( Tool, Player ) then		
-			if not CheckIfAlive() then
-				return
-			end
-			ToolEquipped = true
-		end
 	end
 	
 	local function Unequipped()
-		ToolEquipped = false
 	end
 	
 --	--print( Tool:GetFullName().." connecting remote event" )
 	
 	Tool.BoltWeaponRE.OnServerEvent:Connect( function( player, funcName, ... )
 --		--print( player.Name.." fired bolt server event "..funcName )
+		DebugXL:logD( 'Combat', player.Name..' fired bolt server event '..funcName)
 		RemoteFunctions[ funcName ]( player, ... )
+	end)
+
+	Tool.BoltWeaponBE.Event:Connect( function( funcName, ... )
+		DebugXL:logD( 'Combat', 'Bolt bindable event '..funcName..' fired')
+		RemoteFunctions[ funcName ]( nil, ... )
 	end)
 	
 --	--print( Tool:GetFullName().." remote event connected" )

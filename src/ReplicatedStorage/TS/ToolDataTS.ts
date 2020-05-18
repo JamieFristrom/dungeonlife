@@ -482,6 +482,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 2,   
             critChanceN    : .06,  
+            rangeN: 120,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -505,6 +506,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 0.8,   
             critChanceN    : .05,  
+            rangeN: 180,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -524,6 +526,7 @@ export namespace ToolData
             skinType       : SkinTypeEnum.Bomb,
             baseToolS      : "Bomb",
             damageNs       : [ 14, 18 ],  // 20 - 32 would mean a first level gremlin could kill a first level hero in 3 hits; also made less swingy
+            rangeN: 60,
             blastRadiusN   : 40,
             cooldownN      : 1,
             critChanceN    : 0,  // explosion code doesn't crit anyway
@@ -808,6 +811,7 @@ export namespace ToolData
             baseToolS : "MagicBolt",
             damageNs       : [ 11, 18 ],
             cooldownN: 1,
+            rangeN: 40,
             critChanceN: 0.04,
 //            effectStrengthN : 20,
 //            effectBonusPerLevelN : 2,
@@ -831,6 +835,7 @@ export namespace ToolData
             baseToolS : "MagicBolt",
             damageNs       : [ 11, 18 ],  // balanced against longbow
             cooldownN: 1,
+            rangeN: 40,
             critChanceN: 0.04,
             walkSpeedMulN   : 0.6,
             jumpPowerMulN: 1,  
@@ -858,6 +863,7 @@ export namespace ToolData
             critChanceN: 0.04,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,
+            rangeN: 90,
             manaCostN : 7,                       // 10 too high, 5 a little too low
             manaCostPerLevelN : 1.5, 
             monsterStartGearBiasN : 1,
@@ -882,6 +888,7 @@ export namespace ToolData
             skinType  : SkinTypeEnum.MagicBarrier,			
             baseToolS : "MagicBarrier",
             damageNs       :[ 30, 40 ],   
+            rangeN: 20,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,		 
             //effectDurationN : 4, 
@@ -914,6 +921,7 @@ export namespace ToolData
             skinType  : SkinTypeEnum.MagicBarrier,			
             baseToolS : "MagicBarrier",
             damageNs       :[ 30, 40 ],
+            rangeN: 20,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,		 
             effectDurationN : 4, 

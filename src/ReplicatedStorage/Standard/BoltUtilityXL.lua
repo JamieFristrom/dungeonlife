@@ -20,7 +20,6 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 	--projectileObj.Transparency = 0
 	
 	local Players = game:GetService("Players")
-	local Debris = game:GetService("Debris")
 	
 	-- not for recording damage but for tracking owner of bolt:
 	local Creator = projectileObj:WaitForChild("creator")
@@ -33,7 +32,6 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 	
 	DebugXL:Assert( Creator )
 	DebugXL:Assert( BodyForce )
---	DebugXL:Assert( BodyGyro )
 	DebugXL:Assert( HitSound )
 		
 	local Stuck = false
@@ -48,11 +46,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 		Weld.C1 = Hit.CFrame:inverse() * CJ
 		Weld.Parent = Object
 	end
-	
-	local function IsTeamMate(Player1, Player2)
-		return (Player1 and Player2 and not Player1.Neutral and not Player2.Neutral and Player1.TeamColor == Player2.TeamColor)
-	end
-	
+
 	local function Touched(Hit)
 		if not Hit or not Hit.Parent or Stuck then
 			return
@@ -74,16 +68,17 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 --		end
 
 -- fixme: figure this shit out and make it gud: need 'creator character' it seems
-		local CreatorPlayer
-		if Creator and Creator.Value and Creator.Value:IsA("Player") then
-			CreatorPlayer = Creator.Value
-		end
-		if CreatorPlayer and CreatorPlayer.Character == hitCharacter then
+		local creatorCharacter
+		creatorCharacter = Creator.Value
+		DebugXL:Assert( creatorCharacter:IsA('Model') )
+		if not creatorCharacter then
 			return
 		end
+		
+		local creatorPlayer = game.Players:GetPlayerFromCharacter( creatorCharacter )
+		local creatorTeam = creatorPlayer and creatorPlayer.Team or game.Teams.Monsters
 		if hitCharacter then
-			local player = Players:GetPlayerFromCharacter(hitCharacter)
-			if not CharacterClientI:ValidTarget( CreatorPlayer.Team, hitCharacter ) then
+			if not CharacterClientI:ValidTarget( creatorTeam, hitCharacter ) then
 				return
 			end
 		end
@@ -93,12 +88,8 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 		if HitSound then
 			HitSound:Play()
 		end
-		for i, v in pairs({BodyForce, BodyGyro}) do
-			if v and v.Parent then
-				v:Destroy()
-			end
-		end
-
+		
+		local hitSquishy = false
 		if( RunService:IsServer() )then  -- ugh. too lazy to refactor this right now
 			local CharacterI = require( game.ServerStorage.CharacterI )
 			local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
@@ -109,23 +100,41 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 				if humanoid and humanoid.Health > 0 then			
 					--print( "Has a humanoid. Executing hit func" )
 					local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
-					CharacterI:TakeFlexToolDamage( hitCharacter, CreatorPlayer.Character, CreatorPlayer.Team, flexToolInst )
+					CharacterI:TakeFlexToolDamage( hitCharacter, creatorCharacter, creatorTeam, flexToolInst )
+					hitSquishy = true
 				end
 			end
 		end
 
+		-- it looks not great if we stop when hitting a person; it looks like it stops way before him. Roblox velocity extrapolation I guess
+		if not hitSquishy then 
+			for _, v in pairs({BodyForce, BodyGyro}) do
+				if v and v.Parent then
+					v:Destroy()
+				end
+			end
+
+			projectileObj.Velocity = Vector3.new(0,0,0)
+			projectileObj.Anchored = true
+		end
 		projectileObj.Transparency = 1
-		projectileObj.Anchored = true
 		HitSound.Ended:Wait()
-		projectileObj:Destroy()
+
+		-- it looks not great on the client if we destroy the projectile right away - its trail disappears
+		delay( 0.5, function()
+			projectileObj.Parent = nil
+		end)
+		
 	end
 		
 	projectileObj.Touched:connect(Touched)
 	
 	for i = 1, 100 do
-		wait(0.1 * i)
+		wait(0.1 * i)  -- so, wait .1 seconds, then .2 seconds, then .3 seconds... not sure why
 		if BodyGyro and BodyGyro.Parent then
 			BodyGyro.cframe = CFrame.new(Vector3.new(0,0,0), -projectileObj.Velocity.unit)
+		else
+			break
 		end
 	end
 end

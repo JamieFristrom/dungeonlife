@@ -5,7 +5,7 @@ local RangedWeaponUtility = {}
 --
 -- like touched:Connect but it makes sure obects are collidable
 -- wishlist: make it so arrows go through ghosts unless magic
-function RangedWeaponUtility:CollidedConnect( projectileObj, onTouchedFunc )
+function RangedWeaponUtility.CollidedConnect( projectileObj, onTouchedFunc )
 	return projectileObj.Touched:Connect( function( hit )
 		if hit.CanCollide then
 			return onTouchedFunc( hit )
@@ -28,10 +28,14 @@ local function FindNontransparentPartOnRayWithIgnoreList( ray, ignoreDescendants
 end
 
 
-function RangedWeaponUtility:MouseHitNontransparent( mouse, ignoreDescendantsVolatile )
+function RangedWeaponUtility.MouseHitNontransparent( mouse, ignoreDescendantsVolatile )
 	local mouseRay = Ray.new( mouse.UnitRay.Origin, mouse.UnitRay.Direction * 1000 )
 	return FindNontransparentPartOnRayWithIgnoreList( mouseRay, ignoreDescendantsVolatile )
 end
 
+function RangedWeaponUtility.MouseHitNontransparentPack( mouse, ignoreDescendantsVolatile )
+	local partHit, intersectionV3, normalV3, material = RangedWeaponUtility.MouseHitNontransparent( mouse, ignoreDescendantsVolatile ) 
+	return { partHit, intersectionV3, normalV3, material }
+end
 
 return RangedWeaponUtility

@@ -42,7 +42,7 @@ function LobbedUtility.new( lobbedObj, particleLifetimeN, specialDamageFunc )
 		end
 	end
 
-	touchConnection = RangedWeaponUtility:CollidedConnect( lobbedObj, OnThrownObjHit )
+	touchConnection = RangedWeaponUtility.CollidedConnect( lobbedObj, OnThrownObjHit )
 
 end
 
