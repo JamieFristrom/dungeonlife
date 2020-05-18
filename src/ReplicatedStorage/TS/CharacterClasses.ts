@@ -581,8 +581,8 @@ export namespace CharacterClasses {
             goldPerLevelN   : 1,	
             dropItemPctN 	: 0.14,
             tagsT           : {},	
-            numWeaponsN     : 1, // 2	
-            potentialWeaponsA :  [ "Broadsword" ], // "Claws", "Longbow", "Crossbow", "Bomb", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
+            numWeaponsN     : 2,
+            potentialWeaponsA :  [ "Claws", "Longbow", "Crossbow", "Bomb", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
             //startingCountN  : 1, // only matters for blueprints
             defaultHideAccessoriesB : true,
         },
