@@ -18,12 +18,20 @@ DebugXL.logD( "Requires", 'PlayerServer: Analytics imports succesful')
 
 type Character = Model
 
+export enum TeamStyleChoice {
+    Hero,
+    Monster,
+    DungeonLord
+}
+
 export namespace PlayerServer {
+    // you'd think a single map would be better but seems to mean more code; also these tend to be updated independently
     let characterAddedFuncs = new Map<Player, (character: Character) => void>()
     let birthTicks = new Map<Player, number>()
+    let currentPCKeys = new Map<Player, CharacterKey>()
+    let teamStyleChoices = new Map<Player, TeamStyleChoice>()
 
     let characterRecords = new Map<CharacterKey, CharacterRecordI>()
-    let currentPCKeys = new Map<Player, CharacterKey>()
     let currentMobKeys = new Map<Character, CharacterKey>()
 
     let characterKeyServer = 1;
@@ -315,6 +323,14 @@ export namespace PlayerServer {
         if( player ) { return player.Name }
         const character = getCharacterModel( characterKey )
         if( character ) { return character.Name }
+    }
+
+    export function setTeamStyleChoice( player: Player, teamStyleChoice: TeamStyleChoice) {
+        teamStyleChoices.set( player, teamStyleChoice )
+    }
+
+    export function getTeamStyleChoice( player:  Player ) {
+        return teamStyleChoices.get( player ) || TeamStyleChoice.DungeonLord
     }
 
     Players.GetPlayers().forEach(playerAdded)
