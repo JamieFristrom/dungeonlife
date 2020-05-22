@@ -1,37 +1,41 @@
-import { TeleportService, Players, Workspace } from "@rbxts/services"
 
-import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
-import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS"
-import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { Localize } from "ReplicatedStorage/TS/Localize"
-import { MessageGui } from "ReplicatedStorage/TS/MessageGui"
-import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
-import { PCClient } from "ReplicatedStorage/TS/PCClient"
-import InstanceXL = require("ReplicatedStorage/Standard/InstanceXL");
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI( 'Executed', script.GetFullName())
+
+import { Players, Workspace } from '@rbxts/services'
+
+import { PlacesManifest } from 'ReplicatedStorage/TS/PlacesManifest'
+import { HeroStable } from 'ReplicatedStorage/TS/HeroStableTS'
+import { Hero } from 'ReplicatedStorage/TS/HeroTS'
+import { Localize } from 'ReplicatedStorage/TS/Localize'
+import { MessageGui } from 'ReplicatedStorage/TS/MessageGui'
+import InstanceXL = require('ReplicatedStorage/Standard/InstanceXL');
 
 
 let localPlayer = Players.LocalPlayer!
-let playerGui = localPlayer.WaitForChild("PlayerGui") as PlayerGui
+let playerGui = localPlayer.WaitForChild('PlayerGui') as PlayerGui
 
-let noResetGui = playerGui.WaitForChild("NoResetGui") as ScreenGui
+let noResetGui = playerGui.WaitForChild('NoResetGui') as ScreenGui
 
-let serverButton = noResetGui.WaitForChild("LeftButtonColumn").WaitForChild<GuiButton>("Server")
+let serverButton = noResetGui.WaitForChild('LeftButtonColumn').WaitForChild<GuiButton>('Server')
 serverButton.Visible = false
 
 let heroesRF = Workspace.WaitForChild('Signals').WaitForChild('HeroesRF') as RemoteFunction
 let heroesRE = Workspace.WaitForChild('Signals').WaitForChild('HeroesRE') as RemoteEvent
 
-let choosePlaceFrame = noResetGui.WaitForChild( "ChoosePlace" ) as Frame
-let choosePlaceGrid = choosePlaceFrame.WaitForChild( "Grid" ) as Frame
-let choosePlaceCloseButton = choosePlaceFrame.WaitForChild( "CloseButton" ) as ImageButton
-let placeTemplate = choosePlaceFrame.WaitForChild( "PlaceTemplate" ) as Frame
+
+// Code for choosing place
+
+let choosePlaceFrame = noResetGui.WaitForChild( 'ChoosePlace' ) as Frame
+let choosePlaceGrid = choosePlaceFrame.WaitForChild( 'Grid' ) as Frame
+let choosePlaceCloseButton = choosePlaceFrame.WaitForChild( 'CloseButton' ) as ImageButton
+let placeTemplate = choosePlaceFrame.WaitForChild( 'PlaceTemplate' ) as Frame
 
 
 
-let heroStableRaw = heroesRF.InvokeServer( "GetSavedPlayerCharactersWait" ) as object  // note it's plural; we're bringing in the whole stable
+let heroStableRaw = heroesRF.InvokeServer( 'GetSavedPlayerCharactersWait' ) as object  // note it's plural; we're bringing in the whole stable
 let heroStable = HeroStable.convertFromRemote( heroStableRaw )
 
 class ServerGuiC
@@ -39,41 +43,41 @@ class ServerGuiC
     inviteToSwitchServer( highestLevel: number )
     {    
         let currentPlace = PlacesManifest.getCurrentPlace()
-        //print( "inviting to switch" )
+        //print( 'inviting to switch' )
 
         let destServerKey = currentPlace.nextServer
 
         // disable BeginnerServer by commenting it out of places list
         if( PlacesManifest.places.BeginnerServer && highestLevel<PlacesManifest.places.BeginnerServer.maxAllowedLevel && currentPlace !== PlacesManifest.places.BeginnerServer )
         {
-            destServerKey = "BeginnerServer"
+            destServerKey = 'BeginnerServer'
         }
             
         // calls MessageGui ShowMessageWait
         let [ rawResult ] = MessageGui.ShowMessageAndAwaitResponse( 
-            Localize.formatByKey( "InviteToOtherServer", {currentserverlevel: Hero.getCurrentMaxHeroLevel(), 
+            Localize.formatByKey( 'InviteToOtherServer', {currentserverlevel: Hero.getCurrentMaxHeroLevel(), 
                 destservername: Localize.formatByKey( destServerKey ) }),
             true,  // needs ack
             0,  // display delay
             true, // modal     
-            "Yes", 
-            "No" )
+            'Yes', 
+            'No' )
         let result = rawResult as string
-        if( result==="Yes" )
+        if( result==='Yes' )
         {
-            let hideCharacterValue = new Instance("BoolValue")
+            let hideCharacterValue = new Instance('BoolValue')
             hideCharacterValue.Value = true
-            hideCharacterValue.Name = "HideCharacter"
+            hideCharacterValue.Name = 'HideCharacter'
             hideCharacterValue.Parent = localPlayer.Character
            
-            heroesRE.FireServer( "ServerSideTeleport", destServerKey )
-//            GameAnalyticsClient.RecordDesignEvent( "ServerInvite:" + destServerKey + ":" + "Yes" )
+            heroesRE.FireServer( 'ServerSideTeleport', destServerKey )
+//            GameAnalyticsClient.RecordDesignEvent( 'ServerInvite:' + destServerKey + ':' + 'Yes' )
     //        TeleportService.Teleport( Places.places[otherPlaceIdx].getPlaceId(), localPlayer )    
         }
         else
         {
-            //GameAnalyticsClient.RecordDesignEvent( "ServerInvite:" + destServerKey + ":" + "No" )
-            DebugXL.Assert( result==="No" )
+            //GameAnalyticsClient.RecordDesignEvent( 'ServerInvite:' + destServerKey + ':' + 'No' )
+            DebugXL.Assert( result==='No' )
         }
     }
 
@@ -84,30 +88,30 @@ class ServerGuiC
             let currentPlace = PlacesManifest.getCurrentPlace()
 
             // calls MessageGui ShowMessageWait
-            //print( "Invoking beginner server message")
+            //print( 'Invoking beginner server message')
             let [ rawResult ] = MessageGui.ShowMessageAndAwaitResponse( 
-                Localize.formatByKey("InviteToBeginnerServer"),
+                Localize.formatByKey('InviteToBeginnerServer'),
                 true,  // needs ack
                 0.01,  // display delay
                 true, // modal     
-                "Yes", 
-                "No" )
-            //print( "Beginning server message returned")
+                'Yes', 
+                'No' )
+            //print( 'Beginning server message returned')
             let result = rawResult as string
-            if( result==="Yes" )
+            if( result==='Yes' )
             {
-                let hideCharacterValue = new Instance("BoolValue")
+                let hideCharacterValue = new Instance('BoolValue')
                 hideCharacterValue.Value = true
-                hideCharacterValue.Name = "HideCharacter"
+                hideCharacterValue.Name = 'HideCharacter'
                 hideCharacterValue.Parent = localPlayer.Character
                 
-                heroesRE.FireServer( "ServerSideTeleport", "BeginnerServer" )
+                heroesRE.FireServer( 'ServerSideTeleport', 'BeginnerServer' )
         //            TeleportService.Teleport( Places.places.BeginnerServer.getPlaceId(), localPlayer )    
                 return true
             }
             else
             {
-                DebugXL.Assert( result==="No" )
+                DebugXL.Assert( result==='No' )
                 return false
             }
         }
@@ -135,26 +139,26 @@ export let ServerGui = new ServerGuiC()
 
 function ChoosePlace( placeKey: string )
 {
-    heroesRE.FireServer( "ServerSideTeleport", placeKey )
+    heroesRE.FireServer( 'ServerSideTeleport', placeKey )
 }
 
 function refresh()
 {
     // setup choose frame
-    InstanceXL.ClearAllChildrenBut( choosePlaceGrid, "UIGridLayout" )
+    InstanceXL.ClearAllChildrenBut( choosePlaceGrid, 'UIGridLayout' )
     for( let [ placeKey, place ] of Object.entries( PlacesManifest.places ) )
     {
         if( place !== PlacesManifest.getCurrentPlace() )
         {
             let placeFrame = placeTemplate.Clone() as Frame
-            let placeFrameImage = placeFrame.WaitForChild("Image") as ImageButton
-            let placeFrameName = placeFrame.WaitForChild("Name") as TextLabel
-            let placeFrameDesc = placeFrame.WaitForChild("Description") as TextLabel
-            let placeFrameChoose = placeFrame.WaitForChild("Choose") as TextButton
-            let placeFrameDisabled = placeFrame.WaitForChild("Disabled") as Frame
+            let placeFrameImage = placeFrame.WaitForChild('Image') as ImageButton
+            let placeFrameName = placeFrame.WaitForChild('Name') as TextLabel
+            let placeFrameDesc = placeFrame.WaitForChild('Description') as TextLabel
+            let placeFrameChoose = placeFrame.WaitForChild('Choose') as TextButton
+            let placeFrameDisabled = placeFrame.WaitForChild('Disabled') as Frame
             placeFrameImage.Image = place.imageId
             placeFrameName.Text = Localize.formatByKey( placeKey as string )
-            placeFrameDesc.Text = Localize.formatByKey( placeKey+"Desc", { minlevel: place.minAllowedLevel, maxlevel: place.maxGrowthLevel })
+            placeFrameDesc.Text = Localize.formatByKey( placeKey+'Desc', { minlevel: place.minAllowedLevel, maxlevel: place.maxGrowthLevel })
             placeFrame.Visible = true
             placeFrameChoose.MouseButton1Click.Connect( function() { ChoosePlace( placeKey as string ) } )
             placeFrameImage.MouseButton1Click.Connect( function() { ChoosePlace( placeKey as string ) } )            
@@ -176,7 +180,7 @@ function refresh()
 
 serverButton.MouseButton1Click.Connect( function()
 {    
-    print( "server button clicked")
+    print( 'server button clicked')
     if( !choosePlaceFrame.Visible )
         refresh()
     choosePlaceFrame.Visible = !choosePlaceFrame.Visible
@@ -199,3 +203,37 @@ choosePlaceCloseButton.MouseButton1Click.Connect( function()
 //         }
 //     }
 // })
+
+
+// code for choosing team
+const chooseTeamFrame = noResetGui.WaitForChild<Frame>( 'ChooseTeam' )
+const chooseTeamGrid = chooseTeamFrame.WaitForChild<Frame>( 'Grid' )
+
+const chooseTeamButton = script.Parent!.Parent!.WaitForChild('LeftButtonColumn').WaitForChild<TextButton>('ChooseTeam')
+
+const choiceKeys = ['HeroChoice','MonsterChoice','DungeonLordChoice']
+const choiceFrames = choiceKeys.map( (key)=>chooseTeamGrid.WaitForChild<Frame>(key) )
+const choiceImageButtons = choiceFrames.map( (frame)=>frame.WaitForChild<ImageButton>('Image'))
+const choiceTextButtons = choiceFrames.map( (frame)=>frame.WaitForChild<TextButton>('Choose'))
+
+function makeTeamChoice( keyName: string )
+{
+    mainRE.FireServer( keyName )
+    chooseTeamFrame.Visible = false
+}
+
+for( let i=0; i<choiceKeys.size(); i++ )
+{
+    choiceImageButtons[i].MouseButton1Click.Connect( ()=>{ makeTeamChoice(choiceKeys[i]) } )
+    choiceTextButtons[i].MouseButton1Click.Connect( ()=>{ makeTeamChoice(choiceKeys[i]) } )
+}
+
+let mainRE = Workspace.WaitForChild('Signals')!.WaitForChild('MainRE') as RemoteEvent
+
+chooseTeamButton.MouseButton1Click.Connect( function()
+{    
+    DebugXL.logI('UI', 'Choose team button clicked')
+    if( !chooseTeamFrame.Visible )
+        refresh()
+    chooseTeamFrame.Visible = !chooseTeamFrame.Visible
+})
