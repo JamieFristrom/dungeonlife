@@ -382,7 +382,7 @@ function ChooseHeroWait( player )
 	PlayerServer.publishLevel( player, 1, 1 )
 
 	-- or you're doing hero express
-	while workspace.GameManagement.PreparationCountdown.Value > 0 or player.HeroExpressPreparationCountdown.Value > 0 do				
+	while true do -- no need for time limit anymore workspace.GameManagement.PreparationCountdown.Value > 0 or player.HeroExpressPreparationCountdown.Value > 0 do				
 		if CharacterClientI:GetCharacterClass( player ) ~= "" then
 			-- we made a decision
 			--player.HeroChoiceTimeLeft.Value = 0
@@ -480,7 +480,7 @@ function GameManagement:DenyHeroInvite( player )
 	player.HeroInviteCountdown.Value = 0
 end
 
-
+--[[
 -- used by constant hero churn version; waits up to 10 seconds for each player considering whether they want to be hero
 local function ChangeMonstersToHeroIfNecessaryWait( loadCharacterB )
 --	DebugXL:logW('GameManagement', "Choosing heroes" )
@@ -571,7 +571,7 @@ local function ChangeMonstersToHeroIfNecessary( loadCharacterB )
 		end
 	end
 end
-	
+	--]]
 
 -- for debug purposes:
 local crashPlayer
@@ -725,7 +725,6 @@ local function MonitorPlayer( player )
 							return 
 						end
 						if not humanoid or not humanoid.Parent or humanoid.Health <= 0 then
-							-- monster dead
 							if player.Team == game.Teams.Heroes then
 								Inventory:AdjustCount( player, "HeroDeaths", 1 )
 								local localTick = time()
@@ -736,8 +735,11 @@ local function MonitorPlayer( player )
 									wait()
 								end
 								playerCharacter.Parent = nil
+								-- now we stay the same team; when we day or respawn we get to re-choose
+								workspace.Signals.ChooseHeroRE:FireClient( player, "ChooseHero" )
+								ChooseHeroWait( player )
 
-								ChangeHeroToMonster( player )
+								--ChangeHeroToMonster( player )
 							else
 								local localTick = time()
 								Monsters:Died( playerCharacter )  -- fixme: this needs to be called for AI NPC mobs as well
@@ -1155,14 +1157,14 @@ local function SpawnMonsters()
 	end	
 end
 
-
+--[[
 local function InviteMonstersToBeHeroesWhileNecessaryWait()
 	while #game.Teams.Heroes:GetPlayers() < GameServer.numHeroesNeeded() and workspace.GameManagement.PreparationCountdown.Value > 0 do
 		ChangeMonstersToHeroIfNecessaryWait()
 		wait(0.1)		
 	end
 end
-
+]]
 
 local function HeroesChooseCharactersWait()
 	-- this is allowed to migrate to next phase if HeroExpress hero hasn't finished choosing yet - they get all of their 60 seconds
@@ -1171,9 +1173,9 @@ local function HeroesChooseCharactersWait()
 	local done = false
 	
 	-- don't invite people to be heroes on the last floor, that sucks
-	if( FloorData:CurrentFloor().exitStaircaseB )then
-		spawn( InviteMonstersToBeHeroesWhileNecessaryWait )
-	end
+	-- if( FloorData:CurrentFloor().exitStaircaseB )then
+	-- 	spawn( InviteMonstersToBeHeroesWhileNecessaryWait )
+	-- end
 		
 	local startCountdownTime = time()
 	while not done do
@@ -1220,13 +1222,14 @@ function DisableablePcall( func )
 	end
 end
 
-
+--[[
 function GameManagement:MonitorPlayerbase()
 	while true do
 		ChangeMonstersToHeroIfNecessaryWait()
 		wait(0.1)
 	end
 end
+--]]
 
 
 function DungeonVoteState()
@@ -1295,9 +1298,10 @@ function GameManagement:Play()
 				end
 			end
 			
+			--[[
 			if workspace.GameManagement.DungeonDepth.Value <= 1 then  -- after a TPK, don't give players choice about becoming heroes
 				ChangeMonstersToHeroIfNecessary( false )
-			end
+			end--]]
 			-- spawn the unlucky ones
 
 			ChangeGameState( "SpawnMonsters" )
@@ -1313,7 +1317,7 @@ function GameManagement:Play()
 				wait(0.1)
 --		--		ChooseStartingHeroesWait()  -- maybe somebody will come in later that will make a nice hero or be worth promoting someone to hero
 --					ChangeMonstersToHeroIfNecessaryWait( false )  -- this one asks for confirmation, but goes one at a time every 10 sec, and the last one may go past the preparation time			
-				ChangeMonstersToHeroIfNecessary( false )    -- this one doesn't give them a choice
+--				ChangeMonstersToHeroIfNecessary( false )    -- this one doesn't give them a choice
 			end
 
 			ChangeGameState( "HeroesChooseCharactersWait" )
@@ -1345,6 +1349,7 @@ function GameManagement:Play()
 					end
 				end
 			elseif levelResult == LevelResultEnum.BeatSuperboss then
+				--[[
 				DebugXL:logW('GameManagement', "Changing heroes" )			
 				for _, hero in pairs( game.Teams.Heroes:GetPlayers()) do
 					DebugXL:logW('GameManagement', "Changing "..hero.Name.." to monster" )
@@ -1352,6 +1357,7 @@ function GameManagement:Play()
 						ChangeHeroToMonster( hero )
 					end
 				end
+				--]]
 			end
 			
 			ChangeGameState( "SessionEnd"..levelResult )
