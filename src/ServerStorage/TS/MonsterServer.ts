@@ -24,6 +24,7 @@ import { PlayerServer } from "./PlayerServer";
 
 import { MonsterDatumI } from "ReplicatedStorage/TS/MonsterDatum";
 import { HeroServer } from "ServerStorage/TS/HeroServer"
+import MathXL from "ReplicatedStorage/Standard/MathXL";
 
 interface MonsterPlayerInfo
 {
@@ -37,6 +38,10 @@ export namespace MonsterServer
 {
     const monsterInfos = new Map<Player, MonsterPlayerInfo>()
     let lastTick = tick()
+
+    const Heroes = Teams.FindFirstChild<Team>('Heroes')!
+    const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
+
 
     function getMonsterInfo( player: Player )
     {
@@ -66,7 +71,59 @@ export namespace MonsterServer
         }
 
         return monsterLevel    
+    }
 
+    function determineMonsterSpawnLevelForHero( underwhelmedHero: Hero, numMonsters: number ) {
+        const startingLevel = underwhelmedHero.getLocalLevel() 
+        DebugXL.logI( 'Gameplay', "Hero level: "+startingLevel )
+
+        const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
+        const numHeroes = Heroes.GetPlayers().size()
+        DebugXL.logI( 'Gameplay', "Hero level: "+startingLevel )
+
+        const dungeonDepthObj = Workspace.FindFirstChild('GameManagement')!.FindFirstChild('DungeonDepth') as NumberValue
+        // floor difficulty was 0.1 before 8/22. I'm pretty sure that's too low, but testing a wider spread anyhow to be sure
+        // 0.1666 as of 9/3
+        const dungeonFloorDifficultyK = BalanceData.dungeonFloorDifficultyK // GameplayTestService.getServerTestGroup( 'FloorDifficulty' ) * 0.0333 + 0.0666  
+        const dungeonFloorDifficulty = dungeonDepthObj.Value * dungeonFloorDifficultyK + 1
+        warn( `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}` )
+
+        // a level 1 hero should be able to take about 3 level 1 monsters and then some (because they respawn)
+
+        // let's say that level 1 monsters are matched to 
+        // not doing the effectiveStartingLevel thing - it would make sense if monsters were matched to characters but it doesn't, level 1 monsters are much weaker.
+        // if a level 1 character has to be able to beat 3 level 1 monsters, then a level 8 character needs to be faced by 3 level 8 monsters - hence the *3, but there's
+        // some wiggle room because monsters will level up
+        const effectiveStartingLevel = startingLevel + BalanceData.effective0LevelStrength
+        DebugXL.logI( 'Gameplay', "Effective starting level "+effectiveStartingLevel )
+
+        // a factoid:  more monsters is harder than fewer monsters not just for outnumbering purposes but because it means less time from monster -> hero; a 9 player game is
+        // a lot harder for the heroes than a 3 player game even though the outnumber is still 2-1. 
+        // so starting level should be even lower in a 3 vs 6 than in a 1 vs 2.  If 1 vs 2 is a 0.5 rating, then 3 vs 6 should be... (0.5 + 0.16) / 2? 
+
+        // it's not as simple as numHeroes / numMonsters -
+        // 1 on 1 is theoretically easier for the hero because the time the monster spends looking for the hero is increased
+        // but the monsters just seem way too hard at that level.  So I'm no longer
+        //       monsters: 1     2     3     4     5     6     7
+        //  heroes:  1     1     .5    .33   .25   .2  
+        //  heroes:  2     1.5   .75   .5    
+        //  heroes:  3     2     1     .66   .5
+        // const outnumberedFactor = ( ( numHeroes + 1 ) / numMonsters ) / 2    // averaging in reciprocal
+        const outnumberedFactor = numHeroes / numMonsters  
+        const calculatedLevel = math.max( 1, math.floor( effectiveStartingLevel * dungeonFloorDifficulty * outnumberedFactor * BalanceData.monsterStartingLevelFactor - 1 ))  
+        return calculatedLevel
+    }
+
+    export function determineMobSpawnLevel( mobCap: number )
+    {
+        if( Heroes.GetPlayers().size()<=0 ) {
+            return 1
+        }
+        // choose a random hero to match
+        const heroes: Array<Hero> = []
+        PlayerServer.getCharacterRecords().forEach( (c)=> { if( c instanceof Hero) heroes.push(c as Hero) } )  
+        const myHero = heroes[ MathXL.RandomInteger(0, heroes.size()-1) ]
+        return determineMonsterSpawnLevelForHero( myHero, mobCap )
     }
 
     // unlike heroes who are in a way starting at a highish level with their 1st level characters and then incrementally improving,
@@ -75,7 +132,6 @@ export namespace MonsterServer
     export function determineMonsterSpawnLevel( player: Player )
     {
         DebugXL.logV( 'Gameplay', "Determining spawn level for "+player.Name )
-        const heroTeam = Teams.FindFirstChild('Heroes') as Team
         const monsterInfo = getMonsterInfo( player )
         const heroForMonster = monsterInfo.heroMatch
         let startingLevel = monsterInfo.startingLevel
@@ -104,47 +160,8 @@ export namespace MonsterServer
                 const underwhelmedHero = heroes[underwhelmedHeroIdx]            
                 DebugXL.logV( 'Gameplay', "Matching hero to monster "+player.Name )
                 monsterInfo.heroMatch = underwhelmedHero
-
-                startingLevel = underwhelmedHero.getLocalLevel() 
-                DebugXL.logI( 'Gameplay', "Hero level: "+startingLevel )
-
-                const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
-                const numHeroes = heroTeam.GetPlayers().size()
-                DebugXL.logI( 'Gameplay', "Hero level: "+startingLevel )
-                const numMonsters = monsterTeam.GetPlayers().size()  // should we count dungeon lords or not?  let's say yes, because they'll be a threat before level is over
-
-                const dungeonDepthObj = Workspace.FindFirstChild('GameManagement')!.FindFirstChild('DungeonDepth') as NumberValue
-                // floor difficulty was 0.1 before 8/22. I'm pretty sure that's too low, but testing a wider spread anyhow to be sure
-                // 0.1666 as of 9/3
-                const dungeonFloorDifficultyK = BalanceData.dungeonFloorDifficultyK // GameplayTestService.getServerTestGroup( 'FloorDifficulty' ) * 0.0333 + 0.0666  
-                const dungeonFloorDifficulty = dungeonDepthObj.Value * dungeonFloorDifficultyK + 1
-                warn( `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}` )
-
-                // a level 1 hero should be able to take about 3 level 1 monsters and then some (because they respawn)
-
-                // let's say that level 1 monsters are matched to 
-                // not doing the effectiveStartingLevel thing - it would make sense if monsters were matched to characters but it doesn't, level 1 monsters are much weaker.
-                // if a level 1 character has to be able to beat 3 level 1 monsters, then a level 8 character needs to be faced by 3 level 8 monsters - hence the *3, but there's
-                // some wiggle room because monsters will level up
-                const effectiveStartingLevel = startingLevel + BalanceData.effective0LevelStrength
-                DebugXL.logI( 'Gameplay', "Effective starting level "+effectiveStartingLevel )
-
-                // a factoid:  more monsters is harder than fewer monsters not just for outnumbering purposes but because it means less time from monster -> hero; a 9 player game is
-                // a lot harder for the heroes than a 3 player game even though the outnumber is still 2-1. 
-                // so starting level should be even lower in a 3 vs 6 than in a 1 vs 2.  If 1 vs 2 is a 0.5 rating, then 3 vs 6 should be... (0.5 + 0.16) / 2? 
-
-                // it's not as simple as numHeroes / numMonsters -
-                // 1 on 1 is theoretically easier for the hero because the time the monster spends looking for the hero is increased
-                // but the monsters just seem way too hard at that level.  So I'm no longer
-                //       monsters: 1     2     3     4     5     6     7
-                //  heroes:  1     1     .5    .33   .25   .2  
-                //  heroes:  2     1.5   .75   .5    
-                //  heroes:  3     2     1     .66   .5
-                // const outnumberedFactor = ( ( numHeroes + 1 ) / numMonsters ) / 2    // averaging in reciprocal
-                const outnumberedFactor = numHeroes / numMonsters  
-                startingLevel = math.max( 1, math.floor( effectiveStartingLevel * dungeonFloorDifficulty * outnumberedFactor * BalanceData.monsterStartingLevelFactor - 1 ))  
-
-                monsterInfo.startingLevel = startingLevel
+               
+                monsterInfo.startingLevel = determineMonsterSpawnLevelForHero( underwhelmedHero, monsterTeam.GetPlayers().size() ) // should we count dungeon lords or not?  let's say yes, because they'll be a threat before level is over
             }
             DebugXL.logI( 'Gameplay', "Level "+startingLevel)
             return startingLevel
@@ -178,7 +195,6 @@ export namespace MonsterServer
     {
         const thisTick = tick()
         const elapsedTicks = thisTick - lastTick
-        const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
         const heroLevelSum = PlayerServer.getCharacterRecords().values().map( (pcdata)=>
         {
             const result = (pcdata instanceof Hero) ? pcdata.getLocalLevel() + BalanceData.effective0LevelStrength : 0
@@ -198,11 +214,10 @@ export namespace MonsterServer
     {
         const monsterInfo = getMonsterInfo( monsterPlayer )
         // we're ignoring potions here but that should more or less factor out
-        const heroTeam = Teams.FindFirstChild<Team>("Heroes")!
         const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
         let heroHealthSum = 0
         let heroLevelSum = 0
-        heroTeam.GetPlayers().forEach( heroPlayer => 
+        Heroes.GetPlayers().forEach( heroPlayer => 
         {
             const pc = heroPlayer.Character
             if( pc )
