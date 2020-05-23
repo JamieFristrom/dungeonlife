@@ -1,5 +1,8 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+DebugXL.logI( 'Executed', script.GetFullName())
 
 import { ServerStorage, Workspace, CollectionService, RunService } from '@rbxts/services'
 
@@ -23,6 +26,7 @@ import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 import { BoltWeaponUtility } from 'ReplicatedStorage/TS/BoltWeaponUtility'
+import { MonsterServer } from './MonsterServer'
 
 type Character = Model
 
@@ -36,7 +40,7 @@ const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<String
 const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('run')!.GetChildren()
 
 export namespace MobServer {
-    const mobCap = 20
+    const mobCap = 15
     let mobPushApart = 10
 
     export let mobs = new Set<Mob>()
@@ -147,32 +151,38 @@ export namespace MobServer {
             CollectionService.AddTag(this.character, 'CharacterTag')
     
             // what happens when we use the monster code on 'em
-            let characterRecord = new Monster('Orc',
+            let characterRecord = new Monster(characterClass,
                 [],
-                10)
+                MonsterServer.determineMobSpawnLevel(mobCap))
             const characterKey = PlayerServer.setCharacterRecordForMob(this.character, characterRecord)
             Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, 1)
             this.character.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
     
             ToolCaches.updateToolCache(characterKey, characterRecord)
     
-            // prepare their main weapon
-            const weaponKey = characterRecord.getPossessionKeyFromSlot(HotbarSlot.Slot1)
-            DebugXL.Assert( weaponKey!==undefined )
-            if( weaponKey ) {
-                const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
-                if (!tool) { 
-                    DebugXL.logW( 'Items', "Couldn't find tool for "+this.character.Name )
-                }
-                else {
-                    const flexTool = characterRecord.getFlexTool(weaponKey)
-                    DebugXL.Assert( flexTool !== undefined )
-                    if( flexTool ) {
-                        if( tool.FindFirstChild<Script>('MeleeClientScript')) {
-                            this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
-                        }
-                        else if( tool.FindFirstChild<Script>('BoltClient')) {
-                            this.weaponUtility = new BoltWeaponUtility(tool, flexTool)
+            // prepare a weapon
+            for( let i=0; i<HotbarSlot.Max; i++ ) {
+                const weaponKey = characterRecord.getPossessionKeyFromSlot(i)
+                if( weaponKey ) {
+                    const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
+                    if (!tool) { 
+                        DebugXL.logW( 'Items', "Couldn't find tool for "+this.character.Name+" weaponKey: "+weaponKey )
+                    }
+                    else {
+                        const flexTool = characterRecord.getFlexTool(weaponKey)
+                        DebugXL.Assert( flexTool !== undefined )
+                        if( flexTool ) {
+                            if( tool.FindFirstChild<Script>('MeleeClientScript')) {
+                                this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
+                                break
+                            }
+                            else if( tool.FindFirstChild<Script>('BoltClient')) {
+                                this.weaponUtility = new BoltWeaponUtility(tool, flexTool)
+                                break
+                            }
+                            else {
+                                DebugXL.logW('Items', 'Weapon '+tool.GetFullName()+' not supported yet')
+                            }
                         }
                     }
                 }
