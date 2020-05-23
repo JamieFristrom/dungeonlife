@@ -1379,7 +1379,7 @@ function GameManagement:BecomeHero( player )
 	ChangeMonsterToHero( player, true ) 				
 end
 
-
+--[[
 -- you may use Hero Express if you *didn't* use Hero Express to get to your last hero run
 function GameManagement:HeroExpress( player )
 	-- want to communicate it to the server
@@ -1412,7 +1412,7 @@ function GameManagement:HeroExpress( player )
 		end
 	end
 end 
-
+--]]
 
 -- this may seem odd but I'm going to try letting it leak and see what happens
 -- at some point the size of the dungeonPlayers dictionary might become unwieldy but it's probably a log search and not too bad?

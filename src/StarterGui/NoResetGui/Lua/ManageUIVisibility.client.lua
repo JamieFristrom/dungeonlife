@@ -1,4 +1,9 @@
---print( script:GetFullName().." executed" )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
+
 game.StarterGui:SetCoreGuiEnabled( Enum.CoreGuiType.Backpack, false )
 game.StarterGui:SetCoreGuiEnabled( Enum.CoreGuiType.PlayerList, false )
 
@@ -30,7 +35,7 @@ if game:GetService("UserInputService").TouchEnabled then
 --	while #dynamicThumbstickFrame:GetChildren() < 2 do wait() end
 end
 
-print( "Acknowledging gui loaded" ) 
+DebugXL:logI( "UI", "Acknowledging gui loaded" ) 
 workspace.Signals.GameManagementRE:FireServer( "AcknowledgeGuiLoaded" )
 
 GuiXL:waitForLoadingGoo()

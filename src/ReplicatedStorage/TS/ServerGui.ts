@@ -204,36 +204,3 @@ choosePlaceCloseButton.MouseButton1Click.Connect( function()
 //     }
 // })
 
-
-// code for choosing team
-const chooseTeamFrame = noResetGui.WaitForChild<Frame>( 'ChooseTeam' )
-const chooseTeamGrid = chooseTeamFrame.WaitForChild<Frame>( 'Grid' )
-
-const chooseTeamButton = script.Parent!.Parent!.WaitForChild('LeftButtonColumn').WaitForChild<TextButton>('ChooseTeam')
-
-const choiceKeys = ['HeroChoice','MonsterChoice','DungeonLordChoice']
-const choiceFrames = choiceKeys.map( (key)=>chooseTeamGrid.WaitForChild<Frame>(key) )
-const choiceImageButtons = choiceFrames.map( (frame)=>frame.WaitForChild<ImageButton>('Image'))
-const choiceTextButtons = choiceFrames.map( (frame)=>frame.WaitForChild<TextButton>('Choose'))
-
-function makeTeamChoice( keyName: string )
-{
-    mainRE.FireServer( keyName )
-    chooseTeamFrame.Visible = false
-}
-
-for( let i=0; i<choiceKeys.size(); i++ )
-{
-    choiceImageButtons[i].MouseButton1Click.Connect( ()=>{ makeTeamChoice(choiceKeys[i]) } )
-    choiceTextButtons[i].MouseButton1Click.Connect( ()=>{ makeTeamChoice(choiceKeys[i]) } )
-}
-
-let mainRE = Workspace.WaitForChild('Signals')!.WaitForChild('MainRE') as RemoteEvent
-
-chooseTeamButton.MouseButton1Click.Connect( function()
-{    
-    DebugXL.logI('UI', 'Choose team button clicked')
-    if( !chooseTeamFrame.Visible )
-        refresh()
-    chooseTeamFrame.Visible = !chooseTeamFrame.Visible
-})
