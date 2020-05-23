@@ -19,7 +19,6 @@ import { RunService } from "@rbxts/services"
 
 // borrowing from Android
 export enum LogLevel {
-    Assert,
     Error,
     Warning,
     Info,
@@ -96,12 +95,9 @@ class DebugXLC {
         }
     }
 
-    logA(tag: string, message: string) {
-        this.log(LogLevel.Assert, tag, message)
-    }
-
-    logE(tag: string, message: string) {
-        this.log(LogLevel.Error, tag, message)
+    logE( tag: string, message: string )
+    {
+        this.log( LogLevel.Error, tag, message )
     }
 
     logW(tag: string, message: string) {
