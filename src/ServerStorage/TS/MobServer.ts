@@ -151,11 +151,12 @@ export namespace MobServer {
             CollectionService.AddTag(this.character, 'CharacterTag')
     
             // what happens when we use the monster code on 'em
+            const mobLevel =  MonsterServer.determineMobSpawnLevel(mobCap)
             let characterRecord = new Monster(characterClass,
                 [],
-                MonsterServer.determineMobSpawnLevel(mobCap))
+                mobLevel)
             const characterKey = PlayerServer.setCharacterRecordForMob(this.character, characterRecord)
-            Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, 1)
+            Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
             this.character.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
     
             ToolCaches.updateToolCache(characterKey, characterRecord)

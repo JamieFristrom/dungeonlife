@@ -86,7 +86,7 @@ export namespace MonsterServer
         // 0.1666 as of 9/3
         const dungeonFloorDifficultyK = BalanceData.dungeonFloorDifficultyK // GameplayTestService.getServerTestGroup( 'FloorDifficulty' ) * 0.0333 + 0.0666  
         const dungeonFloorDifficulty = dungeonDepthObj.Value * dungeonFloorDifficultyK + 1
-        warn( `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}` )
+        DebugXL.logI( 'Gameplay', `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}` )
 
         // a level 1 hero should be able to take about 3 level 1 monsters and then some (because they respawn)
 
