@@ -1,7 +1,9 @@
---
--- Tutorial
--- 
-print( script:GetFullName().. " executed" )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
+
 local startTime = tick()
 
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
@@ -9,8 +11,6 @@ local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local InventoryClient  = require( game.ReplicatedStorage.InventoryClient )
 local PossessionData   = require( game.ReplicatedStorage.PossessionData )
-
---local GameAnalyticsClient = require( game.ReplicatedStorage.Standard.GameAnalyticsClient )
 
 local AnalyticsClient = require( game.ReplicatedStorage.TS.AnalyticsClient ).AnalyticsClient
 local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility ).GameplayTestUtility
@@ -30,18 +30,20 @@ local displayDelay = 0.001  -- it's slower than I'd like but can't go any faster
 
 local treasureArrow
 
+DebugXL:logD("UI", "Waiting for loading goo")
 GuiXL:waitForLoadingGoo()
+DebugXL:logD("UI", "Done waiting for loading goo")
 
 -- also, the very first time we get here, check to see if we should invite to a different server
 if( Places.places.BeginnerServer and ServerGui.cachedHighestHeroLevel < Places.places.BeginnerServer.maxGrowthLevel and Places.getCurrentPlace() ~= Places.places.BeginnerServer )then
-	print( "Inviting to beginner server" )
+	DebugXL:logI('UI', "Inviting to beginner server" )
 	if ServerGui:inviteToBeginnerServer() then
-		print( "Beginner server invitation accepted" )
+		DebugXL:logI('UI', "Beginner server invitation accepted" )
 		return
 	end
 end
 
-print( "Activating UI")
+DebugXL:logI( "UI", "Activating UI")
 playerGui:WaitForChild('CurtainGui').Enabled = true
 playerGui:WaitForChild('PlayerListGui').Enabled = true
 playerGui:WaitForChild('NoResetGui').Enabled = true
@@ -98,7 +100,7 @@ end
 	
 -- if localPlayer:WaitForChild("Tutorial").Value == 2 then
 	
--- 	print( "Tutorial: Let's go shopping" )
+-- 	DebugXL:logI('UI', "Tutorial: Let's go shopping" )
 -- 	-- turn arrow off chest if it's still around
 -- 	-- close the furnishing gui for you
 -- 	playerGui.FurnishGui.Event:Fire( "Build" )

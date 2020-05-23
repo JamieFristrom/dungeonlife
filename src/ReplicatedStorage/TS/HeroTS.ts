@@ -312,7 +312,7 @@ export class Hero extends CharacterRecord implements HeroI
         if( !validHeroPlayers.isEmpty())
         {
             const heroesAndRanges: [Character,number][] = validHeroPlayers.map( (player)=>
-                [player.Character!, player.Character!.PrimaryPart!.Position.sub( v3 ).mul(zeroY).Magnitude] )  // magnitude of y-zeroed distances             
+                [player.Character!, player.Character!.PrimaryPart!.Position.sub( v3 ).mul(zeroY).Magnitude] as [Character,number] )  // magnitude of y-zeroed distances             
             const heroAndRange = heroesAndRanges.reduce( (pairA, pairB)=>pairA[1] < pairB[1] ? pairA : pairB )
             return heroAndRange[1]
         }
@@ -322,3 +322,4 @@ export class Hero extends CharacterRecord implements HeroI
         }
     }
 }
+

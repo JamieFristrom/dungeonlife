@@ -30,7 +30,7 @@ local heroesRE = workspace.Signals.HeroesRE
 
 
 local function JumpTo( page )
-	if page == Gui.Main.MainHeader.Rubies or page == Gui.Main.MainHeader.Boost or page == Gui.Main.MainHeader.HeroExpress or page == Gui.Main.MainHeader.VIP then
+	if page == Gui.Main.MainHeader.Rubies or page == Gui.Main.MainHeader.Boost or page == Gui.Main.MainHeader.VIP then --page == Gui.Main.MainHeader.HeroExpress or 
 		Gui.Main.MainFooter.Info.Text = Localize.formatByKey( "StoreInfo"..page.Name )
 	elseif page == Gui.Main.MainHeader.Gold then
 		DebugXL:Assert( LocalPlayer.Team == game.Teams.Heroes )
@@ -319,7 +319,7 @@ vipTemplate.Button.MouseButton1Click:Connect( promptPurchase )
 
 
 -- hook up hero express button
-
+--[[
 local heroExpressTemplate = script.Parent.Parent:WaitForChild("Main"):WaitForChild("MainHeader"):WaitForChild("HeroExpress"):WaitForChild("Template")
 
 heroExpressTemplate.Button.MouseButton1Click:Connect( function() 
@@ -335,3 +335,4 @@ heroExpressTemplate.Button.MouseButton1Click:Connect( function()
 		MessageGui:PostMessage( "You're already the hero!" )
 	end
 end)
+--]]
