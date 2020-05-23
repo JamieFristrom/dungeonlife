@@ -33,7 +33,7 @@ export namespace GeneralWeaponUtility
         const charactersWithHeads = forcefieldlessCharacters.filter( (char)=>char.FindFirstChild('Head')!==undefined )
         DebugXL.logV('Combat', 'Targets with heads: '+DebugXL.stringifyInstanceArray(charactersWithHeads) )
         const targetsAndRanges : [Character,number][]= charactersWithHeads.map( (char)=>
-            [ char, WeaponUtility.GetTargetPoint( char ).sub( attackingCharacter.GetPrimaryPartCFrame().p ).Magnitude ])
+            [ char, WeaponUtility.GetTargetPoint( char ).sub( attackingCharacter.GetPrimaryPartCFrame().p ).Magnitude ] as [Character,number])
         if( !targetsAndRanges.isEmpty() )
         {
             const closestTarget = targetsAndRanges.reduce( ( pairA, pairB )=>pairA[1] < pairB[1] ? pairA : pairB )
