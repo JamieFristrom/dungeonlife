@@ -4,7 +4,7 @@ type Character = Model
 
 declare class MonstersClass
 {
-    Initialize( character: Character, characterKey: CharacterKey, walkSpeed: number, monsterClass: string, monsterLevel: number ) : void
+    Initialize( character: Character, characterKey: CharacterKey, walkSpeed: number, monsterClass: string, isMob: boolean ) : void
 }
 
 declare let Monsters: MonstersClass
