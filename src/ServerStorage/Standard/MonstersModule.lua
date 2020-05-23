@@ -150,7 +150,7 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 
 	PlayerServer.publishLevel( player, monsterLevel, monsterLevel )
 	local characterKey = PlayerServer.setCharacterRecordForPlayer( player, characterRecord )
-	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterClass, monsterLevel )
+	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterClass, false )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
@@ -172,27 +172,7 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 		warn( "Aborting Monsters:PlayerCharacterAddedWait due to missing class")
 		return characterRecord, characterKey
 	end
---	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
-	local totalDamageEstimate = 0
-	characterRecord.gearPool:forEach( function( possession )
-		if ToolData.dataT[ possession.baseDataS ].damageNs then
-			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
-			local average = ( damageN1 + damageN2 ) / 2
-			totalDamageEstimate = totalDamageEstimate + average
-		end
-	end )
-	totalDamageEstimate = totalDamageEstimate / characterRecord:countTools()
-	local damageBonusN = monsterDatum.baseDamageBonusN + monsterLevel * 0.15 -- monsterDatum.damageBonusPerLevelN  -- not using anymore to keep xp same after nerfing high level server monsters
-	totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN
-
---	--print( "Estimate: "..damageEstimate )
-	-- ( dividing by healthModifier quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
-	-- ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
-	local xp = humanoid.MaxHealth + characterRecord:getWalkSpeed() + totalDamageEstimate / damageModifierN
-	xp = xp * BalanceData.heroXPMultiplierN
-
-	InstanceXL.new( "NumberValue", { Name = "ExperienceReward", Value = xp, Parent = character }, true )
-
+--	
 	DebugXL:Assert( type(monsterLevel)=="number" )
 	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Monster:"..monsterClass, monsterLevel, 1, "level" )
 	-- we keep the sounds in MonsterConfigurations because some monsters (ghost, dungeonlord) don't have models with
@@ -348,7 +328,7 @@ function Monsters:Died( monster )
 end
 
 
-function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterClass, level )
+function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterClass, isMob )
 	DebugXL:Assert( self == Monsters )
 
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
@@ -356,6 +336,9 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 	-- wishlist, don't use Configurations, it's just one more object that might get unattached
 --	InstanceXL.new( "Folder", { Parent = monster, Name = "Configurations" }, true )
 --	InstanceXL.new( "NumberValue", { Parent = monster.Configurations, Name = "Level", Value = level }, true )
+
+	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
+	local level = characterRecord:getActualLevel()
 	--local standardHealth = enemyData.baseHealthN + enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
 	local standardHealth = monsterDatum.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
 
@@ -389,7 +372,6 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 		GiveUniqueWeapon( characterKey, potentialWeaponsA )
 	end
 
-	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
 	-- make sure you don't just have a one-shot weapon
 	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
 		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
@@ -407,7 +389,28 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 		CostumesServer:Colorify( monsterCharacterModel, monsterDatum.colorify3 )
 	end
 	CostumesServer:Scale( monsterCharacterModel, monsterDatum.scaleN )
+
+	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
+	local totalDamageEstimate = 0
+	characterRecord.gearPool:forEach( function( possession )
+		if ToolData.dataT[ possession.baseDataS ].damageNs then
+			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
+			local average = ( damageN1 + damageN2 ) / 2
+			totalDamageEstimate = totalDamageEstimate + average
+		end
+	end )
+	totalDamageEstimate = totalDamageEstimate / characterRecord:countTools()
+	local damageBonusN = monsterDatum.baseDamageBonusN + level * 0.15 -- monsterDatum.damageBonusPerLevelN  -- not using anymore to keep xp same after nerfing high level server monsters
+	totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN
 	-- wait( 0.5 ) -- sometimes there's a delay in getting that teamcolor going
+	--	--print( "Estimate: "..damageEstimate )
+	-- ( dividing by healthModifier quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
+	-- ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
+	local xp = monsterCharacterModel.Humanoid.MaxHealth + characterRecord:getWalkSpeed() + totalDamageEstimate / damageModifierN
+	xp = xp * BalanceData.heroXPMultiplierN * ( isMob and 0.5 or 1 )
+
+	DebugXL:logD('Gameplay', monsterCharacterModel:GetFullName()..' is worth '..xp..' xp')
+	InstanceXL.new( "NumberValue", { Name = "ExperienceReward", Value = xp, Parent = monsterCharacterModel }, true )
 end
 
 function Monsters:AdjustBuildPoints( player, amountN )
