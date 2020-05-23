@@ -212,18 +212,17 @@ let CommandList: {[k:string]:unknown} =
 
     // setLogLevel level optionaltag
     setLogLevel: function( sender: Player, args: string[] ) {
-      if( !args[1] ) {
+      const logLevelString = args[1]
+      if( !logLevelString ) {
         DebugXL.logW('Admin', 'Missing log level')
         return
       }
-      type LogLevelType = keyof typeof LogLevel
-      const logLevelString = args[1] as LogLevelType
-      if( !logLevelString )
+      if( !(logLevelString in LogLevel ))
       {
         DebugXL.logW('Admin', 'Unknown log level '+args[1])
         return
       }
-      const logLevel = LogLevel[logLevelString]
+      const logLevel = LogLevel[logLevelString as keyof typeof LogLevel]
       DebugXL.setLogLevel( logLevel, args[2] )
     },
 
