@@ -8,11 +8,6 @@
 --
 --  Jamie_Fristrom @happionlabs
 
---  What should my new naming convention be with these typescript files?
---  I don't want to name them the exact same thing as their lua counterparts which often still exist
---  Even though they're in their own directory
---  So I can put TS on the end, which seems redundant here but isn't on the Roblox side
-
 */
 
 import { RunService } from "@rbxts/services"
