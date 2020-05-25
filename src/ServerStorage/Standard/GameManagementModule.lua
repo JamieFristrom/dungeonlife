@@ -742,7 +742,7 @@ local function MonitorPlayer( player )
 								--ChangeHeroToMonster( player )
 							else
 								local localTick = time()
-								Monsters:Died( playerCharacter )  -- fixme: this needs to be called for AI NPC mobs as well
+								Monsters:Died( playerCharacter )  
 								-- if the rest of the characters die while we're lying in pieces
 								while GameManagement:LevelReady() and time() < localTick + 2 do
 									wait()

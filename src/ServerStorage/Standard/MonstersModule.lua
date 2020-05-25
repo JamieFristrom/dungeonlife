@@ -270,6 +270,7 @@ function Monsters:Died( monster )
 	local player = game.Players:GetPlayerFromCharacter( monster )
 	if player then
 		Inventory:AdjustCount( player, "MonsterDeaths", 1 )
+		PlayerServer.recordCharacterDeath( player, monster )
 	end
 
 	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monster )
@@ -298,8 +299,6 @@ function Monsters:Died( monster )
 			end
 		end
 	end
-
-	PlayerServer.recordCharacterDeath( player, player.Character )
 
 	if monsterDatum.tagsT.Superboss then
 		-- everybody gets credit & loot for the superboss but xp shared as usual
