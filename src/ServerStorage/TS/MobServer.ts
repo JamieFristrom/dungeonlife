@@ -34,6 +34,8 @@ const mobAnimationsFolder = ServerStorage.FindFirstChild<Folder>('MobAnimations'
 DebugXL.Assert(mobAnimationsFolder !== undefined)
 const mobFolder = Workspace.FindFirstChild<Folder>('Mobs')!
 DebugXL.Assert(mobFolder !== undefined)
+const mobToolCacheFolder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+DebugXL.Assert(mobToolCacheFolder !== undefined)
 
 const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('idle')!.GetChildren()
 const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('walk')!.GetChildren()
@@ -216,6 +218,7 @@ export namespace MobServer {
                         DebugXL.logW('Items', "Couldn't find tool for " + this.character.Name + " weaponKey: " + weaponKey)
                     }
                     else {
+                        // check to make sure nobody else arl
                         const flexTool = characterRecord.getFlexTool(weaponKey)
                         DebugXL.Assert(flexTool !== undefined)
                         if (flexTool) {
@@ -272,7 +275,9 @@ export namespace MobServer {
 
         mobUpdate() {
             if (this.weaponUtility) {
+                DebugXL.Assert( this.weaponUtility.tool.Parent === mobToolCacheFolder || this.weaponUtility.tool.Parent === this.character )
                 if (this.weaponUtility && !GeneralWeaponUtility.isEquippedBy(this.weaponUtility.tool, this.character)) {
+                    DebugXL.Assert( this.weaponUtility.tool.Parent === mobToolCacheFolder )
                     this.humanoid.EquipTool(this.weaponUtility.tool)
                     this.weaponUtility.drawWeapon(this.character)                      // do server stuff
                     this.stopMoving()
