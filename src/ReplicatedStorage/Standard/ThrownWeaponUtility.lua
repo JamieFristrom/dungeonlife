@@ -107,8 +107,6 @@ function ThrownWeaponClient.new( tool )
 	
 	local cooldownN = tool:WaitForChild("Cooldown").Value
 	local projectileTemplate = tool.Handle:Clone()
-	local toolIdValue = tool.ToolId:Clone()
-	toolIdValue.Parent = projectileTemplate
 	
 	local player = tool.Parent
 	
