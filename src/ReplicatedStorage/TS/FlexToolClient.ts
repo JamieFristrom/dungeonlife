@@ -33,7 +33,9 @@ export namespace FlexToolClient
         {
             let possessionKey = possessionKeyValObj.Value          
             DebugXL.Assert( PCClient.pc !== undefined )  
-            if( !PCClient.pc ) return new FlexTool('NullTool',1,[])
+            if( !PCClient.pc ) {
+                return FlexTool.nullTool
+            }
 
             let flexTool = PCClient.pc.getFlexTool( possessionKey )
             DebugXL.Assert( flexTool !== undefined )
@@ -48,7 +50,7 @@ export namespace FlexToolClient
                 return flexTool
             }
         }
-        return new FlexTool('NullTool',1,[])
+        return FlexTool.nullTool
     }
 
     

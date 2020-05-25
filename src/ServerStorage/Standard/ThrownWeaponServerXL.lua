@@ -24,12 +24,15 @@ function ThrownWeaponServer.new( tool )
 	local thrown = true
 	--ObjectX.SaveTransparencyInfoRecursively( tool.Handle )
 
+	local toolObjectValue = tool.Handle:FindFirstChild('Tool')
+	DebugXL:Assert( toolObjectValue )
+	if not toolObjectValue then
+		return
+	end
+	toolObjectValue.Value = tool
 	local projectileTemplate = tool.Handle:Clone()
-	local toolIdValue = tool.ToolId:Clone()
 	
 	local flexToolInst 
-	
-	toolIdValue.Parent = projectileTemplate
 
 	local function Weld(parentObj)
 		local w1 = Instance.new("Weld") 
@@ -69,7 +72,6 @@ function ThrownWeaponServer.new( tool )
 			-- we need to wait for tool action to resolve before destroying lest we mess things up
 			-- if thrownObj then thrownObj.AncestryChanged:Wait() end  -- didn't work
 --				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
-			--print( "Destroying "..player.Name.."'s "..tool.Name.." id "..tool.ToolId.Value )
 			FlexibleTools:RemoveToolWait( player, tool )
 		end
 		

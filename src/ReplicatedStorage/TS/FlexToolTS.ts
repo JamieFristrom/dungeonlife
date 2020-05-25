@@ -1,17 +1,24 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
 import { BalanceData } from "./BalanceDataTS"
-print( "FlexTool: BalanceData required")
+DebugXL.logD('Requires', "FlexTool: BalanceData required")
 import { Enhancements } from "./EnhancementsTS"
-print( "FlexTool: Enhancements required")
-import { PlacesManifest } from "./PlacesManifest"
-print( "FlexTool: Places required")
+DebugXL.logD('Requires', "FlexTool: Enhancements required")
 import { ToolData } from "./ToolDataTS"
-print( "FlexTool: ToolData required")
-import { DebugXL } from "./DebugXLTS";
-print( "FlexTool: DebugXL required")
-import { Players } from "@rbxts/services";
-print( "FlexTool: Players required")
+DebugXL.logD('Requires', "FlexTool: ToolData required")
+import { Players, RunService, ServerStorage } from "@rbxts/services";
+DebugXL.logD('Requires', "FlexTool: Players required")
+
+import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper'
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
+import { ActiveSkinSetI } from "./SkinTypes"
+
+type PossessionKey = string
 
 // disappointed to discover after converting this from a number to an enum that typescript allows you to assign
 // any number to it
@@ -36,12 +43,12 @@ export interface GearDefinition
     readonly hideAccessoriesB?: boolean
 }
 
-export interface GlobalToolInfo
+export interface GlobalGearInfo
 {
     cooldownFinishTime: number
 }
 
-let globalToolInfos = new Map<Player, { [toolId:string]:GlobalToolInfo }>()
+let globalGearInfos = new Map<Player, { [possessionKey:string]:GlobalGearInfo }>()
 
 const enhancementPriceFactor = 1.2
 const priceGamma = 1.2
@@ -245,26 +252,26 @@ export class FlexTool
     startPowerCooldown( player: Player )
     {
         let powerType = this.baseDataS
-        let myToolInfos = globalToolInfos.get( player )
-        if( !myToolInfos )
+        let myGearInfos = globalGearInfos.get( player )
+        if( !myGearInfos )
         {
-            myToolInfos = {}
-            globalToolInfos.set( player, myToolInfos )
+            myGearInfos = {}
+            globalGearInfos.set( player, myGearInfos )
         }
         // not affected by slow as yet
-        myToolInfos[ powerType ] = { cooldownFinishTime: time() + this.getCooldown() + this.getDuration() }        
+        myGearInfos[ powerType ] = { cooldownFinishTime: time() + this.getCooldown() + this.getDuration() }        
     }
     
     powerCooldownPctRemaining( player: Player )
     {
         let powerType = this.baseDataS
-        let myToolInfos = globalToolInfos.get( player )
-        if( myToolInfos )
+        let myGearInfos = globalGearInfos.get( player )
+        if( myGearInfos )
         {
-            let myToolInfo = myToolInfos[ powerType ]
-            if( myToolInfo )
+            let myGearInfo = myGearInfos[ powerType ]
+            if( myGearInfo )
             {
-                return math.max( ( myToolInfo.cooldownFinishTime - time() ) / ( this.getCooldown()! + this.getDuration() ), 0 )
+                return math.max( ( myGearInfo.cooldownFinishTime - time() ) / ( this.getCooldown()! + this.getDuration() ), 0 )
             }
         }
         return 0
@@ -273,7 +280,7 @@ export class FlexTool
     powerCooldownTimeRemaining( player: Player )
     {
         let powerType = this.baseDataS
-        let myToolInfos = globalToolInfos.get( player )
+        let myToolInfos = globalGearInfos.get( player )
         if( myToolInfos )
         {
             let myToolInfo = myToolInfos[ powerType ]
@@ -409,6 +416,117 @@ export class FlexTool
         }
     }
 
+    // don't call this function unless you know what you're doing
+    // should only be called on server
+    createToolInstance( activeSkins: ActiveSkinSetI, possessionKey: PossessionKey )
+    {
+        DebugXL.Assert( RunService.IsServer() )
+
+        // if tool doesn't have enhancements add an empty array so we don't have to constantly check if enhancementsA is nil
+        if (!this.enhancementsA) this.enhancementsA = []
+        
+        const toolBaseDatum = ToolData.dataT[ this.baseDataS ]
+        if (!toolBaseDatum) DebugXL.logE( script.Name, `Unable to find possession ${this.baseDataS}` ) 
+        
+        let baseToolId = toolBaseDatum.baseToolS
+        DebugXL.Assert( baseToolId !== undefined )
+        if( baseToolId )
+        {
+            let textureSwapId = undefined
+            if (!toolBaseDatum.skinType) 
+            {
+                DebugXL.logE( script.Name, `${toolBaseDatum.idS} has no skinType`)
+            }
+            else
+            {
+                if( activeSkins[ toolBaseDatum.skinType ])
+                {
+                    const reskin = PossessionData.dataT[ activeSkins[ toolBaseDatum.skinType ]] as PossessionData.SkinDatumI
+                    if( reskin )
+                    {
+                        baseToolId = reskin.baseToolS
+                        textureSwapId = reskin.textureSwapId
+                    }
+                }
+            }
+             
+            const ToolsFolder = ServerStorage.FindFirstChild<Folder>('Tools')!
+            DebugXL.Assert( ToolsFolder !== undefined )
+
+            const toolTemplate = ToolsFolder.FindFirstChild<Tool>( baseToolId )
+            DebugXL.Assert( toolTemplate !== undefined )
+            if( toolTemplate )
+            {
+                const newToolInstance = toolTemplate.Clone() as Tool
+                FlexTool.retexture( newToolInstance, textureSwapId )
+                let nonDefaultFX = false
+                for( let i=0; i<this.enhancementsA.size(); i++ )
+                {
+                    const enhancement = this.enhancementsA[i]
+
+                    // enable enhancement related effects
+                    for( let descendent of newToolInstance.GetDescendants() )
+                    {
+                        if( descendent.Name === 'FX'+enhancement.flavorS )
+                        {
+                            if( descendent.IsA('Script') )
+                            {
+                                descendent.Disabled = false
+                            }
+                            else if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire') || descendent.IsA('Trail'))
+                            {
+                                // now *that's* a new idea to me. Any of these things have Enabled properties, so...
+                                const descendentEmitter = descendent as ParticleEmitter | Beam | Light | Fire | Trail
+                                descendentEmitter.Enabled = true
+                                nonDefaultFX = true
+                            }
+                            else
+                            {
+                                DebugXL.logE( script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
+                            }
+                        }
+                    }
+                }
+
+                if( nonDefaultFX )
+                {
+                    // remove default effects
+                    for( let descendent of newToolInstance.GetDescendants() )
+                    {
+                        if( descendent.Name === 'FXdefault' )
+                        {
+                            if( descendent.IsA('ParticleEmitter') || descendent.IsA('Beam') || descendent.IsA('Light') || descendent.IsA('Fire') || descendent.IsA('Trail'))
+                            {
+                                let effect = descendent as ParticleEmitter | Beam | Light | Fire | Trail
+                                effect.Enabled = false
+                            }
+                            else
+                            {
+                                DebugXL.logE( script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}` )
+                            }
+                            // delibaretely not enabling something already enabled because I think there's a perf hit
+                            // and who knows, there may be tools with disabled default fx that were there for temp or testing
+                        }
+                    }
+                }
+
+                newToolInstance.CanBeDropped = false
+        
+                // here's some data we attach to the tool itself to make it easy to look up on the client
+                // attach inventory slot so we can find it on the client
+                ValueHelper.AddStringValue( newToolInstance, 'PossessionKey', possessionKey )
+
+                // and if you're having trouble looking up its stats, maybe because you're on the client and haven't loaded the character
+                // record yet, then you can look up its base data:
+                ValueHelper.AddStringValue( newToolInstance, 'BaseData', toolBaseDatum.idS )
+
+                return newToolInstance
+            }
+        }
+        return undefined
+    }
+
+
     static nullTool = new FlexTool( 'NullTool', 1, [] )
 }
 
@@ -416,8 +534,8 @@ export class FlexTool
 Players.PlayerRemoving.Connect( function( )
 {
     // it's possible that the remove could outrace a power use, so checking everyone
-    globalToolInfos.forEach( function( _, player )
+    globalGearInfos.forEach( function( _, player )
     {
-        if( !player.Parent ) globalToolInfos.delete( player )
+        if( !player.Parent ) globalGearInfos.delete( player )
     } )
 } )

@@ -22,18 +22,24 @@ export enum LogLevel {
 }
 
 class DebugXLC {
-    static readonly logLevelPrefixes: string[] = ['A', 'E', 'W', 'I', 'D', 'V']
+    static readonly logLevelPrefixes: string[] = ['E','W','I','D','V']
 
     private defaultLogLevel = LogLevel.Warning
 
-    private logLevelForTag = new Map<string,LogLevel>([['Combat',LogLevel.Debug]])
+    private logLevelForTag = new Map<string,LogLevel>([
+//        ['Combat',LogLevel.Verbose],
+        ['Mobs',LogLevel.Info],
+        ['Executed',LogLevel.Info],
+        ['UI', LogLevel.Info]
+    ])
 
-    Error(message: string) {
+    Error( message: string )
+    {
         let callstackS = debug.traceback()
-        if (false) //--game["Run Service"]:IsStudio() )
-            error(message)
+        if( false ) //--game["Run Service"]:IsStudio() )
+            error( message )
         else
-            spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
+            spawn( () => { this.log( LogLevel.Error, script.Name, message+" "+callstackS ) } ) // -- so analytics will pick it up
     }
 
     Assert(conditionB: boolean) {
