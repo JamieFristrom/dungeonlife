@@ -62,6 +62,7 @@ export namespace ToolCaches {
                 }
             }
 
+            // garbage collection
             let toolCache = player ? player.FindFirstChild<Folder>('Backpack')! : mobToolCache
             toolCache.GetChildren().forEach(function (inst: Instance) {
                 let tool = inst as Tool
