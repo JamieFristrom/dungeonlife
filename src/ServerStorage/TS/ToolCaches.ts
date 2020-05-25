@@ -14,23 +14,25 @@ import { PlayerServer } from "./PlayerServer"
 type Character = Model
 
 export namespace ToolCaches {
-    let mobToolCache : Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
-    DebugXL.Assert( mobToolCache !== undefined )
+    let mobToolCache: Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+    DebugXL.Assert(mobToolCache !== undefined)
 
 
     export function updateToolCache(characterKey: CharacterKey, characterRecord: CharacterRecord) {
         DebugXL.logD('Items', `Updating ToolCache for characterKey: ${characterKey}`)
-        DebugXL.Assert( typeOf(characterKey)==='number' )
-        DebugXL.Assert( characterKey !== 0 )
+        DebugXL.Assert(typeOf(characterKey) === 'number')
+        DebugXL.Assert(characterKey !== 0)
         let player = PlayerServer.getPlayer(characterKey)
+        if (!player) {
+            return  // mobs don't need to keep their tools in the cache
+        }
 
         let allActiveSkins = player ? Inventory.GetActiveSkinsWait(player) : { monster: {}, hero: {} }
         let activeSkins = characterRecord.getTeam() === Teams.FindFirstChild('Heroes') ? allActiveSkins.hero : allActiveSkins.monster
 
         let characterModel = PlayerServer.getCharacterModel(characterKey)
-        DebugXL.Assert( characterModel !== undefined ) // character should be instantiated if we're building its cache
-        if( characterModel )
-        {
+        DebugXL.Assert(characterModel !== undefined) // character should be instantiated if we're building its cache
+        if (characterModel) {
             for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
                 let possessionKey = characterRecord.getPossessionKeyFromSlot(i)
                 if (possessionKey) {
@@ -40,7 +42,7 @@ export namespace ToolCaches {
                         continue
                     }
                     if (flexTool.getUseType() === "held") {
-                        let tool = CharacterRecord.getToolInstanceFromPossessionKey(characterModel, possessionKey)
+                        let tool = CharacterRecord.getToolInstanceFromPossessionKey(characterModel, characterRecord, possessionKey)
                         if (!tool)
                             tool = FlexibleTools.CreateTool({
                                 toolInstanceDatumT: flexTool,
@@ -74,7 +76,7 @@ export namespace ToolCaches {
                 }
             })
 
-            if( player )
+            if (player)
                 publishPotions(player, characterRecord)
         }
         DebugXL.logD('Items', `Finished updating ToolCache for characterKey: ${characterKey}`)

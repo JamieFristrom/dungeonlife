@@ -27,6 +27,7 @@ import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 import { BoltWeaponUtility } from 'ReplicatedStorage/TS/BoltWeaponUtility'
 import { MonsterServer } from './MonsterServer'
+import { FlexibleToolsServer } from './FlexibleToolsServer'
 
 type Character = Model
 
@@ -57,8 +58,8 @@ export namespace MobServer {
         mobPushApart = newMobPush
     }
 
-    export function spawnMob(characterClass: string, position?: Vector3, spawner?: Spawner, curTick?: number) {        
-        if( spawner && curTick ) {
+    export function spawnMob(characterClass: string, position?: Vector3, spawner?: Spawner, curTick?: number) {
+        if (spawner && curTick) {
             lastSpawnTicks.set(spawner, curTick)
         }
         mobs.add(new Mob(characterClass, position, spawner))
@@ -127,13 +128,12 @@ export namespace MobServer {
                 }
             }
         }
-        else
-        {
+        else {
             const lastSpawnTick = lastSpawnTicks.get(spawner)
-            if (!lastSpawnTick || (lastSpawnTick<curTick-5)) {
+            if (!lastSpawnTick || (lastSpawnTick < curTick - 5)) {
                 // have we already spawned enough for now?
-                const myMobs = mobs.values().filter((mob)=>mob.spawnPart===spawner)
-                if( myMobs.size() < 4 ) {
+                const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawner)
+                if (myMobs.size() < 4) {
                     spawnMob(spawner.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
                         spawner,
@@ -211,18 +211,19 @@ export namespace MobServer {
 
             // prepare a weapon
             for (let i = 0; i < HotbarSlot.Max; i++) {
-                const weaponKey = characterRecord.getPossessionKeyFromSlot(i)
-                if (weaponKey) {
-                    const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, weaponKey)
+                const possessionKey = characterRecord.getPossessionKeyFromSlot(i)
+                if (possessionKey) {
+                    const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, characterRecord, possessionKey)
                     if (!tool) {
-                        DebugXL.logW('Items', "Couldn't find tool for " + this.character.Name + " weaponKey: " + weaponKey)
+                        DebugXL.logW("Items", "Couldn't find tool for " + this.character.Name + " weaponKey: " + possessionKey)
                     }
                     else {
                         // check to make sure nobody else arl
-                        const flexTool = characterRecord.getFlexTool(weaponKey)
+                        const flexTool = characterRecord.getFlexTool(possessionKey)
                         DebugXL.Assert(flexTool !== undefined)
                         if (flexTool) {
-                            if (tool.FindFirstChild<Script>('MeleeClientScript')) {
+                            FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: this.character, possessionsKey: possessionKey })
+                            if (tool.FindFirstChild<Script>("MeleeClientScript")) {
                                 this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
                                 break
                             }
@@ -275,9 +276,9 @@ export namespace MobServer {
 
         mobUpdate() {
             if (this.weaponUtility) {
-                DebugXL.Assert( this.weaponUtility.tool.Parent === mobToolCacheFolder || this.weaponUtility.tool.Parent === this.character )
+                DebugXL.Assert(this.weaponUtility.tool.Parent === undefined || this.weaponUtility.tool.Parent === this.character)
                 if (this.weaponUtility && !GeneralWeaponUtility.isEquippedBy(this.weaponUtility.tool, this.character)) {
-                    DebugXL.Assert( this.weaponUtility.tool.Parent === mobToolCacheFolder )
+                    DebugXL.Assert(this.weaponUtility.tool.Parent === undefined)
                     this.humanoid.EquipTool(this.weaponUtility.tool)
                     this.weaponUtility.drawWeapon(this.character)                      // do server stuff
                     this.stopMoving()
