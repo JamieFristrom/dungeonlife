@@ -11,7 +11,7 @@ local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )
 
 local GameManagement  = require( game.ServerStorage.GameManagementModule )
 local Monsters        = require( game.ServerStorage.MonstersModule )
-local Loot            = require( game.ServerStorage.LootModule )
+local LootServer = require( game.ServerStorage.Standard.TS.LootServer )
 
 local AdminCommands = require( game.ServerStorage.TS.AdminCommands ).AdminCommands
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
@@ -21,7 +21,7 @@ local CheatParser = {}
 function CheatParser:DropLoot( player )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if characterKey then
-		Loot:MonsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+		LootServer.monsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", player )
 	end
 end
 

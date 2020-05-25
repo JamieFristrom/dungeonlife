@@ -9,7 +9,6 @@ local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 
 local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
-local Loot             = require( game.ServerStorage.LootModule )
 
 local CharacterI       = require( game.ServerStorage.CharacterI )
 local Ghost            = require( game.ServerStorage.GhostModule )
@@ -30,6 +29,7 @@ local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 
+local LootServer       = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
@@ -321,7 +321,7 @@ function Monsters:Died( monster )
 	end
 	-- give out loot even if we don't know who is responsible
 	if lastAttackingPlayer then
-		Loot:MonsterDrop( monsterLevel, Monsters:GetClass( monster ), lastAttackingPlayer, dropWhereV3 )
+		LootServer.MonsterDrop( monsterLevel, Monsters:GetClass( monster ), lastAttackingPlayer )
 	end
 	--print( "Loot, if any, dropped" )
 end

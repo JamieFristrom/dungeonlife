@@ -6,7 +6,7 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import CharacterClientI = require("ReplicatedStorage/Standard/CharacterClientI");
 
 import * as Destructible from "ServerStorage/Standard/Destructible"
-import * as Loot from "ServerStorage/Standard/LootModule"
+import { LootServer } from "ServerStorage/TS/LootServer"
 import * as MechanicalEffects from "ServerStorage/Standard/MechanicalEffects"
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
@@ -39,7 +39,7 @@ export class Chest
         DebugXL.Assert( hero instanceof Hero )
         if( hero && hero instanceof Hero ) 
         {
-            Loot.ChestDrop( math.floor( hero.getActualLevel()*1.5 ), player, this.chestInstance.PrimaryPart!.Position )
+            LootServer.chestDrop( math.floor( hero.getActualLevel()*1.5 ), player )
         }
     }
 

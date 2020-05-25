@@ -1,3 +1,9 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
+
 --[[
 	
 	Heroes
@@ -5,10 +11,8 @@
 	Functions to handle the PC, its stats, and its persistence
 	
 --]]
-print( script:GetFullName().." executed" )
 
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL			= require( game.ReplicatedStorage.Standard.MathXL )
 local InstanceXL    	= require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
@@ -16,7 +20,6 @@ local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 local BalanceData       = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
