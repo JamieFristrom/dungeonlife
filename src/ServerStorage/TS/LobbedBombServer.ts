@@ -9,35 +9,28 @@ import { FlexibleToolsServer } from 'ServerStorage/TS/FlexibleToolsServer'
 
 
 
-export namespace LobbedBombServer
-{
-    export function explode( thrownObjPart: Part )	
-    {
+export namespace LobbedBombServer {
+    export function explode(thrownObjPart: Part) {
         let creatorValueObj = thrownObjPart.FindFirstChild<ObjectValue>('creator')
-        DebugXL.Assert( creatorValueObj !== undefined )
-        if( creatorValueObj )
-        {
+        DebugXL.Assert(creatorValueObj !== undefined)
+        if (creatorValueObj) {
             let attackingPlayer = creatorValueObj.Value as Player
-            DebugXL.Assert( attackingPlayer !== undefined )
-            if( attackingPlayer )
-            {
-                let flexToolIdObj = thrownObjPart.FindFirstChild<NumberValue>('ToolId')
-                DebugXL.Assert( flexToolIdObj !== undefined )
-                if( flexToolIdObj )
-                {
-                    let flexTool = FlexibleToolsServer.getFlexToolFromId( flexToolIdObj.Value )
-                    let toolDamage = CharacterI.DetermineFlexToolDamage( attackingPlayer, flexTool )
-                    let hitCharacters = MechanicalEffects.Explosion( thrownObjPart.Position, 
+            DebugXL.Assert(attackingPlayer !== undefined)
+            if (attackingPlayer) {
+                let parentToolValueObj = thrownObjPart.FindFirstChild<ObjectValue>('Tool')
+                DebugXL.Assert(parentToolValueObj !== undefined)
+                if (parentToolValueObj) {
+                    let flexTool = FlexibleToolsServer.getFlexTool(parentToolValueObj.Value as Tool)
+                    let toolDamage = CharacterI.DetermineFlexToolDamage(attackingPlayer, flexTool)
+                    let hitCharacters = MechanicalEffects.Explosion(thrownObjPart.Position,
                         toolDamage[0],
-                        FlexibleTools.GetAdjFlexToolStat( flexTool, 'blastRadiusN'),
+                        FlexibleTools.GetAdjFlexToolStat(flexTool, 'blastRadiusN'),
                         attackingPlayer,
-                        false )
-                    hitCharacters.forEach( (hitCharacter)=>
-                    {
+                        false)
+                    hitCharacters.forEach((hitCharacter) => {
                         let humanoid = hitCharacter.FindFirstChild<Humanoid>('Humanoid')
-                        if( humanoid )
-                        {
-                            FlexibleTools.ResolveFlexToolEffects( flexTool, humanoid, attackingPlayer )
+                        if (humanoid) {
+                            FlexibleTools.ResolveFlexToolEffects(flexTool, humanoid, attackingPlayer)
                         }
                     })
                 }

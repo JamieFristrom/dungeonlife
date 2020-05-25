@@ -159,8 +159,7 @@ end
 
 
 function FlexibleTools:RemoveToolWait( player, tool )
-	local toolId = tool.ToolId.Value
-	local toolServerData = FlexibleToolsServer.getFlexToolAccessor( toolId )
+	local toolServerData = FlexibleToolsServer.getFlexToolAccessor( tool )
 	DebugXL:Assert( player == toolServerData.player )
 	
 	local pcData = CharacterI:GetPCDataWait( player )
@@ -188,8 +187,7 @@ end
 -- on the ground is just the view to the internal document, but for now...
 function FlexibleTools:GetToolInstanceDatum( toolObject )
 	DebugXL:Assert( self == FlexibleTools )
-	local toolId = toolObject.ToolId.Value
-	return FlexibleToolsServer.getFlexToolAccessor( toolId ).flexToolInst
+	return FlexibleToolsServer.getFlexToolAccessor( toolObject ).flexToolInst
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -232,9 +230,6 @@ end
 function FlexibleTools:CreateExplosionIfNecessary( toolObj, positionV3 )
 	DebugXL:Assert( self == FlexibleTools )
 	
-	-- temp error suppression; this probably means the player put their crossbow away immediately after firing
-	if not toolObj:FindFirstChild("ToolId") then return end
-		
 	local explosiveEnhancementIdx = FlexibleTools:GetExplosiveEnhancementIdx( toolObj )
 	
 	local owningPlayer = ToolXL:GetOwningPlayer( toolObj )
@@ -452,8 +447,8 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 	local toolBaseData = FlexibleTools:GetToolBaseData( tool )
 	local toolSkinType = toolBaseData.skinType
 	local activeSkin = _activeSkinsT[ toolSkinType ]
-	local _possessionsKey = FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).possessionsKey
-	DebugXL:Assert( FlexibleToolsServer.getFlexToolAccessor( tool.ToolId.Value ).character == player.Character )
+	local _possessionsKey = FlexibleToolsServer.getFlexToolAccessor( tool ).possessionsKey
+	DebugXL:Assert( FlexibleToolsServer.getFlexToolAccessor( tool ).character == player.Character )
 	-- oh look, I can use local functions to avoid the hassle of passing parameters
 	local function RecreateTool()
 		local _toolInstanceDatum = FlexibleTools:GetToolInstanceDatum( tool )
