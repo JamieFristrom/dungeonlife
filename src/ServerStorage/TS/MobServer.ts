@@ -82,6 +82,7 @@ export namespace MobServer {
         // dispose of bodies and act
         mobs.forEach((mob) => {
             if (mob.humanoid.Health <= 0) {
+                Monsters.Died( mob.character )
                 delay(2, () => {
                     mob.character.Parent = undefined
                 })
