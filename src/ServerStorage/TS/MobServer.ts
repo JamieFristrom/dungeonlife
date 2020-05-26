@@ -46,7 +46,9 @@ type Spawner = BasePart
 
 export namespace MobServer {
     const mobCap = 15
+    const mobSpawnPeriod = 10
     let mobPushApart = 10
+
 
     const monsterTeam = Teams.WaitForChild<Team>('Monsters')
 
@@ -126,7 +128,7 @@ export namespace MobServer {
         }
         else {
             const lastSpawnTick = lastSpawnTicks.get(spawner)
-            if (!lastSpawnTick || (lastSpawnTick < curTick - 5)) {
+            if (!lastSpawnTick || (lastSpawnTick < curTick - mobSpawnPeriod)) {
                 // have we already spawned enough for now?
                 const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawner)
                 if (myMobs.size() < 4) {
