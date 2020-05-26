@@ -73,15 +73,10 @@ export namespace MobServer {
             }
         })
 
-        mobs.forEach((mob) => {
-            if (mob.character.Parent === undefined) {
-                mobs.delete(mob)
-            }
-        })
-
         // dispose of bodies and act
         mobs.forEach((mob) => {
-            if (mob.humanoid.Health <= 0) {
+            if (mob.humanoid.Health <= 0 || mob.character.Parent === undefined) {
+                mobs.delete(mob)
                 Monsters.Died( mob.character )
                 delay(2, () => {
                     mob.character.Parent = undefined
