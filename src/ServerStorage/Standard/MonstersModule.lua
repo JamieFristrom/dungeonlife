@@ -267,10 +267,10 @@ function Monsters:Died( monster )
 	DebugXL:Assert( monster:IsA( 'Model' ) )
 	DebugXL:logI( "Character", "Monster "..monster.Name.." died" )
 
-	local player = game.Players:GetPlayerFromCharacter( monster )
-	if player then
-		Inventory:AdjustCount( player, "MonsterDeaths", 1 )
-		PlayerServer.recordCharacterDeath( player, monster )
+	local monsterPlayer = game.Players:GetPlayerFromCharacter( monster )
+	if monsterPlayer then
+		Inventory:AdjustCount( monsterPlayer, "MonsterDeaths", 1 )
+		PlayerServer.recordCharacterDeath( monsterPlayer, monster )
 	end
 
 	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monster )
@@ -282,7 +282,7 @@ function Monsters:Died( monster )
 
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	if not monsterDatum then
-		DebugXL:Error( "Couldn't find monster "..monsterClass.." of player "..player.Name )
+		DebugXL:Error( "Couldn't find monster "..monsterClass.." of player "..monsterPlayer.Name )
 		return
 	end
 	local lastAttackingPlayer = CharacterUtility:GetLastAttackingPlayer( monster )
@@ -304,8 +304,8 @@ function Monsters:Died( monster )
 		-- everybody gets credit & loot for the superboss but xp shared as usual
 		for _, hero in pairs( game.Teams.Heroes:GetPlayers() ) do
 			Inventory:AdjustCount( hero, "Kills"..monsterClass, 1 )
-			Inventory:AdjustCount( player, "Stars", 20, "Kill", "Superboss" )
-			Inventory:EarnRubies( player, 20, "Kill", "Superboss" )
+			Inventory:AdjustCount( monsterPlayer, "Stars", 20, "Kill", "Superboss" )
+			Inventory:EarnRubies( monsterPlayer, 20, "Kill", "Superboss" )
 			-- GameAnalyticsServer.ServerEvent( {
 			-- 	["category"] = "design",
 			-- 	["event_id"] = "Kill:Shared:"..monsterClass
@@ -319,9 +319,10 @@ function Monsters:Died( monster )
 			Inventory:AdjustCount( lastAttackingPlayer, "MonsterKills", 1 )
 		end
 	end
-	-- give out loot even if we don't know who is responsible
+	-- give out loot even if we don't know who is responsible	
 	if lastAttackingPlayer then
-		LootServer.MonsterDrop( monsterLevel, Monsters:GetClass( monster ), lastAttackingPlayer )
+		local wasMob = monsterPlayer and false or true
+		LootServer.monsterDrop( monsterLevel, Monsters:GetClass( monster ), wasMob, lastAttackingPlayer )
 	end
 	--print( "Loot, if any, dropped" )
 end
