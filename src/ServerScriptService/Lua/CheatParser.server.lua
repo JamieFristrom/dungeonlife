@@ -1,8 +1,9 @@
---
--- CheatParser
---
--- Part of Jamie's new XL libraries
---
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI( 'Executed', script.Name )
+
 local CheatUtilityXL  = require( game.ReplicatedStorage.TS.CheatUtility )
 
 local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
