@@ -1063,6 +1063,7 @@ end
 
 
 local function LoadLevelWait()
+	MobServer.clearMobs()
 	Dungeon:BuildWait( function( player ) return GameManagement:ReachedExit( player ) end )
 	FurnishServer:FurnishWithRandomSpawns()
 	FurnishServer:FurnishWithRandomChests()
