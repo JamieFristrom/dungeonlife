@@ -30,7 +30,8 @@ class DebugXLC {
 //        ['Combat',LogLevel.Verbose],
         ['Mobs',LogLevel.Info],
         ['Executed',LogLevel.Info],
-        ['UI', LogLevel.Info]
+//        ['UI', LogLevel.Info],
+        ['GameManagement',LogLevel.Verbose]
     ])
 
     Error( message: string )
