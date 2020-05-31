@@ -90,6 +90,11 @@ export namespace MobServer {
         })
     })
 
+    export function clearMobs() {
+        mobs.clear()
+        mobFolder.GetChildren().forEach( (mobModel)=>mobModel.Parent=undefined )
+    }
+
     export function spawnMobs(curTick: number) {
         DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
         if (mobs.size() < mobCap) {
