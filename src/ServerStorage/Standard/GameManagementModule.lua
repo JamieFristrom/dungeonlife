@@ -76,7 +76,7 @@ local StarterGui = game.StarterGui
 -- We want *some* prep, though, particularly so after a TPK monsters can become heroes before we spawn the monsters and rebalance.
 local preparationDuration = workspace.GameManagement.FastStart.Value and 5 or Places:getCurrentPlace().preparationDuration
 
-
+local heroDeathSavoringSecondsK = 4
 
 local timeToThrowARodB = false
 
@@ -356,16 +356,16 @@ local function TPK()
 						allHeroesDeadB = false
 						break					
 					else
---						DebugXL:logV('GameManagement', player.Name.." not HeroChosen" )
+						DebugXL:logV('GameManagement', player.Name.." not HeroChosen" )
 					end
 				else
---					DebugXL:logV('GameManagement', player.Name.." health 0" )
+					DebugXL:logV('GameManagement', player.Name.." health 0" )
 				end
 			else
---				DebugXL:logV('GameManagement', player.Name.." no humanoid" )
+				DebugXL:logV('GameManagement', player.Name.." no humanoid" )
 			end
 		else
---			DebugXL:logV('GameManagement', player.Name.." character missing" )
+			DebugXL:logV('GameManagement', player.Name.." character missing" )
 		end
 		-- maybe you're dead or maybe you're a fresh hero about to be reassembled
 		if DungeonPlayer:Get( player ).pcState == PCState.Respawning then
@@ -726,17 +726,22 @@ local function MonitorPlayer( player )
 						end
 						if not humanoid or not humanoid.Parent or humanoid.Health <= 0 then
 							if player.Team == game.Teams.Heroes then
+								DebugXL:logD("GameManagement",player.Name.." death detected")
 								Inventory:AdjustCount( player, "HeroDeaths", 1 )
 								local localTick = time()
 --								GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Fail:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
 								Heroes:Died( player )  
 								-- if the rest of the characters die while we're lying in pieces
-								while GameManagement:LevelReady() and time() < localTick + 2 do
+								while GameManagement:LevelReady() and time() < localTick + heroDeathSavoringSecondsK do
 									wait()
 								end
 								playerCharacter.Parent = nil
 								-- now we stay the same team; when we day or respawn we get to re-choose
+								DebugXL:logD("GameManagement",player.Name.." death grace period over. Choosing hero.")
 								workspace.Signals.ChooseHeroRE:FireClient( player, "ChooseHero" )
+								-- putting you in limbo now otherwise it will trigger error in end-of-level watcher
+								myDungeonPlayerT.pcState = PCState.Limbo
+
 								ChooseHeroWait( player )
 
 								--ChangeHeroToMonster( player )
@@ -1109,11 +1114,13 @@ local function PlayLevelWait()
 			emptyTable[ nil ] = 'die'
 		end
 		if TPK() then
+			DebugXL:logI("GameManagement","TPK detected")
 			levelResult = LevelResultEnum.TPK
+			-- give it some time. the player monitor and this should complete at roughly the same time
+			-- and if I've coded it right then it won't matter which is done first
+			wait(heroDeathSavoringSecondsK) 
+			DebugXL:logI("GameManagement","TPK grace period over")
 			break
---		elseif LoungeModeOver() then
---			levelResult = LevelResultEnum.LoungeModeOver
---			break
 		-- probably didn't need to duplicate state here with bools *and* a state variable
 		elseif reachedExitB then		
 			local newDungeonDepth = DungeonDeck:goToNextFloor()
@@ -1213,7 +1220,7 @@ local function HeroesChooseCharactersWait()
 end
 
 
-local protectionDisabled = false
+local protectionDisabled = true
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()
@@ -1285,20 +1292,15 @@ function GameManagement:Play()
 			end
 
 			ChangeGameState( "Lobby" )
+			
+-- let the client handle this
+--			GameServer.letHeroesPrepare()
 
 			LoadLevelWait()  -- so monsters can start building while waiting
 			ChangeGameState( "MonstersToHeroes" )
 
 			roundCounterN = roundCounterN + 1			
-	
-			-- heroes from last round don't have to choose but do have to prepare
-			for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-				DebugXL:logW('GameManagement', "Triggering PrepareHero for "..player.Name )
-				if player.HeroExpressPreparationCountdown.Value <= 0 then 
-					workspace.Signals.ChooseHeroRE:FireClient( player, "PrepareHero" )
-				end
-			end
-			
+				
 			--[[
 			if workspace.GameManagement.DungeonDepth.Value <= 1 then  -- after a TPK, don't give players choice about becoming heroes
 				ChangeMonstersToHeroIfNecessary( false )
