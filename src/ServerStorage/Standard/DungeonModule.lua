@@ -348,7 +348,6 @@ function Dungeon:BuildWait( _nextLevelFunc )
 		InstanceXL:UnparentAllChildren( workspace.MonsterSpawns )
 		InstanceXL:UnparentAllChildren( workspace.Environment )
 		InstanceXL:UnparentAllChildren( workspace.Building )
-		InstanceXL:UnparentAllChildren( workspace.Mobs )
 		ClearGrid()
 		PlaceStartTile( math.ceil( GridWidth() / 2) + currentFloor.startX, 
 			math.ceil( GridWidth() / 2) + currentFloor.startY, 
