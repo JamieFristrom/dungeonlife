@@ -1,6 +1,11 @@
-import { Players } from "@rbxts/services";
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
+import { Players, Teams, Workspace } from "@rbxts/services";
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
-import { InventoryServer } from "./InventoryServer";
 import { MessageServer } from "./MessageServer";
 
 // -- it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
@@ -30,8 +35,8 @@ import { MessageServer } from "./MessageServer";
 
 let numHeroesNeededPerPlayer: number[] = []
 
-numHeroesNeededPerPlayer[0] = 0;   
-numHeroesNeededPerPlayer[1] = 0;   
+numHeroesNeededPerPlayer[0] = 0;
+numHeroesNeededPerPlayer[1] = 0;
 numHeroesNeededPerPlayer[2] = 1;   // 1v1
 numHeroesNeededPerPlayer[3] = 1;   // 1v2
 numHeroesNeededPerPlayer[4] = 1;   // 1v3
@@ -48,7 +53,7 @@ numHeroesNeededPerPlayer[9] = 3;   // 3v6  // don't know!  //  I've capped the s
 numHeroesNeededPerPlayer[10] = 4;  // 4v6
 numHeroesNeededPerPlayer[11] = 4;  // 4v7
 numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
-	
+
 //	numHeroesNeededPerPlayer[13] = 4;  // 4v9  // calling optimal (a lot of monsters but also a lot of time spent as hero) but only if you don't take into account possible wide hero spreads
 //	numHeroesNeededPerPlayer[14] = 4;  // 4v10  
 //	numHeroesNeededPerPlayer[15] = 4;  // 4v11
@@ -56,27 +61,45 @@ numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
 //	numHeroesNeededPerPlayer[17] = 5;  // 5v12
 //	numHeroesNeededPerPlayer[18] = 5;  // 5v13
 
-export namespace GameServer
-{
-    export function numHeroesNeeded()
-    {
-     //   TableXL:FindAllInAWhere( game.Teams.Monsters:GetPlayers(), function( monsterPlayer ) return not Inventory:PlayerInTutorial( monsterPlayer ) end )
-        let nonNoobs = Players.GetPlayers().filter( ( player )=> !Inventory.PlayerInTutorial( player ) )
-        return numHeroesNeededPerPlayer[ nonNoobs.size() ]
+const HeroTeam = Teams.FindFirstChild<Team>('Heroes')!
+DebugXL.Assert(HeroTeam !== undefined)
+
+const signals = Workspace.FindFirstChild<Folder>('Signals')!
+DebugXL.Assert(signals !== undefined)
+
+const chooseHeroRE = signals.FindFirstChild<RemoteEvent>('ChooseHeroRE')!
+DebugXL.Assert(chooseHeroRE !== undefined)
+
+export namespace GameServer {
+    export function numHeroesNeeded() {
+        //   TableXL:FindAllInAWhere( game.Teams.Monsters:GetPlayers(), function( monsterPlayer ) return not Inventory:PlayerInTutorial( monsterPlayer ) end )
+        let nonNoobs = Players.GetPlayers().filter((player) => !Inventory.PlayerInTutorial(player))
+        return numHeroesNeededPerPlayer[nonNoobs.size()]
     }
 
-    export function askPlayersToRate()
-    {
+    export function askPlayersToRate() {
         let players = Players.GetPlayers()
-        for( let player of players )
-        {
-            if( Inventory.IsStarFeedbackDue( player ) )
-            {
-                let starFeedbackCount = Inventory.GetCount( player, 'StarFeedbackCount' )
+        for (let player of players) {
+            if (Inventory.IsStarFeedbackDue(player)) {
+                let starFeedbackCount = Inventory.GetCount(player, 'StarFeedbackCount')
                 let messageCode = starFeedbackCount > 0 ? '!StarFeedbackRepeat' : '!StarFeedback'
-                MessageServer.PostMessageByKey( player, messageCode, false, 0, true )
-                Inventory.SetNextStarFeedbackDueTime( player )
+                MessageServer.PostMessageByKey(player, messageCode, false, 0, true)
+                Inventory.SetNextStarFeedbackDueTime(player)
             }
         }
     }
+
+    // let's let the client handle this
+    // export function letHeroesPrepare() {
+    //     // heroes who lived through last level should go to prepare menu
+    //     // heroes who died have already been sent to the choose hero screen by the health monitor
+    //     const players = HeroTeam.GetPlayers()
+    //     for (let player of players) {
+    //         const character = player.Character
+    //         if (!character || !character.FindFirstChild<Humanoid>('Humanoid') || character.FindFirstChild<Humanoid>('Humanoid')!.Health <= 0) {
+    //             DebugXL.logD('GameManagement', 'PrepareHero for ' + player.Name)
+    //             chooseHeroRE.FireClient(player, "PrepareHero")
+    //         }
+    //     }
+    // }
 }
