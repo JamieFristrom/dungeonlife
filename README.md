@@ -66,7 +66,8 @@ To get the animations into your place you'll need the Animation Editor plug-in.
 
 In your place, right click Workspace and **Insert from file**; choose rbxm/DungeonLifeAnimations.rbxm. That will insert an AnimationDummy into your place.
 
-Open the Animation Editor, go to File -> Load -> AttackBothHands1.
+Open the Animation Editor, select the Dummy you've just imported, and go to ... -> Load -> AttackBothHands1.
+![alt text](https://i.gyazo.com/40997aff0094c3b2b814405ca770b76e.png "Logo Title Text 1")
 
 Then File -> Export -> (Create New) and save it under the name AttackBothHands1.
 
