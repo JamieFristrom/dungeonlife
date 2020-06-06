@@ -68,27 +68,22 @@ import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 // //     enhancement.suffixes.forEach( ( word )=> print( word ) )
 // // }
 
-ToolData.dataA.forEach( ( baseData )=>
-{
+ToolData.dataA.forEach((baseData) => {
     // if( false )  // activeSkinsT[ baseData.skinType ] )  // just using to reskin image now
     //     return PossessionData.dataT[ activeSkinsT[ baseData.skinType ] ].readableNameS
     // else
     // {
-    if( baseData.namePerLevel )
-    {
-        for( let i=0;i<10;i++ )
-        {
+    if (baseData.namePerLevel) {
+        for (let i = 0; i < 10; i++) {
             let v = baseData.namePerLevel[i]
-            if( v )
-            {
-                Localize.formatByKey( v )
-//                print( v + " Gender" )          
+            if (v) {
+                Localize.formatByKey(v)
+                //                print( v + " Gender" )          
             }
         }
     }
-    else
-    {
-        Localize.formatByKey( baseData.readableNameS )
-//        print( baseData.readableNameS + " Gender")
+    else {
+        Localize.formatByKey(baseData.readableNameS)
+        //        print( baseData.readableNameS + " Gender")
     }
 })

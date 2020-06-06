@@ -15,8 +15,7 @@
 
 */
 // borrowing from Android
-export enum LogLevel
-{
+export enum LogLevel {
     Assert,
     Error,
     Warning,
@@ -25,121 +24,99 @@ export enum LogLevel
     Verbose
 }
 
-class DebugXLC
-{
-    static readonly logLevelPrefixes: string[] = ['A','E','W','I','D','V']
+class DebugXLC {
+    static readonly logLevelPrefixes: string[] = ['A', 'E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Info
+    private defaultLogLevel = LogLevel.Warning
 
-    private logLevelForTag = new Map<string,LogLevel>()
+    private logLevelForTag = new Map<string, LogLevel>()
 
-    Error( message: string )
-    {
+    Error(message: string) {
         let callstackS = debug.traceback()
-        if( false ) //--game["Run Service"]:IsStudio() )
-            error( message )
+        if (false) //--game["Run Service"]:IsStudio() )
+            error(message)
         else
-            spawn( () => { this.log( LogLevel.Error, script.Name, message+" "+callstackS ) } ) // -- so analytics will pick it up
+            spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
     }
 
-    Assert( conditionB: boolean )
-    {
-        if( ! conditionB )
-            this.Error( "Assertion failed" )
-	}
+    Assert(conditionB: boolean) {
+        if (!conditionB)
+            this.Error("Assertion failed")
+    }
 
-    DumpToStr( variable: unknown )
-    {
+    DumpToStr(variable: unknown) {
         let str = ""
-        if( typeIs(variable, "table") )
-        {    
-            let tbl = variable as {[index:string]:unknown}         
-            for( let [k,v] of Object.entries(tbl))
-            {
-                str += ( k+": "+tostring( v ) ) + "\n"
-                str += this.DumpToStr( v )
+        if (typeIs(variable, "table")) {
+            let tbl = variable as { [index: string]: unknown }
+            for (let [k, v] of Object.entries(tbl)) {
+                str += (k + ": " + tostring(v)) + "\n"
+                str += this.DumpToStr(v)
             }
         }
-        else
-        {
-            str += tostring( variable ) + "\n"
+        else {
+            str += tostring(variable) + "\n"
         }
         return str
     }
 
-    Dump( variable: unknown )
-    {
-        this.log( LogLevel.Info, script.Name, this.DumpToStr( variable ))
+    Dump(variable: unknown) {
+        this.log(LogLevel.Info, script.Name, this.DumpToStr(variable))
     }
 
-    setLogLevel( newLogLevel: LogLevel, tag?: string )
-    {
-        if( tag ) 
-        {
-            this.logLevelForTag.set( tag, newLogLevel )
+    setLogLevel(newLogLevel: LogLevel, tag?: string) {
+        if (tag) {
+            this.logLevelForTag.set(tag, newLogLevel)
         }
-        else
-        {
+        else {
             this.defaultLogLevel = newLogLevel
         }
     }
 
-    getLogLevelForTag( tag: string )
-    {
+    getLogLevelForTag(tag: string) {
         const logLevelForTag = this.logLevelForTag.get(tag)
         return logLevelForTag ? logLevelForTag : this.defaultLogLevel
     }
 
-    log( logLevel: LogLevel, tag: string, message: string )
-    {
-        if( !message )
-        {
-            error( `E/${tag}: MISSING MESSAGE` )
+    log(logLevel: LogLevel, tag: string, message: string) {
+        if (!message) {
+            error(`E/${tag}: MISSING MESSAGE`)
         }
-        else if( logLevel <= this.getLogLevelForTag(tag))
-        {
-            let prefix = DebugXLC.logLevelPrefixes[ logLevel ]
-            if( logLevel <= LogLevel.Error )
-                error( `${prefix}/${tag}: ${message}` )
-            else if( logLevel <= LogLevel.Warning )
-                warn( `${prefix}/${tag}: ${message}` )
+        else if (logLevel <= this.getLogLevelForTag(tag)) {
+            let prefix = DebugXLC.logLevelPrefixes[logLevel]
+            if (logLevel <= LogLevel.Error)
+                error(`${prefix}/${tag}: ${message}`)
+            else if (logLevel <= LogLevel.Warning)
+                warn(`${prefix}/${tag}: ${message}`)
             else
-                print( `${prefix}/${tag}: ${message}`)
+                print(`${prefix}/${tag}: ${message}`)
         }
     }
 
-    logA( tag: string, message: string )
-    {
-        this.log( LogLevel.Assert, tag, message )
+    logA(tag: string, message: string) {
+        this.log(LogLevel.Assert, tag, message)
     }
 
-    logE( tag: string, message: string )
-    {
-        this.log( LogLevel.Error, tag, message )
+    logE(tag: string, message: string) {
+        this.log(LogLevel.Error, tag, message)
     }
 
-    logW( tag: string, message: string )
-    {
-        this.log( LogLevel.Warning, tag, message )
+    logW(tag: string, message: string) {
+        this.log(LogLevel.Warning, tag, message)
     }
 
-    logI( tag: string, message: string )
-    {
-        this.log( LogLevel.Info, tag, message )
+    logI(tag: string, message: string) {
+        this.log(LogLevel.Info, tag, message)
     }
 
-    logD( tag: string, message: string )
-    {
-        this.log( LogLevel.Debug, tag, message )
+    logD(tag: string, message: string) {
+        this.log(LogLevel.Debug, tag, message)
     }
 
-    logV( tag: string, message: string )
-    {
-        this.log( LogLevel.Verbose, tag, message )
+    logV(tag: string, message: string) {
+        this.log(LogLevel.Verbose, tag, message)
     }
 
-    setDefaultLogLevel( logLevel: LogLevel ) 
-    {
+    setDefaultLogLevel(logLevel: LogLevel) {
         this.defaultLogLevel = logLevel
     }
 }
