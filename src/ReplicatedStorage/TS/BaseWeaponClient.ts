@@ -44,7 +44,7 @@ export abstract class BaseWeaponClient
         }
         else {
             this._onActivated(character, mouse)
-            const [bestTarget, bestFit] = GeneralWeaponUtility.findClosestTarget( character )
+            const [bestTarget] = GeneralWeaponUtility.findClosestVisibleTarget( character, this.weaponUtility.getRange() )
             this.weaponUtility.showAttack(character, bestTarget) 
         }
     }

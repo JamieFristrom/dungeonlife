@@ -120,7 +120,7 @@ function ThrownWeaponClient.new( tool )
 	
 		enabled = false
 		
-		local clickPart, clickHitV3 = RangedWeaponUtility.MouseHitNontransparent( mouse, { character } )  --  Raycast.Mouse( mouse )
+		local clickPart, clickHitV3 = unpack( RangedWeaponUtility.MouseHitNontransparent( mouse, { character } ) )  --  Raycast.Mouse( mouse )
 		--local clickPart = mouse.Target
 		--local clickHitV3 = mouse.Hit.p
 		
