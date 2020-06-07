@@ -482,7 +482,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 2,   
             critChanceN    : .06,  
-            rangeN: 120,
+            rangeN: 60,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -506,7 +506,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 0.8,   
             critChanceN    : .05,  
-            rangeN: 180,
+            rangeN: 70,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -526,7 +526,7 @@ export namespace ToolData
             skinType       : SkinTypeEnum.Bomb,
             baseToolS      : "Bomb",
             damageNs       : [ 14, 18 ],  // 20 - 32 would mean a first level gremlin could kill a first level hero in 3 hits; also made less swingy
-            rangeN: 60,
+            rangeN: 40,
             blastRadiusN   : 40,
             cooldownN      : 1,
             critChanceN    : 0,  // explosion code doesn't crit anyway

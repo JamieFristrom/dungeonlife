@@ -1,5 +1,10 @@
 
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
+
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 --
 local RangedWeaponUtility = {}
 --
@@ -13,29 +18,12 @@ function RangedWeaponUtility.CollidedConnect( projectileObj, onTouchedFunc )
 	end)
 end
 
-
--- one day we may want to put this in its own deal
--- 
-local function FindNontransparentPartOnRayWithIgnoreList( ray, ignoreDescendantsVolatile, terrainCellsAreCubesB, ignoreWaterB )
-	local partHit, intersectionV3, normalV3, material = workspace:FindPartOnRayWithIgnoreList( ray, ignoreDescendantsVolatile, terrainCellsAreCubesB, ignoreWaterB )
-	
-	if partHit and partHit.Transparency > 0.9 or not partHit.CanCollide or partHit.CollisionGroupId == workspace.GameManagement.PorousCollisionGroupId.Value then 
-		table.insert( ignoreDescendantsVolatile, partHit )
-		return FindNontransparentPartOnRayWithIgnoreList( ray, ignoreDescendantsVolatile, terrainCellsAreCubesB, ignoreWaterB )
-	else
-		return partHit, intersectionV3, normalV3, material
-	end
-end
-
-
+-- returns packed result 
 function RangedWeaponUtility.MouseHitNontransparent( mouse, ignoreDescendantsVolatile )
 	local mouseRay = Ray.new( mouse.UnitRay.Origin, mouse.UnitRay.Direction * 1000 )
-	return FindNontransparentPartOnRayWithIgnoreList( mouseRay, ignoreDescendantsVolatile )
+	return GeneralWeaponUtility.findNontransparentPartOnRayWithIgnoreList( mouseRay, ignoreDescendantsVolatile )
 end
 
-function RangedWeaponUtility.MouseHitNontransparentPack( mouse, ignoreDescendantsVolatile )
-	local partHit, intersectionV3, normalV3, material = RangedWeaponUtility.MouseHitNontransparent( mouse, ignoreDescendantsVolatile ) 
-	return { partHit, intersectionV3, normalV3, material }
-end
+
 
 return RangedWeaponUtility
