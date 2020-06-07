@@ -27,11 +27,11 @@ class DebugXLC {
     private defaultLogLevel = LogLevel.Warning
 
     private logLevelForTag = new Map<string,LogLevel>([
-//        ['Combat',LogLevel.Verbose],
+        ['Combat',LogLevel.Debug],
         ['Mobs',LogLevel.Info],
         ['Executed',LogLevel.Info],
 //        ['UI', LogLevel.Info],
-        ['GameManagement',LogLevel.Verbose]
+//        ['GameManagement',LogLevel.Verbose]
     ])
 
     Error( message: string )

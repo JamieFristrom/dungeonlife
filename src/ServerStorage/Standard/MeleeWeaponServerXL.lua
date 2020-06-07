@@ -59,18 +59,17 @@ function MeleeWeaponServerXL.new( Tool )
 			PlayerServer.markAttack( Player, "Melee" )
 		end
 
-		local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestTarget( Character ) )
+		local range = flexToolInst:getBaseData().rangeN
+		local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( Character, range ) )
 		if bestTarget then
 --			--print( Character.Name.." found target "..bestTarget.Name )
-			if bestFitN <= flexToolInst:getBaseData().rangeN then
-				DebugXL:logI( 'Combat', Character.Name.." in range. Applying damage to "..bestTarget.Name )
-				CharacterI:TakeFlexToolDamage( bestTarget, Character, Player and Player.Team or game.Teams.Monsters, flexToolInst )
-				if Player then
-					PlayerServer.markHit( Player, "Melee" )
-				end			
+			DebugXL:logI( 'Combat', Character.Name.." in range. Applying damage to "..bestTarget.Name )
+			CharacterI:TakeFlexToolDamage( bestTarget, Character, Player and Player.Team or game.Teams.Monsters, flexToolInst )
+			if Player then
+				PlayerServer.markHit( Player, "Melee" )
+			end			
 
-				FlexibleTools:CreateExplosionIfNecessary( Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
-			end
+			FlexibleTools:CreateExplosionIfNecessary( Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
 		end
 
 		GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )

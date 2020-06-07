@@ -4,7 +4,7 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { ServerStorage, Workspace, CollectionService, RunService, Teams } from '@rbxts/services'
+import { ServerStorage, Workspace, CollectionService, RunService, Teams, PhysicsService } from '@rbxts/services'
 
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
@@ -44,6 +44,8 @@ const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringV
 
 type Spawner = BasePart
 
+
+
 export namespace MobServer {
     const mobCap = 15
     const mobSpawnPeriod = 10
@@ -79,7 +81,7 @@ export namespace MobServer {
         mobs.forEach((mob) => {
             if (mob.humanoid.Health <= 0 || mob.character.Parent === undefined) {
                 mobs.delete(mob)
-                Monsters.Died( mob.character )
+                Monsters.Died(mob.character)
                 delay(2, () => {
                     mob.character.Parent = undefined
                 })
@@ -92,7 +94,7 @@ export namespace MobServer {
 
     export function clearMobs() {
         mobs.clear()
-        mobFolder.GetChildren().forEach( (mobModel)=>mobModel.Parent=undefined )
+        mobFolder.GetChildren().forEach((mobModel) => mobModel.Parent = undefined)
     }
 
     export function spawnMobs(curTick: number) {
@@ -162,9 +164,30 @@ export namespace MobServer {
         currentAnimationTrack?: AnimationTrack
         currentAnimationSet?: Animation[]
         spawnPart?: Spawner
+        lastSpottedEnemyPosition?: Vector3
 
         getCharacterRecord() {
             return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.character))
+        }
+
+        findSpawnPos(spawnCenter: Vector3, spawnSize: Vector3, exclusionCenter: Vector3, exclusionRadius: number) {
+            const minX = spawnCenter.X - spawnSize.X / 2
+            const maxX = spawnCenter.X + spawnSize.X / 2
+            const minZ = spawnCenter.Z - spawnSize.Z / 2
+            const maxZ = spawnCenter.Z + spawnSize.Z / 2
+            const exclusionRadiusSquared = exclusionRadius * exclusionRadius
+            for (let i = 0; i < 100; i++) {
+                const myX = MathXL.RandomNumber(minX, maxX)
+                const myZ = MathXL.RandomNumber(minZ, maxZ)
+                const deltaX = myX - exclusionCenter.X
+                const deltaZ = myZ - exclusionCenter.Z
+                if (deltaX * deltaX + deltaZ * deltaZ > exclusionRadiusSquared) {
+                    return new Vector3(myX, 0, myZ)
+                }
+            }
+            // spawn on corner to be safe
+            DebugXL.logW("Mob", "Unable to find spawn point in 100 tries")
+            return new Vector3(maxX, 0, maxZ)
         }
 
         constructor(characterClass: string, position?: Vector3, spawnPart?: Spawner) {
@@ -182,20 +205,17 @@ export namespace MobServer {
             // position mob
             let spawnPosition: Vector3 = new Vector3(8, 0, 0)
             if (spawnPart) {
-                // doesn't support rotated spawns yet
-                const minX = spawnPart.Position.X - spawnPart.Size.X / 2
-                const maxX = spawnPart.Position.X + spawnPart.Size.X / 2
-                const minZ = spawnPart.Position.Z - spawnPart.Size.Z / 2
-                const maxZ = spawnPart.Position.Z + spawnPart.Size.Z / 2
-                const myX = MathXL.RandomNumber(minX, maxX)
-                const myZ = MathXL.RandomNumber(minZ, maxZ)
-                spawnPosition = new Vector3(myX, 0, myZ)
+                const exclusionPart = spawnPart.Parent!.FindFirstChild<Part>("MobExclusion")
+                const exclusionPosition = exclusionPart ? exclusionPart.Position : spawnPosition
+                const exclusionRadius = exclusionPart ? exclusionPart.Size.Z : 0
+                spawnPosition = this.findSpawnPos( spawnPart.Position, spawnPart.Size, exclusionPosition, exclusionRadius )
             }
             else if (position) {
                 spawnPosition = position
             }
             const adjustedSpawnPosition = spawnPosition.add(new Vector3(0, 6, 0))
             this.character.SetPrimaryPartCFrame(new CFrame(adjustedSpawnPosition))
+            const mobChildren = this.character.GetDescendants()
 
             this.character.Parent = mobFolder
 
@@ -209,6 +229,16 @@ export namespace MobServer {
             const characterKey = PlayerServer.setCharacterRecordForMob(this.character, characterRecord)
             Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
             this.character.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
+
+            if (!CharacterClasses.monsterStats[characterClass].ghostifyB) {
+                // doing this before they draw their weapon so I think it's ok
+                mobChildren.forEach((child) => {
+                    if (child.IsA("BasePart")) {
+                        PhysicsService.SetPartCollisionGroup(child, "Mob")
+                    }
+                })
+            }
+
 
             ToolCaches.updateToolCache(characterKey, characterRecord)
 
@@ -277,6 +307,20 @@ export namespace MobServer {
             this.humanoid.Move(new Vector3(0, 0, 0))
         }
 
+        getLastSpottedEnemyPosition() {
+            if( this.lastSpottedEnemyPosition ) {
+                return this.lastSpottedEnemyPosition
+            }
+            else {
+                // has my crew spotted an enemy?
+                for( let mob of mobs.values() ) {
+                    if( mob.spawnPart===this.spawnPart && mob.lastSpottedEnemyPosition ) {
+                        return mob.lastSpottedEnemyPosition
+                    }
+                }
+            }
+        }
+
         mobUpdate() {
             if (this.weaponUtility) {
                 DebugXL.Assert(this.weaponUtility.tool.Parent === undefined || this.weaponUtility.tool.Parent === this.character)
@@ -288,8 +332,10 @@ export namespace MobServer {
                     return
                 }
                 else {
-                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestTarget(this.character)
+                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.character, 80)
                     if (closestTarget) {
+                        // if enemy in aggro range approach that spot (even if they go out of sight)
+                        this.lastSpottedEnemyPosition = closestTarget.GetPrimaryPartCFrame().p
                         // if enemy in range attack
                         if (bestFit <= this.weaponUtility.getRange()) {
                             // unless already attacking
@@ -304,34 +350,31 @@ export namespace MobServer {
                                 return // follow current orders                            
                             }
                         }
-                        else {
-                            // if enemy in aggro range approach
-                            // todo: and LOS?
-                            if (bestFit <= 60) {
-                                // a laggy client will keep extrapolating your movement, not sure why, even when we've told it we want to stop
-                                // so to be safe we tell it to MoveTo the point we do want to stop, instead of moving all the way
-                                // so destination is a little less than range minus 
+                    }
+                    const lastSpottedEnemyPosition = this.getLastSpottedEnemyPosition()
+                    if (lastSpottedEnemyPosition) {
+                        // a laggy client will keep extrapolating your movement, not sure why, even when we've told it we want to stop
+                        // so to be safe we tell it to MoveTo the point we do want to stop, instead of moving all the way
+                        // so destination is a little less than range minus 
 
-                                // the antimagnet trick: poll your friends and push away from them
-                                // the antimagnet trick is O(n^2) wipth sqrts so I'm a bit leery
-                                const zeroVec = new Vector3(0, 0, 0)
-                                const myPos = this.character.GetPrimaryPartCFrame().p
-                                const mobs: Character[] = mobFolder.GetChildren()
-                                const pushForces = mobs.map((mob) => myPos.sub(mob.GetPrimaryPartCFrame().p))
-                                const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
-                                const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
+                        // the antimagnet trick: poll your friends and push away from them
+                        // the antimagnet trick is O(n^2) with sqrts so I'm a bit leery
+                        const zeroVec = new Vector3(0, 0, 0)
+                        const myPos = this.character.GetPrimaryPartCFrame().p
+                        const mobs: Character[] = mobFolder.GetChildren()
+                        const pushForces = mobs.map((mob) => myPos.sub(mob.GetPrimaryPartCFrame().p))
+                        const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
+                        const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
 
-                                const destinationVec = closestTarget.GetPrimaryPartCFrame().p.sub(this.character.GetPrimaryPartCFrame().p)
-                                const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
-                                //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
-                                //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
-                                this.humanoid.Move(totalVec.Unit)
-                                this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
-                                // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client
-                                // and server if it's following a player's parts
-                                return
-                            }
-                        }
+                        const destinationVec = lastSpottedEnemyPosition.sub(this.character.GetPrimaryPartCFrame().p)
+                        const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
+                        //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
+                        //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
+                        this.humanoid.Move(totalVec.Unit)
+                        this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
+                        // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client
+                        // and server if it's following a player's parts
+                        return
                     }
                 }
             }
