@@ -31,7 +31,7 @@ export class BoltWeaponClient extends BaseWeaponClient
     _onActivated(character: Character, mouse: Mouse)
     {
         // can't use mouse hit because it collides with transparent objects
-        const [ clickPart, clickHitV3 ] = RangedWeaponUtility.MouseHitNontransparentPack( mouse, [character] )
+        const [ clickPart, clickHitV3 ] = RangedWeaponUtility.MouseHitNontransparent( mouse, [character] )
 
         const serverBoltCodeName = 'Bolt'+tostring(MathXL.RandomInteger(1,100000))
         DebugXL.logV('Combat', 'BoltWeaponRE.FireServer')
