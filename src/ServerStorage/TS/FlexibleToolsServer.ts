@@ -38,6 +38,10 @@ export namespace FlexibleToolsServer {
 
     let serverToolDataT = new Map<Tool, FlexToolAccessor>()
 
+    export function setFlexToolInst(tool: Tool, fta: FlexToolAccessor) {
+        serverToolDataT.set(tool, fta)
+    }
+
     export function getFlexTool(toolObj: Tool) {
         const fta = serverToolDataT.get(toolObj)
         if (!fta) {
