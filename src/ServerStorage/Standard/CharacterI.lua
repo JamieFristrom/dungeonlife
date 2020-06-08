@@ -7,23 +7,13 @@ local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 print( "CharacterI: CharacterClientI required succesfully" )
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 print( "CharacterI: PlayerServer required succesfully" )
+local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
 
 -- *** deliberately does not require heroes or monsters in the header to avoid circular requires ***
 
 -- the interface between encapsulated game components and this particular game's specific characters;
 -- it needs to be modified for every game
 local CharacterI = {}
-
--- it's ok to pass nil player. at some point we'll want certain mobs (magical creations) to pass their owner player for xp purposes
-function CharacterI:SetLastAttackingPlayer( character, player )
-	DebugXL:Assert( character:IsA("Model"))
-	DebugXL:Assert( character.Parent ~= nil )
-	local humanoid = character:FindFirstChild("Humanoid")
-	if humanoid then
-		InstanceXL:CreateSingleton( "ObjectValue", { Name = "creator", Parent = humanoid, Value = player } )
-	end
-end
-
 
 
 function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attackingTeam, flexTool )
@@ -35,9 +25,9 @@ function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attack
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingTeam then
+			CharacterServer.setLastAttacker( hitCharacter, attackingCharacter )
 			local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
-			CharacterI:SetLastAttackingPlayer( hitCharacter, attackingPlayer )
-			
+		
 			if attackingTeam == game.Teams.Heroes then	
 				DebugXL:logV( 'Combat', 'Hero damaging monster' )	
 				DebugXL:Assert( attackingPlayer )
