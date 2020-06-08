@@ -165,6 +165,7 @@ export namespace MobServer {
         currentAnimationSet?: Animation[]
         spawnPart?: Spawner
         lastSpottedEnemyPosition?: Vector3
+        lastAttacker?: Character
 
         getCharacterRecord() {
             return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.character))
@@ -321,7 +322,26 @@ export namespace MobServer {
             }
         }
 
+        updateLastAttacker() {
+            const lastAttackerObject = this.character.FindFirstChild<ObjectValue>("LastAttacker")
+            if( lastAttackerObject ) {
+                if( !lastAttackerObject.Value ) {
+                    DebugXL.logE("Mob", this.character.Name+" has invalid lastAttackerObject")
+                    return
+                }
+                if( !lastAttackerObject.Value.IsA("Model")) {
+                    DebugXL.logE("Mob", this.character.Name+" has lastAttacker "+lastAttackerObject.Value.GetFullName()+" that is not a model")
+                    return
+                }
+                if( lastAttackerObject.Value !== this.lastAttacker ) {       
+                    this.lastAttacker = lastAttackerObject.Value as Character
+                    this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
+                }
+            }
+        }
+
         mobUpdate() {
+            this.updateLastAttacker()
             if (this.weaponUtility) {
                 DebugXL.Assert(this.weaponUtility.tool.Parent === undefined || this.weaponUtility.tool.Parent === this.character)
                 if (this.weaponUtility && !GeneralWeaponUtility.isEquippedBy(this.weaponUtility.tool, this.character)) {
@@ -346,7 +366,6 @@ export namespace MobServer {
                                 return
                             }
                             else {
-                                //this.stopMoving()  // let showAttack adjust movement
                                 return // follow current orders                            
                             }
                         }

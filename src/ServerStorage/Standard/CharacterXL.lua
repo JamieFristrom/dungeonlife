@@ -4,15 +4,13 @@ local CharacterUtility   = require( game.ReplicatedStorage.Standard.CharacterUti
 local DebugXL            = require( game.ReplicatedStorage.Standard.DebugXL )
 local InstanceXL         = require( game.ReplicatedStorage.Standard.InstanceXL )
 
-local CharacterClientI   = require( game.ReplicatedStorage.CharacterClientI )
 local CharacterPhysics   = require( game.ReplicatedStorage.Standard.CharacterPhysics )
 
 local CharacterI         = require( game.ServerStorage.CharacterI )
-local FloorData          = require( game.ReplicatedStorage.FloorData )
-
-local WeaponUtility      = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
+
+local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
 
 local CharacterXL = {}
 
@@ -23,7 +21,6 @@ local manaRegenRate = BalanceData.manaRestorePctN -- Regenerate this fraction of
 function CharacterXL:FreezeFor( character, duration )	
 	if game.Players:GetPlayerFromCharacter( character ) then  	-- don't defile your freeze on a worthless object
 		if not CharacterUtility:IsFrozen( character ) then
-			local characterHumanoid = character:FindFirstChild("Humanoid") 
 			for _, child in pairs( character:GetChildren() ) do
 				if child:IsA("BasePart") then
 					child.Anchored = true
@@ -50,7 +47,7 @@ end
 function CharacterXL:DamageOverTimeFor( character, dps, duration, attackingPlayer )
 	local damageUntil = time() + duration
 	if attackingPlayer then
-		CharacterI:SetLastAttackingPlayer( character, attackingPlayer )
+		CharacterServer.setLastAttackingPlayer( character, attackingPlayer )
 	end
 	-- stacks
 	InstanceXL.new( "Vector3Value", { Name = "DamageUntil", Value = Vector3.new( dps, damageUntil, 0 ), Parent = character } )
