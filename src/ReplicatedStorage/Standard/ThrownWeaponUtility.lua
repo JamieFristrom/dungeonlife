@@ -121,8 +121,6 @@ function ThrownWeaponClient.new( tool )
 		enabled = false
 		
 		local clickPart, clickHitV3 = unpack( RangedWeaponUtility.MouseHitNontransparent( mouse, { character } ) )  --  Raycast.Mouse( mouse )
-		--local clickPart = mouse.Target
-		--local clickHitV3 = mouse.Hit.p
 		
 		-- throw server missile
 		tool.BombRemoteEvent:FireServer( "Activate", clickHitV3 )
@@ -131,18 +129,6 @@ function ThrownWeaponClient.new( tool )
 		if showMissileOnClientB then
 			local missile
 			missile = ThrownWeaponClient.Lob( player, projectileTemplate, clickHitV3 )
-			-- this part handled by utility script:
---			, function()
---				missile.Anchored = true
---				missile.CanCollide = false
---				missile.Transparency = 1
---				missile.HitSound:Play()
---				missile.HitSound.Ended:Wait()
---				missile:Destroy()				
---			end) 
-			
---			missile.Handle.CollisionGroupId = game.Players.LocalPlayer.Character.PrimaryPart.CollisionGroupId
---			missile.Parent = workspace.ActiveClientProjectiles  -- local script won't execute there, it has to be here:
 			missile.Parent = game.Players.LocalPlayer.Character
 		end
 		
