@@ -42,9 +42,15 @@ const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<String
 const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('walk')!.GetChildren()
 const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('run')!.GetChildren()
 
-type Spawner = BasePart
+class Spawner {
+    lastSpottedEnemyPosition?: Vector3
+    lastSpawnTick: number = 0
+    constructor(curTick: number) {
+        this.lastSpawnTick = curTick
+    }
+}
 
-
+type SpawnPart = BasePart
 
 export namespace MobServer {
     const mobCap = 15
@@ -54,7 +60,7 @@ export namespace MobServer {
 
     const monsterTeam = Teams.WaitForChild<Team>('Monsters')
 
-    let lastSpawnTicks = new Map<Spawner, number>()
+    let spawnersMap = new Map<SpawnPart, Spawner>()
 
     export let mobs = new Set<Mob>()
 
@@ -62,24 +68,33 @@ export namespace MobServer {
         mobPushApart = newMobPush
     }
 
-    export function spawnMob(characterClass: string, position?: Vector3, spawner?: Spawner, curTick?: number) {
-        if (spawner && curTick) {
-            lastSpawnTicks.set(spawner, curTick)
+    export function spawnMob(characterClass: string, position?: Vector3, spawnPart?: SpawnPart, curTick?: number) {
+        if (spawnPart && curTick) {
+            let mySpawner = spawnersMap.get(spawnPart)
+            if (!mySpawner) {
+                mySpawner = new Spawner(curTick)
+                spawnersMap.set( spawnPart, mySpawner )
+            }
+            else {
+                mySpawner.lastSpawnTick = curTick
+            }
         }
-        mobs.add(new Mob(characterClass, position, spawner))
+        mobs.add(new Mob(characterClass, position, spawnPart))
     }
 
     RunService.Stepped.Connect((time, step) => {
         // collect garbage
-        lastSpawnTicks.forEach((_, spawner) => {
-            if (spawner.Parent === undefined) {
-                lastSpawnTicks.delete(spawner)
+        spawnersMap.forEach((_, spawnPart) => {
+            if (spawnPart.Parent === undefined) {
+                if( mobs.values().filter( (mob)=>mob.spawnPart===spawnPart ).isEmpty() )
+                    spawnersMap.delete(spawnPart)
             }
         })
 
         // dispose of bodies and act
         mobs.forEach((mob) => {
             if (mob.humanoid.Health <= 0 || mob.character.Parent === undefined) {
+                mob.updateLastAttacker()
                 mobs.delete(mob)
                 Monsters.Died(mob.character)
                 delay(2, () => {
@@ -101,16 +116,16 @@ export namespace MobServer {
         DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
         if (mobs.size() < mobCap) {
             DebugXL.logV('Mobs', 'below cap')
-            const monsterSpawns = FurnishServer.GetMonsterSpawners()
-            if (!monsterSpawns.isEmpty()) {
+            const monsterSpawnParts = FurnishServer.GetMonsterSpawners()
+            if (!monsterSpawnParts.isEmpty()) {
                 DebugXL.logD('Mobs', 'Spawners available')
                 // for now mobs will not be bosses or superbosses
-                const minionSpawners = monsterSpawns.filter((spawner) =>
-                    spawner.FindFirstChild<BoolValue>('OneUse')!.Value === false)
+                const minionSpawners = monsterSpawnParts.filter((spawnPart) =>
+                    spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value === false)
                 if (!minionSpawners.isEmpty()) {
                     DebugXL.logV('Mobs', 'Minion spawners available')
-                    const distantSpawners = minionSpawners.filter((spawner) =>
-                        Hero.distanceToNearestHeroXZ(spawner.Position) > MapTileData.tileWidthN * 2.5)
+                    const distantSpawners = minionSpawners.filter((spawnPart) =>
+                        Hero.distanceToNearestHeroXZ(spawnPart.Position) > MapTileData.tileWidthN * 2.5)
                     const acceptableSpawners = distantSpawners.isEmpty() ? minionSpawners : distantSpawners
                     const desiredSpawn = acceptableSpawners[MathXL.RandomInteger(0, acceptableSpawners.size() - 1)]
                     const characterClass = desiredSpawn.FindFirstChild<StringValue>('CharacterClass')!.Value
@@ -120,28 +135,28 @@ export namespace MobServer {
         }
     }
 
-    export function spawnerCheckForSpawn(spawner: Spawner, curTick: number) {
-        if (spawner.FindFirstChild<BoolValue>('OneUse')!.Value) {
-            // boss spawner; only use if no monster players
+    export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
+        if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
+            // boss spawnPart; only use if no monster players
             if (monsterTeam.GetPlayers().size() === 0) {
-                if (!lastSpawnTicks.get(spawner)) {
-                    spawnMob(spawner.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                if (!spawnersMap.get(spawnPart)) {
+                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
-                        spawner,
+                        spawnPart,
                         curTick)
-                    lastSpawnTicks.set(spawner, curTick)
+                    spawnersMap.set(spawnPart, new Spawner(curTick))
                 }
             }
         }
         else {
-            const lastSpawnTick = lastSpawnTicks.get(spawner)
-            if (!lastSpawnTick || (lastSpawnTick < curTick - mobSpawnPeriod)) {
+            const spawner = spawnersMap.get(spawnPart)
+            if (!spawner || (spawner.lastSpawnTick < curTick - mobSpawnPeriod)) {
                 // have we already spawned enough for now?
-                const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawner)
+                const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
                 if (myMobs.size() < 4) {
-                    spawnMob(spawner.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
-                        spawner,
+                        spawnPart,
                         curTick)
                 }
             }
@@ -151,8 +166,8 @@ export namespace MobServer {
     export function spawnersSpawnMobs(curTick: number) {
         if (mobs.size() < mobCap) {
             const monsterSpawns = FurnishServer.GetMonsterSpawners()
-            monsterSpawns.forEach((spawner) => {
-                spawnerCheckForSpawn(spawner, curTick)
+            monsterSpawns.forEach((spawnPart) => {
+                spawnerCheckForSpawn(spawnPart, curTick)
             })
         }
     }
@@ -163,7 +178,7 @@ export namespace MobServer {
         weaponUtility?: MeleeWeaponUtility | BoltWeaponUtility
         currentAnimationTrack?: AnimationTrack
         currentAnimationSet?: Animation[]
-        spawnPart?: Spawner
+        spawnPart?: SpawnPart
         lastSpottedEnemyPosition?: Vector3
         lastAttacker?: Character
 
@@ -191,7 +206,7 @@ export namespace MobServer {
             return new Vector3(maxX, 0, maxZ)
         }
 
-        constructor(characterClass: string, position?: Vector3, spawnPart?: Spawner) {
+        constructor(characterClass: string, position?: Vector3, spawnPart?: SpawnPart) {
             const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
             const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
             const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
@@ -209,7 +224,7 @@ export namespace MobServer {
                 const exclusionPart = spawnPart.Parent!.FindFirstChild<Part>("MobExclusion")
                 const exclusionPosition = exclusionPart ? exclusionPart.Position : spawnPosition
                 const exclusionRadius = exclusionPart ? exclusionPart.Size.Z : 0
-                spawnPosition = this.findSpawnPos( spawnPart.Position, spawnPart.Size, exclusionPosition, exclusionRadius )
+                spawnPosition = this.findSpawnPos(spawnPart.Position, spawnPart.Size, exclusionPosition, exclusionRadius)
             }
             else if (position) {
                 spawnPosition = position
@@ -309,33 +324,48 @@ export namespace MobServer {
         }
 
         getLastSpottedEnemyPosition() {
-            if( this.lastSpottedEnemyPosition ) {
+            if (this.lastSpottedEnemyPosition) {
                 return this.lastSpottedEnemyPosition
             }
             else {
                 // has my crew spotted an enemy?
-                for( let mob of mobs.values() ) {
-                    if( mob.spawnPart===this.spawnPart && mob.lastSpottedEnemyPosition ) {
+                for (let mob of mobs.values()) {
+                    if (mob.spawnPart === this.spawnPart && mob.lastSpottedEnemyPosition) {
                         return mob.lastSpottedEnemyPosition
+                    }
+                }
+                // did a dead crew member spot an enemy or get hit?
+                if (this.spawnPart) {
+                    const spawner = spawnersMap.get(this.spawnPart)
+                    DebugXL.Assert(spawner !== undefined)
+                    if (spawner) {
+                        return spawner.lastSpottedEnemyPosition
                     }
                 }
             }
         }
 
         updateLastAttacker() {
-            const lastAttackerObject = this.character.FindFirstChild<ObjectValue>("LastAttacker")
-            if( lastAttackerObject ) {
-                if( !lastAttackerObject.Value ) {
-                    DebugXL.logE("Mob", this.character.Name+" has invalid lastAttackerObject")
+            const lastAttackerObject = this.humanoid.FindFirstChild<ObjectValue>("LastAttacker")
+            if (lastAttackerObject) {
+                if (!lastAttackerObject.Value) {
+                    DebugXL.logE("Mob", this.humanoid.Name + " has invalid lastAttackerObject")
                     return
                 }
-                if( !lastAttackerObject.Value.IsA("Model")) {
-                    DebugXL.logE("Mob", this.character.Name+" has lastAttacker "+lastAttackerObject.Value.GetFullName()+" that is not a model")
+                if (!lastAttackerObject.Value.IsA("Model")) {
+                    DebugXL.logE("Mob", this.humanoid.Name + " has lastAttacker " + lastAttackerObject.Value.GetFullName() + " that is not a model")
                     return
                 }
-                if( lastAttackerObject.Value !== this.lastAttacker ) {       
+                if (lastAttackerObject.Value !== this.lastAttacker) {
                     this.lastAttacker = lastAttackerObject.Value as Character
                     this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
+                    if( this.spawnPart ) {
+                        const spawner = spawnersMap.get(this.spawnPart)
+                        DebugXL.Assert( spawner !== undefined )
+                        if( spawner ) {
+                            spawner.lastSpottedEnemyPosition = this.lastSpottedEnemyPosition
+                        }
+                    }
                 }
             }
         }
