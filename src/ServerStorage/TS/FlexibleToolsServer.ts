@@ -4,13 +4,18 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { ServerStorage, Players } from '@rbxts/services';
+import { ServerStorage, Players, Workspace } from '@rbxts/services';
 
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS';
+import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 DebugXL.logD('Requires', 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
 
 import { CreateToolParamsI } from 'ServerStorage/TS/CreateToolParamsI'
+import { PlayerServer } from './PlayerServer';
+
+//import * as HeroesModule from 'ServerStorage/Standard/HeroesModule';
+import { SaveHeroesWait } from 'ServerStorage/Standard/HeroesModule';
 
 DebugXL.logD('Requires', 'FlexibleToolServer: imports succesful')
 
@@ -42,17 +47,26 @@ export namespace FlexibleToolsServer {
         serverToolDataT.set(tool, fta)
     }
 
-    export function getFlexTool(toolObj: Tool) {
-        const fta = serverToolDataT.get(toolObj)
+    export function getFlexTool(tool: Tool) {
+        const fta = serverToolDataT.get(tool)
         if (!fta) {
-            DebugXL.Error("Couldn't find flexTool for " + toolObj.GetFullName())
+            DebugXL.Error("Couldn't find flexTool for " + tool.GetFullName())
             return FlexTool.nullTool
         }
         return fta.flexToolInst
     }
 
-    export function getToolBaseData(toolObj: Tool) {
-        const flexTool = getFlexTool(toolObj)
+    export function getCharacter(tool: Tool) {
+        const fta = serverToolDataT.get(tool)
+        if (!fta) {
+            DebugXL.Error("Couldn't find flexTool for " + tool.GetFullName())
+            return FlexTool.nullTool
+        }
+        return fta.character
+    }
+
+    export function getToolBaseData(tool: Tool) {
+        const flexTool = getFlexTool(tool)
         return getFlexToolBaseData(flexTool)
     }
 
@@ -83,5 +97,17 @@ export namespace FlexibleToolsServer {
         }
 
         return toolInstance
+    }
+
+    export function removeToolWait(tool:Tool, character:Character) {
+        const fta = serverToolDataT.get(tool)
+        if (!fta) {
+            DebugXL.Error("Couldn't find flexTool to remove:" + tool.GetFullName())
+        }
+        else {
+            const characterRecord = PlayerServer.getCharacterRecordFromCharacter( fta.character )
+            characterRecord.removeTool( fta.possessionsKey )            
+        }
+        tool.Destroy()        
     }
 }

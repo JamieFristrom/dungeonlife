@@ -1,12 +1,15 @@
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI( 'Executed', script.GetFullName())
+
+// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.Name)
 
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
-import { MessageGui } from "ReplicatedStorage/TS/MessageGui"
 import { BaseWeaponClient } from "ReplicatedStorage/TS/BaseWeaponClient"
-import { BoltWeaponUtility } from "ReplicatedStorage/TS/BoltWeaponUtility"
+import { RangedWeaponUtility } from "ReplicatedStorage/TS/RangedWeaponUtility"
+
 import * as BoltWeaponUtilityXL from 'ReplicatedStorage/Standard/BoltWeaponUtilityXL'
-import * as RangedWeaponUtility from 'ReplicatedStorage/Standard/RangedWeaponUtility'
+import * as RangedWeaponHelpers from 'ReplicatedStorage/Standard/RangedWeaponHelpers'
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 
 import { Workspace, RunService } from "@rbxts/services"
@@ -22,7 +25,7 @@ export class BoltWeaponClient extends BaseWeaponClient
     constructor( tool: Tool, messageFunc: (msg: string, b: boolean)=>void, animName: string )
     {
         let flexTool = FlexToolClient.getFlexTool( tool )
-        super( tool, new BoltWeaponUtility( tool, flexTool ) )       // fixme: move flexTool into BaseWeaponUtility
+        super( tool, new RangedWeaponUtility( tool, flexTool, "DisplayBolt" ) )      
         const templateTemplate = this.tool.WaitForChild<BasePart>('Bolt')
         this.boltTemplate = templateTemplate.Clone()
         templateTemplate.Parent = undefined        
@@ -31,7 +34,7 @@ export class BoltWeaponClient extends BaseWeaponClient
     _onActivated(character: Character, mouse: Mouse)
     {
         // can't use mouse hit because it collides with transparent objects
-        const [ clickPart, clickHitV3 ] = RangedWeaponUtility.MouseHitNontransparent( mouse, [character] )
+        const [ clickPart, clickHitV3 ] = RangedWeaponHelpers.MouseHitNontransparent( mouse, [character] )
 
         const serverBoltCodeName = 'Bolt'+tostring(MathXL.RandomInteger(1,100000))
         DebugXL.logV('Combat', 'BoltWeaponRE.FireServer')
