@@ -25,9 +25,10 @@ import MathXL from 'ReplicatedStorage/Standard/MathXL'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
-import { BoltWeaponUtility } from 'ReplicatedStorage/TS/BoltWeaponUtility'
+import { RangedWeaponUtility } from 'ReplicatedStorage/TS/RangedWeaponUtility'
 import { MonsterServer } from './MonsterServer'
 import { FlexibleToolsServer } from './FlexibleToolsServer'
+import { BaseWeaponUtility } from 'ReplicatedStorage/TS/BaseWeaponUtility'
 
 type Character = Model
 
@@ -73,7 +74,7 @@ export namespace MobServer {
             let mySpawner = spawnersMap.get(spawnPart)
             if (!mySpawner) {
                 mySpawner = new Spawner(curTick)
-                spawnersMap.set( spawnPart, mySpawner )
+                spawnersMap.set(spawnPart, mySpawner)
             }
             else {
                 mySpawner.lastSpawnTick = curTick
@@ -86,7 +87,7 @@ export namespace MobServer {
         // collect garbage
         spawnersMap.forEach((_, spawnPart) => {
             if (spawnPart.Parent === undefined) {
-                if( mobs.values().filter( (mob)=>mob.spawnPart===spawnPart ).isEmpty() )
+                if (mobs.values().filter((mob) => mob.spawnPart === spawnPart).isEmpty())
                     spawnersMap.delete(spawnPart)
             }
         })
@@ -94,7 +95,7 @@ export namespace MobServer {
         // dispose of bodies and act
         mobs.forEach((mob) => {
             if (mob.humanoid.Health <= 0 || mob.character.Parent === undefined) {
-                mob.updateLastAttacker()
+                mob.updateLastAttacker()  // because it passes through to the team
                 mobs.delete(mob)
                 Monsters.Died(mob.character)
                 delay(2, () => {
@@ -175,7 +176,7 @@ export namespace MobServer {
     class Mob {
         character: Character
         humanoid: Humanoid
-        weaponUtility?: MeleeWeaponUtility | BoltWeaponUtility
+        weaponUtility?: BaseWeaponUtility
         currentAnimationTrack?: AnimationTrack
         currentAnimationSet?: Animation[]
         spawnPart?: SpawnPart
@@ -277,7 +278,11 @@ export namespace MobServer {
                                 break
                             }
                             else if (tool.FindFirstChild<Script>('BoltClient')) {
-                                this.weaponUtility = new BoltWeaponUtility(tool, flexTool)
+                                this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "DisplayBolt")
+                                break
+                            }
+                            else if(tool.FindFirstChild<Script>('ThrownWeaponClientScript')) {
+                                this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "Handle")
                                 break
                             }
                             else {
@@ -359,10 +364,10 @@ export namespace MobServer {
                 if (lastAttackerObject.Value !== this.lastAttacker) {
                     this.lastAttacker = lastAttackerObject.Value as Character
                     this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
-                    if( this.spawnPart ) {
+                    if (this.spawnPart) {
                         const spawner = spawnersMap.get(this.spawnPart)
-                        DebugXL.Assert( spawner !== undefined )
-                        if( spawner ) {
+                        DebugXL.Assert(spawner !== undefined)
+                        if (spawner) {
                             spawner.lastSpottedEnemyPosition = this.lastSpottedEnemyPosition
                         }
                     }

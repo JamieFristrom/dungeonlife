@@ -1,6 +1,6 @@
 local DebugXL              = require( game.ReplicatedStorage.Standard.DebugXL )
 
-local RangedWeaponUtility  = require( game.ReplicatedStorage.Standard.RangedWeaponUtility )
+local RangedWeaponHelpers  = require( game.ReplicatedStorage.Standard.RangedWeaponHelpers )
 
 
 local LobbedUtility = {}
@@ -42,7 +42,7 @@ function LobbedUtility.new( lobbedObj, particleLifetimeN, specialDamageFunc )
 		end
 	end
 
-	touchConnection = RangedWeaponUtility.CollidedConnect( lobbedObj, OnThrownObjHit )
+	touchConnection = RangedWeaponHelpers.CollidedConnect( lobbedObj, OnThrownObjHit )
 
 end
 

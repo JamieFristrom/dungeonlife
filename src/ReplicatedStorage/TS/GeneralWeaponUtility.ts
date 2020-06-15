@@ -1,3 +1,6 @@
+
+// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
+
 import { DebugXL } from "./DebugXLTS"
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
 
@@ -9,9 +12,15 @@ DebugXL.logI("Executed", script.Name)
 
 type Character = Model
 
+// because collision happens on the server but clients need to predict whether projectiles will collide we need another way to indicate
+// something is unhittable. A tag is an obvious possibility
 const porousCollisionGroupIdObject = Workspace.WaitForChild<Folder>("GameManagement").WaitForChild<NumberValue>("PorousCollisionGroupId")
 
 export namespace GeneralWeaponUtility {
+
+    export function isPorous( part: BasePart ) {
+        return part.CollisionGroupId === porousCollisionGroupIdObject.Value || CollectionService.HasTag( part, 'MobExclusion')
+    }
 
     export function findNontransparentPartOnRayWithIgnoreList(
         ray: Ray,
@@ -21,7 +30,7 @@ export namespace GeneralWeaponUtility {
         [BasePart | undefined, Vector3, Vector3, Enum.Material] {
 
         const [partHit, intersectionV3, normalV3, material] = Workspace.FindPartOnRayWithIgnoreList(ray, ignoreDescendantsVolatile, terrainCellsAreCubes, ignoreWater)
-        if (partHit && (partHit.Transparency > 0.9 || !partHit.CanCollide || partHit.CollisionGroupId === porousCollisionGroupIdObject.Value)) {
+        if (partHit && (partHit.Transparency > 0.9 || !partHit.CanCollide || isPorous(partHit))) {
             ignoreDescendantsVolatile.push(partHit)
             return findNontransparentPartOnRayWithIgnoreList(ray, ignoreDescendantsVolatile, terrainCellsAreCubes, ignoreWater)
         }
