@@ -4,6 +4,8 @@ local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
 
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
+
 --
 local BoltUtilityXL = {}
 
@@ -19,8 +21,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 	--  doesn't look good with magic fx	
 	--projectileObj.Transparency = 0
 	
-	local Players = game:GetService("Players")
-	
+
 	-- not for recording damage but for tracking owner of bolt:
 	local Creator = projectileObj:WaitForChild("creator")
 	
@@ -36,16 +37,16 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 		
 	local Stuck = false
 	
-	local function Stick(Object, Hit)
-		local Weld = Instance.new("Weld")
-		Weld.Part0 = projectileObj
-		Weld.Part1 = Hit
-		local HitPos = projectileObj.Position + (projectileObj.Velocity.unit * 3)
-		local CJ = CFrame.new(HitPos)
-		Weld.C0 = projectileObj.CFrame:inverse() * CJ
-		Weld.C1 = Hit.CFrame:inverse() * CJ
-		Weld.Parent = Object
-	end
+	-- local function Stick(Object, Hit)
+	-- 	local Weld = Instance.new("Weld")
+	-- 	Weld.Part0 = projectileObj
+	-- 	Weld.Part1 = Hit
+	-- 	local HitPos = projectileObj.Position + (projectileObj.Velocity.unit * 3)
+	-- 	local CJ = CFrame.new(HitPos)
+	-- 	Weld.C0 = projectileObj.CFrame:inverse() * CJ
+	-- 	Weld.C1 = Hit.CFrame:inverse() * CJ
+	-- 	Weld.Parent = Object
+	-- end
 
 	local function Touched(Hit)
 		if not Hit or not Hit.Parent or Stuck then
@@ -55,8 +56,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 			return 
 		end		
 
-		-- here it gets awkward, since only the server can check if collision groups are collidable or not
-		if Hit.CollisionGroupId == workspace.GameManagement.PorousCollisionGroupId.Value then
+		if GeneralWeaponUtility.isPorous( Hit ) then
 			return
 		end
 		

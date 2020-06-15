@@ -1,8 +1,8 @@
 type Character = Model
 
-declare namespace RangedWeaponUtility
+declare namespace RangedWeaponHelpers
 {
     function MouseHitNontransparent( mouse: Mouse, ignoreDescendantsVolatile: Instance[] ) : [ BasePart, Vector3, Vector3 ]
 }
 
-export = RangedWeaponUtility
+export = RangedWeaponHelpers

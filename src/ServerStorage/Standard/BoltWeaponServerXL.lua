@@ -115,7 +115,7 @@ function BoltWeaponServerXL.new( Tool )
 		RemoteFunctions[ funcName ]( player, ... )
 	end)
 
-	Tool.BoltWeaponBE.Event:Connect( function( funcName, ... )
+	Tool.RangedWeaponBE.Event:Connect( function( funcName, ... )
 		DebugXL:logD( 'Combat', 'Bolt bindable event '..funcName..' fired')
 		RemoteFunctions[ funcName ]( nil, ... )
 	end)
