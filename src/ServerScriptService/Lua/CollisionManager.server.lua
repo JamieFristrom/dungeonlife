@@ -10,6 +10,8 @@ local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local CollectionService = game.CollectionService
 local PhysicsService = game.PhysicsService
 
+-- the need for this isn't super-clear: the client needs to know what missiles can go through but actually setting
+-- its collision groups isn't terribly useful client side. Tags might have sufficed
 workspace.GameManagement.MissileCollisionGroupId.Value = game.PhysicsService:CreateCollisionGroup( "Missile" )
 workspace.GameManagement.PorousCollisionGroupId.Value  = game.PhysicsService:CreateCollisionGroup( "Porous" )
 

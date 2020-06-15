@@ -1,19 +1,18 @@
 print( script:GetFullName().." executed" )
 
 local DebugXL             = require( game.ReplicatedStorage.Standard.DebugXL )
-local InstanceXL          = require( game.ReplicatedStorage.Standard.InstanceXL )
-local ThrownWeaponUtility = require( game.ReplicatedStorage.Standard.ThrownWeaponUtility )
-local WeaponUtility       = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
 local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
 
-local CharacterI          = require( game.ServerStorage.CharacterI )
 local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
-local Mana                = require( game.ServerStorage.ManaModule )
+
+local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
+local ThrownWeaponHelpers = require( game.ReplicatedStorage.TS.ThrownWeaponHelpers ).ThrownWeaponHelpers
 
 local showThrownObjOnServerB = true
 
@@ -56,7 +55,7 @@ function ThrownWeaponServer.new( tool )
 	--	local targetPos = humanoid.TargetPoint
 		local thrownObj
 		if showThrownObjOnServerB then
-			thrownObj = ThrownWeaponUtility.Lob( player, projectileTemplate, mouseHitV3 ) 			
+			thrownObj = ThrownWeaponHelpers.lob( player, projectileTemplate, mouseHitV3 ) 			
 			thrownObj.Parent = workspace.ActiveServerProjectiles
 			
 --			Collisions.AssignToPlayersCollisionGroup( thrownObj, player )		
@@ -64,21 +63,30 @@ function ThrownWeaponServer.new( tool )
 		end
 		
 		-- we've rewritten this so the lobbed item will supposedly survive having its tool rmoved
-
-		local cooldownN = tool.Cooldown.Value
-		
-		tool.Remaining.Value = tool.Remaining.Value - 1
-		if tool.Remaining.Value <= 0 then
-			-- we need to wait for tool action to resolve before destroying lest we mess things up
-			-- if thrownObj then thrownObj.AncestryChanged:Wait() end  -- didn't work
---				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
-			FlexibleTools:RemoveToolWait( player, tool )
+		local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
+		DebugXL:Assert( flexToolInst )
+		if flexToolInst then
+			local cooldownN = flexToolInst:getBaseData().cooldownN
+			
+			tool.Remaining.Value = tool.Remaining.Value - 1
+			if tool.Remaining.Value <= 0 then
+				-- we need to wait for tool action to resolve before destroying lest we mess things up
+				-- if thrownObj then thrownObj.AncestryChanged:Wait() end  -- didn't work
+	--				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
+				FlexibleToolsServer.removeToolWait(tool, character)
+				if player.Team == game.Teams.Heroes then
+					require( game.ServerStorage.Standard.HeroesModule ):SaveHeroesWait( player )		
+				else
+					local pcData = PlayerServer.getCharacterRecordFromPlayer(player)
+					DebugXL:Assert( pcData )
+					workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
+				end				
+			end
+			
+			GeneralWeaponUtility.cooldownWait( character, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
+			
+			thrown = false
 		end
-		
-		GeneralWeaponUtility.cooldownWait( character, cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
-		
-
-		thrown = false
 	end
 		
 	local function onEquipped()

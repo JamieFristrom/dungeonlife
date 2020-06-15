@@ -1,7 +1,10 @@
-import { Players, DataStoreService, HttpService } from "@rbxts/services";
 
-import { DebugXL, LogLevel } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI( "Executed", script.Name )
+// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
+
+import { LogLevel, DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.Name)
+
+import { Players, DataStoreService, HttpService, Workspace } from "@rbxts/services";
 
 import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 
@@ -99,6 +102,7 @@ let CommandList: {[k:string]:unknown} =
             myPC.giveFlexTool( flexTool )
             const characterKey = PlayerServer.getCharacterKeyFromPlayer( sender )
             ToolCaches.updateToolCache( characterKey, myPC )
+            Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("HotbarRE").FireClient(sender,"Refresh",myPC)
           }
         }
         else

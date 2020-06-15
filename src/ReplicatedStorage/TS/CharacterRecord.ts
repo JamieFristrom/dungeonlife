@@ -31,6 +31,7 @@ export interface CharacterRecordI
     getLocalLevel() : number
     getActualLevel() : number
     getTeam() : Team
+    removeTool( itemKey: string ) : void
 }
 
 
