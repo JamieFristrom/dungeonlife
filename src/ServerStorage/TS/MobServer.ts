@@ -43,10 +43,44 @@ const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<String
 const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('walk')!.GetChildren()
 const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('run')!.GetChildren()
 
-class Spawner {
+
+class Attackable {
+    lastAttacker?: Character
+    lastSpottedEnemyPosition?: Vector3
+    constructor( 
+        public model: Model, 
+        public humanoid: Humanoid ) {
+    }
+
+    protected _updateLastAttacker() {
+    }
+
+    updateLastAttacker() {
+        const lastAttackerObject = this.humanoid.FindFirstChild<ObjectValue>("LastAttacker")
+        if (lastAttackerObject) {
+            if (!lastAttackerObject.Value) {
+                DebugXL.logE("Spawner", this.model.Name + " has invalid lastAttackerObject")
+                return
+            }
+            if (!lastAttackerObject.Value.IsA("Model")) {
+                DebugXL.logE("Spawner", this.model.Name + " has lastAttacker " + lastAttackerObject.Value.GetFullName() + " that is not a model")
+                return
+            }
+            if (lastAttackerObject.Value !== this.lastAttacker) {
+                this.lastAttacker = lastAttackerObject.Value as Character
+                this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
+                this._updateLastAttacker()
+            }
+        }
+    }
+}
+class Spawner extends Attackable {
+    lastAttacker?: Character
     lastSpottedEnemyPosition?: Vector3
     lastSpawnTick: number = 0
-    constructor(curTick: number) {
+
+    constructor(model: Model, humanoid: Humanoid, curTick: number) {
+        super(model, humanoid)
         this.lastSpawnTick = curTick
     }
 }
@@ -69,18 +103,48 @@ export namespace MobServer {
         mobPushApart = newMobPush
     }
 
+    export function createSpawnerForSpawnPart( spawnPart: BasePart, curTick: number ) {
+        const mySpawnerModel = spawnPart.Parent
+        DebugXL.Assert( mySpawnerModel !== undefined)
+        if( mySpawnerModel ) {
+            DebugXL.Assert( mySpawnerModel.IsA("Model"))                
+            if( mySpawnerModel.IsA("Model")) {
+                let myHumanoid = mySpawnerModel.FindFirstChild<Humanoid>("Humanoid")
+                DebugXL.Assert( myHumanoid!==undefined )
+                if( myHumanoid ) {
+                    const mySpawner = new Spawner(mySpawnerModel, myHumanoid, curTick)
+                    spawnersMap.set(spawnPart, mySpawner)
+                }
+            }
+        }
+    }
+
     export function spawnMob(characterClass: string, position?: Vector3, spawnPart?: SpawnPart, curTick?: number) {
         if (spawnPart && curTick) {
             let mySpawner = spawnersMap.get(spawnPart)
             if (!mySpawner) {
-                mySpawner = new Spawner(curTick)
-                spawnersMap.set(spawnPart, mySpawner)
+                createSpawnerForSpawnPart( spawnPart, curTick )
             }
             else {
                 mySpawner.lastSpawnTick = curTick
             }
         }
-        mobs.add(new Mob(characterClass, position, spawnPart))
+
+        const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
+        const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
+        const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
+        const mobTemplate = monsterFolder.FindFirstChild<Model>(modelName)
+        if (!mobTemplate) {
+            DebugXL.logW('Mobs', 'No model for ' + modelName)
+        }
+        else {
+            const mobModel = mobTemplate.Clone()
+            const humanoid = mobModel.FindFirstChild<Humanoid>('Humanoid')
+            DebugXL.Assert( humanoid !== undefined )      
+            if( humanoid ) {
+                mobs.add(new Mob(mobModel, humanoid, characterClass, position, spawnPart))
+            }
+        }
     }
 
     RunService.Stepped.Connect((time, step) => {
@@ -94,12 +158,12 @@ export namespace MobServer {
 
         // dispose of bodies and act
         mobs.forEach((mob) => {
-            if (mob.humanoid.Health <= 0 || mob.character.Parent === undefined) {
+            if (mob.humanoid.Health <= 0 || mob.model.Parent === undefined) {
                 mob.updateLastAttacker()  // because it passes through to the team
                 mobs.delete(mob)
-                Monsters.Died(mob.character)
+                Monsters.Died(mob.model)
                 delay(2, () => {
-                    mob.character.Parent = undefined
+                    mob.model.Parent = undefined
                 })
             }
             else {
@@ -145,7 +209,7 @@ export namespace MobServer {
                         undefined,
                         spawnPart,
                         curTick)
-                    spawnersMap.set(spawnPart, new Spawner(curTick))
+                    createSpawnerForSpawnPart(spawnPart, curTick)                        
                 }
             }
         }
@@ -164,18 +228,23 @@ export namespace MobServer {
         }
     }
 
-    export function spawnersSpawnMobs(curTick: number) {
+    export function spawnersUpdate(curTick: number) {
         if (mobs.size() < mobCap) {
             const monsterSpawns = FurnishServer.GetMonsterSpawners()
             monsterSpawns.forEach((spawnPart) => {
                 spawnerCheckForSpawn(spawnPart, curTick)
             })
         }
+        spawnersUpdateLastAttacker()
     }
 
-    class Mob {
-        character: Character
-        humanoid: Humanoid
+    export function spawnersUpdateLastAttacker() {
+        for( let spawner of spawnersMap.values() ) {
+            spawner.updateLastAttacker()
+        }
+    }
+
+    class Mob extends Attackable {
         weaponUtility?: BaseWeaponUtility
         currentAnimationTrack?: AnimationTrack
         currentAnimationSet?: Animation[]
@@ -184,7 +253,7 @@ export namespace MobServer {
         lastAttacker?: Character
 
         getCharacterRecord() {
-            return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.character))
+            return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.model))
         }
 
         findSpawnPos(spawnCenter: Vector3, spawnSize: Vector3, exclusionCenter: Vector3, exclusionRadius: number) {
@@ -207,16 +276,8 @@ export namespace MobServer {
             return new Vector3(maxX, 0, maxZ)
         }
 
-        constructor(characterClass: string, position?: Vector3, spawnPart?: SpawnPart) {
-            const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
-            const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
-            const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
-            const mobTemplate = monsterFolder.FindFirstChild<Model>(modelName)!
-            if (!mobTemplate) {
-                DebugXL.logW('Mobs', 'No model for ' + modelName)
-            }
-            this.character = mobTemplate.Clone()
-            this.humanoid = this.character.FindFirstChild<Humanoid>('Humanoid')!
+        constructor(model: Model, humanoid: Humanoid, characterClass: string, position?: Vector3, spawnPart?: SpawnPart) {
+            super(model, humanoid)
             this.spawnPart = spawnPart
 
             // position mob
@@ -231,21 +292,21 @@ export namespace MobServer {
                 spawnPosition = position
             }
             const adjustedSpawnPosition = spawnPosition.add(new Vector3(0, 6, 0))
-            this.character.SetPrimaryPartCFrame(new CFrame(adjustedSpawnPosition))
-            const mobChildren = this.character.GetDescendants()
+            this.model.SetPrimaryPartCFrame(new CFrame(adjustedSpawnPosition))
+            const mobChildren = this.model.GetDescendants()
 
-            this.character.Parent = mobFolder
+            this.model.Parent = mobFolder
 
-            CollectionService.AddTag(this.character, 'CharacterTag')
+            CollectionService.AddTag(this.model, 'CharacterTag')
 
             // what happens when we use the monster code on 'em
             const mobLevel = MonsterServer.determineMobSpawnLevel(mobCap)
             let characterRecord = new Monster(characterClass,
                 [],
                 mobLevel)
-            const characterKey = PlayerServer.setCharacterRecordForMob(this.character, characterRecord)
-            Monsters.Initialize(this.character, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
-            this.character.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
+            const characterKey = PlayerServer.setCharacterRecordForMob(this.model, characterRecord)
+            Monsters.Initialize(this.model, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
+            this.model.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
 
             if (!CharacterClasses.monsterStats[characterClass].ghostifyB) {
                 // doing this before they draw their weapon so I think it's ok
@@ -263,16 +324,16 @@ export namespace MobServer {
             for (let i = 0; i < HotbarSlot.Max; i++) {
                 const possessionKey = characterRecord.getPossessionKeyFromSlot(i)
                 if (possessionKey) {
-                    const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.character, characterRecord, possessionKey)
+                    const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.model, characterRecord, possessionKey)
                     if (!tool) {
-                        DebugXL.logW("Items", "Couldn't find tool for " + this.character.Name + " weaponKey: " + possessionKey)
+                        DebugXL.logW("Items", "Couldn't find tool for " + this.model.Name + " weaponKey: " + possessionKey)
                     }
                     else {
                         // check to make sure nobody else arl
                         const flexTool = characterRecord.getFlexTool(possessionKey)
                         DebugXL.Assert(flexTool !== undefined)
                         if (flexTool) {
-                            FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: this.character, possessionsKey: possessionKey })
+                            FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: this.model, possessionsKey: possessionKey })
                             if (tool.FindFirstChild<Script>("MeleeClientScript")) {
                                 this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
                                 break
@@ -281,7 +342,7 @@ export namespace MobServer {
                                 this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "DisplayBolt")
                                 break
                             }
-                            else if(tool.FindFirstChild<Script>('ThrownWeaponClientScript')) {
+                            else if (tool.FindFirstChild<Script>('ThrownWeaponClientScript')) {
                                 this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "Handle")
                                 break
                             }
@@ -350,27 +411,12 @@ export namespace MobServer {
             }
         }
 
-        updateLastAttacker() {
-            const lastAttackerObject = this.humanoid.FindFirstChild<ObjectValue>("LastAttacker")
-            if (lastAttackerObject) {
-                if (!lastAttackerObject.Value) {
-                    DebugXL.logE("Mob", this.humanoid.Name + " has invalid lastAttackerObject")
-                    return
-                }
-                if (!lastAttackerObject.Value.IsA("Model")) {
-                    DebugXL.logE("Mob", this.humanoid.Name + " has lastAttacker " + lastAttackerObject.Value.GetFullName() + " that is not a model")
-                    return
-                }
-                if (lastAttackerObject.Value !== this.lastAttacker) {
-                    this.lastAttacker = lastAttackerObject.Value as Character
-                    this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
-                    if (this.spawnPart) {
-                        const spawner = spawnersMap.get(this.spawnPart)
-                        DebugXL.Assert(spawner !== undefined)
-                        if (spawner) {
-                            spawner.lastSpottedEnemyPosition = this.lastSpottedEnemyPosition
-                        }
-                    }
+        protected _updateLastAttacker() {
+            if (this.spawnPart) {
+                const spawner = spawnersMap.get(this.spawnPart)
+                DebugXL.Assert(spawner !== undefined)
+                if (spawner) {
+                    spawner.lastSpottedEnemyPosition = this.lastSpottedEnemyPosition
                 }
             }
         }
@@ -378,26 +424,26 @@ export namespace MobServer {
         mobUpdate() {
             this.updateLastAttacker()
             if (this.weaponUtility) {
-                DebugXL.Assert(this.weaponUtility.tool.Parent === undefined || this.weaponUtility.tool.Parent === this.character)
-                if (this.weaponUtility && !GeneralWeaponUtility.isEquippedBy(this.weaponUtility.tool, this.character)) {
+                DebugXL.Assert(this.weaponUtility.tool.Parent === undefined || this.weaponUtility.tool.Parent === this.model)
+                if (this.weaponUtility && !GeneralWeaponUtility.isEquippedBy(this.weaponUtility.tool, this.model)) {
                     DebugXL.Assert(this.weaponUtility.tool.Parent === undefined)
                     this.humanoid.EquipTool(this.weaponUtility.tool)
-                    this.weaponUtility.drawWeapon(this.character)                      // do server stuff
+                    this.weaponUtility.drawWeapon(this.model)                      // do server stuff
                     this.stopMoving()
                     return
                 }
                 else {
-                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.character, 80)
+                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.model, 80)
                     if (closestTarget) {
                         // if enemy in aggro range approach that spot (even if they go out of sight)
                         this.lastSpottedEnemyPosition = closestTarget.GetPrimaryPartCFrame().p
                         // if enemy in range attack
                         if (bestFit <= this.weaponUtility.getRange()) {
                             // unless already attacking
-                            if (!GeneralWeaponUtility.isCoolingDown(this.character)) {
+                            if (!GeneralWeaponUtility.isCoolingDown(this.model)) {
                                 this.stopMoving()
                                 this.weaponUtility.mobActivate(closestTarget)
-                                spawn(() => { this.weaponUtility!.showAttack(this.character, closestTarget) })  // 'client' side, blocking
+                                spawn(() => { this.weaponUtility!.showAttack(this.model, closestTarget) })  // 'client' side, blocking
                                 return
                             }
                             else {
@@ -414,13 +460,13 @@ export namespace MobServer {
                         // the antimagnet trick: poll your friends and push away from them
                         // the antimagnet trick is O(n^2) with sqrts so I'm a bit leery
                         const zeroVec = new Vector3(0, 0, 0)
-                        const myPos = this.character.GetPrimaryPartCFrame().p
+                        const myPos = this.model.GetPrimaryPartCFrame().p
                         const mobs: Character[] = mobFolder.GetChildren()
                         const pushForces = mobs.map((mob) => myPos.sub(mob.GetPrimaryPartCFrame().p))
                         const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
                         const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
 
-                        const destinationVec = lastSpottedEnemyPosition.sub(this.character.GetPrimaryPartCFrame().p)
+                        const destinationVec = lastSpottedEnemyPosition.sub(this.model.GetPrimaryPartCFrame().p)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
                         //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
                         //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
