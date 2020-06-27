@@ -1105,7 +1105,7 @@ local function PlayLevelWait()
 	lastMonsterLevels = {}
 	while wait() do 
 		workspace.GameManagement.LevelTimeElapsed.Value = time() - GameManagement.levelStartTime	
-		MobServer.spawnersSpawnMobs(time())
+		MobServer.spawnersUpdate(time())
 		MonsterServer.awardTeamXPForTimeElapsed()
 
 		if timeToThrowARodB then
