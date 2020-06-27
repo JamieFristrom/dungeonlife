@@ -1,5 +1,5 @@
 
-// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { LogLevel, DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.Name)

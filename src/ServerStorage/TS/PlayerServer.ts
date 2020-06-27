@@ -1,7 +1,11 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
 import { Players, Teams, ServerStorage } from "@rbxts/services"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI("Executed", script.Name)
 import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
 DebugXL.logD("Requires", 'PlayerServer: ReplicatedStorage/TS imports succesful')
 
