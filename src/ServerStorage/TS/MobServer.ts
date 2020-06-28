@@ -47,9 +47,9 @@ const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringV
 class Attackable {
     lastAttacker?: Character
     lastSpottedEnemyPosition?: Vector3
-    constructor( 
-        public model: Model, 
-        public humanoid: Humanoid ) {
+    constructor(
+        public model: Model,
+        public humanoid: Humanoid) {
     }
 
     protected _updateLastAttacker() {
@@ -103,15 +103,15 @@ export namespace MobServer {
         mobPushApart = newMobPush
     }
 
-    export function createSpawnerForSpawnPart( spawnPart: BasePart, curTick: number ) {
+    export function createSpawnerForSpawnPart(spawnPart: BasePart, curTick: number) {
         const mySpawnerModel = spawnPart.Parent
-        DebugXL.Assert( mySpawnerModel !== undefined)
-        if( mySpawnerModel ) {
-            DebugXL.Assert( mySpawnerModel.IsA("Model"))                
-            if( mySpawnerModel.IsA("Model")) {
+        DebugXL.Assert(mySpawnerModel !== undefined)
+        if (mySpawnerModel) {
+            DebugXL.Assert(mySpawnerModel.IsA("Model"))
+            if (mySpawnerModel.IsA("Model")) {
                 let myHumanoid = mySpawnerModel.FindFirstChild<Humanoid>("Humanoid")
-                DebugXL.Assert( myHumanoid!==undefined )
-                if( myHumanoid ) {
+                DebugXL.Assert(myHumanoid !== undefined)
+                if (myHumanoid) {
                     const mySpawner = new Spawner(mySpawnerModel, myHumanoid, curTick)
                     spawnersMap.set(spawnPart, mySpawner)
                 }
@@ -123,7 +123,7 @@ export namespace MobServer {
         if (spawnPart && curTick) {
             let mySpawner = spawnersMap.get(spawnPart)
             if (!mySpawner) {
-                createSpawnerForSpawnPart( spawnPart, curTick )
+                createSpawnerForSpawnPart(spawnPart, curTick)
             }
             else {
                 mySpawner.lastSpawnTick = curTick
@@ -140,8 +140,8 @@ export namespace MobServer {
         else {
             const mobModel = mobTemplate.Clone()
             const humanoid = mobModel.FindFirstChild<Humanoid>('Humanoid')
-            DebugXL.Assert( humanoid !== undefined )      
-            if( humanoid ) {
+            DebugXL.Assert(humanoid !== undefined)
+            if (humanoid) {
                 mobs.add(new Mob(mobModel, humanoid, characterClass, position, spawnPart))
             }
         }
@@ -209,7 +209,7 @@ export namespace MobServer {
                         undefined,
                         spawnPart,
                         curTick)
-                    createSpawnerForSpawnPart(spawnPart, curTick)                        
+                    createSpawnerForSpawnPart(spawnPart, curTick)
                 }
             }
         }
@@ -239,7 +239,7 @@ export namespace MobServer {
     }
 
     export function spawnersUpdateLastAttacker() {
-        for( let spawner of spawnersMap.values() ) {
+        for (let spawner of spawnersMap.values()) {
             spawner.updateLastAttacker()
         }
     }
@@ -403,9 +403,11 @@ export namespace MobServer {
                 // did a dead crew member spot an enemy or get hit?
                 if (this.spawnPart) {
                     const spawner = spawnersMap.get(this.spawnPart)
-                    DebugXL.Assert(spawner !== undefined)
                     if (spawner) {
                         return spawner.lastSpottedEnemyPosition
+                    }
+                    else {
+                        DebugXL.logE("Spawner", this.model.GetFullName() + "'s spawner for " + this.spawnPart.GetFullName() + " not found in spawnersMap")
                     }
                 }
             }
