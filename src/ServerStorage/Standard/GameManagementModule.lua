@@ -31,12 +31,12 @@ DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage includes
 
 local AnalyticsXL       = require( game.ServerStorage.Standard.AnalyticsXL )
 DebugXL:logD('GameManagement', 'GameManagementModule: AnalyticsXL included')
-local ChatMessages      = require( game.ServerStorage.Standard.ChatMessages )
-DebugXL:logD('GameManagement', 'GameManagementModule: ChatMessages included')
+--local ChatMessages      = require( game.ServerStorage.Standard.ChatMessages )
+--DebugXL:logD('GameManagement', 'GameManagementModule: ChatMessages included')
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 DebugXL:logD('GameManagement', 'GameManagementModule: Costumes included')
-local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
-DebugXL:logD('GameManagement', 'GameManagementModule: GameAnalyticsServer included')
+--local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
+--DebugXL:logD('GameManagement', 'GameManagementModule: GameAnalyticsServer included')
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
 DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.Standard includes succesful' )
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
@@ -59,6 +59,7 @@ DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage.TS inclu
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).DestructibleServer
 local DungeonDeck = require( game.ServerStorage.TS.DungeonDeck ).DungeonDeck
+local Furnisher = require( game.ServerStorage.TS.Furnisher ).Furnisher
 local GameServer = require( game.ServerStorage.TS.GameServer ).GameServer
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
@@ -1070,7 +1071,8 @@ end
 local function LoadLevelWait()
 	MobServer.clearMobs()
 	Dungeon:BuildWait( function( player ) return GameManagement:ReachedExit( player ) end )
-	FurnishServer:FurnishWithRandomSpawns()
+	local numHeroes = #game.Teams.Heroes:GetPlayers()
+	Furnisher.furnishWithRandomSpawns(numHeroes)
 	FurnishServer:FurnishWithRandomChests()
 	levelSessionCounterN = levelSessionCounterN + 1
 	levelReadyB = true
