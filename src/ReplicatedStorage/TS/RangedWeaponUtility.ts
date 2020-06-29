@@ -1,5 +1,8 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+DebugXL.logI( 'Executed', script.GetFullName())
 
 import { BaseWeaponUtility } from './BaseWeaponUtility'
 import { FlexTool } from './FlexToolTS'

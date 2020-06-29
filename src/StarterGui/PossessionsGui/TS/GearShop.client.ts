@@ -1,3 +1,9 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI( 'Executed', script.GetFullName())
+
 import { Players, Teams, Workspace } from "@rbxts/services";
 
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
