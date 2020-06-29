@@ -1,6 +1,8 @@
+
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
 import { DebugXL } from './DebugXLTS'
+DebugXL.logI('Executed', script.Name)
 
 import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
 

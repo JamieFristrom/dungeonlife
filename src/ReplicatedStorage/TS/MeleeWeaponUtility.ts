@@ -1,9 +1,10 @@
 
-// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI( 'Executed', script.GetFullName())
 
 import { Players, Debris, RunService } from '@rbxts/services'
-
-import { DebugXL } from './DebugXLTS'
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 
