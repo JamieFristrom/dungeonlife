@@ -1,8 +1,6 @@
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
-local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
 local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 
 local PossessionData = 

@@ -1,3 +1,6 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 // can use a namespace because no method functions
 // only partially typed so far - doing on an as-needed basis
 
@@ -20,6 +23,7 @@ declare namespace PossessionData   // namespace for info about possessions
         flavor: PossessionData.FlavorEnum
         heroesCanOpenB?: boolean
         baseDamageN?: number
+        furnishingType?: PossessionData.FurnishingEnum
         damagePerLevelN?: number
         healthPerLevelN?: number
         balanceAgainstNumHeroesB?: boolean
@@ -43,6 +47,18 @@ declare namespace PossessionData   // namespace for info about possessions
 		Skin       = "Skin",
 		Expansion  = "Expansion"    
     }
+
+	enum FurnishingEnum  
+	{
+		BossSpawn    = "Boss Spawn",
+		Spawn        = "Spawn",
+		Treasure     = "Treasure",
+		Barrier      = "Barrier",
+		Cosmetic     = "Cosmetic",
+		Lighting     = "Lighting",
+		WaterFeature = "Water Feature",
+		Trap         = "Trap"
+	} 
     /* =
     {
         Sword1H:

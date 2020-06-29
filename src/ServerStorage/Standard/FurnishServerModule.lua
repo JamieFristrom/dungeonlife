@@ -52,7 +52,7 @@ end
 --------------------------------------------------------------------------------------------------------------------
 -- Dungeon Furnishing
 --------------------------------------------------------------------------------------------------------------------
-local function PlaceSpawns( spawnDataA, spawnCountN )
+function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 	local dungeonMap = Dungeon:GetMap()
 	local emergencyFailCount = 0
 	while #workspace.Building:GetChildren() < spawnCountN do
@@ -74,7 +74,7 @@ local function PlaceSpawns( spawnDataA, spawnCountN )
 		if math.abs( gridX ) + math.abs( gridZ ) >= minSpawnDistance then		
 			if dungeonMap[ mapX ][ mapZ ].tileName ~= "BlockWall" then
 				
-				local spawnChoice = spawnDataA[ MathXL:RandomInteger( 1, #spawnDataA ) ]
+				local spawnChoice = spawnFromListA[ MathXL:RandomInteger( 1, #spawnFromListA ) ]
 				
 				local tileCenterPositionX = gridX * MapTileData.cellWidthN 
 				local tileCenterPositionZ = gridZ * MapTileData.cellWidthN
@@ -108,38 +108,6 @@ local function PlaceSpawns( spawnDataA, spawnCountN )
 end
 	
 				
-function FurnishServer:FurnishWithRandomSpawns()
-	
-	-- why do I insist on being cute?	
-	-- it's not likely we'll ever have more than one boss, but I'm handling it if we do
-	local bossBlueprintsT = TableXL:FindAllInTWhere(
-		FloorData:CurrentFloor().availableBlueprintsT,
-		function( blueprintS )
-			return PossessionData.dataT[ blueprintS ].furnishingType == PossessionData.FurnishingEnum.BossSpawn
-	end )
-	local spawnBlueprintsA = TableXL:TableToPairArray( bossBlueprintsT )
-	local spawnDataA = TableXL:Map( spawnBlueprintsA, function( blueprint )
-		return PossessionData.dataT[ blueprint.k ]
-	end)
-	if #spawnDataA >= 1 then
-		PlaceSpawns( spawnDataA, 1)
-	end
-	
-	local spawnBlueprintsT = TableXL:FindAllInTWhere(
-		FloorData:CurrentFloor().availableBlueprintsT,
-		function( blueprintS )
-			return PossessionData.dataT[ blueprintS ].furnishingType == PossessionData.FurnishingEnum.Spawn
-	end )
-	
-	local spawnBlueprintsA = TableXL:TableToPairArray( spawnBlueprintsT )
-	local spawnDataA = TableXL:Map( spawnBlueprintsA, function( blueprint )
-		return PossessionData.dataT[ blueprint.k ]
-	end)
-	
-	PlaceSpawns( spawnDataA, 4 )
-end
-
-
 function FurnishServer:FurnishWithRandomChests()
 	local dungeonMap = Dungeon:GetMap()
 	local scarcity = 2 * math.max( 1, #game.Teams.Heroes:GetPlayers() )

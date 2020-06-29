@@ -1,12 +1,15 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 /*
---
---  DebugXL
---
---  Debug eXtended Library. It excels. It's extra large.
---
---  Additional debug functions to augment roblox
---
---  Jamie_Fristrom @happionlabs
+
+  DebugXL
+
+  Debug eXtended Library. It excels. It's extra large.
+
+  Additional debug functions to augment roblox
+
+  Jamie_Fristrom @happionlabs
 
 */
 
