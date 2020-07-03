@@ -450,8 +450,9 @@ function RecreateToolIfNecessary( tool, player, _activeSkinsT )
 	local toolBaseData = FlexibleTools:GetToolBaseData( tool )
 	local toolSkinType = toolBaseData.skinType
 	local activeSkin = _activeSkinsT[ toolSkinType ]
+	-- FIXME - attempt to call nil value here
 	local _possessionsKey = FlexibleToolsServer.getFlexToolAccessor( tool ).possessionsKey
-	DebugXL:Assert( FlexibleToolsServer.getFlexToolAccessor( tool ).character == player.Character )
+	DebugXL:Assert( _possessionsKey.character == player.Character )
 	-- oh look, I can use local functions to avoid the hassle of passing parameters
 	local function RecreateTool()
 		local _toolInstanceDatum = FlexibleTools:GetToolInstanceDatum( tool )
