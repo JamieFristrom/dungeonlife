@@ -1092,9 +1092,12 @@ local function PlayLevelWait()
 	-- end
 
 	ChangeGameState( "LevelPlaying" )
-	
+
 	local averageHeroLocalLevel = HeroServer.getAverageHeroLocalLevel()
 	local numHeroes = #game.Teams.Heroes:GetPlayers()
+	-- add more spawns if necessary
+	Furnisher.furnishWithRandomSpawns(numHeroes)
+
 	local dungeonDepth = DungeonDeck.getCurrentDepth()
 	DestructibleServer.calibrateAllDestructiblesHealth( averageHeroLocalLevel, numHeroes, dungeonDepth )
 	

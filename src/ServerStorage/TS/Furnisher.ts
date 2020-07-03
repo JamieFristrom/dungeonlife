@@ -8,24 +8,34 @@ import * as FloorData from "ReplicatedStorage/Standard/FloorData"
 import PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
 import * as FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+import { Workspace } from '@rbxts/services'
 
+const buildingFolder = Workspace.WaitForChild<Folder>("Building")
 
 export namespace Furnisher {
-    
-    export function furnishWithRandomSpawns( numHeroes: number ) {
-        const bossBlueprints = FloorData.CurrentFloor().availableBlueprintsT.keys().filter( 
-            (blueprint)=>PossessionData.dataT[blueprint].furnishingType === PossessionData.FurnishingEnum.BossSpawn );
-        const spawnData = bossBlueprints.map( (blueprint)=>PossessionData.dataT[blueprint] )
-        if( spawnData.size()>= 1 ) {
-            FurnishServer.PlaceSpawns( spawnData, 1 )
-        }
+    export function countFurnishingsOfType( furnishingType: PossessionData.FurnishingEnum ) {
+        return buildingFolder.GetChildren().filter( (furnishing)=>PossessionData.dataT[furnishing.Name].furnishingType===furnishingType).size()
+    }
 
-        const spawnBlueprints = FloorData.CurrentFloor().availableBlueprintsT.keys().filter(
-            (blueprint)=>PossessionData.dataT[blueprint].furnishingType === PossessionData.FurnishingEnum.Spawn );
-        const spawnFromList = spawnBlueprints.map( (blueprint)=>PossessionData.dataT[blueprint])
-        DebugXL.Assert( spawnFromList.size()>=1 )
-        if( spawnFromList.size()>=1 ) {
-            FurnishServer.PlaceSpawns( spawnFromList, numHeroes+3-spawnData.size() )
+    export function furnishWithFurnishingsOfType( availableBlueprints: Map<string,Boolean>, expectedTotal: number, furnishingType: PossessionData.FurnishingEnum ) {
+        const existingCount = countFurnishingsOfType( furnishingType )
+        if( existingCount < expectedTotal ) {
+            const bossBlueprints = availableBlueprints.keys().filter( 
+                (blueprint)=>PossessionData.dataT[blueprint].furnishingType === furnishingType );
+            const spawnData = bossBlueprints.map( (blueprint)=>PossessionData.dataT[blueprint] )
+            if( spawnData.size() >= 1 ) {
+                FurnishServer.PlaceSpawns( spawnData, expectedTotal-existingCount )
+                return expectedTotal
+            }
         }
+        return existingCount
+    }
+
+    // this gets called twice; once when the level is created and once when the heroes are ready in case the monsters
+    // didn't place enough spawn points or a hero arrived late
+    // so it checks to see if the right amount of spawns are there and adds more if necessary
+    export function furnishWithRandomSpawns( numHeroes: number ) {
+        const bossCount = furnishWithFurnishingsOfType( FloorData.CurrentFloor().availableBlueprintsT, 1, PossessionData.FurnishingEnum.BossSpawn )
+        furnishWithFurnishingsOfType( FloorData.CurrentFloor().availableBlueprintsT, numHeroes+3/(bossCount+1), PossessionData.FurnishingEnum.Spawn )
     }
 }
