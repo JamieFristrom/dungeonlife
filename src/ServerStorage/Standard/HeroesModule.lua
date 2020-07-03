@@ -541,53 +541,55 @@ function Heroes:AwardExperienceWait( player, experienceBonusN, analyticsItemType
 		if pcData then			
 			
 			local pcDataStatsT = pcData.statsT
-			local lastLevel    = Hero:levelForExperience( pcDataStatsT.experienceN )
+			if pcDataStatsT then  -- your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
+				local lastLevel    = Hero:levelForExperience( pcDataStatsT.experienceN )
+						
+				-- being careful because somehow a player ended up with nan experience
+				GameAnalyticsServer.RecordResource( player, math.ceil( experienceBonusN ), "Source", "XP", analyticsItemTypeS, analyticsItemIdS )
+				local newExperienceN = pcDataStatsT.experienceN + math.ceil( experienceBonusN )
+				DebugXL:Assert( MathXL:IsFinite( newExperienceN ) )
+				if not MathXL:IsFinite( newExperienceN ) then return end
+				pcDataStatsT.experienceN = newExperienceN
+
+				--InstanceXL.new( "NumberValue", { Parent = player.Character, Name = "Experience", Value = pcData.statsT.experienceN }, true )	
+				local newLevel = Hero:levelForExperience( pcDataStatsT.experienceN )
+				if newLevel > lastLevel then
+					-- prevent it from going up more than one level at a time
+					-- there was no significant effect to do this extra work according to the analytics but I watched one guy
+					-- get to level 10 in one session which seems crazy
+					-- that was partly because I wasn't nerfed for some reason
+					newLevel = lastLevel + 1
+					-- once you level discard extra experience; slows things down and won't accidentally jump multiple levels this way
+					pcDataStatsT.experienceN = Hero:totalExperienceForLevel( newLevel )
+
+					if newLevel >= Hero.globalHeroLevelCap then
+						MessageServer.PostMessageByKey( player, "MaximumLevel", false )
+					end
 					
-			-- being careful because somehow a player ended up with nan experience
-			GameAnalyticsServer.RecordResource( player, math.ceil( experienceBonusN ), "Source", "XP", analyticsItemTypeS, analyticsItemIdS )
-			local newExperienceN = pcDataStatsT.experienceN + math.ceil( experienceBonusN )
-			DebugXL:Assert( MathXL:IsFinite( newExperienceN ) )
-			if not MathXL:IsFinite( newExperienceN ) then return end
-			pcDataStatsT.experienceN = newExperienceN
-
-			--InstanceXL.new( "NumberValue", { Parent = player.Character, Name = "Experience", Value = pcData.statsT.experienceN }, true )	
-			local newLevel = Hero:levelForExperience( pcDataStatsT.experienceN )
-			if newLevel > lastLevel then
-				-- prevent it from going up more than one level at a time
-				-- there was no significant effect to do this extra work according to the analytics but I watched one guy
-				-- get to level 10 in one session which seems crazy
-				-- that was partly because I wasn't nerfed for some reason
-				newLevel = lastLevel + 1
-				-- once you level discard extra experience; slows things down and won't accidentally jump multiple levels this way
-				pcDataStatsT.experienceN = Hero:totalExperienceForLevel( newLevel )
-
-				if newLevel >= Hero.globalHeroLevelCap then
-					MessageServer.PostMessageByKey( player, "MaximumLevel", false )
+					MessageServer.PostMessageByKey( player, "LevelUpHero", false )
+					if pcDataStatsT.totalTimeN then
+						local heroSlotsUsed = #savedPlayerCharactersT[ PCKey( player ) ].heroesA
+						if birthTickT[ player ] then
+							local heroTimeInvested = pcDataStatsT.totalTimeN + tick() - birthTickT[ player ]
+							GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUpHeroTimeSpent:%02d", newLevel ), heroTimeInvested, 1, "Level" )
+						end
+						local totalTimeInvested = Inventory:GetCount( player, "TimeInvested" )
+						GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUp:%02d", newLevel ), totalTimeInvested, 1, "Level" )
+					end
+					if player.Character:FindFirstChild("Humanoid") then
+						player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
+						if player.Character:FindFirstChild("ManaValue") then
+							player.Character.ManaValue.Value = player.Character.MaxManaValue.Value
+						end
+		--				player.Character.Configurations.Level.Value = newLevel
+					end
+					player.leaderstats.Level.Value = newLevel
+					HeroServer.repopulateShopIfNecessary( player, pcData )
+					HeroServer.awardBadgesForHero( player, pcData )
 				end
 				
-				MessageServer.PostMessageByKey( player, "LevelUpHero", false )
-				if pcDataStatsT.totalTimeN then
-					local heroSlotsUsed = #savedPlayerCharactersT[ PCKey( player ) ].heroesA
-					if birthTickT[ player ] then
-						local heroTimeInvested = pcDataStatsT.totalTimeN + tick() - birthTickT[ player ]
-						GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUpHeroTimeSpent:%02d", newLevel ), heroTimeInvested, 1, "Level" )
-					end
-					local totalTimeInvested = Inventory:GetCount( player, "TimeInvested" )
-					GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUp:%02d", newLevel ), totalTimeInvested, 1, "Level" )
-				end
-				if player.Character:FindFirstChild("Humanoid") then
-					player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
-					if player.Character:FindFirstChild("ManaValue") then
-						player.Character.ManaValue.Value = player.Character.MaxManaValue.Value
-					end
-	--				player.Character.Configurations.Level.Value = newLevel
-				end
-				player.leaderstats.Level.Value = newLevel
-				HeroServer.repopulateShopIfNecessary( player, pcData )
-				HeroServer.awardBadgesForHero( player, pcData )
+				Heroes:SaveHeroesWait( player )
 			end
-			
-			Heroes:SaveHeroesWait( player )
 		end
 	end
 end
