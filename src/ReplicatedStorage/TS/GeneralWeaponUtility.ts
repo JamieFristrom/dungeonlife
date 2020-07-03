@@ -72,15 +72,22 @@ export namespace GeneralWeaponUtility {
             targetsAndRanges.sort((a, b) => b[1] - a[1])
             const attackingCharacterPos = attackingCharacter.GetPrimaryPartCFrame().p
             for (let i = 0; i < targetsAndRanges.size(); i++) {
-                const losRay = new Ray(attackingCharacterPos, targetsAndRanges[i][0].GetPrimaryPartCFrame().p.sub(attackingCharacterPos))
-                const [hitPart] = findNontransparentPartOnRayWithIgnoreList(losRay, [attackingCharacter, targetsAndRanges[i][0]])
-                if (!hitPart) {
-                    // clear LOS
-                    DebugXL.logV("Combat", "Closest target: " + DebugXL.stringifyInstance(targetsAndRanges[i][0]))
-                    return targetsAndRanges[i]
-                }
+                // use head for target because some destructibles make their primary part something else for positioning purposes. Everyone has a head
+                const targetPart = targetsAndRanges[i][0].FindFirstChild<BasePart>("Head")
+                if( !targetPart ) {
+                    DebugXL.logD("Combat", "Target "+targetsAndRanges[i][0].Name+" missing Head")
+                } 
                 else {
-                    DebugXL.logD("Combat", "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
+                    const losRay = new Ray(attackingCharacterPos, targetPart.Position.sub(attackingCharacterPos))
+                    const [hitPart] = findNontransparentPartOnRayWithIgnoreList(losRay, [attackingCharacter, targetsAndRanges[i][0]])
+                    if (!hitPart) {
+                        // clear LOS
+                        DebugXL.logV("Combat", "Closest target: " + DebugXL.stringifyInstance(targetsAndRanges[i][0]))
+                        return targetsAndRanges[i]
+                    }
+                    else {
+                        DebugXL.logD("Combat", "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
+                    }
                 }
             }
             // no LOS on anyone
