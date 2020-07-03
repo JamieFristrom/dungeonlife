@@ -55,7 +55,8 @@ end
 function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 	local dungeonMap = Dungeon:GetMap()
 	local emergencyFailCount = 0
-	while #workspace.Building:GetChildren() < spawnCountN do
+	local numPlaced = 0
+	while numPlaced < spawnCountN do
 		emergencyFailCount = emergencyFailCount + 1
 		if emergencyFailCount > 1000 then
 			if #workspace.Building:GetChildren() <= 1 then
@@ -101,7 +102,9 @@ function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 					end
 				end
 				local position = FurnishUtility:SnapV3( Vector3.new( positionX, 1.2, positionZ ), spawnChoice.gridSubdivisionsN, spawnChoice.placementType )
-				FurnishServer:Furnish( nil, spawnChoice.idS, position, rotY )
+				if( FurnishServer:Furnish( nil, spawnChoice.idS, position, rotY ) )then
+					numPlaced = numPlaced + 1
+				end
 			end
 		end
 	end
