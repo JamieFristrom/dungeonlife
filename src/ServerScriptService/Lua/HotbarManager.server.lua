@@ -10,7 +10,6 @@ local HotbarRemote = {}
 
 function HotbarRemote:Equip( player, hotbarSlotN )
 --	--print( player.Name.." equipping "..hotbarSlotN )
---	local flexToolInst , _possessionsKey = CharacterI:GetHotbarToolDatum( player, hotbarSlotN )
 	local flexToolInst = CharacterI:GetHotbarToolDatum( player, hotbarSlotN )
 	if flexToolInst then
 		local possessionDatum = ToolData.dataT[ flexToolInst.baseDataS ]

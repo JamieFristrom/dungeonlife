@@ -691,7 +691,6 @@ local function MonitorPlayer( player )
 			end
 			DebugXL:logV('GameManagement', player.Name.." has spawnPart" )
 			
-			-- fixme; something's going wrong here
 			if levelSessionCounterN ~= levelSessionN then
 				local diagS = "Session changed in the middle of "..player.Name.."'s spawn. levelSessionCounterN: "..
 					levelSessionCounterN.." levelSessionN: "..levelSessionN.." monitorCyclesN: "..monitorCyclesN.." gameStateDesc: "..workspace.GameManagement.GameState.Value
