@@ -1,25 +1,26 @@
-import { CollectionService, ReplicatedStorage } from "@rbxts/services";
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
 
-// import { ServerStorage } from "@rbxts/services";
+// This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-// import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI("Executed", script.Name)
 
-// let tools = ServerStorage.Tools.GetChildren()
+import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
 
-// tools.forEach( ( tool )=>
-// {
-//     tool.GetChildren().forEach( (child)=>
-//     {
-//         if( child.IsA("BasePart") )
-//         {
-//             if( child.CanCollide )
-//             {
-//                 DebugXL.Error( child.GetFullName() + " CanCollide true" )
-//             }
-//         }
-//     })
-// })
+let toolsFolder = ServerStorage.WaitForChild("Tools")
+
+toolsFolder.GetChildren().forEach( ( tool )=>
+{
+    tool.GetDescendants().forEach( (child)=>
+    {
+        if( child.IsA("BasePart") )
+        {
+            if( child.CanCollide )
+            {
+                DebugXL.Error( child.GetFullName() + " CanCollide true" )
+            }
+        }
+    })
+})
 
 // validate correct servers - sometimes their Team value just disappears
 let furniture = ReplicatedStorage.WaitForChild('Shared Instances').WaitForChild('Placement Storage').GetChildren()
