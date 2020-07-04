@@ -67,7 +67,6 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 --			character = character.Parent
 --		end
 
--- fixme: figure this shit out and make it gud: need 'creator character' it seems
 		local creatorCharacter
 		creatorCharacter = Creator.Value
 		DebugXL:Assert( creatorCharacter:IsA('Model') )
