@@ -251,7 +251,6 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 				if #validSpawnPoints <= 0 then
 					warn( "Couldn't find matching spawn" )
 					-- it's possible that the level can reload while you're loading your character, in which case we find any emergency spawn point
-					-- yet another reason we should find spawn point first and then choose your character class -- fixme
 					validSpawnPoints = TableXL:FindAllInAWhere( spawnPoints, function( element ) return element.Enabled.Value end )
 				end
 			end
