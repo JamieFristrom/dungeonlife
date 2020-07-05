@@ -8,20 +8,15 @@ DebugXL.logI('Executed', script.GetFullName())
 //  "Gear" includes both Tools and Armor and I'm not sure what else
 //
 
-import { ServerStorage, Players, Teams, Workspace } from '@rbxts/services';
+import { Teams } from '@rbxts/services';
 
-import { SkinTypes } from 'ReplicatedStorage/TS/SkinTypes'
-import { ActiveSkinSetI, SkinTypeEnum } from 'ReplicatedStorage/TS/SkinTypes';
+import { ActiveSkinSetI } from 'ReplicatedStorage/TS/SkinTypes';
 
-import * as FlexEquip from 'ServerStorage/Standard/FlexEquipModule'
 import * as Inventory from 'ServerStorage/Standard/InventoryModule'
 
 import { CreateToolParamsI } from './CreateToolParamsI'
 import { FlexibleToolsServer } from './FlexibleToolsServer'
 
-const SignalsFolder = Workspace.WaitForChild<Folder>("Signals")
-const InventoryRE = SignalsFolder.WaitForChild<RemoteEvent>("InventoryRE")
-const GearRE = SignalsFolder.WaitForChild<RemoteEvent>("GearRE")
 
 export namespace GearServer {
     export function recreateTool(tool: Tool, toolParams: CreateToolParamsI) {
@@ -75,33 +70,3 @@ export namespace GearServer {
         }
     }
 }
-
-export namespace GearRemote {
-    export function setActiveSkin(player: Player, skinOwner: string, toolSkinType: SkinTypeEnum, skinId: string) {
-        const inventoryStore = Inventory.GetInventoryStoreWait(player)
-        if (inventoryStore) {
-            const inventory = inventoryStore.Get()
-            if (inventory) {
-                const skinSet = inventory.activeSkinsT[skinOwner]
-                skinSet.set(toolSkinType, skinId)
-                inventoryStore.Set(inventory)
-                InventoryRE.FireClient(player, "Update", inventory)
-                if (SkinTypes[toolSkinType].tagsT.worn) {
-                    // has to come first otherwise you drop weapon
-                    FlexEquip.ApplyEntireCostumeIfNecessaryWait(player)
-                }
-                GearServer.reskinTools(player)
-            }
-        }
-    }
-}
-
-GearRE.OnServerEvent.Connect((player, ...args) => {
-    const funcName = args[0] as string
-    if (funcName === "setActiveSkin") {
-        GearRemote.setActiveSkin(player, args[1] as string, args[2] as SkinTypeEnum, args[3] as string)
-    }
-    else {
-        DebugXL.Error("Unknown FlexibleToolsRE function " + funcName)
-    }
-})
