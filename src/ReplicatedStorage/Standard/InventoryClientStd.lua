@@ -1,7 +1,4 @@
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
-local PossessionData    = require( game.ReplicatedStorage.PossessionData )
-
-local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
 
 local InventoryClient = {}
