@@ -1,11 +1,15 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
 import { Teams, ServerStorage } from "@rbxts/services"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { CharacterKey, CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
-
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
+import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
 
-import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
 import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
@@ -24,10 +28,10 @@ export namespace ToolCaches {
         DebugXL.Assert(characterKey !== 0)
         let player = PlayerServer.getPlayer(characterKey)
         if (!player) {
-            return  // mobs don't need to keep their tools in the cache
+            return  // I guess later I decided that mobs don't need to keep tools in a cache because they don't currently switch
         }
 
-        let allActiveSkins = player ? Inventory.GetActiveSkinsWait(player) : { monster: {}, hero: {} }
+        let allActiveSkins = player ? Inventory.GetActiveSkinsWait(player) : { monster: new Map<SkinTypeEnum,string>(), hero: new Map<SkinTypeEnum,string>() }
         let activeSkins = characterRecord.getTeam() === Teams.FindFirstChild('Heroes') ? allActiveSkins.hero : allActiveSkins.monster
 
         let characterModel = PlayerServer.getCharacterModel(characterKey)
@@ -85,5 +89,10 @@ export namespace ToolCaches {
     export function publishPotions(player: Player, characterRecord: CharacterRecord) {
         let potions = characterRecord.countBaseDataQuantity('Healing')
         InstanceXL.CreateSingleton("NumberValue", { Name: "NumHealthPotions", Value: potions, Parent: player })
+    }
+
+    export function getToolCache( player: Player ) {
+        const toolCache = player.FindFirstChild<Folder>("Backpack")!
+        return toolCache
     }
 }

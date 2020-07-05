@@ -16,7 +16,7 @@ end)
 
 
 function InventoryClient:SetActiveSkin( skinOwnerS, skinTypeKey, skinIdS )
-	workspace.Signals.InventoryRE:FireServer( "SetActiveSkin", skinOwnerS, skinTypeKey, skinIdS )
+	workspace.Signals.GearRE:FireServer( "setActiveSkin", skinOwnerS, skinTypeKey, skinIdS )
 	
 	-- for snappiness purposes:
 	InventoryClient.inventory.activeSkinsT[ skinTypeKey ] = skinIdS

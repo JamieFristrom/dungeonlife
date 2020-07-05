@@ -1,10 +1,17 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
 import { FlexTool, GearDefinition, HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from './ToolDataTS';
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
+
 import { CharacterClasses } from './CharacterClasses';
+import { SkinTypeEnum } from "./SkinTypes"
 import { Players, Teams } from '@rbxts/services';
 
 // we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
@@ -411,7 +418,7 @@ export abstract class CharacterRecord implements CharacterRecordI
                     const flexTool = characterRecord.gearPool.get( possessionKey )
                     DebugXL.Assert( flexTool !== undefined )
                     if( flexTool ) {
-                        tool = flexTool.createToolInstance( {}, possessionKey )
+                        tool = flexTool.createToolInstance( new Map<SkinTypeEnum, string>(), possessionKey )
                     }
                 }
             }
