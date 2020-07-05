@@ -586,24 +586,6 @@ function InventoryRemote.Reset( player )
 end
 
 
-function InventoryRemote.SetActiveSkin( player, skinOwnerS, skinTypeKey, skinIdS )
-	local inventoryStore = Inventory:GetInventoryStoreWait( player )
-	if inventoryStore then
-		local inventory = inventoryStore:Get()
-		if inventory then
-			inventory.activeSkinsT[ skinOwnerS ][ skinTypeKey ] = skinIdS
-			inventoryStore:Set( inventory )
-			workspace.Signals.InventoryRE:FireClient( player, "Update", inventory )
-			if PossessionData.skinTypesT[ skinTypeKey ].tagsT.worn then
-				-- has to come first otherwise you drop weapon
-				require( game.ServerStorage.FlexEquipModule ):ApplyEntireCostumeIfNecessaryWait( player )
-			end
-			require( game.ServerStorage.Standard.FlexibleToolsModule ):ReskinTools( player )
-		end
-	end
-end
-
-
 function InventoryRemote.SetMonsterSetting( player, monsterIdS, setting, value )
 	local inventoryStore = Inventory:GetInventoryStoreWait( player )
 	if inventoryStore then

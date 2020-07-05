@@ -33,6 +33,7 @@ class DebugXLC {
         ['Combat',LogLevel.Debug],
         ['Mobs',LogLevel.Info],
         ['Executed',LogLevel.Info],
+        ['Requires',LogLevel.Verbose]
 //        ['UI', LogLevel.Info],
 //        ['GameManagement',LogLevel.Verbose]
     ])

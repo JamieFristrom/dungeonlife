@@ -6,7 +6,8 @@ DebugXL.logI( 'Executed', script.GetFullName())
 
 import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest";
 
-export interface ActiveSkinSetI { [k: string]: SkinTypeEnum }
+export type ActiveSkinSetI = Map<SkinTypeEnum, string>
+export type ActiveSkins = { [skinSetType: string]: ActiveSkinSetI, monster: ActiveSkinSetI, hero: ActiveSkinSetI }
 
 export declare interface SkinInfoI {
 	idS: string

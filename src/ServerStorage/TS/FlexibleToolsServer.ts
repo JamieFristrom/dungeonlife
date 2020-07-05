@@ -4,18 +4,14 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { ServerStorage, Players, Workspace } from '@rbxts/services';
+import { ServerStorage, Players } from '@rbxts/services';
 
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS';
-import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 DebugXL.logD('Requires', 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
 
 import { CreateToolParamsI } from 'ServerStorage/TS/CreateToolParamsI'
 import { PlayerServer } from './PlayerServer';
-
-//import * as HeroesModule from 'ServerStorage/Standard/HeroesModule';
-import { SaveHeroesWait } from 'ServerStorage/Standard/HeroesModule';
 
 DebugXL.logD('Requires', 'FlexibleToolServer: imports succesful')
 
@@ -25,8 +21,7 @@ DebugXL.logD('Requires', 'FlexibleToolServer: imports succesful')
 // currently, players hold weapons
 // what about the shop? how does that work?
 // heroes have shops
-const ToolsFolder = ServerStorage.WaitForChild<Folder>('Tools', 10)!
-DebugXL.Assert(ToolsFolder !== undefined)
+const ToolsFolder = ServerStorage.WaitForChild<Folder>("Tools")
 
 type Character = Model
 
@@ -41,7 +36,7 @@ export namespace FlexibleToolsServer {
     let mobToolCache: Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
     DebugXL.Assert(mobToolCache !== undefined)
 
-    let serverToolDataT = new Map<Tool, FlexToolAccessor>()
+    export let serverToolDataT = new Map<Tool, FlexToolAccessor>()
 
     export function setFlexToolInst(tool: Tool, fta: FlexToolAccessor) {
         serverToolDataT.set(tool, fta)
@@ -99,15 +94,16 @@ export namespace FlexibleToolsServer {
         return toolInstance
     }
 
-    export function removeToolWait(tool:Tool, character:Character) {
+    export function removeToolWait(tool: Tool, character: Character) {
         const fta = serverToolDataT.get(tool)
         if (!fta) {
             DebugXL.Error("Couldn't find flexTool to remove:" + tool.GetFullName())
         }
         else {
-            const characterRecord = PlayerServer.getCharacterRecordFromCharacter( fta.character )
-            characterRecord.removeTool( fta.possessionsKey )            
+            const characterRecord = PlayerServer.getCharacterRecordFromCharacter(fta.character)
+            characterRecord.removeTool(fta.possessionsKey)
         }
-        tool.Destroy()        
+        tool.Destroy()
     }
 }
+
