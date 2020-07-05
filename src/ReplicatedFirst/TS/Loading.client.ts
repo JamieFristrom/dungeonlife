@@ -1,7 +1,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 6/6/2020")
-warn("Fixed mana potions")
+warn("DUNGEON LIFE 7/5/2020")
+warn("First mobs public test")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")

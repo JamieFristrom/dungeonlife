@@ -25,26 +25,25 @@ export enum LogLevel {
 }
 
 class DebugXLC {
-    static readonly logLevelPrefixes: string[] = ['E','W','I','D','V']
+    static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
     private defaultLogLevel = LogLevel.Warning
 
-    private logLevelForTag = new Map<string,LogLevel>([
-        ['Combat',LogLevel.Debug],
-        ['Mobs',LogLevel.Info],
-        ['Executed',LogLevel.Info],
-        ['Requires',LogLevel.Verbose]
-//        ['UI', LogLevel.Info],
-//        ['GameManagement',LogLevel.Verbose]
+    private logLevelForTag = new Map<string, LogLevel>([
+        // ['Combat',LogLevel.Debug],
+        // ['Mobs',LogLevel.Info],
+        // ['Executed',LogLevel.Info],
+        // ['Requires',LogLevel.Verbose],
+        // ['UI', LogLevel.Info],
+        // ['GameManagement',LogLevel.Verbose]
     ])
 
-    Error( message: string )
-    {
+    Error(message: string) {
         let callstackS = debug.traceback()
-        if( false ) //--game["Run Service"]:IsStudio() )
-            error( message )
+        if (false) //--game["Run Service"]:IsStudio() )
+            error(message)
         else
-            spawn( () => { this.log( LogLevel.Error, script.Name, message+" "+callstackS ) } ) // -- so analytics will pick it up
+            spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
     }
 
     Assert(conditionB: boolean) {
@@ -86,24 +85,23 @@ class DebugXLC {
     }
 
     log(logLevel: LogLevel, tag: string, message: string) {
-        const cliSrvPrefix = (RunService.IsServer()?'Srv':'')+(RunService.IsClient()?'Cli':'')  // in run mode they can both be true
+        const cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') + (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
         if (!message) {
-            error( `${cliSrvPrefix}-E/${tag}: MISSING MESSAGE` )
+            error(`${cliSrvPrefix}-E/${tag}: MISSING MESSAGE`)
         }
         else if (logLevel <= this.getLogLevelForTag(tag)) {
             let prefix = DebugXLC.logLevelPrefixes[logLevel]
             if (logLevel <= LogLevel.Error)
-                error( `${cliSrvPrefix}-${prefix}/${tag}: ${message}` )
+                error(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
             else if (logLevel <= LogLevel.Warning)
-                warn( `${cliSrvPrefix}-${prefix}/${tag}: ${message}` )
+                warn(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
             else
-                print( `${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
+                print(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
         }
     }
 
-    logE( tag: string, message: string )
-    {
-        this.log( LogLevel.Error, tag, message )
+    logE(tag: string, message: string) {
+        this.log(LogLevel.Error, tag, message)
     }
 
     logW(tag: string, message: string) {
@@ -126,15 +124,13 @@ class DebugXLC {
         this.defaultLogLevel = logLevel
     }
 
-    stringifyInstance( inst: Instance | undefined )
-    {
+    stringifyInstance(inst: Instance | undefined) {
         return inst ? inst.Name : '(nil)'
     }
 
-    stringifyInstanceArray( instArray: Instance[] )
-    {
+    stringifyInstanceArray(instArray: Instance[]) {
         return instArray.isEmpty() ? '[]' :
-            '['+instArray.map( (inst)=>this.stringifyInstance(inst) ).reduce( (a, b)=>a+','+b )+']'
+            '[' + instArray.map((inst) => this.stringifyInstance(inst)).reduce((a, b) => a + ',' + b) + ']'
     }
 }
 
