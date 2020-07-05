@@ -21,12 +21,14 @@ declare namespace PossessionData   // namespace for info about possessions
         publishValueB?: boolean
         defaultHideAccessoriesB: boolean 
         flavor: PossessionData.FlavorEnum
+        baseToolS?: string
         heroesCanOpenB?: boolean
         baseDamageN?: number
         furnishingType?: PossessionData.FurnishingEnum
         damagePerLevelN?: number
         healthPerLevelN?: number
         balanceAgainstNumHeroesB?: boolean
+        textureSwapId?: string
         getReadableName: ( self: PossessionDatumI )=>string
     }
 

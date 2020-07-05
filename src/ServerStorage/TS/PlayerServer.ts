@@ -4,7 +4,7 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { Players, Teams, ServerStorage } from "@rbxts/services"
+import { Players } from "@rbxts/services"
 
 import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
 DebugXL.logD("Requires", 'PlayerServer: ReplicatedStorage/TS imports succesful')

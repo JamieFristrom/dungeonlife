@@ -4,7 +4,7 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI( 'Executed', script.GetFullName())
 
-import { Players, Teams, Workspace } from "@rbxts/services";
+import { Players, Workspace } from "@rbxts/services";
 
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
 
@@ -12,6 +12,7 @@ import * as GearUI from "ReplicatedStorage/Standard/GearUI"
 import * as HeroUtility from "ReplicatedStorage/Standard/HeroUtility"
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
+import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { Localize } from "ReplicatedStorage/TS/Localize"
@@ -52,7 +53,7 @@ function RefreshGearShop( pc: CharacterRecord )
         gearShopFrame.WaitForChild('ItemTemplate'),
         gearShopFrame.WaitForChild('ItemInfoFrame'),
         hero.getShopItems(),
-        {},
+        new Map<SkinTypeEnum, string>(),
         30,
         ( toolIdx: string )=>
         {
