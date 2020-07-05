@@ -43,7 +43,7 @@ And now you should be able to build Dungeon Life:
 ```
 (As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
 
-Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxl in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
+Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxlx in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
 
 Give me credit! Configure your place and in your description put: "Made with Dungeon Life by Jamie Fristrom: https://www.roblox.com/games/2184151436"
 
