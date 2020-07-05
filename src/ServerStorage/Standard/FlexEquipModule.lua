@@ -1,5 +1,8 @@
-local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
-DebugXL:logI( 'Executed', script.Name )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
