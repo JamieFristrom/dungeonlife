@@ -927,6 +927,7 @@ PossessionData.dataA =
 			furnishingType = PossessionData.FurnishingEnum.BossSpawn,
 			placementType = PossessionData.PlacementTypeEnum.Floor,
 			gridSubdivisionsN = 1,
+			startingCountN = 0,
 			buildCapN = 1,
 			levelCapN = 1,
 			rarityN = 0,			-- indicates not a player ownable thing
@@ -945,6 +946,7 @@ PossessionData.dataA =
 			buildCapN = 1,
 			levelCapN = 1,
 			rarityN = 0,			-- indicates not a player ownable thing
+			startingCountN = 0,
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		-- boss spawns
