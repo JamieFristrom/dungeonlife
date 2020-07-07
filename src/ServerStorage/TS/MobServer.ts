@@ -306,7 +306,21 @@ export namespace MobServer {
                 mobLevel)
             const characterKey = PlayerServer.setCharacterRecordForMob(this.model, characterRecord)
             Monsters.Initialize(this.model, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
-            this.model.PrimaryPart!.SetNetworkOwner(undefined)  // not doesn't seem to do anything but leaving it in for voodoo
+
+            // apparently this is necessary to stop client-side TP hacks; null
+            delay(1,
+                () => {
+                    for (let instance of this.model.GetDescendants()) {
+                        if (instance.IsA("BasePart")) {
+                            if (instance.Anchored) {
+                                DebugXL.logW("Parts", instance.GetFullName() + " is anchored. Should it be?")
+                            }
+                            else {
+                                instance.SetNetworkOwner(undefined)
+                            }
+                        }
+                    }
+                })
 
             if (!CharacterClasses.monsterStats[characterClass].ghostifyB) {
                 // doing this before they draw their weapon so I think it's ok
@@ -316,7 +330,6 @@ export namespace MobServer {
                     }
                 })
             }
-
 
             ToolCaches.updateToolCache(characterKey, characterRecord)
 
@@ -470,9 +483,9 @@ export namespace MobServer {
 
                         const destinationVec = lastSpottedEnemyPosition.sub(this.model.GetPrimaryPartCFrame().p)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
-                        //const shortenedVec = destinationVec.mul( destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
-                        //this.humanoid.MoveTo( this.character.GetPrimaryPartCFrame().p.add( shortenedVec ) )
-                        this.humanoid.Move(totalVec.Unit)
+                        const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
+                        this.humanoid.MoveTo(this.model.GetPrimaryPartCFrame().p.add(shortenedVec))
+                        //this.humanoid.Move(totalVec.Unit)
                         this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
                         // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client
                         // and server if it's following a player's parts
