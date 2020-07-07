@@ -31,6 +31,7 @@ class DebugXLC {
 
     private logLevelForTag = new Map<string, LogLevel>([
         // ['Combat',LogLevel.Debug],
+        // ["Gameplay", LogLevel.Verbose],
         // ['Mobs',LogLevel.Info],
         // ['Executed',LogLevel.Info],
         // ['Requires',LogLevel.Verbose],
