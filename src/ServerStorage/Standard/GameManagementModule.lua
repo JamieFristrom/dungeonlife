@@ -1059,7 +1059,8 @@ function GameManagement:BeatSuperboss()
 
 	DebugXL:logV('GameManagement', "Awarding end of dungeon" )
 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-		Heroes:AwardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Superboss" )
+		HeroServer.awardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Superboss" )
+		Heroes:SaveHeroesWait( player )
 	end
 	
 	beatSuperbossB = true
@@ -1132,9 +1133,10 @@ local function PlayLevelWait()
 			for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
 --				GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Complete:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
 				Heroes:NewDungeonLevel( player, newDungeonDepth )
-				Heroes:AwardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor" )
+				HeroServer.awardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor" )				
 				Inventory:AdjustCount( player, "Stars", 10, "Progress", "Floor" )
 				Inventory:EarnRubies( player, 10, "Progress", "Floor" )
+				Heroes:SaveHeroesWait( player )
 			end
 			for _, player in pairs( game.Teams.Monsters:GetPlayers() ) do
 				Monsters:AdjustBuildPoints( player, 50 )
