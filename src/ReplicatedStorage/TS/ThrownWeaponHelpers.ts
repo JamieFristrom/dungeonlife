@@ -7,7 +7,7 @@ DebugXL.logI('Executed', script.Name)
 import * as InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
 
 export namespace ThrownWeaponHelpers {
-	const velocityK = 150
+	const velocityK = 120
 
     function createThrownItem(projectileTemplate: BasePart, player: Player) {
 		const thrownObj = projectileTemplate.Clone()
@@ -33,7 +33,8 @@ export namespace ThrownWeaponHelpers {
 		const inRoot = (velocityK * velocityK * velocityK * velocityK) - (grav * ((grav * dx * dx) + (2 * dy * velocityK * velocityK)))
 
 		if (inRoot <= 0) {
-			return .25 * math.pi
+			DebugXL.logI("Combat", "Computing out of range launch angle")
+			return .25 * math.pi  // maximum distance you can throw, 45 degrees === pi/4
 		}
 		const root = math.sqrt(inRoot)
 		const inATan1 = ((velocityK * velocityK) + root) / (grav * dx)

@@ -483,7 +483,7 @@ export namespace CharacterClasses {
             dropItemPctN    : 0.12,		
             numWeaponsN     : 1,							
             tagsT           : { Dark : true },
-            potentialWeaponsA : [ "Longbow", "Crossbow", "Bomb", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
+            potentialWeaponsA : [ "Longbow", "Crossbow", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
             //startingCountN  : 1, // only matters for blueprints
             defaultHideAccessoriesB : false,
         },		
@@ -534,7 +534,7 @@ export namespace CharacterClasses {
             dropItemPctN    : 0.12,		
             tagsT           : { Dark : true },
             numWeaponsN     : 1,							
-            potentialWeaponsA : [ "Longbow", "Crossbow", "Bomb", "Broadsword", "Greatsword", "Axe", "Mace" ], 
+            potentialWeaponsA : [ "Longbow", "Crossbow", "Broadsword", "Greatsword", "Axe", "Mace" ], 
             //startingCountN  : 1, // only matters for blueprints
             defaultHideAccessoriesB : false
         },
@@ -560,7 +560,7 @@ export namespace CharacterClasses {
             dropItemPctN    : 0.12,		
             tagsT           : { },
             numWeaponsN     : 1,							
-            potentialWeaponsA : [ "Shortsword", "Bomb" ], 
+            potentialWeaponsA : [ "Shortsword" ],//, "Bomb" ], 
             //startingCountN  : 1, // only matters for blueprints
             defaultHideAccessoriesB : true,
         },
@@ -583,7 +583,7 @@ export namespace CharacterClasses {
             dropItemPctN 	: 0.14,
             tagsT           : {},	
             numWeaponsN     : 2,
-            potentialWeaponsA :  [ "Claws", "Longbow", "Crossbow", "Bomb", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
+            potentialWeaponsA :  [ "Claws", "Longbow", "Crossbow", "Broadsword", "Greatsword", "Axe", "Hatchet", "Mace" ], 
             //startingCountN  : 1, // only matters for blueprints
             defaultHideAccessoriesB : true,
         },

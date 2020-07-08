@@ -17,9 +17,7 @@ import { RangedWeaponUtility } from './RangedWeaponUtility'
 
 type Character = Model
 
-const standardFolder = Workspace.WaitForChild<Folder>("Standard")
-const testInStudio = standardFolder.WaitForChild<BoolValue>("TestInStudio")
-const showMissileOnClient = !RunService.IsStudio() || !testInStudio.Value
+const showMissileOnClient = false
 
 export class ThrownWeaponClient extends BaseWeaponClient {
 	//const thrown = true
@@ -45,14 +43,15 @@ export class ThrownWeaponClient extends BaseWeaponClient {
 			const player = Players.GetPlayerFromCharacter(character)
 			DebugXL.Assert(player !== undefined)
 			if (player) {
-				const [clickPart, clickHit] = RangedWeaponHelpers.MouseHitNontransparent(mouse, [character])
+				const [_, clickHit] = RangedWeaponHelpers.MouseHitNontransparent(mouse, [character])
 				const bombRemoteEvent = this.tool.WaitForChild<RemoteEvent>("BombRemoteEvent")
-				bombRemoteEvent.FireServer("Activate", clickHit)
+				bombRemoteEvent.FireServer("Activate", clickHit)								
 				if (showMissileOnClient) {
 					const missile = ThrownWeaponHelpers.lob(player, this.projectileTemplate, clickHit)
 					if (missile)
 						missile.Parent = Players.LocalPlayer.Character
 				}
+				this.projectileTemplate.Parent = undefined
 			}
 			GeneralWeaponUtility.cooldownWait(character, this.weaponUtility.getCooldown())  // wishlist - fix this if you want a lobbed with a walkspeed reduction
 		}
