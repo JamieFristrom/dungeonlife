@@ -86,7 +86,7 @@ export namespace GeneralWeaponUtility {
                         return targetsAndRanges[i]
                     }
                     else {
-                        DebugXL.logD("Combat", "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
+                        DebugXL.logV("Combat", "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
                     }
                 }
             }
