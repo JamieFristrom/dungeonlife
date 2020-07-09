@@ -470,6 +470,10 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 				-- this is so the low level people on the floor don't get crazy points
 				-- so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
 				DebugXL:logD( "Gameplay", targetHumanoid:GetFullName().." kill experience awarded: starting value "..xprewardObj.Value )
+				local xpValue = xprewardObj.Value
+				if( not xpValue ) then
+					DebugXL:Error( xprewardObj:GetFullName().." invalid")
+				end
 				HeroServer.awardKillExperienceWait( player, xprewardObj.Value, targetHumanoid.Parent )
 				Heroes:SaveHeroesWait( player )				
 				

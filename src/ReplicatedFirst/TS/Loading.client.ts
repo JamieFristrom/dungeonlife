@@ -1,7 +1,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
 warn("DUNGEON LIFE 7/9/2020")
-warn("Server owned mob public playtest #2")
+warn("Server owned mob public playtest #2.2: logging")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")

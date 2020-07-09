@@ -14,7 +14,16 @@ const buildingFolder = Workspace.WaitForChild<Folder>("Building")
 
 export namespace Furnisher {
     export function countFurnishingsOfType( furnishingType: PossessionData.FurnishingEnum ) {
-        return buildingFolder.GetChildren().filter( (furnishing)=>PossessionData.dataT[furnishing.Name].furnishingType===furnishingType).size()
+        // FIXME - this can somehow cause indexing nil
+        return buildingFolder.GetChildren().filter( (furnishing)=>{
+            if( !PossessionData.dataT[furnishing.Name]) {
+                DebugXL.Error( furnishing.Name+" doesn't exist in PossessionData")
+                return false
+            }
+            else {
+                return PossessionData.dataT[furnishing.Name].furnishingType===furnishingType
+            }
+        }).size()
     }
 
     export function furnishWithFurnishingsOfType( availableBlueprints: Map<string,Boolean>, expectedTotal: number, furnishingType: PossessionData.FurnishingEnum ) {
