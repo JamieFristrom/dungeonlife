@@ -25,6 +25,12 @@ import { PlayerServer } from "./PlayerServer";
 import { MonsterDatumI } from "ReplicatedStorage/TS/MonsterDatum";
 import { HeroServer } from "ServerStorage/TS/HeroServer"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord";
+import { CharacterClasses, MonsterStatBlockI } from "ReplicatedStorage/TS/CharacterClasses";
+import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
+import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
+
+import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 
 interface MonsterPlayerInfo
 {
@@ -265,5 +271,37 @@ export namespace MonsterServer
         const monsterInfo = getMonsterInfo( monsterPlayer )
         monsterInfo.damageDoneThisSpawn += amount
         //DebugXL.logI( 'Gameplay', "Monster did "+amount+" damage" )
+    }
+
+    export function isHighLevelServer() {
+        return PlacesManifest.getCurrentPlace().maxGrowthLevel > 8
+    }
+
+    export function calculateMaxHealth(monsterDatum: MonsterStatBlockI, level: number, isHighLevelServer: boolean) {
+        const monsterHealthPerLevelN = ( isHighLevelServer ? BalanceData.monsterHealthPerLevelHighLevelServerN : BalanceData.monsterHealthPerLevelN ) * 0.666
+        return monsterDatum.baseHealthN * monsterHealthPerLevelN * level
+    }
+
+    export function calculateXPReward(characterRecord: CharacterRecord, isMob: boolean) {
+        //print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
+        let totalDamageEstimate = 0
+        characterRecord.gearPool.forEach( ( possession )=>{
+            if( ToolData.dataT[ possession.baseDataS ].damageNs ) {
+                const [ damageN1, damageN2 ] = FlexEquipUtility.GetDamageNs( possession, 1, 1 )
+                const average = ( damageN1 + damageN2 ) / 2
+                totalDamageEstimate = totalDamageEstimate + average
+            }
+        } )
+        totalDamageEstimate = totalDamageEstimate / characterRecord.countTools()
+
+        const monsterDatum = CharacterClasses.monsterStats[ characterRecord.getClass() ]
+        const damageBonusN = monsterDatum.baseDamageBonusN + characterRecord.getLocalLevel() * 0.15 // monsterDatum.damageBonusPerLevelN  // not using anymore to keep xp same after nerfing high level server monsters
+        totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN
+        // ( dividing by monsterDamageMultiplierN quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
+        // ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
+        const xp = ( calculateMaxHealth(monsterDatum, characterRecord.getLocalLevel(), isHighLevelServer()) 
+            + characterRecord.getWalkSpeed() 
+            + totalDamageEstimate * BalanceData.heroXPMultiplierN / BalanceData.monsterDamageMultiplierN ) * ( isMob ? 0.2 : 1 )
+        return xp
     }
 }

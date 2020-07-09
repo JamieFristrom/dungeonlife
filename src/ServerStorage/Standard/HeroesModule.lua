@@ -460,35 +460,23 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 		if targetHumanoid.Health <= 0 then
 --		--print( targetHumanoid:GetFullName().." killed" )
 			-- if we wanted more encapsulation we could have this be a function we registeredfixed
-			local xprewardObj = targetHumanoid.Parent:FindFirstChild("ExperienceReward")
-			if xprewardObj then
-				-- we don't want to encourage kill stealing
-				-- we don't want 2 players to level up quite as fast as 1, so the game stays tough-ish for them
-				-- so we don't want to give the same value to everybody
-				-- but we also don't want to split it down the middle
-				-- temp: killer gets half xp, rest divided amongst other players whether they touched bad guy or not;
-				-- this is so the low level people on the floor don't get crazy points
-				-- so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
-				DebugXL:logD( "Gameplay", targetHumanoid:GetFullName().." kill experience awarded: starting value "..xprewardObj.Value )
-				local xpValue = xprewardObj.Value
-				if( not xpValue ) then
-					DebugXL:Error( xprewardObj:GetFullName().." invalid")
-				end
-				HeroServer.awardKillExperienceWait( player, xprewardObj.Value, targetHumanoid.Parent )
+			local victimCharacter = targetHumanoid.Parent
+			local victimPlayer = game.Players:GetPlayerFromCharacter( victimCharacter )
+			local victimCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( victimCharacter )
+			if( victimCharacterRecord ) then  -- structures don't award xp
+				local xpValue = MonsterServer.calculateXPReward( victimCharacterRecord, not victimPlayer )
+				DebugXL:logD( "Gameplay", targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
+				HeroServer.awardKillExperienceWait( player, xpValue, targetHumanoid.Parent )
 				Heroes:SaveHeroesWait( player )				
+			end
+			-- consolation prize for victim:
+			if victimPlayer then
+				require( game.ServerStorage.MonstersModule ):AdjustBuildPoints( victimPlayer, 50 )
+				MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
 				
-				-- incentive to get killed for victim:
-				local victimPlayer = game.Players:GetPlayerFromCharacter( targetHumanoid.Parent )
-				if victimPlayer then
-					require( game.ServerStorage.MonstersModule ):AdjustBuildPoints( victimPlayer, 50 )
-					MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
-					
-					Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
-					Inventory:EarnRubies( victimPlayer, 2, "Death", "Monster" )
-				end
---			--print( targetHumanoid:GetFullName().." inventory adjusted" )
-
-			end  
+				Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
+				Inventory:EarnRubies( victimPlayer, 2, "Death", "Monster" )
+			end
 		end	
 	end
 end
@@ -906,9 +894,8 @@ function HeroRemote.SellItem( player, itemKey )
 				-- get data again because player might have reset while dialog was up
 				local pcData = Heroes:GetPCDataWait( player )				
 				local item = pcData:removeTool( itemKey )
-
-				HeroServer.adjustGold( player, pcData, item:getSellPrice(), "Sell", item.baseDataS )
 				if item then
+					HeroServer.adjustGold( player, pcData, item:getSellPrice(), "Sell", item.baseDataS )
 					if item.equippedB then
 						if player.Character then
 							FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )

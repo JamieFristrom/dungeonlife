@@ -89,8 +89,13 @@ export namespace PlayerServer {
     }
 
     export function getCharacterRecordFromCharacter(character: Character) {
-        const characterKey = getCharacterKeyFromCharacterModel( character )
-        return getCharacterRecord( characterKey )
+        const characterKey = getCharacterKeyFromCharacterModel(character)
+        if (characterKey !== 0) {
+            return getCharacterRecord(characterKey)
+        }
+        else {
+            return undefined // probably a structure
+        }
     }
 
     export function getCharacterRecordWait(characterKey: CharacterKey) {
