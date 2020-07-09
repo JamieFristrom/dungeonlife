@@ -11,7 +11,7 @@ buildingFolder.ChildAdded.Connect( (thing)=>
         let startCFrame = rotatingBit.GetPrimaryPartCFrame()
         let connection = RunService.RenderStepped.Connect( ()=>
         {
-            if( !rotatingBit.Parent ) 
+            if( !rotatingBit.Parent || !rotatingBit.PrimaryPart ) 
             {
                 connection.Disconnect()
             }
