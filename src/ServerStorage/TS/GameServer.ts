@@ -4,14 +4,25 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { Players, Teams, Workspace } from "@rbxts/services";
+import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
+
+import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
-import { MessageServer } from "./MessageServer";
+
+import * as MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
+import * as MathXL from "ReplicatedStorage/Standard/MathXL"
+
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
+
+
+import { MessageServer } from "./MessageServer"
+import { PlayerServer, TeamStyleChoice } from "./PlayerServer"
+
 
 // -- it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
 // -- swarm on exit and entrance
 // -- constants
-// --local numHeroesNeededPerPlayer = 
+// --const numHeroesNeededPerPlayer = 
 // --{
 // --	[1] = 0,   
 // --	[2] = 1,   -- 1v1
@@ -72,7 +83,6 @@ DebugXL.Assert(chooseHeroRE !== undefined)
 
 export namespace GameServer {
     export function numHeroesNeeded() {
-        //   TableXL:FindAllInAWhere( game.Teams.Monsters:GetPlayers(), function( monsterPlayer ) return not Inventory:PlayerInTutorial( monsterPlayer ) end )
         let nonNoobs = Players.GetPlayers().filter((player) => !Inventory.PlayerInTutorial(player))
         return numHeroesNeededPerPlayer[nonNoobs.size()]
     }
@@ -89,17 +99,57 @@ export namespace GameServer {
         }
     }
 
-    // let's let the client handle this
-    // export function letHeroesPrepare() {
-    //     // heroes who lived through last level should go to prepare menu
-    //     // heroes who died have already been sent to the choose hero screen by the health monitor
-    //     const players = HeroTeam.GetPlayers()
-    //     for (let player of players) {
-    //         const character = player.Character
-    //         if (!character || !character.FindFirstChild<Humanoid>('Humanoid') || character.FindFirstChild<Humanoid>('Humanoid')!.Health <= 0) {
-    //             DebugXL.logD('GameManagement', 'PrepareHero for ' + player.Name)
-    //             chooseHeroRE.FireClient(player, "PrepareHero")
-    //         }
-    //     }
-    // }
+    export function chooseSpawn(player: Player, monsterSpawns: BasePart[]) {
+        let spawnPart = undefined
+        const customSpawns = CollectionService.GetTagged("CustomSpawn")
+        const monsterSpawnN = monsterSpawns.size()
+        if (player.Team === HeroTeam || monsterSpawnN===0 ) {
+            spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+            //spawnPart = workspace.StaticEnvironment.HeroSpawn
+        }
+        else {
+            if (PlayerServer.getTeamStyleChoice(player) === TeamStyleChoice.DungeonLord ||
+                (Inventory.PlayerInTutorial(player) && Inventory.GetCount(player, "TimeInvested") <= 450)) { // once they've been playing for 10 minutes just give up on trying to tutorialize them
+                // while heroes are prepping start off as "DungeonLord"; invulnerable monster that just builds
+                spawnPart = monsterSpawns[MathXL.RandomInteger(0, monsterSpawnN-1)]
+                CharacterI.SetCharacterClass(player, "DungeonLord")
+            }
+            else {
+                // bosses take priority
+                const acceptableSpawns: BasePart[] = []
+                for (let i = 0; i < monsterSpawnN; i++) {
+                    const spawner = monsterSpawns[i]
+                    if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
+                        DebugXL.logV('GameManagement', "Found a boss spawn for " + player.Name)
+                        if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {
+                            DebugXL.logV('GameManagement', "Unoccupied")
+                            spawnPart = spawner
+                            break
+                        }
+                        monsterSpawns.remove(i)
+                    }
+                    else if (Hero.distanceToNearestHeroXZ(spawner.Position) > MapTileData.tileWidthN * 2.5) {
+                        acceptableSpawns.push(spawner)
+                    }
+                    else {
+                        DebugXL.logV('GameManagement', "Spawner at " + tostring(spawner.Position) + " too close to hero")
+                    }
+                }
+                if (!spawnPart) {
+                    DebugXL.logV('GameManagement', "Acceptable spawn list for" + player.Name)
+                    //DebugXL.Dump( acceptableSpawns )
+                    DebugXL.logV('GameManagement', "Fallback spawn list for" + player.Name)
+                    //DebugXL.Dump( monsterSpawns )
+                    if (acceptableSpawns.size() > 0) {
+                        spawnPart = acceptableSpawns[MathXL.RandomInteger(0, acceptableSpawns.size()-1)]
+                    }
+                    else {
+                        // couldn't find a spot far away from us, give up and spawn close
+                        spawnPart = monsterSpawns[MathXL.RandomInteger(0, monsterSpawns.size()-1)]
+                    }
+                }
+                CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+            }
+        }
+    }
 }
