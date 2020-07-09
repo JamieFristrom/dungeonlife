@@ -101,7 +101,10 @@ export namespace FlexibleToolsServer {
         }
         else {
             const characterRecord = PlayerServer.getCharacterRecordFromCharacter(fta.character)
-            characterRecord.removeTool(fta.possessionsKey)
+            DebugXL.Assert( characterRecord !== undefined )
+            if( characterRecord ) {
+                characterRecord.removeTool(fta.possessionsKey)
+            }
         }
         tool.Destroy()
     }

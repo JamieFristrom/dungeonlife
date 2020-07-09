@@ -40,14 +40,11 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local damageModifierN = BalanceData.monsterDamageMultiplierN   -- after the auto balancing change a level 4 skeleton was taking a lot of strikes to do in a level 1 warrior at 0.3
 
-local isHighLevelServer = Places:getCurrentPlace().maxGrowthLevel > 8
-local monsterHealthPerLevelN = isHighLevelServer and BalanceData.monsterHealthPerLevelHighLevelServerN or BalanceData.monsterHealthPerLevelN
-local monsterDefaultDamagePerLevelBonusN = isHighLevelServer and BalanceData.monsterDefaultDamagePerLevelBonusHighLevelServerN or BalanceData.monsterDefaultDamagePerLevelBonusN
+local monsterDefaultDamagePerLevelBonusN = MonsterServer.isHighLevelServer() and BalanceData.monsterDefaultDamagePerLevelBonusHighLevelServerN or BalanceData.monsterDefaultDamagePerLevelBonusN
 
 -- 0.666 as of 9/3
 -- tripled damage on 11/16 because I cut weapon level in third
 
-monsterHealthPerLevelN = monsterHealthPerLevelN * 0.666
 monsterDefaultDamagePerLevelBonusN = monsterDefaultDamagePerLevelBonusN * 2
 
 local Monsters = {}
@@ -340,7 +337,7 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
 	local level = characterRecord:getActualLevel()
 	--local standardHealth = enemyData.baseHealthN + enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
-	local standardHealth = monsterDatum.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
+	local standardHealth = MonsterServer.calculateMaxHealth( monsterDatum, level, MonsterServer.isHighLevelServer()  )   -- monster hit points accrete faster than weapon damage accretes
 
 	monsterCharacterModel.Humanoid.MaxHealth	= standardHealth
 
@@ -389,28 +386,6 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 		CostumesServer:Colorify( monsterCharacterModel, monsterDatum.colorify3 )
 	end
 	CostumesServer:Scale( monsterCharacterModel, monsterDatum.scaleN )
-
-	--print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
-	local totalDamageEstimate = 0
-	characterRecord.gearPool:forEach( function( possession )
-		if ToolData.dataT[ possession.baseDataS ].damageNs then
-			local damageN1, damageN2 = unpack( FlexEquipUtility:GetDamageNs( possession, 1, 1 ) )
-			local average = ( damageN1 + damageN2 ) / 2
-			totalDamageEstimate = totalDamageEstimate + average
-		end
-	end )
-	totalDamageEstimate = totalDamageEstimate / characterRecord:countTools()
-	local damageBonusN = monsterDatum.baseDamageBonusN + level * 0.15 -- monsterDatum.damageBonusPerLevelN  -- not using anymore to keep xp same after nerfing high level server monsters
-	totalDamageEstimate = totalDamageEstimate + totalDamageEstimate * damageBonusN
-	-- wait( 0.5 ) -- sometimes there's a delay in getting that teamcolor going
-	--	--print( "Estimate: "..damageEstimate )
-	-- ( dividing by healthModifier quick and dirty way to make sure XP doesn't change when we adjust monster difficulty; want to keep those dials independent )
-	-- ( actually...  do we?  If we're killing a lot of pukes we don't want to get as much exp as we would have if we were killing a lot of tougher creatures)
-	local xp = monsterCharacterModel.Humanoid.MaxHealth + characterRecord:getWalkSpeed() + totalDamageEstimate / damageModifierN
-	xp = xp * BalanceData.heroXPMultiplierN * ( isMob and 0.5 or 1 )
-
-	DebugXL:logD('Gameplay', monsterCharacterModel:GetFullName()..' is worth '..xp..' xp')
-	InstanceXL.new( "NumberValue", { Name = "ExperienceReward", Value = xp, Parent = monsterCharacterModel }, true )
 end
 
 function Monsters:AdjustBuildPoints( player, amountN )

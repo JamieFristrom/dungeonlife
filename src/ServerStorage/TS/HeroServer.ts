@@ -129,7 +129,7 @@ export namespace HeroServer {
             DebugXL.logD( "Gameplay", "Awarding (adjusted) "+experienceBonus+" xp to "+player.Name )	
             const pcData = PlayerServer.getCharacterRecordFromPlayer(player)
             // only if hero has chosen class yet
-            if (pcData instanceof Hero) {  // -- your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
+            if (pcData instanceof Hero) {  // // your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
                 const pcDataStatsT = pcData.statsT
                 const lastLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
 
@@ -179,10 +179,13 @@ export namespace HeroServer {
     }
 
     export function awardKillExperienceWait(killer: Player, xp: number, target: Character) {
-        // give a fraction of the points for mobs
-        if (!Players.GetPlayerFromCharacter(target)) {
-            xp /= 4
-        }
+        // we don't want to encourage kill stealing
+        // we don't want 2 players to level up quite as fast as 1, so the game stays tough-ish for them
+        // so we don't want to give the same value to everybody
+        // but we also don't want to split it down the middle
+        // temp: killer gets half xp, rest divided amongst other players whether they touched bad guy or not;
+        // this is so the low level people on the floor don't get crazy points
+        // so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
         const numHeroes = heroTeam.GetPlayers().size()
         for (let hero of heroTeam.GetPlayers()) {
             if (hero === killer) {
@@ -232,8 +235,8 @@ export namespace HeroServer {
     }
 
     export function getDifficultyLevel() {
-        //-- if you change difficulty mode, also change GameManagement module
-        //        -- on-the-fly-balancing-mode
+        //// if you change difficulty mode, also change GameManagement module
+        //        // on-the-fly-balancing-mode
         return math.floor(HeroServer.getAverageHeroLocalLevel())
     }
 
