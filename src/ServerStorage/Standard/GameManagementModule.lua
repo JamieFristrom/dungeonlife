@@ -640,54 +640,9 @@ local function MonitorPlayer( player )
 				end
 			end
 
-			-- choose a respawn if we don't have one
-			if not spawnPart then
-				if player.Team == game.Teams.Heroes then
-					local customSpawns = game.CollectionService:GetTagged("CustomSpawn")
-					spawnPart = TableXL:FindFirstWhere( customSpawns, function(x) return x.Team.Value==game.Teams.Heroes end )
-					--spawnPart = workspace.StaticEnvironment.HeroSpawn
-				else
-					local monsterSpawnN = #monsterSpawns
-					DebugXL:Assert( monsterSpawnN > 0 )
 
-					if PlayerServer.getTeamStyleChoice(player)==TeamStyleChoice.DungeonLord or 
-						 ( Inventory:PlayerInTutorial( player ) and Inventory:GetCount( player, "TimeInvested" )<=450 ) then -- once they've been playing for 10 minutes just give up on trying to tutorialize them
-						-- while heroes are prepping start off as "DungeonLord"; invulnerable monster that just builds
-						spawnPart = monsterSpawns[ MathXL:RandomInteger( 1, monsterSpawnN ) ]
-						CharacterI:SetCharacterClass( player, "DungeonLord" )
-					else			
-						-- bosses take priority
-						local acceptableSpawns = {}
-						for i, spawner in pairs( monsterSpawns ) do
-							if spawner.OneUse.Value then
-								DebugXL:logV('GameManagement', "Found a boss spawn for "..player.Name ) 
-								if spawner.LastPlayer.Value == nil then
-									DebugXL:logV('GameManagement', "Unoccupied" )
-									spawnPart = spawner
-									break
-								end								
-								table.remove( monsterSpawns, i )
-							elseif Hero.distanceToNearestHeroXZ( spawner.Position ) > MapTileData.tileWidthN * 2.5 then
-								table.insert( acceptableSpawns, spawner )
-							else
-								DebugXL:logV('GameManagement', "Spawner at "..tostring(spawner.Position).." too close to hero" )
-							end
-						end
-						if not spawnPart then
-							DebugXL:logV('GameManagement', "Acceptable spawn list for"..player.Name )
-							--DebugXL:Dump( acceptableSpawns )
-							DebugXL:logV('GameManagement', "Fallback spawn list for"..player.Name )
-							--DebugXL:Dump( monsterSpawns )
-							if #acceptableSpawns > 0 then
-								spawnPart = acceptableSpawns[ MathXL:RandomInteger( 1, #acceptableSpawns ) ]
-							else
-								-- couldn't find a spot far away from us, give up and spawn close
-								spawnPart = monsterSpawns[ MathXL:RandomInteger( 1, #monsterSpawns ) ]
-							end
-						end
-						CharacterI:SetCharacterClass( player, spawnPart.CharacterClass.Value )
-					end
-				end
+			if not spawnPart then 
+				spawnPart = GameServer.chooseSpawn(player, monsterSpawns)
 			end
 			DebugXL:logV('GameManagement', player.Name.." has spawnPart" )
 			
