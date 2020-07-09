@@ -17,8 +17,6 @@ export namespace BarrierServer {
 
     const fire = barrierFolder.WaitForChild<BasePart>("BarrierSegment").Clone()
 
-    const enabled = true
-
     export function onTouched(part: BasePart, attackingCharacter: Character, flexTool: FlexTool, burntStuff: Map<Instance, boolean>) {
         const partParent = part.Parent as Character
         if (partParent) {

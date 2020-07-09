@@ -1226,7 +1226,7 @@ local function HeroesChooseCharactersWait()
 end
 
 
-local protectionDisabled = false
+local protectionDisabled = true
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()
