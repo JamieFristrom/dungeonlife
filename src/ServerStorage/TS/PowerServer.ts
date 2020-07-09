@@ -8,7 +8,7 @@ import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 import { AuraServer } from "ServerStorage/TS/AuraServer"
 
 import { AreaEffect } from "ServerStorage/TS/AreaEffect"
-import { Barrier } from "ServerStorage/Standard/BarrierModule"
+import { BarrierServer } from "ServerStorage/TS/BarrierServer"
 
 import * as CharacterXL from "ServerStorage/Standard/CharacterXL"
 import * as Mana from "ServerStorage/Standard/ManaModule"
@@ -117,7 +117,7 @@ export namespace PowerServer
                             let duration = toolBaseData.durationFunc!( toolBaseData, flexToolInst.levelN ) 
                             // using the Roblox tool is really entrenched in the damage system right now even though it has become
                             // nearly irrelevant, so let's dig up the tool so we can apply damage :P
-                            Barrier.Activate( character, duration, flexToolInst )                            
+                            BarrierServer.ActivateWait( character, duration, flexToolInst )                            
                         }
                         else
                         {
