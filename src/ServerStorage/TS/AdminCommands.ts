@@ -76,6 +76,7 @@ let CommandList: {[k:string]:unknown} =
     // !equip {"baseDataS":"Shortsword","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}
     // !equip {"baseDataS":"MagicHealing","levelN":2}
     // !equip {"baseDataS":"Bomb","levelN":2}
+    // !equip {"baseDataS":"MagicBarrier","levelN":2}
     // !equip {"baseDataS":"Longbow","levelN":1}
     // !equip {"baseDataS":"Mana","levelN":1}
     equip: function( sender: Player, args: string[] )
