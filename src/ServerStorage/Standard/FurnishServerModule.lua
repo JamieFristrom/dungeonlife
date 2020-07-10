@@ -130,6 +130,7 @@ function FurnishServer:FurnishWithRandomChests()
 						if not FurnishUtility:GridPointOccupied( Vector3.new( positionX, 1.2, positionZ ), extentsV3, 3, PossessionData.PlacementTypeEnum.Open ) then							
 							newChest:SetPrimaryPartCFrame( CFrame.new( positionX, 1, positionZ ) * CFrame.fromEulerAnglesXYZ( 0, 0, 0 ) )
 							--newSpawn.MonsterSpawn.Enabled = true
+							BlueprintUtility.hideDebugInfo( newChest )
 							newChest.Parent = workspace.Building
 						end
 					end
@@ -240,6 +241,7 @@ function FurnishServer:Furnish( creator, name, position, rotation )
 			local tileModel = workspace.Environment[ "Tile_"..x.."_"..z ]
 			instance.DisposableFloor.Value = tileModel.Floor
 		end
+		BlueprintUtility.hideDebugInfo( instance )
 		instance.Parent = workspace.Building
 
 		return instance		
