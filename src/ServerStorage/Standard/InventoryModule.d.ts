@@ -14,6 +14,7 @@ interface Inventory {
     IsStarFeedbackDue(player: Player): boolean
     SetNextStarFeedbackDueTime(player: Player): void
     BoostActive(player: Player): boolean
+    EarnRubies(player: Player, increment: number, analyticItemTypeS: string, analyticItemIdS: string): void
 }
 
 declare let inventory: Inventory

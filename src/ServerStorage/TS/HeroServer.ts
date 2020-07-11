@@ -1,3 +1,9 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+DebugXL.logI('Executed', script.Name)
+
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
 
@@ -10,15 +16,13 @@ import { Analytics } from "ServerStorage/TS/Analytics"
 import { RandomGear } from "ServerStorage/TS/RandomGear"
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 
 import { MessageServer } from "./MessageServer"
 import { PlayerServer } from "./PlayerServer"
-import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS";
-
+DebugXL.logD('Requires', 'HeroServer imports finished')
 let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
 DebugXL.Assert(heroTeam !== undefined)
 
@@ -278,29 +282,31 @@ export namespace HeroServer {
         })
     }
 
-    function checkNerfingHealth() {
+    function checkNerfingHealthWait() {
         let players = Players.GetPlayers()
         let minHeroLevel = 1000
         let maxHeroLevel = 1
         let anyNerfing = false
         for (let i = 0; i < players.size(); i++) {
             // not going to be careful with this diagnostic function
-            let myLeaderstats = players[i].FindFirstChild('leaderstats')!
-            let classObj = myLeaderstats.FindFirstChild<StringValue>('Class')
-            if (classObj !== undefined)  // might not have loaded in yet
-            {
-                let levelObj = myLeaderstats.FindFirstChild<StringValue>('Level')
-                if (levelObj !== undefined) {
-                    let classStr = classObj.Value
-                    let levelStr = levelObj.Value
-                    if (classStr === 'Rogue' || classStr === 'Mage' || classStr === 'Warrior' || classStr === 'Barbarian' || classStr === 'Priest') {
-                        let localLevel = levelStr.match('%d+')[0] as unknown as number
-                        // confusing because the string has () in it and () is also the code to capture a match:
-                        // literal (, capture (, match, capture ), literal ):
-                        let unnerfedLevel = levelStr.match('%((%d+)%)')[0] as unknown as number
-                        if (unnerfedLevel !== undefined) anyNerfing = true
-                        minHeroLevel = math.min(minHeroLevel, localLevel)
-                        maxHeroLevel = math.max(maxHeroLevel, localLevel)
+            let myLeaderstats = players[i].FindFirstChild<Folder>('leaderstats')
+            if( myLeaderstats ) {   
+                let classObj = myLeaderstats.FindFirstChild<StringValue>('Class')
+                if (classObj !== undefined)  // might not have loaded in yet
+                {
+                    let levelObj = myLeaderstats.FindFirstChild<StringValue>('Level')
+                    if (levelObj !== undefined) {
+                        let classStr = classObj.Value
+                        let levelStr = levelObj.Value
+                        if (classStr === 'Rogue' || classStr === 'Mage' || classStr === 'Warrior' || classStr === 'Barbarian' || classStr === 'Priest') {
+                            let localLevel = levelStr.match('%d+')[0] as unknown as number
+                            // confusing because the string has () in it and () is also the code to capture a match:
+                            // literal (, capture (, match, capture ), literal ):
+                            let unnerfedLevel = levelStr.match('%((%d+)%)')[0] as unknown as number
+                            if (unnerfedLevel !== undefined) anyNerfing = true
+                            minHeroLevel = math.min(minHeroLevel, localLevel)
+                            maxHeroLevel = math.max(maxHeroLevel, localLevel)
+                        }
                     }
                 }
             }
@@ -316,7 +322,7 @@ export namespace HeroServer {
     spawn(() => {
         for (; ;) {
             wait(30)
-            checkNerfingHealth()
+            checkNerfingHealthWait()
         }
     })
 }

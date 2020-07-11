@@ -73,22 +73,40 @@ class Attackable {
             }
         }
     }
+
 }
-class Spawner extends Attackable {
-    lastAttacker?: Character
-    lastSpottedEnemyPosition?: Vector3
+class Spawner {
+    attackable?: Attackable
     lastSpawnTick: number = 0
 
-    constructor(model: Model, humanoid: Humanoid, curTick: number) {
-        super(model, humanoid)
-        this.lastSpawnTick = curTick
+    constructor(model: Model, humanoid?: Humanoid) {
+        if( humanoid ) {
+            this.attackable = new Attackable(model, humanoid)
+        }
+    }
+
+    updateLastAttacker() {
+        if( this.attackable ) {
+            this.attackable.updateLastAttacker()
+        }
+    }
+    
+    getLastSpottedEnemyPosition() {
+        return this.attackable ? this.attackable.lastSpottedEnemyPosition : undefined
+    }
+
+    setLastSpottedEnemyPosition( enemyPos: Vector3 ) {
+        if( this.attackable ) {
+            this.attackable.lastSpottedEnemyPosition = enemyPos
+        }
     }
 }
 
 type SpawnPart = BasePart
 
 export namespace MobServer {
-    const mobCap = 15
+    const mobGlobalCap = 50
+    const mobSpawnerCap = 5
     const mobSpawnPeriod = 10
     let mobPushApart = 10
 
@@ -110,11 +128,8 @@ export namespace MobServer {
             DebugXL.Assert(mySpawnerModel.IsA("Model"))
             if (mySpawnerModel.IsA("Model")) {
                 let myHumanoid = mySpawnerModel.FindFirstChild<Humanoid>("Humanoid")
-                DebugXL.Assert(myHumanoid !== undefined)
-                if (myHumanoid) {
-                    const mySpawner = new Spawner(mySpawnerModel, myHumanoid, curTick)
-                    spawnersMap.set(spawnPart, mySpawner)
-                }
+                const mySpawner = new Spawner(mySpawnerModel, myHumanoid)
+                spawnersMap.set(spawnPart, mySpawner)
             }
         }
     }
@@ -177,34 +192,38 @@ export namespace MobServer {
         mobFolder.GetChildren().forEach((mobModel) => mobModel.Parent = undefined)
     }
 
-    export function spawnMobs(curTick: number) {
-        DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
-        if (mobs.size() < mobCap) {
-            DebugXL.logV('Mobs', 'below cap')
-            const monsterSpawnParts = FurnishServer.GetMonsterSpawners()
-            if (!monsterSpawnParts.isEmpty()) {
-                DebugXL.logD('Mobs', 'Spawners available')
-                // for now mobs will not be bosses or superbosses
-                const minionSpawners = monsterSpawnParts.filter((spawnPart) =>
-                    spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value === false)
-                if (!minionSpawners.isEmpty()) {
-                    DebugXL.logV('Mobs', 'Minion spawners available')
-                    const distantSpawners = minionSpawners.filter((spawnPart) =>
-                        Hero.distanceToNearestHeroXZ(spawnPart.Position) > MapTileData.tileWidthN * 2.5)
-                    const acceptableSpawners = distantSpawners.isEmpty() ? minionSpawners : distantSpawners
-                    const desiredSpawn = acceptableSpawners[MathXL.RandomInteger(0, acceptableSpawners.size() - 1)]
-                    const characterClass = desiredSpawn.FindFirstChild<StringValue>('CharacterClass')!.Value
-                    spawnMob(characterClass, undefined, desiredSpawn, curTick)
-                }
-            }
-        }
-    }
+    // export function spawnMobs(curTick: number) {
+
+    //     DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
+    //     for( let spawner in spawnersMap ) {
+            
+    //     }
+    //     const monsterSpawnParts = FurnishServer.GetMonsterSpawners()
+    //     if (!monsterSpawnParts.isEmpty()) {
+    //         DebugXL.logD('Mobs', 'Spawners available')
+    //         // for now mobs will not be bosses or superbosses
+    //         const minionSpawners = monsterSpawnParts.filter((spawnPart) =>
+    //             spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value === false)
+    //         if (!minionSpawners.isEmpty()) {
+    //             DebugXL.logV('Mobs', 'Minion spawners available')
+    //             const distantSpawners = minionSpawners.filter((spawnPart) =>
+    //                 Hero.distanceToNearestHeroXZ(spawnPart.Position) > MapTileData.tileWidthN * 2.5)
+    //             const acceptableSpawners = distantSpawners.isEmpty() ? minionSpawners : distantSpawners
+    //             const desiredSpawn = acceptableSpawners[MathXL.RandomInteger(0, acceptableSpawners.size() - 1)]
+    //             const characterClass = desiredSpawn.FindFirstChild<StringValue>('CharacterClass')!.Value
+    //             spawnMob(characterClass, undefined, desiredSpawn, curTick)
+    //         }
+    //     }
+    //     }
+    // }
 
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
         if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
             // boss spawnPart; only use if no monster players
             if (monsterTeam.GetPlayers().size() === 0) {
+                const spawner = spawnersMap.get(spawnPart)
                 if (!spawnersMap.get(spawnPart)) {
+                    DebugXL.logI("Gameplay","Spawning one use spawner "+spawnPart.GetFullName())
                     spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
                         spawnPart,
@@ -218,7 +237,7 @@ export namespace MobServer {
             if (!spawner || (spawner.lastSpawnTick < curTick - mobSpawnPeriod)) {
                 // have we already spawned enough for now?
                 const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
-                if (myMobs.size() < 4) {
+                if (myMobs.size() < mobSpawnerCap) {
                     spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
                         spawnPart,
@@ -229,7 +248,7 @@ export namespace MobServer {
     }
 
     export function spawnersUpdate(curTick: number) {
-        if (mobs.size() < mobCap) {
+        if (mobs.size() < mobGlobalCap) {
             const monsterSpawns = FurnishServer.GetMonsterSpawners()
             monsterSpawns.forEach((spawnPart) => {
                 spawnerCheckForSpawn(spawnPart, curTick)
@@ -300,7 +319,12 @@ export namespace MobServer {
             CollectionService.AddTag(this.model, 'CharacterTag')
 
             // what happens when we use the monster code on 'em
-            const mobLevel = MonsterServer.determineMobSpawnLevel(mobCap)
+            const monsterDatum = CharacterClasses.monsterStats[characterClass]
+           
+            const mobLevel = ( monsterDatum.tagsT.Superboss || monsterDatum.tagsT.Boss ) ?
+                MonsterServer.determineBossSpawnLevel(monsterDatum) :
+                MonsterServer.determineMobSpawnLevel(mobSpawnerCap)
+
             let characterRecord = new Monster(characterClass,
                 [],
                 mobLevel)
@@ -417,7 +441,7 @@ export namespace MobServer {
                 if (this.spawnPart) {
                     const spawner = spawnersMap.get(this.spawnPart)
                     if (spawner) {
-                        return spawner.lastSpottedEnemyPosition
+                        return spawner.getLastSpottedEnemyPosition()
                     }
                     else {
                         DebugXL.logE("Spawner", this.model.GetFullName() + "'s spawner for " + this.spawnPart.GetFullName() + " not found in spawnersMap")
@@ -427,11 +451,13 @@ export namespace MobServer {
         }
 
         protected _updateLastAttacker() {
-            if (this.spawnPart) {
-                const spawner = spawnersMap.get(this.spawnPart)
-                DebugXL.Assert(spawner !== undefined)
-                if (spawner) {
-                    spawner.lastSpottedEnemyPosition = this.lastSpottedEnemyPosition
+            if( this.lastSpottedEnemyPosition ) {
+                if (this.spawnPart) {
+                    const spawner = spawnersMap.get(this.spawnPart)
+                    DebugXL.Assert(spawner !== undefined)
+                    if (spawner) {
+                        spawner.setLastSpottedEnemyPosition( this.lastSpottedEnemyPosition )
+                    }
                 }
             }
         }

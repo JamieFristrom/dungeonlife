@@ -188,17 +188,14 @@ end
 
 
 -- difference between this and MonsterUtility:GetClassWait is this doesn't wait
+-- FIXME: Completely wrong
 function Monsters:GetClass( monsterCharacter )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:Assert( monsterCharacter:IsA("Model") )
 	DebugXL:Assert( monsterCharacter.Parent ~= nil )
-	local player = game.Players:GetPlayerFromCharacter( monsterCharacter )
-	-- it's possible for this to just fail ... maybe player leaves while character still referenced?
-	if player then
-		return CharacterClientI:GetCharacterClass( player )
-	else
-		return "DungeonLord"
-	end
+	local characterRecord = PlayerServer.getCharacterRecordFromCharacter( monsterCharacter )
+	return characterRecord.idS
+
 end
 
 -- returns pair [ number, bool ]
@@ -261,61 +258,7 @@ end
 
 
 function Monsters:Died( monster )
-	DebugXL:Assert( monster:IsA( 'Model' ) )
-	DebugXL:logI( "Character", "Monster "..monster.Name.." died" )
-
-	local monsterPlayer = game.Players:GetPlayerFromCharacter( monster )
-	if monsterPlayer then
-		Inventory:AdjustCount( monsterPlayer, "MonsterDeaths", 1 )
-		PlayerServer.recordCharacterDeath( monsterPlayer, monster )
-	end
-
-	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monster )
-	DebugXL:Assert( characterKey ~= 0 )
-	local monsterLevel = PlayerServer.getLocalLevel( characterKey )
-
-	-- drop item
-	local monsterClass = Monsters:GetClass( monster )
-
-	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
-	if not monsterDatum then
-		DebugXL:Error( "Couldn't find monster "..monsterClass.." of player "..monsterPlayer.Name )
-		return
-	end
-	local lastAttackingPlayer = CharacterUtility:GetLastAttackingPlayer( monster )
-	local dropWhereV3
-	if( monster.PrimaryPart ) then
-		dropWhereV3 = monster.PrimaryPart.Position
-	else
-		--print( "Monster primary part not found" )
-		if lastAttackingPlayer then
-			if lastAttackingPlayer.Character then
-				if lastAttackingPlayer.Character.PrimaryPart then
-					dropWhereV3 = lastAttackingPlayer.Character.PrimaryPart.Position
-				end
-			end
-		end
-	end
-
-	if monsterDatum.tagsT.Superboss then
-		-- everybody gets credit & loot for the superboss but xp shared as usual
-		for _, hero in pairs( game.Teams.Heroes:GetPlayers() ) do
-			Inventory:AdjustCount( hero, "Kills"..monsterClass, 1 )
-			Inventory:AdjustCount( monsterPlayer, "Stars", 20, "Kill", "Superboss" )
-			Inventory:EarnRubies( monsterPlayer, 20, "Kill", "Superboss" )
-			-- GameAnalyticsServer.ServerEvent( {
-			-- 	["category"] = "design",
-			-- 	["event_id"] = "Kill:Shared:"..monsterClass
-			-- }, player )
-		end
-		workspace.Standard.MessageGuiXL.MessageRE:FireAllClients( "SuperbossDefeated", { monsterDatum.readableNameS } )
-		require( game.ServerStorage.GameManagementModule ):BeatSuperboss()
-	else
-		-- otherwise just the one who got the kill
-		if lastAttackingPlayer then
-			Inventory:AdjustCount( lastAttackingPlayer, "MonsterKills", 1 )
-		end
-	end
+	MonsterServer.died( monster )
 	-- give out loot even if we don't know who is responsible	
 	if lastAttackingPlayer then
 		local wasMob = monsterPlayer and false or true
