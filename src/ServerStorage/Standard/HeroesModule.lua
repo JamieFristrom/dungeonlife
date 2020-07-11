@@ -47,7 +47,7 @@ local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServe
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
-
+DebugXL:logD("Requires", "HeroesModule requires succesful")
 
 local PhysicsService = game.PhysicsService
 

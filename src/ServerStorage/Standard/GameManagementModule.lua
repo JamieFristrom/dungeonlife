@@ -16,7 +16,7 @@ game.Players.CharacterAutoLoads = false
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
-DebugXL:logD('GameManagement',  'GameManagementModule: utilities includes succesful' )
+DebugXL:logD('GameManagement',  'GameManagementModule: utilities requires succesful' )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
@@ -26,7 +26,7 @@ local MapTileData       = require( game.ReplicatedStorage.MapTileDataModule )
 local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local RankForStars      = require( game.ReplicatedStorage.RankForStars )
-DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage includes succesful' )
+DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage requires succesful' )
 
 
 local AnalyticsXL       = require( game.ServerStorage.Standard.AnalyticsXL )
@@ -38,7 +38,7 @@ DebugXL:logD('GameManagement', 'GameManagementModule: Costumes included')
 --local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 --DebugXL:logD('GameManagement', 'GameManagementModule: GameAnalyticsServer included')
 local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
-DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.Standard includes succesful' )
+DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.Standard requires succesful' )
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
@@ -47,14 +47,14 @@ local FurnishServer     = require( game.ServerStorage.FurnishServerModule )
 local Heroes            = require( game.ServerStorage.Standard.HeroesModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 local Monsters          = require( game.ServerStorage.MonstersModule )
-DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage includes succesful' )
+DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage requires succesful' )
 
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
 local Hero = require( game.ReplicatedStorage.TS.HeroTS).Hero
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
-DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage.TS includes succesful' )
+DebugXL:logD('GameManagement', 'GameManagementModule: ReplicatedStorage.TS requires succesful' )
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).DestructibleServer
@@ -67,7 +67,7 @@ local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local TeamStyleChoice = require( game.ServerStorage.TS.PlayerServer ).TeamStyleChoice
-DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.TS includes succesful' )
+DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.TS requires succesful' )
 
 DebugXL:logD('GameManagement', 'GameManagementModule processing')
 local StarterGui = game.StarterGui
@@ -143,7 +143,6 @@ local roundCounterN = 1
 local heroExpressServerN = -100000
 
 local reachedExitB = false
-local beatSuperbossB = false
 
 local levelSessionCounterN = 1
 
@@ -908,7 +907,7 @@ end
 
 for _, player in pairs( game.Players:GetPlayers() ) do spawn( function() PlayerAdded( player ) end ) end
 game.Players.PlayerAdded:Connect( PlayerAdded )
-
+DebugXL:logI("Execution", "GameManagementModule: PlayerAdded connected")
 
 -- game loop
 
@@ -1007,18 +1006,16 @@ function GameManagement:ReachedExit( player )
 end
 
 
-function GameManagement:BeatSuperboss()
-	DebugXL:logW('GameManagement',"BeatSuperboss()")
+function GameManagement:DoBeatSuperbossStuff()
+	DebugXL:logI('GameManagement',"BeatSuperboss()")
 
 	firstLevelB = true
 
-	DebugXL:logV('GameManagement', "Awarding end of dungeon" )
 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
 		HeroServer.awardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Superboss" )
 		Heroes:SaveHeroesWait( player )
 	end
 	
-	beatSuperbossB = true
 end
 
 
@@ -1037,7 +1034,6 @@ end
 
 local function PlayLevelWait()
 	reachedExitB = false
-	beatSuperbossB = false
 	GameManagement.levelStartTime = time()
 --	LoadLevelWait()
 --	LoadHeroesWait()
@@ -1099,10 +1095,13 @@ local function PlayLevelWait()
 				
 			levelResult = LevelResultEnum.ExitReached
 			break
-		elseif beatSuperbossB then
-			DebugXL:logW('GameManagement', "Setting BeatSuperboss state" )
-			levelResult = LevelResultEnum.BeatSuperboss
-			break
+		elseif not FloorData.CurrentFloor().exitStaircaseB then
+			if not MonsterServer.isThereLivingSuperboss() then
+				DebugXL:logW('GameManagement', "Setting BeatSuperboss state" )
+				levelResult = LevelResultEnum.BeatSuperboss
+				GameManagement:DoBeatSuperbossStuff()
+				break
+			end
 		end
 	end
 	
