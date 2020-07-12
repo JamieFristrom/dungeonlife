@@ -259,12 +259,7 @@ end
 
 function Monsters:Died( monster )
 	MonsterServer.died( monster )
-	-- give out loot even if we don't know who is responsible	
-	if lastAttackingPlayer then
-		local wasMob = monsterPlayer and false or true
-		LootServer.monsterDrop( monsterLevel, Monsters:GetClass( monster ), wasMob, lastAttackingPlayer )
-	end
-	--print( "Loot, if any, dropped" )
+	LootServer.checkMonsterDrop( monster )
 end
 
 

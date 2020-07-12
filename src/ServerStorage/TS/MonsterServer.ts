@@ -313,12 +313,6 @@ export namespace MonsterServer {
             }
             const lastAttackingPlayer = CharacterUtility.GetLastAttackingPlayer(monster)
 
-            const dropWhereV3 = monster.PrimaryPart ?
-                monster.PrimaryPart.Position :
-                lastAttackingPlayer && lastAttackingPlayer.Character && lastAttackingPlayer.Character.PrimaryPart ?
-                    lastAttackingPlayer.Character.PrimaryPart.Position :
-                    undefined
-
             if (monsterDatum.tagsT.Superboss) {
                 // everybody gets credit & loot for the superboss but xp shared as usual
                 for (let hero of HeroTeam.GetPlayers()) {

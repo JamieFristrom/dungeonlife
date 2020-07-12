@@ -24,6 +24,8 @@ import { HeroServer } from './HeroServer'
 import { PlayerServer } from './PlayerServer'
 import { RandomGear } from './RandomGear'
 
+type Character = Model
+
 const lootDropRE = Workspace.FindFirstChild<Folder>("Signals")!.FindFirstChild<RemoteEvent>("LootDropRE")!
 
 const playerLootRandomishers = new Map<Readonly<Player>, Randomisher>()
@@ -62,6 +64,19 @@ export namespace LootServer {
         Heroes.RecordTool(earningPlayer, flexTool)
 
         return "EnhanceLvl" + flexTool.getTotalEnhanceLevels() + ":" + "RelativeLvl" + (flexTool.getActualLevel() - heroLevel)
+    }
+
+    export function checkMonsterDrop(monster: Character) {
+        const lastAttackingPlayer = CharacterUtility.GetLastAttackingPlayer(monster)
+        if( lastAttackingPlayer ) {
+            const characterRecord = PlayerServer.getCharacterRecordFromCharacter( monster )
+            DebugXL.Assert( characterRecord !== undefined )
+            if( characterRecord ) {
+                const wasMob = !Players.GetPlayerFromCharacter(monster)
+                LootServer.monsterDrop( characterRecord.getLocalLevel(), characterRecord.idS, wasMob, lastAttackingPlayer )
+            }
+        }
+        DebugXL.logV("Gameplay", "Loot, if any, dropped" )
     }
 
     export function monsterDrop(monsterLevel: number, monsterClassS: string, wasMob: boolean, lastAttackingPlayer?: Readonly<Player>) {
