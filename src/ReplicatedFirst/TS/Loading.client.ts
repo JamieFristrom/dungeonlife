@@ -2,8 +2,8 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 7/10/2020")
-warn("Stealth public playtest fixed superbosses")
+warn("DUNGEON LIFE 7/12/2020")
+warn("Mobs RC1 fixed superbosses")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
