@@ -105,6 +105,7 @@ export namespace GameServer {
         const monsterSpawnN = monsterSpawns.size()
         if (player.Team === HeroTeam || monsterSpawnN===0 ) {
             spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+            CharacterI.SetCharacterClass(player, "DungeonLord")
             //spawnPart = workspace.StaticEnvironment.HeroSpawn
         }
         else {
@@ -116,10 +117,10 @@ export namespace GameServer {
             }
             else {
                 // bosses take priority
-                const acceptableSpawns: BasePart[] = []
+                const closeSpawns: BasePart[] = []
+                const distantSpawns: BasePart[] = []
                 for (let i = 0; i < monsterSpawnN; i++) {
                     const spawner = monsterSpawns[i]
-                    // FIXME: this is still failing even though it theoretically can't
                     if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
                         DebugXL.logV('GameManagement', "Found a boss spawn for " + player.Name)
                         if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {
@@ -127,13 +128,13 @@ export namespace GameServer {
                             spawnPart = spawner
                             break
                         }
-                        monsterSpawns.remove(i)
                     }
                     else if (Hero.distanceToNearestHeroXZ(spawner.Position) > MapTileData.tileWidthN * 2.5) {
-                        acceptableSpawns.push(spawner)
+                        distantSpawns.push(spawner)
                     }
                     else {
                         DebugXL.logV('GameManagement', "Spawner at " + tostring(spawner.Position) + " too close to hero")
+                        closeSpawns.push(spawner)
                     }
                 }
                 if (!spawnPart) {
@@ -141,15 +142,21 @@ export namespace GameServer {
                     //DebugXL.Dump( acceptableSpawns )
                     DebugXL.logV('GameManagement', "Fallback spawn list for" + player.Name)
                     //DebugXL.Dump( monsterSpawns )
-                    if (acceptableSpawns.size() > 0) {
-                        spawnPart = acceptableSpawns[MathXL.RandomInteger(0, acceptableSpawns.size()-1)]
+                    if (distantSpawns.size() > 0) {
+                        spawnPart = distantSpawns[MathXL.RandomInteger(0, distantSpawns.size()-1)]
+                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+                    }
+                    else if( closeSpawns.size()>0) {
+                        // couldn't find a spot far away from us, give up and spawn close
+                        spawnPart = closeSpawns[MathXL.RandomInteger(0, closeSpawns.size()-1)]
+                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
                     }
                     else {
-                        // couldn't find a spot far away from us, give up and spawn close
-                        spawnPart = monsterSpawns[MathXL.RandomInteger(0, monsterSpawns.size()-1)]
+                        // apparently there's only one already used boss spawn on this level; fall back to hero spawner
+                        spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+                        CharacterI.SetCharacterClass(player, "DungeonLord")
                     }
                 }
-                CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
             }
         }
     }
