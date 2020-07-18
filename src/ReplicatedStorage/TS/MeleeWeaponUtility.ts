@@ -1,20 +1,20 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI( 'Executed', script.GetFullName())
+import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI("Executed", script.GetFullName())
 
-import { Players, Debris, RunService } from '@rbxts/services'
+import { Players, Debris, RunService } from "@rbxts/services"
 
-import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
+import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 
-import { AnimationManifestService } from 'ReplicatedFirst/TS/AnimationManifestService'
+import { AnimationManifestService } from "ReplicatedFirst/TS/AnimationManifestService"
 
-import { GeneralWeaponUtility } from 'ReplicatedStorage/TS/GeneralWeaponUtility'
-import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS'
-import { SkinTypeEnum, SkinTypes } from './SkinTypes'
-import { BaseWeaponUtility } from './BaseWeaponUtility'
-import { FlexTool } from './FlexToolTS'
+import { GeneralWeaponUtility } from "ReplicatedStorage/TS/GeneralWeaponUtility"
+import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
+import { SkinTypeEnum, SkinTypes } from "./SkinTypes"
+import { BaseWeaponUtility } from "./BaseWeaponUtility"
+import { FlexTool } from "./FlexToolTS"
 
 type Character = Model
 
@@ -41,33 +41,39 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
 
     constructor(tool: Tool, flexTool: FlexTool) {
         super(tool, flexTool)
-        this.hitSound = this.handle.WaitForChild<Sound>('Hit')
+        this.hitSound = this.handle.WaitForChild<Sound>("Hit")
         this.hitVol = this.hitSound.Volume
         this.hitSoundSpeed = this.hitSound.PlaybackSpeed
     }
 
     _aimAtTarget(character: Character, target?: Character) {
         if (target) {
-            DebugXL.logD('Combat', target.Name + " in range")
-            const targetV3 = target.GetPrimaryPartCFrame().p
-            const player = Players.GetPlayerFromCharacter(character)
-            if (player) {
-                const targetV3InMyPlane = new Vector3(targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z)
-                const facingTargetCF = new CFrame(character.GetPrimaryPartCFrame().p, targetV3InMyPlane)
-                character.SetPrimaryPartCFrame(facingTargetCF)
+            DebugXL.logD("Combat", target.Name + " in range")
+            const primaryPart = target.PrimaryPart
+            if (primaryPart) {
+                const targetV3 = target.GetPrimaryPartCFrame().p
+                const player = Players.GetPlayerFromCharacter(character)
+                if (player) {
+                    const targetV3InMyPlane = new Vector3(targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z)
+                    const facingTargetCF = new CFrame(character.GetPrimaryPartCFrame().p, targetV3InMyPlane)
+                    character.SetPrimaryPartCFrame(facingTargetCF)
+                }
+                else {
+                    this._mobAimAtTarget(character, target)
+                }
             }
             else {
-                this._mobAimAtTarget(character, target)
+                DebugXL.logW("Combat", target.GetFullName() + " is missing PrimaryPart")
             }
         }
     }
 
     _playAlternateAttackAnimation() {
-        DebugXL.logD('Combat', 'Playing default slash animation')
+        DebugXL.logD("Combat", "Playing default slash animation")
         //              old default Roblox way to do this when our custom animation is missing
-        const Animation = new Instance('StringValue')
-        Animation.Name = 'toolanim'
-        Animation.Value = 'Slash'
+        const Animation = new Instance("StringValue")
+        Animation.Name = "toolanim"
+        Animation.Value = "Slash"
         Animation.Parent = this.tool
         Debris.AddItem(Animation, 2)
     }
