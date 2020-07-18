@@ -414,7 +414,7 @@ end
 
 
 local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
-	DebugXL:Assert( Inventory:GetCount( designatedMonsterPlayer, "Tutorial" ) >= 3 )
+--	DebugXL:Assert( Inventory:GetCount( designatedMonsterPlayer, "Tutorial" ) >= 3 )
 	DebugXL:logD('GameManagement', "Changing "..designatedMonsterPlayer.Name.." to hero" )
 	MarkPlayersCharacterForDestruction( designatedMonsterPlayer )	
 	CharacterI:ChangeTeam( designatedMonsterPlayer, game.Teams.Heroes )  -- this will automatically launch Choose dialog on client

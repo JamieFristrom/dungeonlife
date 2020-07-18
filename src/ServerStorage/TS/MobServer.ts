@@ -8,13 +8,10 @@ import { ServerStorage, Workspace, CollectionService, RunService, Teams, Physics
 
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
-import * as MapTileData from 'ReplicatedStorage/Standard/MapTileDataModule'
-
 import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
 import { CharacterRecord } from 'ReplicatedStorage/TS/CharacterRecord'
-import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
 
@@ -29,6 +26,7 @@ import { RangedWeaponUtility } from 'ReplicatedStorage/TS/RangedWeaponUtility'
 import { MonsterServer } from './MonsterServer'
 import { FlexibleToolsServer } from './FlexibleToolsServer'
 import { BaseWeaponUtility } from 'ReplicatedStorage/TS/BaseWeaponUtility'
+import { HeroServer } from './HeroServer'
 
 type Character = Model
 
@@ -321,9 +319,10 @@ export namespace MobServer {
             // what happens when we use the monster code on 'em
             const monsterDatum = CharacterClasses.monsterStats[characterClass]
            
+            const numHeroes = HeroServer.getNumHeroes()
             const mobLevel = ( monsterDatum.tagsT.Superboss || monsterDatum.tagsT.Boss ) ?
                 MonsterServer.determineBossSpawnLevel(monsterDatum) :
-                MonsterServer.determineMobSpawnLevel(mobSpawnerCap)
+                MonsterServer.determineMobSpawnLevel(mobSpawnerCap*(numHeroes+3)/2)
 
             let characterRecord = new Monster(characterClass,
                 [],
