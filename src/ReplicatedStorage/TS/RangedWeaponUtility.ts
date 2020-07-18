@@ -2,12 +2,13 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI( 'Executed', script.GetFullName())
+DebugXL.logI('Executed', script.GetFullName())
 
 import { BaseWeaponUtility } from './BaseWeaponUtility'
 import { FlexTool } from './FlexToolTS'
 
 import { Players } from '@rbxts/services'
+import { ModelUtility } from './ModelUtility'
 
 type Character = Model
 
@@ -48,7 +49,7 @@ export class RangedWeaponUtility extends BaseWeaponUtility {
     static projectileCounter = 0
 
     _mobActivate(target: Character) {
-        const targetV3 = target.GetPrimaryPartCFrame().p
+        const targetV3 = ModelUtility.getPrimaryPartCFrameSafe(target).p
         // bindable rather than a direct function call seems the most consistent way to communicate -
         // with players it's a client-server remote event, so this dovetails
         this.weaponBE.Fire('OnActivated', targetV3, 'MobProjectile' + RangedWeaponUtility.projectileCounter)

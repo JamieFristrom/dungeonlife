@@ -27,6 +27,7 @@ import { MonsterServer } from './MonsterServer'
 import { FlexibleToolsServer } from './FlexibleToolsServer'
 import { BaseWeaponUtility } from 'ReplicatedStorage/TS/BaseWeaponUtility'
 import { HeroServer } from './HeroServer'
+import { ModelUtility } from 'ReplicatedStorage/TS/ModelUtility'
 
 type Character = Model
 
@@ -66,7 +67,7 @@ class Attackable {
             }
             if (lastAttackerObject.Value !== this.lastAttacker) {
                 this.lastAttacker = lastAttackerObject.Value as Character
-                this.lastSpottedEnemyPosition = this.lastAttacker.GetPrimaryPartCFrame().p
+                this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(this.lastAttacker).p
                 this._updateLastAttacker()
             }
         }
@@ -78,23 +79,23 @@ class Spawner {
     lastSpawnTick: number = 0
 
     constructor(model: Model, humanoid?: Humanoid) {
-        if( humanoid ) {
+        if (humanoid) {
             this.attackable = new Attackable(model, humanoid)
         }
     }
 
     updateLastAttacker() {
-        if( this.attackable ) {
+        if (this.attackable) {
             this.attackable.updateLastAttacker()
         }
     }
-    
+
     getLastSpottedEnemyPosition() {
         return this.attackable ? this.attackable.lastSpottedEnemyPosition : undefined
     }
 
-    setLastSpottedEnemyPosition( enemyPos: Vector3 ) {
-        if( this.attackable ) {
+    setLastSpottedEnemyPosition(enemyPos: Vector3) {
+        if (this.attackable) {
             this.attackable.lastSpottedEnemyPosition = enemyPos
         }
     }
@@ -194,7 +195,7 @@ export namespace MobServer {
 
     //     DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
     //     for( let spawner in spawnersMap ) {
-            
+
     //     }
     //     const monsterSpawnParts = FurnishServer.GetMonsterSpawners()
     //     if (!monsterSpawnParts.isEmpty()) {
@@ -221,7 +222,7 @@ export namespace MobServer {
             if (monsterTeam.GetPlayers().size() === 0) {
                 const spawner = spawnersMap.get(spawnPart)
                 if (!spawnersMap.get(spawnPart)) {
-                    DebugXL.logI("Gameplay","Spawning one use spawner "+spawnPart.GetFullName())
+                    DebugXL.logI("Gameplay", "Spawning one use spawner " + spawnPart.GetFullName())
                     spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
                         undefined,
                         spawnPart,
@@ -318,11 +319,11 @@ export namespace MobServer {
 
             // what happens when we use the monster code on 'em
             const monsterDatum = CharacterClasses.monsterStats[characterClass]
-           
+
             const numHeroes = HeroServer.getNumHeroes()
-            const mobLevel = ( monsterDatum.tagsT.Superboss || monsterDatum.tagsT.Boss ) ?
+            const mobLevel = (monsterDatum.tagsT.Superboss || monsterDatum.tagsT.Boss) ?
                 MonsterServer.determineBossSpawnLevel(monsterDatum) :
-                MonsterServer.determineMobSpawnLevel(mobSpawnerCap*(numHeroes+3)/2)
+                MonsterServer.determineMobSpawnLevel(mobSpawnerCap * (numHeroes + 3) / 2)
 
             let characterRecord = new Monster(characterClass,
                 [],
@@ -450,12 +451,12 @@ export namespace MobServer {
         }
 
         protected _updateLastAttacker() {
-            if( this.lastSpottedEnemyPosition ) {
+            if (this.lastSpottedEnemyPosition) {
                 if (this.spawnPart) {
                     const spawner = spawnersMap.get(this.spawnPart)
                     DebugXL.Assert(spawner !== undefined)
                     if (spawner) {
-                        spawner.setLastSpottedEnemyPosition( this.lastSpottedEnemyPosition )
+                        spawner.setLastSpottedEnemyPosition(this.lastSpottedEnemyPosition)
                     }
                 }
             }
@@ -476,7 +477,7 @@ export namespace MobServer {
                     const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.model, 80)
                     if (closestTarget) {
                         // if enemy in aggro range approach that spot (even if they go out of sight)
-                        this.lastSpottedEnemyPosition = closestTarget.GetPrimaryPartCFrame().p
+                        this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(closestTarget).p
                         // if enemy in range attack
                         if (bestFit <= this.weaponUtility.getRange()) {
                             // unless already attacking
@@ -500,16 +501,16 @@ export namespace MobServer {
                         // the antimagnet trick: poll your friends and push away from them
                         // the antimagnet trick is O(n^2) with sqrts so I'm a bit leery
                         const zeroVec = new Vector3(0, 0, 0)
-                        const myPos = this.model.GetPrimaryPartCFrame().p
+                        const myPos = ModelUtility.getPrimaryPartCFrameSafe(this.model).p
                         const mobs: Character[] = mobFolder.GetChildren()
-                        const pushForces = mobs.map((mob) => myPos.sub(mob.GetPrimaryPartCFrame().p))
+                        const pushForces = mobs.map((mob) => myPos.sub(ModelUtility.getPrimaryPartCFrameSafe(mob).p))
                         const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
                         const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
 
-                        const destinationVec = lastSpottedEnemyPosition.sub(this.model.GetPrimaryPartCFrame().p)
+                        const destinationVec = lastSpottedEnemyPosition.sub(ModelUtility.getPrimaryPartCFrameSafe(this.model).p)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
                         const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
-                        this.humanoid.MoveTo(this.model.GetPrimaryPartCFrame().p.add(shortenedVec))
+                        this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).p.add(shortenedVec))
                         //this.humanoid.Move(totalVec.Unit)
                         this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
                         // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client

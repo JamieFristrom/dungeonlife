@@ -4,17 +4,13 @@
 import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI("Executed", script.GetFullName())
 
-import { Players, Debris, RunService } from "@rbxts/services"
+import { Players, Debris } from "@rbxts/services"
 
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 
-import { AnimationManifestService } from "ReplicatedFirst/TS/AnimationManifestService"
-
-import { GeneralWeaponUtility } from "ReplicatedStorage/TS/GeneralWeaponUtility"
-import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
-import { SkinTypeEnum, SkinTypes } from "./SkinTypes"
 import { BaseWeaponUtility } from "./BaseWeaponUtility"
 import { FlexTool } from "./FlexToolTS"
+import { ModelUtility } from "./ModelUtility"
 
 type Character = Model
 
@@ -51,11 +47,11 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
             DebugXL.logD("Combat", target.Name + " in range")
             const primaryPart = target.PrimaryPart
             if (primaryPart) {
-                const targetV3 = target.GetPrimaryPartCFrame().p
+                const targetV3 = primaryPart.CFrame.p
                 const player = Players.GetPlayerFromCharacter(character)
                 if (player) {
-                    const targetV3InMyPlane = new Vector3(targetV3.X, character.GetPrimaryPartCFrame().p.Y, targetV3.Z)
-                    const facingTargetCF = new CFrame(character.GetPrimaryPartCFrame().p, targetV3InMyPlane)
+                    const targetV3InMyPlane = new Vector3(targetV3.X, ModelUtility.getPrimaryPartCFrameSafe(character).p.Y, targetV3.Z)
+                    const facingTargetCF = new CFrame(ModelUtility.getPrimaryPartCFrameSafe(character).p, targetV3InMyPlane)
                     character.SetPrimaryPartCFrame(facingTargetCF)
                 }
                 else {
