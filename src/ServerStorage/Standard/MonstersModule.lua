@@ -346,10 +346,10 @@ function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid
 		
 		local targetPC = targetHumanoid.Parent
 		local targetPlayer = game.Players:GetPlayerFromCharacter( targetPC )
-		DebugXL:logV( 'Combat', 'targetPlayer = '..targetPlayer.Name )
 
 		-- while theoretically monsters only damage players this can throw an error because monsters can currently damage barriers
 		if targetPlayer and targetPlayer.Parent then
+			DebugXL:logV( 'Combat', 'targetPlayer = '..targetPlayer.Name )
 			local characterRecord = PlayerServer.getCharacterRecordFromPlayer( targetPlayer )
 			DebugXL:Assert( characterRecord )  -- seriously, if the target player and their character is still around then there should be no way this can happen
 			if characterRecord then
