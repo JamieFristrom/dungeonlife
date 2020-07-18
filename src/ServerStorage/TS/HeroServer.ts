@@ -319,6 +319,10 @@ export namespace HeroServer {
         }
     }
 
+    export function getNumHeroes() {
+        return heroTeam.GetPlayers().size()
+    }
+
     spawn(() => {
         for (; ;) {
             wait(30)

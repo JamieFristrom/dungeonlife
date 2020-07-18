@@ -3,7 +3,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
 warn("DUNGEON LIFE 7/12/2020")
-warn("Mobs RC1 fixed superbosses")
+warn("Mobs RC2 nerf monsters")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
