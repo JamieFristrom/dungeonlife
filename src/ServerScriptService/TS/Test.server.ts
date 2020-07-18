@@ -4,12 +4,12 @@
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI('Executed', script.GetFullName())
 
-import { RunService, Teams, Players, Workspace } from "@rbxts/services"
+import { RunService, Teams, Players, Workspace, ReplicatedStorage } from "@rbxts/services"
 
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
+import { ModelUtility } from 'ReplicatedStorage/TS/ModelUtility';
 
 if (RunService.IsStudio()) {
     // make sure nothing unanchored
@@ -19,6 +19,18 @@ if (RunService.IsStudio()) {
                 DebugXL.logW("Parts", descendant.GetFullName() + " is not anchored")
             }
     }
+
+    // test getting cframe of a bad model
+    let errorMessage = ""
+    const modelNoPrimaryPart = ReplicatedStorage.WaitForChild<Folder>("TestObjects").WaitForChild<Model>("ModelNoPrimaryPart")
+    DebugXL.catchErrors((message) => {
+        errorMessage = message
+    })
+    const cframe = ModelUtility.getPrimaryPartCFrameSafe(modelNoPrimaryPart)
+    DebugXL.stopCatchingErrors()
+    DebugXL.Assert(cframe !== undefined)
+    DebugXL.Assert(cframe.p === new Vector3(0, 0, 0))
+    DebugXL.Assert(errorMessage === "ReplicatedStorage.TestObjects.ModelNoPrimaryPart is missing its PrimaryPart")
 
     // test updating an obsolete broken hero
     const rawHeroData = {
@@ -39,15 +51,12 @@ if (RunService.IsStudio()) {
         jumpPowerN: 10,
         badges: []
     }
-
-    let errorCaught = false
-    DebugXL.catchErrors( (message)=>{
-        DebugXL.Assert( message.find( "had neither gearPool nor itemsT") !== undefined )
-        errorCaught = true
+    DebugXL.catchErrors((message) => {
+        errorMessage = message
     })
     const convertedHero = Hero.convertFromPersistent(rawHeroData, 3, "TestHeroName")
     DebugXL.stopCatchingErrors()
-    DebugXL.Assert(errorCaught)
+    DebugXL.Assert(errorMessage.find("had neither gearPool nor itemsT") !== undefined)
     DebugXL.Assert(convertedHero.gearPool !== undefined)
     DebugXL.Assert(convertedHero.gearPool.size() === 0)
 
