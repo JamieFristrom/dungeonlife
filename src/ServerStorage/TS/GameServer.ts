@@ -119,6 +119,7 @@ export namespace GameServer {
                 const acceptableSpawns: BasePart[] = []
                 for (let i = 0; i < monsterSpawnN; i++) {
                     const spawner = monsterSpawns[i]
+                    // FIXME: this is still failing even though it theoretically can't
                     if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
                         DebugXL.logV('GameManagement', "Found a boss spawn for " + player.Name)
                         if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {

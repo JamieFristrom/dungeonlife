@@ -1,7 +1,7 @@
 import { Workspace, Teams } from "@rbxts/services";
 
 import { HeroStatBlockI, CharacterClasses } from "./CharacterClasses"
-import { HeroI } from "./HeroClassesTS"
+import { HeroI, RawHeroDataI } from "./HeroClassesTS"
 import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
@@ -48,26 +48,25 @@ export class Hero extends CharacterRecord implements HeroI
         this.statsT = ObjectXL.clone( stats )
     }        
 
-    static convertFromPersistent( rawHeroData: HeroI, storageVersion: number )
+    static convertFromPersistent( rawHeroData: RawHeroDataI, storageVersion: number, playerNameDebug: string )
     {
         // at first I was thinking leave the persistent data in the old format when I created these item pools, but then it seemed
         // more likely there would be bugs if I was constantly converting back and forth
-        let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
-        if( !hero.gearPool )
-        {
+        if( !rawHeroData.gearPool ) {
             DebugXL.Assert( storageVersion < 4 )
-            DebugXL.Assert( hero.itemsT !== undefined )  
-            if( hero.itemsT )          
+            if( rawHeroData.itemsT )          
             {
-                hero.gearPool = new GearPool( hero.itemsT )
-                hero.itemsT = undefined
+                rawHeroData.gearPool = new GearPool( rawHeroData.itemsT )
+                rawHeroData.itemsT = undefined
+            }
+            else {
+                DebugXL.Error( playerNameDebug + " " + rawHeroData.idS + " had neither gearPool nor itemsT")
+                rawHeroData.gearPool = new GearPool({})
             }
         }
-        else
-        {
-            setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
-            hero.gearPool.forEach( item => FlexTool.objectify( item ) )
-        }
+        let hero = setmetatable( rawHeroData as HeroI, Hero as LuaMetatable<HeroI> ) as Hero
+        setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
+        hero.gearPool.forEach( item => FlexTool.objectify( item ) )
 
         if( !hero.shopPool )
         {

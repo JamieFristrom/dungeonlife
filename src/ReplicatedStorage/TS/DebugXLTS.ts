@@ -39,12 +39,15 @@ class DebugXLC {
         // ['GameManagement',LogLevel.Verbose]
     ])
 
+    private testErrorCatcher?: (message: string)=>void
+
     Error(message: string) {
         let callstackS = debug.traceback()
-        if (false) //--game["Run Service"]:IsStudio() )
-            error(message)
-        else
+        if( this.testErrorCatcher ) {
+            this.testErrorCatcher( message )
+        } else {
             spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
+        }
     }
 
     Assert(conditionB: boolean) {
@@ -132,6 +135,16 @@ class DebugXLC {
     stringifyInstanceArray(instArray: Instance[]) {
         return instArray.isEmpty() ? '[]' :
             '[' + instArray.map((inst) => this.stringifyInstance(inst)).reduce((a, b) => a + ',' + b) + ']'
+    }
+
+    catchErrors( errorCatcher: (message:string)=>void ) { 
+        DebugXL.Assert( !this.testErrorCatcher )
+        this.testErrorCatcher = errorCatcher 
+    }
+
+    stopCatchingErrors() {
+        DebugXL.Assert( this.testErrorCatcher !== undefined )
+        this.testErrorCatcher = undefined
     }
 }
 
