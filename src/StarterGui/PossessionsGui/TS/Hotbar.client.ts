@@ -1,16 +1,14 @@
-print("Executing " + script.GetFullName())
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
 
 import { ContextActionService, Workspace, Players, RunService, Teams } from "@rbxts/services";
 
-//import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
-
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
-// local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-// local InventoryClient  = require( game.ReplicatedStorage.InventoryClient )
-// local PossessionData   = require( game.ReplicatedStorage.PossessionData )
 
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
-// local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 
 import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 
@@ -18,16 +16,13 @@ import { HotbarSlot } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
 
 import { Localize } from "ReplicatedStorage/TS/Localize"
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
 
 let hotbar = script.Parent!.Parent!.WaitForChild("Hotbar")
-// print("Hotbar available")
 
 let hotbarRE = Workspace.WaitForChild('Signals')!.WaitForChild('HotbarRE') as RemoteEvent
-// let hotbarRF = Workspace.Signals.HotbarRF as RemoteFunction
 
 let localPlayer = Players.LocalPlayer!
 let playerGui = localPlayer.WaitForChild('PlayerGui')
@@ -111,13 +106,21 @@ function Equip(slotN: HotbarSlot) {
                             }
                             else {
                                 let tool = CharacterRecord.getToolInstanceFromPossessionKey(localCharacter, PCClient.pc, possessionKey) as Tool
-                                DebugXL.Assert(tool !== undefined)
-                                // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
-                                // I could see false positives coming from equipping a weapon that the inventory replication
-                                // says you have before the instance actually gets replicated - perhaps waiting here is the right choice
                                 if (tool) {
                                     DebugXL.logD(script.Name, 'Equipping')
                                     humanoid.EquipTool(tool)  // error in EquipTool's type signature that has now been fixed
+                                }
+                                else {
+                                    // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
+                                    // I could see false positives coming from equipping a weapon that the inventory replication
+                                    // says you have before the instance actually gets replicated - perhaps waiting here is the right choice
+                                    const flexTool = PCClient.pc.getFlexTool(possessionKey)
+                                    if (flexTool) {
+                                        DebugXL.logW("Items", "Hotbar failed to find instance for " + localCharacter.GetFullName() + " tool " + flexTool.baseDataS)
+                                    }
+                                    else {
+                                        DebugXL.Error("Hotbar had possession key for " + localCharacter.GetFullName() + " flextool that doesn't exist")
+                                    }
                                 }
                                 // put box around equipped tool in GUI
                                 //SelectSlot( slotN )
@@ -243,5 +246,4 @@ RunService.RenderStepped.Connect(function () {
     }
 })
 
-//HotbarRefresh()  // shouldn't need this until we've got a character
 

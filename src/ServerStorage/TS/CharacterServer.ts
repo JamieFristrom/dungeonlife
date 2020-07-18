@@ -8,6 +8,9 @@ import { PlayerServer } from "./PlayerServer";
 
 type Character = Model
 
+// const heroTeam = Teams.WaitForChild<Team>("Heroes")
+// const monsterTeam = Teams.WaitForChild<Team>("Monsters")
+
 export namespace CharacterServer {
     //
     //  Is player playing with companions out of their league?
@@ -83,6 +86,39 @@ export namespace CharacterServer {
             }
         })
     }
+        
+    /* those circular dependencies are going to make this tough to port
+
+    export function takeFlexToolDamage( hitCharacter: Character, attackingCharacter: Character, flexTool: FlexTool ) {
+        DebugXL.Assert( attackingCharacter.IsA("Model"))
+        const attackerRecord = PlayerServer.getCharacterRecordFromCharacter( attackingCharacter )
+        // getting this from record means less chance of a mismatch, which has happened - you could imagine somebody
+        // getting in a final blow right as they change from hero to monster, for example
+        const attackingTeam = (attackerRecord instanceof Hero)?heroTeam:monsterTeam
+        DebugXL.logD( 'Combat', 'TakeFlexToolDamage attackingPlayer. '+attackingCharacter.Name+' hitCharacter. '+hitCharacter.Name )
+        const hitHumanoid = hitCharacter.FindFirstChild("Humanoid")
+        if( hitHumanoid ) {
+            const hitPlayer = Players.GetPlayerFromCharacter( hitCharacter )
+            if( ! hitPlayer || hitPlayer.Team !== attackingTeam ) {
+                CharacterServer.setLastAttacker( hitCharacter, attackingCharacter )
+                const attackingPlayer = Players.GetPlayerFromCharacter( attackingCharacter )
+            
+                if( attackingTeam === heroTeam ) {	
+                    DebugXL.logV( 'Combat', 'Hero damaging monster' )	
+                    DebugXL.Assert( attackingPlayer!==undefined )
+                    if(( attackingPlayer )) {
+                        heroesModule.DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
+                    }
+                } else {
+                    // can't just use tool's parent to determine attacking character because it might be lingering
+                    // damage from a tool that has been put away
+                    DebugXL.logV( 'Combat', 'Monster damaging hero' )	
+                    Monsters.DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
+                }
+            }
+        }    
+    }
+    */
 
     RunService.Heartbeat.Connect(() => {
         Players.GetPlayers().forEach((player) => {
