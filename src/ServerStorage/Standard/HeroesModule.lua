@@ -563,7 +563,7 @@ local function PlayerAdded( player )
 		end
 	end
 
-	HeroStable:convertFromPersistent( savedPlayerCharacters )
+	HeroStable:convertFromPersistent( savedPlayerCharacters, player.Name )
 
 	
 	for _, hero in pairs( savedPlayerCharacters.heroesA ) do

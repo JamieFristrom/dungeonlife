@@ -6,14 +6,10 @@ DebugXL.logI('Executed', script.GetFullName())
 
 import { RunService, Teams, Players, Workspace } from "@rbxts/services"
 
-import { CharacterServer } from "ServerStorage/TS/CharacterServer"
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { MonsterServer } from "ServerStorage/TS/MonsterServer";
-
-import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
-import { MonsterDatumI } from "ReplicatedStorage/TS/MonsterDatum";
+import { HeroStatBlockI } from "ReplicatedStorage/TS/CharacterClasses"
 
 if (RunService.IsStudio()) {
     // make sure nothing unanchored
@@ -24,10 +20,42 @@ if (RunService.IsStudio()) {
             }
     }
 
+    // test updating an obsolete broken hero
+    const rawHeroData = {
+        statsT: {
+            strN: 11,  //// means if you draw a level 3 weapon you have a choice between putting in strength or con when you hit level 2
+            dexN: 10,
+            conN: 14,
+            willN: 10,
+            experienceN: 0,
+            goldN: 0,
+            deepestDungeonLevelN: 1,
+            totalTimeN: 0
+        },
+        idS: "Warrior",
+        readableNameS: "Warrior",
+        imageId: "blahblah",
+        walkSpeedN: 10,
+        jumpPowerN: 10,
+        badges: []
+    }
+
+    let errorCaught = false
+    DebugXL.catchErrors( (message)=>{
+        DebugXL.Assert( message.find( "had neither gearPool nor itemsT") !== undefined )
+        errorCaught = true
+    })
+    const convertedHero = Hero.convertFromPersistent(rawHeroData, 3, "TestHeroName")
+    DebugXL.stopCatchingErrors()
+    DebugXL.Assert(errorCaught)
+    DebugXL.Assert(convertedHero.gearPool !== undefined)
+    DebugXL.Assert(convertedHero.gearPool.size() === 0)
+
     // place to put tests. why is it empty 
     let heroes = Teams.WaitForChild<Team>("Heroes")
 
     // just so we can step in debugger, not a test-case type test which would require creating fake players...  which we can totally do, huh.
+    // NOTE THIS TEST DOESN'T RUN UNTIL A HERO IS PRESENT
     wait(1)
     while (heroes.GetPlayers().size() === 0) wait(1)
 
@@ -46,15 +74,4 @@ if (RunService.IsStudio()) {
         1))
     DebugXL.Assert(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
     DebugXL.Assert(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === Teams.WaitForChild<Team>('Monsters'))
-    //let test0 = CharacterServer.IsDangerZoneForHero( fakePlayerMap, heroPlayer )
-    //DebugXL.Assert( test0 === false )
-
-    // DangerZone tests are flaky due to heroPlayer can change while game is booting up
-    // let test1 = CharacterServer.IsDangerZoneForHero( fakePlayerMap, heroPlayer )
-    // DebugXL.Assert( test1 === false )
-    // fakePlayerMap.set( heroPlayer, new Hero( 'Warrior', 
-    //     { strN: 10, dexN: 10, conN: 10, willN: 10, experienceN: 100000, goldN: 0, deepestDungeonLevelN: 0, totalTimeN: 0 },
-    //     [] ) )
-    // let test2 = CharacterServer.IsDangerZoneForHero( fakePlayerMap, heroPlayer )
-    // DebugXL.Assert( test2 === true )
 }
