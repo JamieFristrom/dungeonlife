@@ -509,10 +509,12 @@ export namespace MobServer {
 
                         const destinationVec = lastSpottedEnemyPosition.sub(ModelUtility.getPrimaryPartCFrameSafe(this.model).p)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
-                        const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
-                        this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).p.add(shortenedVec))
-                        //this.humanoid.Move(totalVec.Unit)
-                        this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
+                        if( totalVec.Magnitude > 4 ) {  // don't do the cha-cha once you're stable
+                            const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
+                            this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).p.add(shortenedVec))
+                            //this.humanoid.Move(totalVec.Unit)
+                            this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
+                        }
                         // I'm choosing to use points instead of parts out of voodoo - I worry how things might diverge on client
                         // and server if it's following a player's parts
                         return

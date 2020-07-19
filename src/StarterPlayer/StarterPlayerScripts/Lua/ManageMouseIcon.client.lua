@@ -52,7 +52,7 @@ game["Run Service"].RenderStepped:Connect( function()
 				end
 			end
 		end
-		if localPlayer.Team == game.Teams.Heroes and ( workspace.GameManagement.PreparationCountdown.Value > 0 or localPlayer.HeroExpressPreparationCountdown.Value > 0 ) then
+		if localPlayer.Team == game.Teams.Heroes and ( workspace.GameManagement.PreparationCountdown.Value > 0 or localPlayer.HeroRespawnCountdown.Value > 0 ) then
 			mouseIcon = false	
 		end
 	end

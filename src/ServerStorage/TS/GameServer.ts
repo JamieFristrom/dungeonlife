@@ -17,6 +17,7 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
 import { MessageServer } from "./MessageServer"
 import { PlayerServer, TeamStyleChoice } from "./PlayerServer"
+import { DungeonPlayer, PCStateRequest } from './DungeonPlayer'
 
 
 // -- it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
@@ -158,6 +159,21 @@ export namespace GameServer {
                     }
                 }
             }
+        }
+    }
+
+    export function broadcastRespawnCountdown( player: Player, dungeonPlayerData: DungeonPlayer ) {
+        const countdownObj = player.FindFirstChild<NumberValue>("HeroRespawnCountdown")
+        DebugXL.Assert( countdownObj !== undefined )
+        if( countdownObj ) {
+            countdownObj.Value = 15 - ( time() - dungeonPlayerData.heroKickoffTime )
+        }
+    }
+
+    export function waitForRespawn( player: Player, dungeonPlayerData: DungeonPlayer ) {
+        while( dungeonPlayerData.pcStateRequest !== PCStateRequest.NeedsRespawn ) {
+            wait(0.1)
+            broadcastRespawnCountdown( player, dungeonPlayerData )
         }
     }
 }

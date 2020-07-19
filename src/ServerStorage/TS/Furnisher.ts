@@ -19,10 +19,10 @@ export namespace Furnisher {
             DebugXL.Assert(possessionNameObj !== undefined)
             if (possessionNameObj) {
                 if (!PossessionData.dataT[possessionNameObj.Value]) {
-                    DebugXL.Error(furnishing.Name + " doesn't exist in PossessionData")
+                    DebugXL.Error(possessionNameObj.Value + " doesn't exist in PossessionData")
                 }
                 else {
-                    return PossessionData.dataT[furnishing.Name].furnishingType === furnishingType
+                    return PossessionData.dataT[possessionNameObj.Value].furnishingType === furnishingType
                 }
             }
             return false

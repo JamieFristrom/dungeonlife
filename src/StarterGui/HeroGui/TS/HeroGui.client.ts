@@ -20,6 +20,11 @@ const characterSheet = characterSheetGui.WaitForChild<Frame>("CharacterSheet")
 const possessionsGui = playerGui.WaitForChild<ScreenGui>("PossessionsGui")
 const possessionsFrame = possessionsGui.WaitForChild<Frame>("PossessionsFrame")
 
+const readyButton = script.Parent!.Parent!.WaitForChild<TextButton>("Ready")
+
+const mainRE = Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("MainRE")
+const heroPrepCountdownObj = Players.LocalPlayer.WaitForChild<NumberValue>("HeroRespawnCountdown")
+
 chooseClassFrame.GetPropertyChangedSignal("Visible").Connect(() => {
     if (InputXL.UsingGamepad()) {
         GuiService.SelectedObject = chooseClassFrame.WaitForChild("Grid").WaitForChild("Hero1").WaitForChild<GuiObject>("Choose")
@@ -28,6 +33,9 @@ chooseClassFrame.GetPropertyChangedSignal("Visible").Connect(() => {
 
 const gameManagementFolder = Workspace.WaitForChild<Folder>("GameManagement")
 const gameState = gameManagementFolder.WaitForChild<StringValue>("GameState")
+const preperationCountdownObj = gameManagementFolder.WaitForChild<NumberValue>("PreparationCountdown")
+
+const heroTeam = Teams.WaitForChild<Team>("Heroes")
 
 DebugXL.logI('GameManagement', 'HeroGui wait complete')
 
@@ -53,3 +61,16 @@ gameState.Changed.Connect((newValue) => {
         }
     }
 })
+
+readyButton.MouseButton1Click.Connect(() => {
+    mainRE.FireServer("SignalReady")
+})
+
+for (; ;) {
+    wait(0.1)
+    readyButton.Visible = (!Players.LocalPlayer.Character || !Players.LocalPlayer.Character.Parent) &&
+        (Players.LocalPlayer.Team === heroTeam) &&
+        (preperationCountdownObj.Value <= 0) &&
+        (heroPrepCountdownObj.Value <= 0) &&
+        (!chooseHeroFrame.Visible && !chooseClassFrame.Visible)
+}
