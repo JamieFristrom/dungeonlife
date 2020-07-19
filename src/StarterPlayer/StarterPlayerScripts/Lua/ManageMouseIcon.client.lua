@@ -4,6 +4,7 @@ local InputXL       = require( game.ReplicatedStorage.Standard.InputXL )
 local WeaponUtility = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
 local UserInputService = game:GetService("UserInputService")
 
@@ -51,7 +52,7 @@ game["Run Service"].RenderStepped:Connect( function()
 				end
 			end
 		end
-		if localPlayer.Team == game.Teams.Heroes and ( workspace.GameManagement.PreparationCountdown.Value > 0 or localPlayer.HeroExpressPreparationCountdown.Value > 0 ) then
+		if localPlayer.Team == game.Teams.Heroes and ( workspace.GameManagement.PreparationCountdown.Value > 0 or localPlayer.HeroRespawnCountdown.Value > 0 ) then
 			mouseIcon = false	
 		end
 	end
@@ -59,8 +60,8 @@ game["Run Service"].RenderStepped:Connect( function()
 	
 	local character = localPlayer.Character
 	if character then
-		if WeaponUtility:IsCoolingDown(localPlayer ) then
-			SetCooldownMouseIconId( WeaponUtility:CooldownPctRemaining( localPlayer ) )
+		if GeneralWeaponUtility.isCoolingDown( character ) then
+			SetCooldownMouseIconId( GeneralWeaponUtility.cooldownPctRemaining( character ) )
 		else
 			local tool = character:FindFirstChildWhichIsA( "Tool" ) 
 			if tool then

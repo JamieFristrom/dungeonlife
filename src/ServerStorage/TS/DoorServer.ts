@@ -1,7 +1,14 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
 import { Players, Teams } from "@rbxts/services";
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
+import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility"
 import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
 
 export namespace DoorServer
@@ -35,8 +42,9 @@ export namespace DoorServer
                     {
                         if( character.PrimaryPart && doorModel.PrimaryPart )
                         {
-                            if( character.GetPrimaryPartCFrame().p.sub( doorModel.GetPrimaryPartCFrame().p ).Magnitude < 16 )
+                            if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 16 ) {
                                 nonopenerClose = true
+                            }
                         }
                     }
                 }
@@ -59,12 +67,12 @@ export namespace DoorServer
                 {
                     if( canBeOpenedBy( doorModel, player ))
                     {
-                        if( character.GetPrimaryPartCFrame().p.sub( doorModel.GetPrimaryPartCFrame().p ).Magnitude < 8 )
+                        if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 8 )
                             openerClose = true
                     }
                     else
                     {
-                       if( character.GetPrimaryPartCFrame().p.sub( doorModel.GetPrimaryPartCFrame().p ).Magnitude < 16 )
+                       if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 16 )
                             nonopenerClose = true
                     }
                 }

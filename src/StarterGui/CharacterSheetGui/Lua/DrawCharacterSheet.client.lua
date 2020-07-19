@@ -84,7 +84,7 @@ function HeroesRemote:RefreshSheet()
 	local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
 	
 	local maxHealth, maxManaN, health, manaN
-	if humanoid and workspace.GameManagement.PreparationCountdown.Value <= 0 and game.Players.LocalPlayer.HeroExpressPreparationCountdown.Value <= 0 then
+	if humanoid and workspace.GameManagement.PreparationCountdown.Value <= 0 and game.Players.LocalPlayer.HeroRespawnCountdown.Value <= 0 then
 		maxHealth = humanoid.MaxHealth
 		health = humanoid.Health
 		local maxManaValue = game.Players.LocalPlayer.Character:FindFirstChild("MaxManaValue")

@@ -150,6 +150,12 @@
         "Lua": {
           "$path": "out/StarterGui/HUDGui/Lua"
         }
+      },
+      "DebugGuiXL": {
+        "$className": "ScreenGui",
+        "TS": {
+          "$path": "out/StarterGui/DebugGuiXL/TS"
+        }
       }
     }
   }

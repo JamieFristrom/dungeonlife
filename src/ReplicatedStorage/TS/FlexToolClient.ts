@@ -1,21 +1,24 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI( 'Executed', script.GetFullName())
+
 import { LocalizationService } from "@rbxts/services"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI(script.Name, "Loaded" )
-
 import { Enhancements } from "./EnhancementsTS"
-DebugXL.logD(script.Name,  "Enhancements required" )
+DebugXL.logD('Requires', script.Name+": Enhancements required" )
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
-DebugXL.logD(script.Name,  "PCClient required" )
+DebugXL.logD('Requires', script.Name+ ": PCClient required" )
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
-DebugXL.logD(script.Name,  "FlexTool required" )
+DebugXL.logD('Requires', script.Name+": FlexTool required" )
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
-DebugXL.logD(script.Name,  "ToolData required" )
+DebugXL.logD('Requires', script.Name+": ToolData required" )
 
 import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
-DebugXL.logD(script.Name,  "SkinTypeEnum required" )
+DebugXL.logD('Requires', script.Name+": SkinTypeEnum required" )
 import { Localize } from "ReplicatedStorage/TS/Localize"
-DebugXL.logD(script.Name,  "Localize required" )
+DebugXL.logD('Requires', script.Name+": Localize required" )
 
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 import { AnalyticsClient } from "./AnalyticsClient";
@@ -24,24 +27,30 @@ export namespace FlexToolClient
 {
     export function getFlexTool( tool: Tool )
     {        
-        let inventorySlotValObj = tool.WaitForChild("PossessionKey",1) as StringValue
-        DebugXL.Assert( inventorySlotValObj !== undefined )
-        if( inventorySlotValObj )
+        let possessionKeyValObj = tool.WaitForChild("PossessionKey",1) as StringValue
+        DebugXL.Assert( possessionKeyValObj !== undefined )
+        if( possessionKeyValObj )
         {
-            let inventorySlot = inventorySlotValObj.Value          
+            let possessionKey = possessionKeyValObj.Value          
             DebugXL.Assert( PCClient.pc !== undefined )  
-            if( !PCClient.pc ) return undefined
+            if( !PCClient.pc ) {
+                return FlexTool.nullTool
+            }
 
-            let flexTool = PCClient.pc.getTool( inventorySlot )
+            let flexTool = PCClient.pc.getFlexTool( possessionKey )
             DebugXL.Assert( flexTool !== undefined )
             if( !flexTool )
             {
-                let errStr = "Couldn't find flextool "+inventorySlot+"\n"
+                let errStr = "Couldn't find flextool "+possessionKey+"\n"
                 errStr += DebugXL.DumpToStr( PCClient.pc )
                 DebugXL.Error( errStr )
             }
-            return flexTool
+            else
+            {
+                return flexTool
+            }
         }
+        return FlexTool.nullTool
     }
 
     

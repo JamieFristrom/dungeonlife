@@ -52,10 +52,11 @@ end
 --------------------------------------------------------------------------------------------------------------------
 -- Dungeon Furnishing
 --------------------------------------------------------------------------------------------------------------------
-local function PlaceSpawns( spawnDataA, spawnCountN )
+function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 	local dungeonMap = Dungeon:GetMap()
 	local emergencyFailCount = 0
-	while #workspace.Building:GetChildren() < spawnCountN do
+	local numPlaced = 0
+	while numPlaced < spawnCountN do
 		emergencyFailCount = emergencyFailCount + 1
 		if emergencyFailCount > 1000 then
 			if #workspace.Building:GetChildren() <= 1 then
@@ -74,7 +75,7 @@ local function PlaceSpawns( spawnDataA, spawnCountN )
 		if math.abs( gridX ) + math.abs( gridZ ) >= minSpawnDistance then		
 			if dungeonMap[ mapX ][ mapZ ].tileName ~= "BlockWall" then
 				
-				local spawnChoice = spawnDataA[ MathXL:RandomInteger( 1, #spawnDataA ) ]
+				local spawnChoice = spawnFromListA[ MathXL:RandomInteger( 1, #spawnFromListA ) ]
 				
 				local tileCenterPositionX = gridX * MapTileData.cellWidthN 
 				local tileCenterPositionZ = gridZ * MapTileData.cellWidthN
@@ -101,45 +102,15 @@ local function PlaceSpawns( spawnDataA, spawnCountN )
 					end
 				end
 				local position = FurnishUtility:SnapV3( Vector3.new( positionX, 1.2, positionZ ), spawnChoice.gridSubdivisionsN, spawnChoice.placementType )
-				FurnishServer:Furnish( nil, spawnChoice.idS, position, rotY )
+				if( FurnishServer:Furnish( nil, spawnChoice.idS, position, rotY ) )then
+					numPlaced = numPlaced + 1
+				end
 			end
 		end
 	end
 end
 	
 				
-function FurnishServer:FurnishWithRandomSpawns()
-	
-	-- why do I insist on being cute?	
-	-- it's not likely we'll ever have more than one boss, but I'm handling it if we do
-	local bossBlueprintsT = TableXL:FindAllInTWhere(
-		FloorData:CurrentFloor().availableBlueprintsT,
-		function( blueprintS )
-			return PossessionData.dataT[ blueprintS ].furnishingType == PossessionData.FurnishingEnum.BossSpawn
-	end )
-	local spawnBlueprintsA = TableXL:TableToPairArray( bossBlueprintsT )
-	local spawnDataA = TableXL:Map( spawnBlueprintsA, function( blueprint )
-		return PossessionData.dataT[ blueprint.k ]
-	end)
-	if #spawnDataA >= 1 then
-		PlaceSpawns( spawnDataA, 1)
-	end
-	
-	local spawnBlueprintsT = TableXL:FindAllInTWhere(
-		FloorData:CurrentFloor().availableBlueprintsT,
-		function( blueprintS )
-			return PossessionData.dataT[ blueprintS ].furnishingType == PossessionData.FurnishingEnum.Spawn
-	end )
-	
-	local spawnBlueprintsA = TableXL:TableToPairArray( spawnBlueprintsT )
-	local spawnDataA = TableXL:Map( spawnBlueprintsA, function( blueprint )
-		return PossessionData.dataT[ blueprint.k ]
-	end)
-	
-	PlaceSpawns( spawnDataA, 4 )
-end
-
-
 function FurnishServer:FurnishWithRandomChests()
 	local dungeonMap = Dungeon:GetMap()
 	local scarcity = 2 * math.max( 1, #game.Teams.Heroes:GetPlayers() )
@@ -159,6 +130,7 @@ function FurnishServer:FurnishWithRandomChests()
 						if not FurnishUtility:GridPointOccupied( Vector3.new( positionX, 1.2, positionZ ), extentsV3, 3, PossessionData.PlacementTypeEnum.Open ) then							
 							newChest:SetPrimaryPartCFrame( CFrame.new( positionX, 1, positionZ ) * CFrame.fromEulerAnglesXYZ( 0, 0, 0 ) )
 							--newSpawn.MonsterSpawn.Enabled = true
+							BlueprintUtility.hideDebugInfo( newChest )
 							newChest.Parent = workspace.Building
 						end
 					end
@@ -269,6 +241,7 @@ function FurnishServer:Furnish( creator, name, position, rotation )
 			local tileModel = workspace.Environment[ "Tile_"..x.."_"..z ]
 			instance.DisposableFloor.Value = tileModel.Floor
 		end
+		BlueprintUtility.hideDebugInfo( instance )
 		instance.Parent = workspace.Building
 
 		return instance		

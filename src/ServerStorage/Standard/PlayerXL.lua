@@ -242,16 +242,17 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 					and spawnPoint:IsDescendantOf( workspace )
 			end )
 			if #validSpawnPoints <= 0 then
-				warn( "Couldn't find unused spawn" )
+				DebugXL:logI( "GameManagement", "Couldn't find unused spawn for "..player.Name )
+				-- must be a monster/DL after all the spawn points have been cleared; spawn wherever you can, probably the hero point
+				validSpawnPoints = spawnPoints
 			end
 			if characterClassS ~= "DungeonLord" then  -- dungeonlords spawn anywhere
 				validSpawnPoints = TableXL:FindAllInAWhere( validSpawnPoints, function( element ) 
 					return not element:FindFirstChild("CharacterClass") or element.CharacterClass.Value == characterClassS 
 				end )
 				if #validSpawnPoints <= 0 then
-					warn( "Couldn't find matching spawn" )
+					DebugXL:logI( "GameManagemenet", "Couldn't find matching spawn" )
 					-- it's possible that the level can reload while you're loading your character, in which case we find any emergency spawn point
-					-- yet another reason we should find spawn point first and then choose your character class -- fixme
 					validSpawnPoints = TableXL:FindAllInAWhere( spawnPoints, function( element ) return element.Enabled.Value end )
 				end
 			end

@@ -56,8 +56,8 @@ function MechanicalEffects.Explosion( positionV3, damage, radius, attackingPlaye
 	local attackingCharacter = attackingPlayer.Character
 	local hitCharatersA = {}
 	if attackingCharacter then
---		--print( "Attacking character is "..attackingCharacter.Name )
-		for _, character in pairs( CharacterClientI:GetValidTargets( attackingCharacter ) ) do
+--		--print( "Attacking character is "..attackingCharacter.Name )		  
+		for _, character in pairs( CharacterClientI:GetValidTargets( attackingPlayer.Team ) ) do
 			if character.PrimaryPart then
 				local distance = ( character:GetPrimaryPartCFrame().p - positionV3 ).Magnitude
 				if distance <= radius then

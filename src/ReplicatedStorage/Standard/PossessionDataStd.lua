@@ -1,8 +1,6 @@
 local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
-local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
 local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 
 local PossessionData = 
@@ -929,6 +927,7 @@ PossessionData.dataA =
 			furnishingType = PossessionData.FurnishingEnum.BossSpawn,
 			placementType = PossessionData.PlacementTypeEnum.Floor,
 			gridSubdivisionsN = 1,
+			startingCountN = 0,
 			buildCapN = 1,
 			levelCapN = 1,
 			rarityN = 0,			-- indicates not a player ownable thing
@@ -947,6 +946,7 @@ PossessionData.dataA =
 			buildCapN = 1,
 			levelCapN = 1,
 			rarityN = 0,			-- indicates not a player ownable thing
+			startingCountN = 0,
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		-- boss spawns
@@ -1017,7 +1017,9 @@ PossessionData.dataA =
 			purchaseCapN = 2,
 			startingCountN  = 0,
 			rarityN = 3,
-			flavor = PossessionData.FlavorEnum.Furnishing,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
+			flavor = PossessionData.FlavorEnum.Furnishing,			
 		},
 		{
 			idS           = "SpawnNecromancer",
@@ -1034,6 +1036,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 1,
 			rarityN = 1,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},				
 		{
@@ -1051,6 +1055,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 1,
 			rarityN = 1,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		{
@@ -1068,6 +1074,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 3,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},		
 		{
@@ -1085,6 +1093,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 1,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		{
@@ -1102,6 +1112,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 2,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		{
@@ -1119,6 +1131,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 4,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		{
@@ -1136,6 +1150,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 2,
+			healthPerLevelN = 5,  			
+			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
 		-------------------------------------------------------------------------------------------------------------------------

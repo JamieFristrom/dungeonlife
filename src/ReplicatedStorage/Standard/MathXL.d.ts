@@ -16,6 +16,8 @@ interface MathXL
     ApproxEqual( x1: number, x2: number, epsilon: number ): boolean
 
     Round( x: number ) : number
+
+    IsFinite( x: number ) : boolean
 }
 
 declare let mathXL: MathXL
