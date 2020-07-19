@@ -104,7 +104,7 @@ class Spawner {
 type SpawnPart = BasePart
 
 export namespace MobServer {
-    const mobGlobalCap = 50
+    const mobGlobalCap = 40
     const mobSpawnerCap = 5
     const mobSpawnPeriod = 10
     let mobPushApart = 10
