@@ -1,7 +1,9 @@
 
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 6/6/2020")
-warn("Fixed mana potions")
+warn("DUNGEON LIFE 7/19/2020")
+warn("Hero 15 second respawn delay")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")

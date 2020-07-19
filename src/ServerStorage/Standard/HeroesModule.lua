@@ -1,3 +1,9 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
+
 --[[
 	
 	Heroes
@@ -5,10 +11,8 @@
 	Functions to handle the PC, its stats, and its persistence
 	
 --]]
-print( script:GetFullName().." executed" )
 
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL			= require( game.ReplicatedStorage.Standard.MathXL )
 local InstanceXL    	= require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
@@ -16,7 +20,6 @@ local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 local BalanceData       = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local FlexibleTools     = require( game.ServerStorage.Standard.FlexibleToolsModule )
@@ -44,7 +47,7 @@ local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServe
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
-
+DebugXL:logD("Requires", "HeroesModule requires succesful")
 
 local PhysicsService = game.PhysicsService
 
@@ -268,13 +271,13 @@ end
 function GivePossession( player, myPCData, flexToolInst )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
-		myPCData:giveTool( flexToolInst )
+		myPCData:giveFlexTool( flexToolInst )
 		ToolCaches.updateToolCache( characterKey, myPCData )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
 		if gearCount < Inventory:GetCount( player, "GearSlots" ) then	
-			myPCData:giveTool( flexToolInst )
+			myPCData:giveFlexTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
 			ToolCaches.updateToolCache( characterKey, myPCData )
@@ -457,41 +460,23 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 		if targetHumanoid.Health <= 0 then
 --		--print( targetHumanoid:GetFullName().." killed" )
 			-- if we wanted more encapsulation we could have this be a function we registeredfixed
-			local xprewardObj = targetHumanoid.Parent:FindFirstChild("ExperienceReward")
-			if xprewardObj then
-				-- we don't want to encourage kill stealing
-				-- we don't want 2 players to level up quite as fast as 1, so the game stays tough-ish for them
-				-- so we don't want to give the same value to everybody
-				-- but we also don't want to split it down the middle
-				-- temp: killer gets half xp, rest divided amongst other players whether they touched bad guy or not;
-				-- this is so the low level people on the floor don't get crazy points
-				-- so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
+			local victimCharacter = targetHumanoid.Parent
+			local victimPlayer = game.Players:GetPlayerFromCharacter( victimCharacter )
+			local victimCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( victimCharacter )
+			if( victimCharacterRecord ) then  -- structures don't award xp
+				local xpValue = MonsterServer.calculateXPReward( victimCharacterRecord, not victimPlayer )
+				DebugXL:logD( "Gameplay", targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
+				HeroServer.awardKillExperienceWait( player, xpValue, targetHumanoid.Parent )
+				Heroes:SaveHeroesWait( player )				
+			end
+			-- consolation prize for victim:
+			if victimPlayer then
+				require( game.ServerStorage.MonstersModule ):AdjustBuildPoints( victimPlayer, 50 )
+				MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
 				
-				local startValue = xprewardObj.Value
-				local numPlayers = #game.Players:GetPlayers()
-
-				for _, partyPlayer in pairs( game.Teams.Heroes:GetPlayers() ) do
-					if partyPlayer == player then
-						Heroes:AwardExperienceWait( partyPlayer, startValue / 2, "Kill", "Monster" )
-					else
-						-- if the killer has left game or switched teams this could divide by 0					
-						Heroes:AwardExperienceWait( partyPlayer, startValue / 2 / math.max( 1, numPlayers - 1 ), "Kill:Shared", "Monster" )
-					end
-				end
---			--print( targetHumanoid:GetFullName().." experience awarded" )
-				
-				-- incentive to get killed for victim:
-				local victimPlayer = game.Players:GetPlayerFromCharacter( targetHumanoid.Parent )
-				if victimPlayer then
-					require( game.ServerStorage.MonstersModule ):AdjustBuildPoints( victimPlayer, 50 )
-					MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
-					
-					Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
-					Inventory:EarnRubies( victimPlayer, 2, "Death", "Monster" )
-				end
---			--print( targetHumanoid:GetFullName().." inventory adjusted" )
-
-			end  
+				Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
+				Inventory:EarnRubies( victimPlayer, 2, "Death", "Monster" )
+			end
 		end	
 	end
 end
@@ -519,75 +504,6 @@ function Heroes:DoFlexToolDamage( player, flexToolInst, targetHumanoid )
 end
 
 
-function Heroes:AwardExperienceWait( player, experienceBonusN, analyticsItemTypeS, analyticsItemIdS )
-	DebugXL:Assert( self == Heroes )
-	-- being careful because somehow a player ended up with nan experience
-	DebugXL:Assert( type( experienceBonusN )=="number" )
-	DebugXL:Assert( MathXL:IsFinite(experienceBonusN) )
-	if( MathXL:IsFinite(experienceBonusN) )then
-		if Inventory:BoostActive( player ) then
-			experienceBonusN = experienceBonusN * 2
-		end	
-		local inventory = Inventory:GetWait( player )
-		if inventory == nil then return end
-		local xpRate = 0.5  
-		experienceBonusN = experienceBonusN * xpRate
-		--print( "Awarding "..experienceBonusN.." xp to "..player.Name )	
-		local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
-		-- only if hero has chosen class yet
-		if pcData then			
-			
-			local pcDataStatsT = pcData.statsT
-			local lastLevel    = Hero:levelForExperience( pcDataStatsT.experienceN )
-					
-			-- being careful because somehow a player ended up with nan experience
-			GameAnalyticsServer.RecordResource( player, math.ceil( experienceBonusN ), "Source", "XP", analyticsItemTypeS, analyticsItemIdS )
-			local newExperienceN = pcDataStatsT.experienceN + math.ceil( experienceBonusN )
-			DebugXL:Assert( MathXL:IsFinite( newExperienceN ) )
-			if not MathXL:IsFinite( newExperienceN ) then return end
-			pcDataStatsT.experienceN = newExperienceN
-
-			--InstanceXL.new( "NumberValue", { Parent = player.Character, Name = "Experience", Value = pcData.statsT.experienceN }, true )	
-			local newLevel = Hero:levelForExperience( pcDataStatsT.experienceN )
-			if newLevel > lastLevel then
-				-- prevent it from going up more than one level at a time
-				-- there was no significant effect to do this extra work according to the analytics but I watched one guy
-				-- get to level 10 in one session which seems crazy
-				-- that was partly because I wasn't nerfed for some reason
-				newLevel = lastLevel + 1
-				-- once you level discard extra experience; slows things down and won't accidentally jump multiple levels this way
-				pcDataStatsT.experienceN = Hero:totalExperienceForLevel( newLevel )
-
-				if newLevel >= Hero.globalHeroLevelCap then
-					MessageServer.PostMessageByKey( player, "MaximumLevel", false )
-				end
-				
-				MessageServer.PostMessageByKey( player, "LevelUpHero", false )
-				if pcDataStatsT.totalTimeN then
-					local heroSlotsUsed = #savedPlayerCharactersT[ PCKey( player ) ].heroesA
-					if birthTickT[ player ] then
-						local heroTimeInvested = pcDataStatsT.totalTimeN + tick() - birthTickT[ player ]
-						GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUpHeroTimeSpent:%02d", newLevel ), heroTimeInvested, 1, "Level" )
-					end
-					local totalTimeInvested = Inventory:GetCount( player, "TimeInvested" )
-					GameAnalyticsServer.RecordDesignEvent( player, string.format( "LevelUp:%02d", newLevel ), totalTimeInvested, 1, "Level" )
-				end
-				if player.Character:FindFirstChild("Humanoid") then
-					player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
-					if player.Character:FindFirstChild("ManaValue") then
-						player.Character.ManaValue.Value = player.Character.MaxManaValue.Value
-					end
-	--				player.Character.Configurations.Level.Value = newLevel
-				end
-				player.leaderstats.Level.Value = newLevel
-				HeroServer.repopulateShopIfNecessary( player, pcData )
-				HeroServer.awardBadgesForHero( player, pcData )
-			end
-			
-			Heroes:SaveHeroesWait( player )
-		end
-	end
-end
 
 
 function Heroes:NewDungeonLevel( player, newDungeonLevelN )
@@ -647,7 +563,7 @@ local function PlayerAdded( player )
 		end
 	end
 
-	HeroStable:convertFromPersistent( savedPlayerCharacters )
+	HeroStable:convertFromPersistent( savedPlayerCharacters, player.Name )
 
 	
 	for _, hero in pairs( savedPlayerCharacters.heroesA ) do
@@ -914,7 +830,8 @@ end
 function HeroRemote.AwardExperienceWait( player )
 	if CheatUtilityXL:PlayerWhitelisted( player ) then
 		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		Heroes:AwardExperienceWait( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
+		HeroServer.awardExperienceWait( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
+		Heroes:SaveHeroesWait( player )
 	end
 end
 
@@ -977,9 +894,8 @@ function HeroRemote.SellItem( player, itemKey )
 				-- get data again because player might have reset while dialog was up
 				local pcData = Heroes:GetPCDataWait( player )				
 				local item = pcData:removeTool( itemKey )
-
-				HeroServer.adjustGold( player, pcData, item:getSellPrice(), "Sell", item.baseDataS )
 				if item then
+					HeroServer.adjustGold( player, pcData, item:getSellPrice(), "Sell", item.baseDataS )
 					if item.equippedB then
 						if player.Character then
 							FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )

@@ -1,7 +1,7 @@
 import { Workspace, Teams } from "@rbxts/services";
 
 import { HeroStatBlockI, CharacterClasses } from "./CharacterClasses"
-import { HeroI } from "./HeroClassesTS"
+import { HeroI, RawHeroDataI } from "./HeroClassesTS"
 import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
@@ -12,9 +12,11 @@ import { DebugXL } from "./DebugXLTS";
 
 let nerfTest = 100000  // test nerfing to this level
 
+type Character = Model
 
 export class Hero extends CharacterRecord implements HeroI
 {   
+    static readonly Heroes: Team = Teams.WaitForChild('Heroes')
     static readonly globalHeroLevelCap = 70
 
     static readonly xpForLevelMultiplier = 1.5
@@ -46,26 +48,25 @@ export class Hero extends CharacterRecord implements HeroI
         this.statsT = ObjectXL.clone( stats )
     }        
 
-    static convertFromPersistent( rawHeroData: HeroI, storageVersion: number )
+    static convertFromPersistent( rawHeroData: RawHeroDataI, storageVersion: number, playerNameDebug: string )
     {
         // at first I was thinking leave the persistent data in the old format when I created these item pools, but then it seemed
         // more likely there would be bugs if I was constantly converting back and forth
-        let hero = setmetatable( rawHeroData, Hero as LuaMetatable<HeroI> ) as Hero
-        if( !hero.gearPool )
-        {
+        if( !rawHeroData.gearPool ) {
             DebugXL.Assert( storageVersion < 4 )
-            DebugXL.Assert( hero.itemsT !== undefined )  
-            if( hero.itemsT )          
+            if( rawHeroData.itemsT )          
             {
-                hero.gearPool = new GearPool( hero.itemsT )
-                hero.itemsT = undefined
+                rawHeroData.gearPool = new GearPool( rawHeroData.itemsT )
+                rawHeroData.itemsT = undefined
+            }
+            else {
+                DebugXL.Error( playerNameDebug + " " + rawHeroData.idS + " had neither gearPool nor itemsT")
+                rawHeroData.gearPool = new GearPool({})
             }
         }
-        else
-        {
-            setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
-            hero.gearPool.forEach( item => FlexTool.objectify( item ) )
-        }
+        let hero = setmetatable( rawHeroData as HeroI, Hero as LuaMetatable<HeroI> ) as Hero
+        setmetatable( hero.gearPool, GearPool as LuaMetatable<GearPool> )
+        hero.gearPool.forEach( item => FlexTool.objectify( item ) )
 
         if( !hero.shopPool )
         {
@@ -301,4 +302,23 @@ export class Hero extends CharacterRecord implements HeroI
         let currentMaxHeroLevelNumberValue = Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!
         return currentMaxHeroLevelNumberValue.Value 
     }
+
+    static distanceToNearestHeroXZ( v3: Vector3 )
+    {        
+        const zeroY = new Vector3(1,0,1)
+        const validHeroPlayers = Hero.Heroes.GetPlayers().filter( (player)=>player.Character!==undefined && 
+            player.Character.FindFirstChild('PrimaryPart')!==undefined )
+        if( !validHeroPlayers.isEmpty())
+        {
+            const heroesAndRanges: [Character,number][] = validHeroPlayers.map( (player)=>
+                [player.Character!, player.Character!.PrimaryPart!.Position.sub( v3 ).mul(zeroY).Magnitude] as [Character,number] )  // magnitude of y-zeroed distances             
+            const heroAndRange = heroesAndRanges.reduce( (pairA, pairB)=>pairA[1] < pairB[1] ? pairA : pairB )
+            return heroAndRange[1]
+        }
+        else
+        {
+            return math.huge
+        }
+    }
 }
+

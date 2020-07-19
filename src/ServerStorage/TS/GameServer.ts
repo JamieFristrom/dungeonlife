@@ -1,12 +1,29 @@
-import { Players } from "@rbxts/services";
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI('Executed', script.GetFullName())
+
+import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
+
+import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
-import { InventoryServer } from "./InventoryServer";
-import { MessageServer } from "./MessageServer";
+
+import * as MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
+import * as MathXL from "ReplicatedStorage/Standard/MathXL"
+
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
+
+
+import { MessageServer } from "./MessageServer"
+import { PlayerServer, TeamStyleChoice } from "./PlayerServer"
+import { DungeonPlayer, PCStateRequest } from './DungeonPlayer'
+
 
 // -- it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
 // -- swarm on exit and entrance
 // -- constants
-// --local numHeroesNeededPerPlayer = 
+// --const numHeroesNeededPerPlayer = 
 // --{
 // --	[1] = 0,   
 // --	[2] = 1,   -- 1v1
@@ -30,8 +47,8 @@ import { MessageServer } from "./MessageServer";
 
 let numHeroesNeededPerPlayer: number[] = []
 
-numHeroesNeededPerPlayer[0] = 0;   
-numHeroesNeededPerPlayer[1] = 0;   
+numHeroesNeededPerPlayer[0] = 0;
+numHeroesNeededPerPlayer[1] = 0;
 numHeroesNeededPerPlayer[2] = 1;   // 1v1
 numHeroesNeededPerPlayer[3] = 1;   // 1v2
 numHeroesNeededPerPlayer[4] = 1;   // 1v3
@@ -48,7 +65,7 @@ numHeroesNeededPerPlayer[9] = 3;   // 3v6  // don't know!  //  I've capped the s
 numHeroesNeededPerPlayer[10] = 4;  // 4v6
 numHeroesNeededPerPlayer[11] = 4;  // 4v7
 numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
-	
+
 //	numHeroesNeededPerPlayer[13] = 4;  // 4v9  // calling optimal (a lot of monsters but also a lot of time spent as hero) but only if you don't take into account possible wide hero spreads
 //	numHeroesNeededPerPlayer[14] = 4;  // 4v10  
 //	numHeroesNeededPerPlayer[15] = 4;  // 4v11
@@ -56,27 +73,107 @@ numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
 //	numHeroesNeededPerPlayer[17] = 5;  // 5v12
 //	numHeroesNeededPerPlayer[18] = 5;  // 5v13
 
-export namespace GameServer
-{
-    export function numHeroesNeeded()
-    {
-     //   TableXL:FindAllInAWhere( game.Teams.Monsters:GetPlayers(), function( monsterPlayer ) return not Inventory:PlayerInTutorial( monsterPlayer ) end )
-        let nonNoobs = Players.GetPlayers().filter( ( player )=> !Inventory.PlayerInTutorial( player ) )
-        return numHeroesNeededPerPlayer[ nonNoobs.size() ]
+const HeroTeam = Teams.FindFirstChild<Team>('Heroes')!
+DebugXL.Assert(HeroTeam !== undefined)
+
+const signals = Workspace.FindFirstChild<Folder>('Signals')!
+DebugXL.Assert(signals !== undefined)
+
+const chooseHeroRE = signals.FindFirstChild<RemoteEvent>('ChooseHeroRE')!
+DebugXL.Assert(chooseHeroRE !== undefined)
+
+export namespace GameServer {
+    export function numHeroesNeeded() {
+        let nonNoobs = Players.GetPlayers().filter((player) => !Inventory.PlayerInTutorial(player))
+        return numHeroesNeededPerPlayer[nonNoobs.size()]
     }
 
-    export function askPlayersToRate()
-    {
+    export function askPlayersToRate() {
         let players = Players.GetPlayers()
-        for( let player of players )
-        {
-            if( Inventory.IsStarFeedbackDue( player ) )
-            {
-                let starFeedbackCount = Inventory.GetCount( player, 'StarFeedbackCount' )
+        for (let player of players) {
+            if (Inventory.IsStarFeedbackDue(player)) {
+                let starFeedbackCount = Inventory.GetCount(player, 'StarFeedbackCount')
                 let messageCode = starFeedbackCount > 0 ? '!StarFeedbackRepeat' : '!StarFeedback'
-                MessageServer.PostMessageByKey( player, messageCode, false, 0, true )
-                Inventory.SetNextStarFeedbackDueTime( player )
+                MessageServer.PostMessageByKey(player, messageCode, false, 0, true)
+                Inventory.SetNextStarFeedbackDueTime(player)
             }
+        }
+    }
+
+    export function chooseSpawn(player: Player, monsterSpawns: BasePart[]) {
+        let spawnPart = undefined
+        const customSpawns = CollectionService.GetTagged("CustomSpawn")
+        const monsterSpawnN = monsterSpawns.size()
+        if (player.Team === HeroTeam || monsterSpawnN===0 ) {
+            spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+            CharacterI.SetCharacterClass(player, "DungeonLord")
+            //spawnPart = workspace.StaticEnvironment.HeroSpawn
+        }
+        else {
+            if (PlayerServer.getTeamStyleChoice(player) === TeamStyleChoice.DungeonLord ||
+                (Inventory.PlayerInTutorial(player) && Inventory.GetCount(player, "TimeInvested") <= 450)) { // once they've been playing for 10 minutes just give up on trying to tutorialize them
+                // while heroes are prepping start off as "DungeonLord"; invulnerable monster that just builds
+                spawnPart = monsterSpawns[MathXL.RandomInteger(0, monsterSpawnN-1)]
+                CharacterI.SetCharacterClass(player, "DungeonLord")
+            }
+            else {
+                // bosses take priority
+                const closeSpawns: BasePart[] = []
+                const distantSpawns: BasePart[] = []
+                for (let i = 0; i < monsterSpawnN; i++) {
+                    const spawner = monsterSpawns[i]
+                    if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
+                        DebugXL.logV('GameManagement', "Found a boss spawn for " + player.Name)
+                        if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {
+                            DebugXL.logV('GameManagement', "Unoccupied")
+                            spawnPart = spawner
+                            break
+                        }
+                    }
+                    else if (Hero.distanceToNearestHeroXZ(spawner.Position) > MapTileData.tileWidthN * 2.5) {
+                        distantSpawns.push(spawner)
+                    }
+                    else {
+                        DebugXL.logV('GameManagement', "Spawner at " + tostring(spawner.Position) + " too close to hero")
+                        closeSpawns.push(spawner)
+                    }
+                }
+                if (!spawnPart) {
+                    DebugXL.logV('GameManagement', "Acceptable spawn list for" + player.Name)
+                    //DebugXL.Dump( acceptableSpawns )
+                    DebugXL.logV('GameManagement', "Fallback spawn list for" + player.Name)
+                    //DebugXL.Dump( monsterSpawns )
+                    if (distantSpawns.size() > 0) {
+                        spawnPart = distantSpawns[MathXL.RandomInteger(0, distantSpawns.size()-1)]
+                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+                    }
+                    else if( closeSpawns.size()>0) {
+                        // couldn't find a spot far away from us, give up and spawn close
+                        spawnPart = closeSpawns[MathXL.RandomInteger(0, closeSpawns.size()-1)]
+                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+                    }
+                    else {
+                        // apparently there's only one already used boss spawn on this level; fall back to hero spawner
+                        spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+                        CharacterI.SetCharacterClass(player, "DungeonLord")
+                    }
+                }
+            }
+        }
+    }
+
+    export function broadcastRespawnCountdown( player: Player, dungeonPlayerData: DungeonPlayer ) {
+        const countdownObj = player.FindFirstChild<NumberValue>("HeroRespawnCountdown")
+        DebugXL.Assert( countdownObj !== undefined )
+        if( countdownObj ) {
+            countdownObj.Value = 15 - ( time() - dungeonPlayerData.heroKickoffTime )
+        }
+    }
+
+    export function waitForRespawn( player: Player, dungeonPlayerData: DungeonPlayer ) {
+        while( dungeonPlayerData.pcStateRequest !== PCStateRequest.NeedsRespawn ) {
+            wait(0.1)
+            broadcastRespawnCountdown( player, dungeonPlayerData )
         }
     }
 }

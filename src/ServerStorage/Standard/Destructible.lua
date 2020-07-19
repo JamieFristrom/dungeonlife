@@ -1,18 +1,18 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 --
--- Destructible structure
+--  Destructible structure
 --
-local DebugXL         = require( game.ReplicatedStorage.Standard.DebugXL )
+local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI( 'Executed', script.Name )
+
 local MathXL          = require( game.ReplicatedStorage.Standard.MathXL )
-
-local HeroUtility     = require( game.ReplicatedStorage.Standard.HeroUtility )  
-local PossessionData  = require( game.ReplicatedStorage.PossessionData )
-
-local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
-local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 
 local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).DestructibleServer
 local DungeonDeck = require( game.ServerStorage.TS.DungeonDeck ).DungeonDeck
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
+local LootServer = require( game.ServerStorage.TS.LootServer ).LootServer
 
 local Destructible = {}
 
@@ -40,7 +40,7 @@ function Destructible.new( destructibleInstance )
 	DebugXL:logD('Gameplay','Destructible.new called for '..destructibleInstance:GetFullName())
 	local timeLength = 1
 	
-	game.CollectionService:AddTag( destructibleInstance, "Character" )
+	game.CollectionService:AddTag( destructibleInstance, "CharacterTag" )
 	game.CollectionService:AddTag( destructibleInstance, "Destructible" )
 	
 	local humanoid = destructibleInstance:FindFirstChild("Humanoid")
@@ -53,8 +53,11 @@ function Destructible.new( destructibleInstance )
 		DestructibleServer.calibrateHealth( destructibleInstance, averageHeroLocalLevel, numHeroes, dungeonDepth )
 	
 		destructibleInstance.Humanoid.Died:Connect( function()
-			DebugXL:logI('Gameplay', destructibleInstance:GetFullName()..' died')		
+			LootServer.destructibleDrop(destructibleInstance)
+
+			DebugXL:logI('Gameplay', destructibleInstance:GetFullName()..' died')
 			destructibleInstance.PrimaryPart.Destroyed:Play()
+			
 			Destructible:FlyApart( destructibleInstance, timeLength )
 			wait( timeLength )
 			destructibleInstance.Parent = nil

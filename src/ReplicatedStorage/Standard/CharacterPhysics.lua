@@ -2,7 +2,8 @@ local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceDa
 
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local CharacterUtility = require( game.ReplicatedStorage.Standard.CharacterUtility )
-local WeaponUtility = require( game.ReplicatedStorage.Standard.WeaponUtility )
+
+local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
 local CharacterPhysics = {}
 
@@ -25,9 +26,9 @@ function CharacterPhysics:CalculateWalkSpeed( character, pcData )
 	if player then
 		-- from having recently fired a weapon that has a slow-walk-cooldown 
 		-- (it used to just be that holding the weapon would trigger the cooldown 
-		if WeaponUtility:IsCoolingDown( player ) then
+		if GeneralWeaponUtility.isCoolingDown( character ) then
 			--print("cooldown slow "..player.Name )
-			local toolWalkSpeedMul = WeaponUtility:LastWeaponWalkSpeedMul( player )
+			local toolWalkSpeedMul = GeneralWeaponUtility.lastWeaponWalkSpeedMul( character )
 			if toolWalkSpeedMul then
 				equipWalkSpeedMul = equipWalkSpeedMul * toolWalkSpeedMul 
 			else

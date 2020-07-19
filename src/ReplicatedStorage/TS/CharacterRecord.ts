@@ -1,14 +1,26 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-import { FlexTool, GearDefinition } from 'ReplicatedStorage/TS/FlexToolTS'
+DebugXL.logI('Executed', script.GetFullName())
+
+import { FlexTool, GearDefinition, HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from './ToolDataTS';
 
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
+
 import { CharacterClasses } from './CharacterClasses';
-import { Players, ServerStorage, Teams } from '@rbxts/services';
+import { SkinTypeEnum } from "./SkinTypes"
+import { Players, Teams } from '@rbxts/services';
 
 // we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
 export type CharacterKey = number
+
+type Character = Model
+
+// I like calling it a PossessionKey rather than an item key or a gear key because it implies that it only makes sense for a specific owner
+type PossessionKey = string
 
 function strcmp( a: string, b: string )
 {
@@ -18,6 +30,7 @@ function strcmp( a: string, b: string )
 // Player Character Interface
 export interface CharacterRecordI
 {
+    gearPool: GearPool
     idS: string
     getImageId() : string
     getWalkSpeed() : number
@@ -25,6 +38,7 @@ export interface CharacterRecordI
     getLocalLevel() : number
     getActualLevel() : number
     getTeam() : Team
+    removeTool( itemKey: string ) : void
 }
 
 
@@ -42,9 +56,9 @@ export class GearPool
         }
     }
 
-    get( key: string ) { return this.gear.get( key ) }
-    set( key: string, item: FlexTool ) { this.gear.set( key, item ) }
-    has( key: string ) { return this.gear.get( key ) ? true: false }
+    get( key: PossessionKey ) { return this.gear.get( key ) }
+    set( key: PossessionKey, item: FlexTool ) { this.gear.set( key, item ) }
+    has( key: PossessionKey ) { return this.gear.get( key ) ? true: false }
 
     clear() { this.gear.clear() }
 
@@ -86,7 +100,7 @@ export class GearPool
         return [ foundItem, foundKey ]
     }
 
-    assignToSlot( itemKey: string, slot: number )
+    assignToSlot( possesesionKey: string, slot: HotbarSlot )
     {
         // clear previous item from slot
         let currentItemInSlot = this.getFromSlot( slot )[0]
@@ -95,7 +109,7 @@ export class GearPool
             currentItemInSlot.slotN = undefined
         }
 
-        let item = this.get( itemKey )
+        let item = this.get( possesesionKey )
         if( item )
         {
             item.slotN = slot
@@ -235,8 +249,6 @@ export abstract class CharacterRecord implements CharacterRecordI
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
     private toolKeyServerN = 1
 
-    private static mobToolCache = ServerStorage.FindFirstChild<Folder>('MobToolCache')
-
     constructor(
         public idS: string,
         //public readableNameS: string,
@@ -301,13 +313,13 @@ export abstract class CharacterRecord implements CharacterRecordI
         return sum
     }
 
-    getTool( itemKey: string )
+    getFlexTool( itemKey: string )
     {
         DebugXL.Assert( itemKey.sub( 0, 3 ) === 'item' )
         return this.gearPool.get( itemKey )
     }
 
-    giveTool( flexTool: FlexTool )
+    giveFlexTool( flexTool: FlexTool )
     {        
         let key = 'item' + this.toolKeyServerN
         DebugXL.Assert( !this.gearPool.has( key ) )
@@ -338,8 +350,7 @@ export abstract class CharacterRecord implements CharacterRecordI
     //  if we wanted to make them independent between different players we'd need one master server or to use GUID's. 
     //  We *could* have another unique id per server, but it seems unnecessary as long as we have some way of identifying tools
     //  uniquely.
-    //  We *do* have a unique id per roblox tool instance, the toolId, in FlexibleToolsServer
-    getPossessionKeyFromSlot( slot: number )
+    getPossessionKeyFromSlot( slot: HotbarSlot )
     {
         let _key: string | undefined
         this.gearPool.forEach( function( flexTool: FlexTool, key: string )
@@ -353,7 +364,7 @@ export abstract class CharacterRecord implements CharacterRecordI
         return _key
     }
 
-    getSlotFromPossessionKey( possessionKey: string )
+    getSlotFromPossessionKey( possessionKey: PossessionKey )
     {
         let flexTool = this.gearPool.get( possessionKey )
         if( flexTool )
@@ -362,7 +373,7 @@ export abstract class CharacterRecord implements CharacterRecordI
         }
     }
 
-    static getToolPossessionKey( tool: Tool )
+    static getToolPossessionKey( tool: Tool ) : PossessionKey | undefined
     {
         let possessionKeyValue = tool.FindFirstChild('PossessionKey') as StringValue
         DebugXL.Assert( possessionKeyValue !== undefined )
@@ -375,7 +386,9 @@ export abstract class CharacterRecord implements CharacterRecordI
 
     // this is awkward because we want to be able to call it from the client or the server, it might be in a character's hand, a player's backpack,
     // or a mob's tool cache. so far characterKeys are server-side only, though that will probably change
-    static getToolInstanceFromPossessionKey( character: Model, possessionKey: string )
+    // It may seem redundant that we have both character & characterRecord since you can derive one from the other but this
+    // is more Demeter principle and it means we're not dependent on PlayerServer (which is already dependent on us)
+    static getToolInstanceFromPossessionKey( character: Character, characterRecord: CharacterRecord, possessionKey: PossessionKey )
     {
         DebugXL.Assert( character !== undefined )        
         let tool: Tool | undefined = undefined
@@ -400,13 +413,13 @@ export abstract class CharacterRecord implements CharacterRecordI
                 }
                 else
                 {
-                    // if player is undefined it's owned by a CPU player which has its own set of unique ids        
-                    let correctInstance = CharacterRecord.mobToolCache!.GetChildren().find( ( inst )=> 
-                    {
-                        DebugXL.Assert( inst.IsA('Tool') )
-                        return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey( inst )===possessionKey 
-                    } )
-                    tool = correctInstance as Tool
+                    // mobs don't keep their tools in a cache; that would be a premature optimization
+                    // players need them in the cache so they can rapidly equip on the client without lag
+                    const flexTool = characterRecord.gearPool.get( possessionKey )
+                    DebugXL.Assert( flexTool !== undefined )
+                    if( flexTool ) {
+                        tool = flexTool.createToolInstance( new Map<SkinTypeEnum, string>(), possessionKey )
+                    }
                 }
             }
         }
@@ -421,7 +434,7 @@ export abstract class CharacterRecord implements CharacterRecordI
             let equipIdx = MathXL.RandomInteger( 0, equipPool.size()-1 )
             let equip = equipPool[ equipIdx ]
             let flexTool = new FlexTool( equip.idS, 0, [], undefined, false, false, false, hideAccessoriesB )
-            this.giveTool( flexTool )
+            this.giveFlexTool( flexTool )
         }
     }
 

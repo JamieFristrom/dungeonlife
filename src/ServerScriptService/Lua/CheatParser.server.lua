@@ -1,8 +1,9 @@
---
--- CheatParser
---
--- Part of Jamie's new XL libraries
---
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI( 'Executed', script.Name )
+
 local CheatUtilityXL  = require( game.ReplicatedStorage.TS.CheatUtility )
 
 local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
@@ -11,7 +12,7 @@ local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )
 
 local GameManagement  = require( game.ServerStorage.GameManagementModule )
 local Monsters        = require( game.ServerStorage.MonstersModule )
-local Loot            = require( game.ServerStorage.LootModule )
+local LootServer = require( game.ServerStorage.TS.LootServer ).LootServer
 
 local AdminCommands = require( game.ServerStorage.TS.AdminCommands ).AdminCommands
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
@@ -21,7 +22,7 @@ local CheatParser = {}
 function CheatParser:DropLoot( player )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if characterKey then
-		Loot:MonsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", player, Vector3.new( 0, 0, 0 ) )
+		LootServer.monsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", true, player )
 	end
 end
 

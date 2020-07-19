@@ -16,9 +16,10 @@ local WeaponServer = {}
 function WeaponServer:CheckRequirements( tool, player )
 	-- although this code should work as-is with monsters, there is some bug in it that I wasn't able to track down
 	-- so, since monsters should always be able to use their tools *anyway*, taking the easy way out: 
+	if player==nil then return true end
 	if player.Team == game.Teams.Monsters then return true end
 	
-	local flexToolInst     = FlexibleTools:GetToolInst( tool )
+	local flexToolInst     = FlexibleTools:GetFlexToolFromInstance( tool )
 	local pcData = Heroes:GetPCDataWait( player )
 	if HeroUtility:CanUseGear( pcData, flexToolInst ) then return true end
 	local humanoid = player.Character:FindFirstChild("Humanoid")

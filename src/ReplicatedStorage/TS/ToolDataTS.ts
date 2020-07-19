@@ -81,7 +81,6 @@ export namespace ToolData
         effectBonusPerLevelN?: number
         descriptionArgs?: ( me:ToolDatumI, level:number ) => (number | string)[]
         durationFunc?: ( me:ToolDatumI, level:number ) => number
-
     }
 
     export let dataA: ToolDatumI[] =
@@ -294,7 +293,7 @@ export namespace ToolData
             priceMulN: 1,
             dropLikelihoodN : 1,						
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2486800832&width=420&height=420&format=png",
-            },		
+        },		
         {
             idS : "HelmetHalf",
             minLevelN : 2,
@@ -483,6 +482,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 2,   
             critChanceN    : .06,  
+            rangeN: 60,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -506,6 +506,7 @@ export namespace ToolData
             // 10-16 was ok when skilled players where using the exploit, so it needs to be higher now, but 14-20 is too strong, almost as strong as bolt
             cooldownN      : 0.8,   
             critChanceN    : .05,  
+            rangeN: 70,
             monsterStartGearBiasN : 2,
             dropLikelihoodN : 2,
             walkSpeedMulN   : 0.6,
@@ -525,6 +526,7 @@ export namespace ToolData
             skinType       : SkinTypeEnum.Bomb,
             baseToolS      : "Bomb",
             damageNs       : [ 14, 18 ],  // 20 - 32 would mean a first level gremlin could kill a first level hero in 3 hits; also made less swingy
+            rangeN: 40,
             blastRadiusN   : 40,
             cooldownN      : 1,
             critChanceN    : 0,  // explosion code doesn't crit anyway
@@ -534,9 +536,7 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 0.2,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2347448422&width=420&height=420&format=png",
-
-            
-            }, // 2 hits to kill z		
+        }, // 2 hits to kill z		
         // Beams require less skill; immediately hits and does splash damage - 
         // Death ray damage used to be 24 / 36 - OP, you could create an unstoppable defense
         //		BeamWeapon :  {
@@ -586,8 +586,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "rbxassetid://124987047",
-
-
         },
         {
             idS            : "Broadsword",
@@ -609,8 +607,7 @@ export namespace ToolData
             walkSpeedMulN   : 1,
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
-            imageId : "rbxassetid://11440361",
-	
+            imageId : "rbxassetid://11440361",	
         },	
         {
             idS            : "Greatsword",
@@ -632,8 +629,7 @@ export namespace ToolData
             walkSpeedMulN   : 1,
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
-            imageId : "rbxassetid://2319980778",
-	
+            imageId : "rbxassetid://2319980778",	
         },			
         {
             idS            : "Staff",  // staves suck, you only use them if you have no other option, as designed
@@ -664,8 +660,7 @@ export namespace ToolData
             walkSpeedMulN   : 1,
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
-            imageId : "rbxassetid://49367564",
-	
+            imageId : "rbxassetid://49367564",	
         },					
         // 'one handed' axe
         {
@@ -689,7 +684,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "https://www.roblox.com/asset-thumbnail/image?assetId=2266973230&width=420&height=420&format=png",
-
         },
         // 'two handed' axe
         {
@@ -713,7 +707,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://12768177",
-
         },		
         {   
             idS             : "Club", 
@@ -736,7 +729,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.4,
             imageId : "http://www.roblox.com/asset/?id=12215459",
-
         },			
         {   
             idS             : "Mace", 
@@ -759,7 +751,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "http://www.roblox.com/asset/?id=18409033",  // tarnished mace thumbnail
-
         },	
         // aka scythes, Axes are good for threshing creeps
         //		TwoHandedAxe :            { 
@@ -820,6 +811,7 @@ export namespace ToolData
             baseToolS : "MagicBolt",
             damageNs       : [ 11, 18 ],
             cooldownN: 1,
+            rangeN: 40,
             critChanceN: 0.04,
 //            effectStrengthN : 20,
 //            effectBonusPerLevelN : 2,
@@ -843,6 +835,7 @@ export namespace ToolData
             baseToolS : "MagicBolt",
             damageNs       : [ 11, 18 ],  // balanced against longbow
             cooldownN: 1,
+            rangeN: 40,
             critChanceN: 0.04,
             walkSpeedMulN   : 0.6,
             jumpPowerMulN: 1,  
@@ -870,6 +863,7 @@ export namespace ToolData
             critChanceN: 0.04,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,
+            rangeN: 90,
             manaCostN : 7,                       // 10 too high, 5 a little too low
             manaCostPerLevelN : 1.5, 
             monsterStartGearBiasN : 1,
@@ -878,7 +872,6 @@ export namespace ToolData
             jumpPowerMulN: 1,  
             priceMulN: 1.5,
             imageId : "rbxassetid://1495371626",
-
         },
         {
             idS             : "MagicBarrier", 
@@ -895,6 +888,7 @@ export namespace ToolData
             skinType  : SkinTypeEnum.MagicBarrier,			
             baseToolS : "MagicBarrier",
             damageNs       :[ 30, 40 ],   
+            rangeN: 20,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,		 
             //effectDurationN : 4, 
@@ -911,7 +905,6 @@ export namespace ToolData
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
             imageId : "rbxassetid://1498812207",
-
         },
         {
             idS             : "NecroBarrier", 
@@ -928,6 +921,7 @@ export namespace ToolData
             skinType  : SkinTypeEnum.MagicBarrier,			
             baseToolS : "MagicBarrier",
             damageNs       :[ 30, 40 ],
+            rangeN: 20,
         //			effectStrengthN : 20,
         //			effectBonusPerLevelN : 2,		 
             effectDurationN : 4, 
@@ -944,7 +938,6 @@ export namespace ToolData
             durationFunc : ( me, level ) => 1 + 8 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
 
             imageId : "rbxassetid://1498812207",
-
         },        
         //	
         //		Storm : {
@@ -983,7 +976,7 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 7 + 7 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level), me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591784"
+            imageId : "rbxassetid://2908591784",
         },
         {   
             idS            : "HasteWisp",		
@@ -1007,7 +1000,7 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level)*100, me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591670"
+            imageId : "rbxassetid://2908591670",
         },
         {   
             idS            : "CurseWisp",		
@@ -1031,7 +1024,7 @@ export namespace ToolData
             rangeN: 15,  // someday we might want to make that flexible but nonlinear stuff is always hell
             durationFunc : ( me, level ) => 10 + 10 * ( 1 - ( 1 / ( level / 5 + 1 ) ) ),  // level 1: 2.3, level 2: 3.3, level 3: 4, level 4: 4.5, level 30: 7.8
             descriptionArgs : ( me, level ) => [ (me.effectStrengthN! + me.effectBonusPerLevelN! * level)*100, me.durationFunc!( me, level ) ],
-            imageId : "rbxassetid://2908591476"
+            imageId : "rbxassetid://2908591476",
         },
         // {   
         //     idS            : "MagicHealing",		
@@ -1158,10 +1151,9 @@ export namespace ToolData
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744360",
-
         },
         {
-            idS             : "Mana",             // one use
+            idS: "Mana",             // one use
             // 11/29: increased from 24/6 because we increased mana / arcane from 4 to 6
             effectStrengthN : 36, 
             effectBonusPerLevelN : 9,   // it's character level, not item level with potions 
@@ -1180,7 +1172,6 @@ export namespace ToolData
             priceMulN: 1,
             descriptionArgs : ( me, level ) => [ me.effectStrengthN! + me.effectBonusPerLevelN! * level ],
             imageId : "rbxassetid://1509744355",
-
         },
     ]
 

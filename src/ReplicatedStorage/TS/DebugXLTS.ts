@@ -1,22 +1,22 @@
-/*
---
---  DebugXL
---
---  Debug eXtended Library. It excels. It's extra large.
---
---  Additional debug functions to augment roblox
---
---  Jamie_Fristrom @happionlabs
 
---  What should my new naming convention be with these typescript files?
---  I don't want to name them the exact same thing as their lua counterparts which often still exist
---  Even though they're in their own directory
---  So I can put TS on the end, which seems redundant here but isn't on the Roblox side
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+/*
+
+  DebugXL
+
+  Debug eXtended Library. It excels. It's extra large.
+
+  Additional debug functions to augment roblox
+
+  Jamie_Fristrom @happionlabs
 
 */
+
+import { RunService } from "@rbxts/services"
+
 // borrowing from Android
 export enum LogLevel {
-    Assert,
     Error,
     Warning,
     Info,
@@ -25,18 +25,29 @@ export enum LogLevel {
 }
 
 class DebugXLC {
-    static readonly logLevelPrefixes: string[] = ['A', 'E', 'W', 'I', 'D', 'V']
+    static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Warning
+    private defaultLogLevel = LogLevel.Info
 
-    private logLevelForTag = new Map<string, LogLevel>()
+    private logLevelForTag = new Map<string, LogLevel>([
+        // ['Combat',LogLevel.Debug],
+        // ["Gameplay", LogLevel.Verbose],
+        // ['Mobs',LogLevel.Info],
+        // ['Executed',LogLevel.Info],
+        // ['Requires',LogLevel.Verbose],
+        // ['UI', LogLevel.Info],
+        // ['GameManagement',LogLevel.Verbose]
+    ])
+
+    private testErrorCatcher?: (message: string)=>void
 
     Error(message: string) {
         let callstackS = debug.traceback()
-        if (false) //--game["Run Service"]:IsStudio() )
-            error(message)
-        else
+        if( this.testErrorCatcher ) {
+            this.testErrorCatcher( message )
+        } else {
             spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
+        }
     }
 
     Assert(conditionB: boolean) {
@@ -78,22 +89,19 @@ class DebugXLC {
     }
 
     log(logLevel: LogLevel, tag: string, message: string) {
+        const cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') + (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
         if (!message) {
-            error(`E/${tag}: MISSING MESSAGE`)
+            error(`${cliSrvPrefix}-E/${tag}: MISSING MESSAGE`)
         }
         else if (logLevel <= this.getLogLevelForTag(tag)) {
             let prefix = DebugXLC.logLevelPrefixes[logLevel]
             if (logLevel <= LogLevel.Error)
-                error(`${prefix}/${tag}: ${message}`)
+                error(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
             else if (logLevel <= LogLevel.Warning)
-                warn(`${prefix}/${tag}: ${message}`)
+                warn(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
             else
-                print(`${prefix}/${tag}: ${message}`)
+                print(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
         }
-    }
-
-    logA(tag: string, message: string) {
-        this.log(LogLevel.Assert, tag, message)
     }
 
     logE(tag: string, message: string) {
@@ -119,6 +127,27 @@ class DebugXLC {
     setDefaultLogLevel(logLevel: LogLevel) {
         this.defaultLogLevel = logLevel
     }
+
+    stringifyInstance(inst: Instance | undefined) {
+        return inst ? inst.Name : '(nil)'
+    }
+
+    stringifyInstanceArray(instArray: Instance[]) {
+        return instArray.isEmpty() ? '[]' :
+            '[' + instArray.map((inst) => this.stringifyInstance(inst)).reduce((a, b) => a + ',' + b) + ']'
+    }
+
+    catchErrors( errorCatcher: (message:string)=>void ) { 
+        DebugXL.Assert( !this.testErrorCatcher )
+        this.testErrorCatcher = errorCatcher 
+    }
+
+    stopCatchingErrors() {
+        DebugXL.Assert( this.testErrorCatcher !== undefined )
+        this.testErrorCatcher = undefined
+    }
 }
+
+
 
 export let DebugXL = new DebugXLC()

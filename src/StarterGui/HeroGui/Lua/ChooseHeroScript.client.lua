@@ -1,4 +1,8 @@
-print( script:GetFullName().." executed" )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+DebugXL:logI('Executed', script:GetFullName())
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 --print( "ChooseHeroScript: CharacterClientI required" )
@@ -42,6 +46,7 @@ local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 
 local function ChooseHero( slotN )
+	DebugXL:logD("GameManagement","Made hero choice "..slotN..": hiding menu")
 	workspace.Signals.HeroesRF:InvokeServer( "ChooseHero", slotN )
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.Visible = false
@@ -53,6 +58,7 @@ end
 
 local function CreateNewHero( slotN )
 	--workspace.Signals.HeroesRF:InvokeServer( "NewHero" )
+	DebugXL:logI("GameManagement","ChooseHeroScript CreateNewHero")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.ChooseClass.Visible = true
 end
@@ -111,9 +117,9 @@ local function DisplayChoices()
 				true,
 				"Yes",
 				"No" )
-			if result[1]=="Yes" then
+			if result[1]=="Yes" then				
 				chooseHeroFrame.Visible = false			
-				print("Invoking DeleteHero for player "..game.Players.LocalPlayer:GetFullName())
+				DebugXL:logI("GameManagement","Invoking DeleteHero for player "..game.Players.LocalPlayer:GetFullName())
 				savedPlayerCharacters = workspace.Signals.HeroesRF:InvokeServer( "DeleteHero", slotN )
 				DisplayChoices()
 				chooseHeroFrame.Visible = true			
@@ -205,12 +211,13 @@ end)
 local ChooseHeroRemote = {}
 
 function ChooseHeroRemote:ChooseHero()
-	print("ChooseHeroRemote:ChooseHero")
+	DebugXL:logI("GameManagement","ChooseHeroRemote:ChooseHero")
 	Display()
 end
 
 
 function ChooseHeroRemote:DefaultHeroChosen()
+	DebugXL:logI("GameManagement","ChooseHeroRemote:DefaultHeroChosen")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.ChooseClass.Visible = false
 	heroGuiFrame.Visible = false	
@@ -218,9 +225,9 @@ end
 
 
 function ChooseHeroRemote:PrepareHero()
+	DebugXL:logI("GameManagement","ChooseHeroRemote:PrepareHero")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.Visible = false
-	playerGui.CharacterSheetGui.CharacterSheet.Visible = true
 	playerGui.CharacterSheetGui.CharacterSheet.Visible = true
 	playerGui.PossessionsGui.PossessionsFrame.Visible = true
 end

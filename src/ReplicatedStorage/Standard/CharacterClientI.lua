@@ -13,26 +13,26 @@ local CharacterClientI = {}
 CharacterClientI.maxSlots = 4
 
 -- do we want to check force field here?
-function CharacterClientI:ValidTarget( attackingCharacter, targetCharacter )
+function CharacterClientI:ValidTarget( attackingTeam, targetCharacter )
+	DebugXL:Assert( attackingTeam:IsA('Team') )
 	DebugXL:Assert( self == CharacterClientI )
 	if Places.getCurrentPlace() == Places.places.Underhaven then return false end	
 --	--print( "Checking "..targetCharacter.Name.." target validity" )
-	local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
 	local targetPlayer    = game.Players:GetPlayerFromCharacter( targetCharacter )
-	if not attackingPlayer then return true end
 	if not targetPlayer then  -- must be some dungeon furnishing, heroes can attack but monsters can't
-		return attackingPlayer.Team == game.Teams.Heroes
+		return attackingTeam == game.Teams.Heroes
 	else
 --		--print( "ValidTarget? Attacker "..attackingCharacter.Name.." team "..tostring( attackingPlayer.Team ).." defender "..targetCharacter.Name.." team "..tostring( targetPlayer.Team ) )
-		return attackingPlayer.Team ~= targetPlayer.Team
+		return attackingTeam ~= targetPlayer.Team
 	end	
 end
 
 
-function CharacterClientI:GetValidTargets( attackingCharacter )
+function CharacterClientI:GetValidTargets( attackingTeam )
+	DebugXL:Assert( attackingTeam:IsA('Team') )
 	DebugXL:Assert( self == CharacterClientI )
-	return TableXL:FindAllInAWhere( game.CollectionService:GetTagged("Character"),
-		function( character ) return CharacterClientI:ValidTarget( attackingCharacter, character ) end )
+	return TableXL:FindAllInAWhere( game.CollectionService:GetTagged("CharacterTag"),
+		function( character ) return CharacterClientI:ValidTarget( attackingTeam, character ) end )
 end
 
 
