@@ -15,14 +15,12 @@ game.Players.CharacterAutoLoads = false
 
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
-local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 DebugXL:logD('GameManagement',  'GameManagementModule: utilities requires succesful' )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local FloorData         = require( game.ReplicatedStorage.FloorData )
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
-local MapTileData       = require( game.ReplicatedStorage.MapTileDataModule )
 local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local RankForStars      = require( game.ReplicatedStorage.RankForStars )
@@ -67,6 +65,10 @@ local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local TeamStyleChoice = require( game.ServerStorage.TS.PlayerServer ).TeamStyleChoice
+
+-- is there a one-line way to require a bunch of objects from a single file?
+local DungeonPlayerRequire = require( game.ServerStorage.TS.DungeonPlayer )
+local DungeonPlayer, PCState, PCStateRequest = DungeonPlayerRequire.DungeonPlayer, DungeonPlayerRequire.PCState, DungeonPlayerRequire.PCStateRequest
 DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.TS requires succesful' )
 
 DebugXL:logD('GameManagement', 'GameManagementModule processing')
@@ -93,23 +95,6 @@ local LevelResultEnum =
 	BeatSuperboss  = "BeatSuperboss"
 }
 
--- it's not like me to duplicate data by using this state information to try and decide if a player's character
--- is there or not, but there's too much stuff to track; we might have called a function that's building the
--- character but the character might not be around yet. Same on the way out.
-local PCState =
-{
-	Limbo              = "Limbo",
-	Respawning         = "Respawning",
-	Exists             = "Exists",	
-	-- I don't think we need 'Destroying' - we can count that as an existing for all intents and purposes until actually destroyed and in limbo
-}
-
-local PCStateRequest =
-{
-	None               = "None",
-	NeedsRespawn       = "NeedsRespawn",
-	NeedsDestruction   = "NeedsDestruction"	
-}
 
 local gameStateStart = tick()
 
@@ -164,24 +149,7 @@ GameManagement.levelStartTime = time()
 --end )
 
 
--- dungeon player class
-local DungeonPlayer = {
-	
-}
 
-function DungeonPlayer.new( player )
-	return 
-	{ 
-		pcState = PCState.Limbo, 
-		addingCompleteB = false,
-		playerMonitoredB = false, 
-		playerRemovedB = false,
-		lastHeroDeathTime = time(), 
-		guiLoadedB = false,
-		chooseHeroREAckedB = false,
-		signalledReadyB = false
-	}
-end
 
 
 function DungeonPlayer:Get( player )
@@ -377,26 +345,10 @@ end
 
 
 
-function ChooseHeroWait( player )
+function KickoffChooseHero( player )
 	CharacterI:SetCharacterClass( player, "" )
 	PlayerServer.publishLevel( player, 1, 1 )
-
-	-- or you're doing hero express
-	while true do -- no need for time limit anymore workspace.GameManagement.PreparationCountdown.Value > 0 or player.HeroExpressPreparationCountdown.Value > 0 do				
-		if CharacterClientI:GetCharacterClass( player ) ~= "" then
-			-- we made a decision
-			--player.HeroChoiceTimeLeft.Value = 0
-			return
-		end
-		--player:WaitForChild("HeroChoiceTimeLeft").Value = math.ceil( countdown - ( time() - startCountdownTick ) )
-		wait( 0.25 )
-		player.HeroExpressPreparationCountdown.Value = math.max( player.HeroExpressPreparationCountdown.Value - 0.25, 0 ) 
-	end
-	-- you don't get to prepare if you waited for default
-	player.HeroExpressPreparationCountdown.Value = 0
-	workspace.Signals.ChooseHeroRE:FireClient( player, "DefaultHeroChosen" )
---	player.HeroChoiceTimeLeft.Value = 0
-	Heroes:ChooseDefaultHeroWait( player )
+	DungeonPlayer:Get( player ):kickoffChooseHero()
 end	
 
 
@@ -440,17 +392,17 @@ local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
 	end
 	
 	spawn( function() 
-		ChooseHeroWait( designatedMonsterPlayer ) 
+		KickoffChooseHero( designatedMonsterPlayer ) 
 		-- wait for them to setup gear
-		while designatedMonsterPlayer.HeroExpressPreparationCountdown.Value > 0 do
-			wait(0.25)
-			designatedMonsterPlayer.HeroExpressPreparationCountdown.Value = math.max( designatedMonsterPlayer.HeroExpressPreparationCountdown.Value - 0.25, 0 ) 		
-		end
-		if loadCharacterB then
-			if workspace.GameManagement.GameState.Value == "LevelPlaying" then-- GameManagement:LevelReady() then
-				GameManagement:MarkPlayersCharacterForRespawn( designatedMonsterPlayer )
-			end
-		end
+		-- while designatedMonsterPlayer.HeroRespawnCountdown.Value > 0 do
+		-- 	wait(0.25)
+		-- 	designatedMonsterPlayer.HeroRespawnCountdown.Value = math.max( designatedMonsterPlayer.HeroRespawnCountdown.Value - 0.25, 0 ) 		
+		-- end
+		-- if loadCharacterB then
+		-- 	if workspace.GameManagement.GameState.Value == "LevelPlaying" then-- GameManagement:LevelReady() then
+		-- 		GameManagement:MarkPlayersCharacterForRespawn( designatedMonsterPlayer )
+		-- 	end
+		-- end
 	end )
 end
 
@@ -593,7 +545,7 @@ local function MonitorPlayer( player )
 			--while not GameManagement:LevelReady() do wait() end
 			-- if time to be a hero
 			DebugXL:logV('GameManagement', player.Name.." waiting for respawn order" )
-			while myDungeonPlayerT.pcStateRequest ~= PCStateRequest.NeedsRespawn do wait() end
+			GameServer.waitForRespawn(player, myDungeonPlayerT)
 			myDungeonPlayerT.pcStateRequest = PCStateRequest.None
 			local levelSessionN = levelSessionCounterN  -- for testing purposes
 			DebugXL:logD( 'MonitorPlayer', player.Name.." beginning respawn" )
@@ -696,7 +648,7 @@ local function MonitorPlayer( player )
 								-- putting you in limbo now otherwise it will trigger error in end-of-level watcher
 								myDungeonPlayerT.pcState = PCState.Limbo
 
-								ChooseHeroWait( player )
+								KickoffChooseHero( player )
 
 								--ChangeHeroToMonster( player )
 							else
@@ -835,7 +787,7 @@ local function PlayerAdded( player )
 		Name = "HeroExpressReady", 
 		Parent = player } )
 	InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroInviteCountdown", Value = 0, Parent = player } )
-	InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroExpressPreparationCountdown", Value = 0, Parent = player } )		
+	InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroRespawnCountdown", Value = 0, Parent = player } )		
 
 	-- they logged out already?  awww
 	if not player.Parent then return end
@@ -978,7 +930,9 @@ local function LoadCharactersWait()
 	DebugXL:Assert( GameManagement:LevelReady() )
 	for _, player in pairs( game.Players:GetPlayers() ) do	
 		-- this is only called when we go from preparation to actual play; monsters need to stay what they are and jump back to a spawn point
-		GameManagement:MarkPlayersCharacterForRespawn( player, DungeonPlayer:Get( player ).respawnPart )
+		if player.Team == game.Teams.Monsters then -- heroes now get to choose when to spawn, they can spend as much time in the menu as they like
+			GameManagement:MarkPlayersCharacterForRespawn( player, DungeonPlayer:Get( player ).respawnPart )
+		end
 	end
 	while PlayerCharactersMissing() do wait() end
 end
@@ -1149,15 +1103,16 @@ local function HeroesChooseCharactersWait()
 	while not done do
 		workspace.GameManagement.PreparationCountdown.Value = math.ceil( preparationDuration - ( time() - startCountdownTime ) )
 		done = true
-		for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-			if CharacterClientI:GetCharacterClass( player )=="" then
-				done = false
-				break
-			end
-			-- if you're hero expressing, throw your lot in with the group timer here; everyone spawns at the same time 
-			-- at end of prep phase
-			player.HeroExpressPreparationCountdown.Value = 0
-		end
+		-- we no longer wait for everyone to choose heroes, they can jump in later
+		-- for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
+		-- 	if CharacterClientI:GetCharacterClass( player )=="" then
+		-- 		done = false
+		-- 		break
+		-- 	end
+		-- 	-- if you're hero expressing, throw your lot in with the group timer here; everyone spawns at the same time 
+		-- 	-- at end of prep phase
+		-- 	player.HeroRespawnCountdown.Value = 0
+		-- end
 		if done then
 			
 			-- but are we *really* done?
@@ -1166,13 +1121,13 @@ local function HeroesChooseCharactersWait()
 				-- yeah, we're definitely really done
 				break
 			end
-			-- or if all the heroes have signalled they're ready
-			for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-				if not DungeonPlayer:Get( player ).signalledReadyB then
-					done = false
-					break
-				end
-			end	
+			-- or if all the heroes have signalled they're ready (this is only a test option IIRC)
+			-- for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
+			-- 	if not DungeonPlayer:Get( player ).signalledReadyB then
+			-- 		done = false
+			-- 		break
+			-- 	end
+			-- end	
 		end
 		wait()
 	end
@@ -1311,16 +1266,6 @@ function GameManagement:Play()
 						player.BuildPoints.Value = Places.getCurrentPlace().startingBuildPoints
 					end
 				end
-			elseif levelResult == LevelResultEnum.BeatSuperboss then
-				--[[
-				DebugXL:logW('GameManagement', "Changing heroes" )			
-				for _, hero in pairs( game.Teams.Heroes:GetPlayers()) do
-					DebugXL:logW('GameManagement', "Changing "..hero.Name.." to monster" )
-					if hero.HeroExpressPreparationCountdown.Value <= 0 then  -- if you started a hero express right before the boss was beat, let you get on with your bad self
-						ChangeHeroToMonster( hero )
-					end
-				end
-				--]]
 			end
 			
 			ChangeGameState( "SessionEnd"..levelResult )
@@ -1340,11 +1285,12 @@ end
 
 
 function GameManagement:BecomeHero( player )
-	if workspace.GameManagement.PreparationCountdown.Value == 0 then
-		player.HeroExpressPreparationCountdown.Value = 45
-	else	
-		player.HeroExpressPreparationCountdown.Value = 0
-	end
+	-- always have at least a 15 second spawn delay
+	-- if workspace.GameManagement.PreparationCountdown.Value == 0 then
+	-- 	player.HeroRespawnCountdown.Value = 45
+	-- else	
+	-- 	player.HeroRespawnCountdown.Value = 0
+	-- end
 	ChangeMonsterToHero( player, true ) 				
 end
 
@@ -1420,7 +1366,13 @@ end
 function MainRemote.SignalReady( player )
 	local myDungeonPlayerT = dungeonPlayersT[ player ]
 	myDungeonPlayerT.signalledReadyB= true
-	player.HeroExpressPreparationCountdown.Value = 0	
+	if player.Team==game.Teams.Heroes then 
+		if CharacterClientI:GetCharacterClass( player )~="" then		
+			GameManagement:MarkPlayersCharacterForRespawn( player )
+		end
+	end
+	
+--	player.HeroRespawnCountdown.Value = 0	
 end
 
 
@@ -1446,7 +1398,6 @@ end
 function MainRemote.ForceHero( player )
     DebugXL:logD('GameManagement',"ForceHeroServer")
 	if Places.getCurrentPlace() == Places.places.Underhaven then
-		player.HeroExpressPreparationCountdown.Value = math.huge
 		ChangeMonsterToHero( player, true )
 	end
 end
