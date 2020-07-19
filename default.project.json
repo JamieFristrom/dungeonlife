@@ -156,6 +156,9 @@
         "TS": {
           "$path": "out/StarterGui/DebugGuiXL/TS"
         }
+      },
+      "TS": {
+        "$path": "out/StarterGui/TS"
       }
     }
   }
