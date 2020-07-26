@@ -1,8 +1,9 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI('Executed', script:GetFullName())
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
@@ -42,9 +43,9 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 		end
 	end )
 	
-	DebugXL:logD( 'CharacterModel', 'FlexEquipModule - Costumes:LoadCharacter for '..player.Name )
+	DebugXL:logD( LogArea.Characters, 'FlexEquipModule - Costumes:LoadCharacter for '..player.Name )
 	Costumes:LoadCharacter( player, equippedItemModelsA, noAttachmentsSet, true, player.Character )
-	DebugXL:logV( 'CharacterModel', 'FlexEquipModule - character loaded for '..player.Name )
+	DebugXL:logV( LogArea.Characters, 'FlexEquipModule - character loaded for '..player.Name )
 	
 	-- loading a character erases the backpack, so:
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )

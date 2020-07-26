@@ -1,8 +1,8 @@
 
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 import { BaseWeaponClient } from "ReplicatedStorage/TS/BaseWeaponClient"
@@ -37,7 +37,7 @@ export class BoltWeaponClient extends BaseWeaponClient
         const [ clickPart, clickHitV3 ] = RangedWeaponHelpers.MouseHitNontransparent( mouse, [character] )
 
         const serverBoltCodeName = 'Bolt'+tostring(MathXL.RandomInteger(1,100000))
-        DebugXL.logV('Combat', 'BoltWeaponRE.FireServer')
+        DebugXL.logV(LogArea.Combat, 'BoltWeaponRE.FireServer')
 
         const boltWeaponRemoteEvent = this.tool.FindFirstChild<RemoteEvent>('BoltWeaponRE')
         DebugXL.Assert( boltWeaponRemoteEvent !== undefined )
@@ -53,12 +53,12 @@ export class BoltWeaponClient extends BaseWeaponClient
             bolt.Parent = this.tool
             // why do we need this line? maybe we don't anymore now that this is local script only
             // if game["Run Service"]:IsClient() and not game["Run Service"]:IsServer() then
-            DebugXL.logD('Combat', 'Spawning boltwatch function for '+serverBoltCodeName )
+            DebugXL.logD(LogArea.Combat, 'Spawning boltwatch function for '+serverBoltCodeName )
             spawn(()=>{
-                DebugXL.logV('Combat', 'Waiting for '+serverBoltCodeName+'...' )   
+                DebugXL.logV(LogArea.Combat, 'Waiting for '+serverBoltCodeName+'...' )   
                 const serverBolt = Workspace.FindFirstChild<Folder>('ActiveServerProjectiles')!.WaitForChild( serverBoltCodeName )
                 serverBolt.Parent = undefined  // hides the real server bolt
-                DebugXL.logD('Combat', 'Destroyed '+serverBoltCodeName)
+                DebugXL.logD(LogArea.Combat, 'Destroyed '+serverBoltCodeName)
             })
         }
     }

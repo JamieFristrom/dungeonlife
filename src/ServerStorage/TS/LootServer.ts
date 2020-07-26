@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Players, Teams, Workspace } from '@rbxts/services'
 
@@ -39,7 +39,7 @@ export namespace LootServer {
     // returns string for telemetry
     export function drop(targetLevel: number, earningPlayer: Readonly<Player>, boosted: boolean) {
         if (earningPlayer.Team !== HeroTeam) {
-            DebugXL.logW('Gameplay', earningPlayer.GetFullName() + ' turned monster before getting loot')
+            DebugXL.logW(LogArea.Gameplay, earningPlayer.GetFullName() + ' turned monster before getting loot')
             return ""
         }
         const heroRecord = CharacterI.GetPCDataWait(earningPlayer)  // this looks like it could lock up fairly easily
@@ -76,7 +76,7 @@ export namespace LootServer {
                 LootServer.monsterDrop( characterRecord.getLocalLevel(), characterRecord.idS, wasMob, lastAttackingPlayer )
             }
         }
-        DebugXL.logV("Gameplay", "Loot, if any, dropped" )
+        DebugXL.logV(LogArea.Gameplay, "Loot, if any, dropped" )
     }
 
     export function monsterDrop(monsterLevel: number, monsterClassS: string, wasMob: boolean, lastAttackingPlayer?: Readonly<Player>) {
@@ -84,7 +84,7 @@ export namespace LootServer {
             return
         }
         let odds = CharacterClasses.monsterStats[monsterClassS].dropItemPctN * BalanceData.itemDropRateModifierN / HeroTeam.GetPlayers().size()
-        DebugXL.logD("Loot", "MonsterDrop level " + monsterLevel + "; odds: " + odds)
+        DebugXL.logD(LogArea.Items, "MonsterDrop level " + monsterLevel + "; odds: " + odds)
         let boostInPlay = false
         for (let [_, player] of Object.entries(HeroTeam.GetPlayers())) {
             if (Inventory.BoostActive(lastAttackingPlayer)) {
@@ -103,7 +103,7 @@ export namespace LootServer {
                 const actualLevel = PlayerServer.getActualLevel(playerCharacterKey)
                 if (actualLevel) {
                     const averageLevel = (monsterLevel + actualLevel) / 2
-                    DebugXL.logD("Loot", "Loot:MonsterDrop HIT: " + lastAttackingPlayer.Name + ": odds: " + odds + "; dieRoll: " + dieRoll)
+                    DebugXL.logD(LogArea.Items, "Loot:MonsterDrop HIT: " + lastAttackingPlayer.Name + ": odds: " + odds + "; dieRoll: " + dieRoll)
                     LootServer.drop(averageLevel, lastAttackingPlayer, boostInPlay && (dieRoll >= odds / 2))
                 }
             }
@@ -200,7 +200,7 @@ export namespace LootServer {
     export function checkForPotionDrop(player: Readonly<Player>, dropChance: number, potionIdS: string) {
         if (!player) { return false }
         if (player.Team === HeroTeam) {
-            DebugXL.logV("Loot", "Loot intended for " + player.Name)
+            DebugXL.logV(LogArea.Items, "Loot intended for " + player.Name)
         } else {
             warn(player.Name + " must have become monster before they got their loot")
             return false

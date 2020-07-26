@@ -1,4 +1,4 @@
-import { DebugXL } from "./DebugXLTS";
+import { DebugXL, LogArea } from "./DebugXLTS";
 
 // CharacterRecord monitor is for functions that monitor any PC
 // PCClient is just for the local player's pc

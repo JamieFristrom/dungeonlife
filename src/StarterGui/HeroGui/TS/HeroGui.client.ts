@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import * as InputXL from "ReplicatedStorage/Standard/InputXL"
 import { GuiService, Workspace, Teams, Players } from "@rbxts/services";
@@ -37,7 +37,7 @@ const preperationCountdownObj = gameManagementFolder.WaitForChild<NumberValue>("
 
 const heroTeam = Teams.WaitForChild<Team>("Heroes")
 
-DebugXL.logI('GameManagement', 'HeroGui wait complete')
+DebugXL.logI(LogArea.GameManagement, 'HeroGui wait complete')
 
 gameState.Changed.Connect((newValue) => {
     if (newValue === "Lobby") {
@@ -49,7 +49,7 @@ gameState.Changed.Connect((newValue) => {
                     const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
                     if (humanoid) {
                         if (humanoid.Health > 0) {
-                            DebugXL.logI("GameManagement", "Lobby, time to re-prepare")
+                            DebugXL.logI(LogArea.GameManagement, "Lobby, time to re-prepare")
                             chooseHeroFrame.Visible = false
                             heroGuiFrame.Visible = false
                             characterSheet.Visible = true

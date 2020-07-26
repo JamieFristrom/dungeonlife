@@ -1,16 +1,12 @@
---[[
-	HeroUtility
-	
-	Utility functions for handling player character data
---]]
-local DebugXL               = require( game.ReplicatedStorage.Standard.DebugXL )
-local MathXL				= require( game.ReplicatedStorage.Standard.MathXL )
-local TableXL               = require( game.ReplicatedStorage.Standard.TableXL )
 
-local CharacterClientI      = require( game.ReplicatedStorage.CharacterClientI )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
+--	Utility functions for handling player character data
 local FlexEquipUtility       = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-
-local PossessionData	= require( game.ReplicatedStorage.PossessionData )
 
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData

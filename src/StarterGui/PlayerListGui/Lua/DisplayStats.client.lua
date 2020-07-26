@@ -1,4 +1,10 @@
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
@@ -6,7 +12,6 @@ local WerewolfUtility   = require( game.ReplicatedStorage.WerewolfUtility )
 
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 
 game:GetService("StarterGui"):SetCoreGuiEnabled( Enum.CoreGuiType.PlayerList, false )
 

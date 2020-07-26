@@ -1,3 +1,10 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 --
 -- GhostModule
 --
@@ -5,10 +12,7 @@
 --
 -- @Jamie_Fristrom 2018
 --
-print( script:GetFullName().." executed" )
 
-
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL  = require( game.ReplicatedStorage.Standard.MathXL )
 
 local Ghost = {}

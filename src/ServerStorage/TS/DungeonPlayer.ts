@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 // export enum PCState {
 //     Limbo = "Limbo",
@@ -50,38 +50,38 @@ export class DungeonPlayer {
     }
 
     markDead() {
-        DebugXL.logD("MonitorPlayer", this.id+" marked dead")
+        DebugXL.logD(LogArea.Players, this.id+" marked dead")
         this.lastDeathEventNum = this.eventCounter++
     }
 
     markHeroDead() {
-        DebugXL.logD("MonitorPlayer", this.id+" marked hero dead")
+        DebugXL.logD(LogArea.Players, this.id+" marked hero dead")
         this.lastHeroDeathEventNum = this.eventCounter++
     }
 
     markRespawnStart() {
         DebugXL.Assert( this.eventCounter++ !== this.lastRespawnRequestEventNum )  // that's just too quick
-        DebugXL.logD("MonitorPlayer", this.id+" marked respawn start")
+        DebugXL.logD(LogArea.Players, this.id+" marked respawn start")
         this.lastRespawnStartEventNum = this.eventCounter++
     }
 
     markRespawnFinish() {
-        DebugXL.logD("MonitorPlayer", this.id+" marked respawn finish")
+        DebugXL.logD(LogArea.Players, this.id+" marked respawn finish")
         this.lastRespawnFinishEventNum = this.eventCounter++
     }
 
     requestDestruction() {
-        DebugXL.logD("MonitorPlayer", this.id+" requested destruction")
+        DebugXL.logD(LogArea.Players, this.id+" requested destruction")
         this.lastDestructionRequestEventNum = this.eventCounter++
     }
 
     requestRespawn() {
-        DebugXL.logD("MonitorPlayer", this.id+" requested respawn")
+        DebugXL.logD(LogArea.Players, this.id+" requested respawn")
         this.lastRespawnRequestEventNum = this.eventCounter++
     }
 
     kickoffChooseHero() {
-        DebugXL.logD("MonitorPlayer", this.id+" kicked off hero")
+        DebugXL.logD(LogArea.Players, this.id+" kicked off hero")
         this.heroKickoffTime = time()
     }
 

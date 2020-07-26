@@ -1,24 +1,24 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI( 'Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI( LogArea.Executed, script.GetFullName())
 
 import { LocalizationService } from "@rbxts/services"
 
 import { Enhancements } from "./EnhancementsTS"
-DebugXL.logD('Requires', script.Name+": Enhancements required" )
+DebugXL.logD(LogArea.Requires, script.Name+": Enhancements required" )
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
-DebugXL.logD('Requires', script.Name+ ": PCClient required" )
+DebugXL.logD(LogArea.Requires, script.Name+ ": PCClient required" )
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
-DebugXL.logD('Requires', script.Name+": FlexTool required" )
+DebugXL.logD(LogArea.Requires, script.Name+": FlexTool required" )
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
-DebugXL.logD('Requires', script.Name+": ToolData required" )
+DebugXL.logD(LogArea.Requires, script.Name+": ToolData required" )
 
 import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
-DebugXL.logD('Requires', script.Name+": SkinTypeEnum required" )
+DebugXL.logD(LogArea.Requires, script.Name+": SkinTypeEnum required" )
 import { Localize } from "ReplicatedStorage/TS/Localize"
-DebugXL.logD('Requires', script.Name+": Localize required" )
+DebugXL.logD(LogArea.Requires, script.Name+": Localize required" )
 
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 import { AnalyticsClient } from "./AnalyticsClient";

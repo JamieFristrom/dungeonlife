@@ -7,7 +7,7 @@ import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 import { QuestStatus, QuestUtility } from "ReplicatedStorage/TS/QuestUtility"
 
 import { Players, GuiService, Teams, Workspace, StarterGui } from "@rbxts/services";
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 
 let main = script.Parent!.Parent!.WaitForChild<Frame>("Main")
 let mainHeader = main.WaitForChild<Frame>("MainHeader")

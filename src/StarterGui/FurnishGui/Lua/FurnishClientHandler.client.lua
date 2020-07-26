@@ -1,8 +1,14 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 --
 
 -- FurnishClientHandler
 --
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+
 --local GameAnalyticsClient = require( game.ReplicatedStorage.Standard.GameAnalyticsClient )
 local InputXL          = require( game.ReplicatedStorage.Standard.InputXL )
 local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
@@ -10,7 +16,6 @@ local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 -- note: everything here is on the client, so people can't see what you're placing until you actually place it.
 
-local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local DungeonClient    = require( game.ReplicatedStorage.DungeonClient )
 local FloorData        = require( game.ReplicatedStorage.FloorData )
 local FurnishUtility   = require( game.ReplicatedStorage.FurnishUtility )

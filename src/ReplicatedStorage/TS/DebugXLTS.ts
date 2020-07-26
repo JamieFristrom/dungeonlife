@@ -24,29 +24,48 @@ export enum LogLevel {
     Verbose
 }
 
+export enum LogArea {
+    Admin,
+    Characters,
+    Config,
+    Combat,           // los, damage, weapons, armor
+    Gameplay,         // levelling, xp
+    GameManagement,   // game flow, overall game state
+    Error,            // for untagged errors
+    Executed,         // has this script begun execution?
+    Items,
+    Mobs,             // mob behavior but not spawning
+    MobSpawn,         // mob spawning
+    Players,
+    Parts,
+    Spawner,          // spawner furnishing behavior, both mob and non-mob
+    Requires,         // tracking which files have been succesfully required/imported
+    UI,               // 
+}
+
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Info
+    private defaultLogLevel = LogLevel.Warning
 
-    private logLevelForTag = new Map<string, LogLevel>([
-        // ['Combat',LogLevel.Debug],
-        // ["Gameplay", LogLevel.Verbose],
-        // ['Mobs',LogLevel.Info],
-        // ['Executed',LogLevel.Info],
-        // ['Requires',LogLevel.Verbose],
-        // ['UI', LogLevel.Info],
-        // ['GameManagement',LogLevel.Verbose]
+    private logLevelForTag = new Map<LogArea, LogLevel>([
+        // [LogArea.Combat,LogLevel.Debug],
+        // [LogArea.Gameplay, LogLevel.Verbose],
+        [LogArea.Executed,LogLevel.Info],
+        // [LogArea.Requires,LogLevel.Verbose],
+        // [LogArea.UI, LogLevel.Info],
+        [LogArea.GameManagement, LogLevel.Verbose],
+        [LogArea.MobSpawn, LogLevel.Verbose]
     ])
 
-    private testErrorCatcher?: (message: string)=>void
+    private testErrorCatcher?: (message: string) => void
 
     Error(message: string) {
         let callstackS = debug.traceback()
-        if( this.testErrorCatcher ) {
-            this.testErrorCatcher( message )
+        if (this.testErrorCatcher) {
+            this.testErrorCatcher(message)
         } else {
-            spawn(() => { this.log(LogLevel.Error, script.Name, message + " " + callstackS) }) // -- so analytics will pick it up
+            spawn(() => { this.log(LogLevel.Error, LogArea.Error, script.Name + ": " + message + " " + callstackS) }) // -- so analytics will pick it up
         }
     }
 
@@ -70,11 +89,11 @@ class DebugXLC {
         return str
     }
 
-    Dump(variable: unknown) {
-        this.log(LogLevel.Info, script.Name, this.DumpToStr(variable))
+    Dump(variable: unknown, tag: LogArea) {
+        this.log(LogLevel.Info, tag, this.DumpToStr(variable))
     }
 
-    setLogLevel(newLogLevel: LogLevel, tag?: string) {
+    setLogLevel(newLogLevel: LogLevel, tag?: LogArea) {
         if (tag) {
             this.logLevelForTag.set(tag, newLogLevel)
         }
@@ -83,44 +102,45 @@ class DebugXLC {
         }
     }
 
-    getLogLevelForTag(tag: string) {
+    getLogLevelForTag(tag: LogArea) {
         const logLevelForTag = this.logLevelForTag.get(tag)
         return logLevelForTag ? logLevelForTag : this.defaultLogLevel
     }
 
-    log(logLevel: LogLevel, tag: string, message: string) {
+    log(logLevel: LogLevel, tag: LogArea, message: string) {
         const cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') + (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
         if (!message) {
             error(`${cliSrvPrefix}-E/${tag}: MISSING MESSAGE`)
         }
         else if (logLevel <= this.getLogLevelForTag(tag)) {
             let prefix = DebugXLC.logLevelPrefixes[logLevel]
+            let tagString = LogArea[tag]
             if (logLevel <= LogLevel.Error)
-                error(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
+                error(`${cliSrvPrefix}-${prefix}/${tagString}: ${message}`)
             else if (logLevel <= LogLevel.Warning)
-                warn(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
+                warn(`${cliSrvPrefix}-${prefix}/${tagString}: ${message}`)
             else
-                print(`${cliSrvPrefix}-${prefix}/${tag}: ${message}`)
+                print(`${cliSrvPrefix}-${prefix}/${tagString}: ${message}`)
         }
     }
 
-    logE(tag: string, message: string) {
+    logE(tag: LogArea, message: string) {
         this.log(LogLevel.Error, tag, message)
     }
 
-    logW(tag: string, message: string) {
+    logW(tag: LogArea, message: string) {
         this.log(LogLevel.Warning, tag, message)
     }
 
-    logI(tag: string, message: string) {
+    logI(tag: LogArea, message: string) {
         this.log(LogLevel.Info, tag, message)
     }
 
-    logD(tag: string, message: string) {
+    logD(tag: LogArea, message: string) {
         this.log(LogLevel.Debug, tag, message)
     }
 
-    logV(tag: string, message: string) {
+    logV(tag: LogArea, message: string) {
         this.log(LogLevel.Verbose, tag, message)
     }
 
@@ -137,17 +157,18 @@ class DebugXLC {
             '[' + instArray.map((inst) => this.stringifyInstance(inst)).reduce((a, b) => a + ',' + b) + ']'
     }
 
-    catchErrors( errorCatcher: (message:string)=>void ) { 
-        DebugXL.Assert( !this.testErrorCatcher )
-        this.testErrorCatcher = errorCatcher 
+    catchErrors(errorCatcher: (message: string) => void) {
+        DebugXL.Assert(!this.testErrorCatcher)
+        this.testErrorCatcher = errorCatcher
     }
 
     stopCatchingErrors() {
-        DebugXL.Assert( this.testErrorCatcher !== undefined )
+        DebugXL.Assert(this.testErrorCatcher !== undefined)
         this.testErrorCatcher = undefined
     }
+
 }
 
-
-
 export let DebugXL = new DebugXLC()
+
+DebugXL.Dump(LogArea, LogArea.Config)

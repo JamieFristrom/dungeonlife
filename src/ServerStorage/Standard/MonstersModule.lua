@@ -1,22 +1,20 @@
+
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI( 'Executed', script.Name )
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 
-local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
-
-local CharacterI       = require( game.ServerStorage.CharacterI )
 local Ghost            = require( game.ServerStorage.GhostModule )
 local Inventory        = require( game.ServerStorage.InventoryModule )
 
 local BalanceData      = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-local CharacterUtility = require( game.ReplicatedStorage.Standard.CharacterUtility )
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
 local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
@@ -27,7 +25,6 @@ local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).C
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 
 local LootServer       = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
@@ -61,12 +58,12 @@ end
 
 local function GiveUniqueWeapon( characterKey, potentialWeaponsA )
 	if #potentialWeaponsA == 0 then
-		DebugXL:logE( 'Items', PlayerServer.getName( characterKey ).." | "..PlayerServer.getCharacterRecord( characterKey ).idS.." has no potential weapons" )
+		DebugXL:logE( LogArea.Items, PlayerServer.getName( characterKey ).." | "..PlayerServer.getCharacterRecord( characterKey ).idS.." has no potential weapons" )
 	end
 	local toolData        = TableXL:Map( potentialWeaponsA, function( weaponNameS ) return ToolData.dataT[ weaponNameS ] end )
 	local dropLikelihoods = TableXL:Map( toolData, function( x ) return x.monsterStartGearBiasN end )
 	if TableXL:GetN( dropLikelihoods ) == 0 then
-		DebugXL:logE( 'Items', PlayerServer.getName( characterKey ).." has no drop likelihoods" )
+		DebugXL:logE( LogArea.Items, PlayerServer.getName( characterKey ).." has no drop likelihoods" )
 	end
 	local toolN = MathXL:RandomBiasedInteger1toN( dropLikelihoods )
 	local weaponTemplate = toolData[ toolN ]
@@ -339,24 +336,24 @@ end
 
 function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid, damageTagsT, critB )
 	DebugXL:Assert( self == Monsters )
-	DebugXL:logD('Combat', 'Monsters:DoDirectDamage('..( optionalDamagingPlayer and optionalDamagingPlayer.Name or 'null damaging player' )..
+	DebugXL:logD(LogArea.Combat, 'Monsters:DoDirectDamage('..( optionalDamagingPlayer and optionalDamagingPlayer.Name or 'null damaging player' )..
 		','..damage..','..targetHumanoid:GetFullName()..')' )
 	if targetHumanoid.Health > 0 then
-		DebugXL:logV( 'Combat', "Base damage: "..damage )
+		DebugXL:logV( LogArea.Combat, "Base damage: "..damage )
 		
 		local targetPC = targetHumanoid.Parent
 		local targetPlayer = game.Players:GetPlayerFromCharacter( targetPC )
 
 		-- while theoretically monsters only damage players this can throw an error because monsters can currently damage barriers
 		if targetPlayer and targetPlayer.Parent then
-			DebugXL:logV( 'Combat', 'targetPlayer = '..targetPlayer.Name )
+			DebugXL:logV( LogArea.Combat, 'targetPlayer = '..targetPlayer.Name )
 			local characterRecord = PlayerServer.getCharacterRecordFromPlayer( targetPlayer )
 			DebugXL:Assert( characterRecord )  -- seriously, if the target player and their character is still around then there should be no way this can happen
 			if characterRecord then
 				damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, characterRecord, damage, damageTagsT )
 			end
 		end
-		DebugXL:logV( 'Combat', targetHumanoid.Name..'humanoid:TakeDamage('..damage..')' )
+		DebugXL:logV( LogArea.Combat, targetHumanoid.Name..'humanoid:TakeDamage('..damage..')' )
 		targetHumanoid:TakeDamage( damage )
 		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( targetPC, -damage, critB )
 
@@ -378,7 +375,7 @@ end
 -- yes, this became a fucking mess
 function Monsters:DoFlexToolDamage( character, flexTool, targetHumanoid )
 	DebugXL:Assert( self == Monsters )
-	DebugXL:logI('Combat', 'Monsters:DoFlexToolDamage')
+	DebugXL:logI(LogArea.Combat, 'Monsters:DoFlexToolDamage')
 	if targetHumanoid.Health > 0 then
 		local damageN, critB = unpack( Monsters:DetermineFlexToolDamageN( character, flexTool ) )
 		local weaponTypeS = flexTool:getBaseData().equipType

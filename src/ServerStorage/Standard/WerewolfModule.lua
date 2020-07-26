@@ -1,12 +1,15 @@
-print( script:GetFullName().." executed" )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
-
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
@@ -35,9 +38,9 @@ function Werewolf:TakeHumanFormWait( player )
 		if heldTool then heldTool:Destroy() end
 --		warn( "Clearing "..player.Name.."'s backpack" )
 		
-		DebugXL:logD( 'CharacterModel', 'WerewolfModule - Costumes:LoadCharacter for '..player.Name )
+		DebugXL:logD( LogArea.Characters, 'WerewolfModule - Costumes:LoadCharacter for '..player.Name )
 		Costumes:LoadCharacter( player, {}, {}, false, character )
-		DebugXL:logV( 'CharacterModel', 'WerewolfModule - character loaded for '..player.Name )
+		DebugXL:logV( LogArea.Characters, 'WerewolfModule - character loaded for '..player.Name )
 
 		local pcData = CharacterI:GetPCDataWait( player )
 		pcData:equipAvailableArmor()		

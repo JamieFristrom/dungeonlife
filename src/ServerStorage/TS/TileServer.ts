@@ -2,7 +2,7 @@ import * as MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
 import * as FloorData from "ReplicatedStorage/Standard/FloorData"
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 import { Workspace } from "@rbxts/services";
 
 let cellWidth = 45 

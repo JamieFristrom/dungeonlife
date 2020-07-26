@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { ContextActionService, Workspace, Players, RunService, Teams } from "@rbxts/services";
 
@@ -100,14 +100,14 @@ function Equip(slotN: HotbarSlot) {
                             let heldTool = localCharacter.FindFirstChildWhichIsA("Tool") as Tool
                             if (heldTool && CharacterRecord.getToolPossessionKey(heldTool) === possessionKey) {
                                 // unequip
-                                DebugXL.logD(script.Name, 'Unequipping')
+                                DebugXL.logD(LogArea.Items, 'Unequipping')
                                 humanoid.UnequipTools()
                                 //SelectSlot(0)
                             }
                             else {
                                 let tool = CharacterRecord.getToolInstanceFromPossessionKey(localCharacter, PCClient.pc, possessionKey) as Tool
                                 if (tool) {
-                                    DebugXL.logD(script.Name, 'Equipping')
+                                    DebugXL.logD(LogArea.Items, 'Equipping')
                                     humanoid.EquipTool(tool)  // error in EquipTool's type signature that has now been fixed
                                 }
                                 else {
@@ -116,7 +116,7 @@ function Equip(slotN: HotbarSlot) {
                                     // says you have before the instance actually gets replicated - perhaps waiting here is the right choice
                                     const flexTool = PCClient.pc.getFlexTool(possessionKey)
                                     if (flexTool) {
-                                        DebugXL.logW("Items", "Hotbar failed to find instance for " + localCharacter.GetFullName() + " tool " + flexTool.baseDataS)
+                                        DebugXL.logW(LogArea.Items, "Hotbar failed to find instance for " + localCharacter.GetFullName() + " tool " + flexTool.baseDataS)
                                     }
                                     else {
                                         DebugXL.Error("Hotbar had possession key for " + localCharacter.GetFullName() + " flextool that doesn't exist")

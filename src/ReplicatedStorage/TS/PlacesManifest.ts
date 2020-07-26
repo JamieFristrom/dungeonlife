@@ -4,7 +4,7 @@
 // file and configure themselves accordingly.
 //
 // It could use some reorganization but it's
-import { DebugXL } from "./DebugXLTS";
+import { DebugXL, LogArea } from "./DebugXLTS";
 import { Workspace } from "@rbxts/services";
 
 import { Hero } from "ReplicatedStorage/TS/HeroTS"

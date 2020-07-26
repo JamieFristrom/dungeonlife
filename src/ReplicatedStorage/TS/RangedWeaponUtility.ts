@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { BaseWeaponUtility } from './BaseWeaponUtility'
 import { FlexTool } from './FlexToolTS'
@@ -17,7 +17,7 @@ export class RangedWeaponUtility extends BaseWeaponUtility {
 
     constructor(tool: Tool, public flexTool: FlexTool, private readonly projectileName: string) {
         super(tool, flexTool)
-        DebugXL.logI('Items', 'RangedWeaponUtility constructor for ' + tool.GetFullName())
+        DebugXL.logI(LogArea.Items, 'RangedWeaponUtility constructor for ' + tool.GetFullName())
         this.weaponBE = tool.WaitForChild<BindableEvent>('RangedWeaponBE')
     }
 

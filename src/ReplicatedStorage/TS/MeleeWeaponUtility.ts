@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI("Executed", script.GetFullName())
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Players, Debris } from "@rbxts/services"
 
@@ -44,7 +44,7 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
 
     _aimAtTarget(character: Character, target?: Character) {
         if (target) {
-            DebugXL.logD("Combat", target.Name + " in range")
+            DebugXL.logD(LogArea.Combat, target.Name + " in range")
             const primaryPart = target.PrimaryPart
             if (primaryPart) {
                 const targetV3 = primaryPart.CFrame.p
@@ -59,13 +59,13 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
                 }
             }
             else {
-                DebugXL.logW("Combat", target.GetFullName() + " is missing PrimaryPart")
+                DebugXL.logW(LogArea.Combat, target.GetFullName() + " is missing PrimaryPart")
             }
         }
     }
 
     _playAlternateAttackAnimation() {
-        DebugXL.logD("Combat", "Playing default slash animation")
+        DebugXL.logD(LogArea.Combat, "Playing default slash animation")
         //              old default Roblox way to do this when our custom animation is missing
         const Animation = new Instance("StringValue")
         Animation.Name = "toolanim"

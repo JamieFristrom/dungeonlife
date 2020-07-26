@@ -1,7 +1,7 @@
 import { Teams, Players, RunService, Workspace } from "@rbxts/services"
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 import { CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import InstanceXL = require("ReplicatedStorage/Standard/InstanceXL");
 import { PlayerServer } from "./PlayerServer";
@@ -45,7 +45,7 @@ export namespace CharacterServer {
     }
 
     export function giveAuraOfCourage(character: Character, damageReduction: number) {
-        DebugXL.logI('Gameplay', `Giving ${character.Name} aura of courage`)
+        DebugXL.logI(LogArea.Gameplay, `Giving ${character.Name} aura of courage`)
         let duration = math.huge
         let effectUntil = time() + duration
         InstanceXL.CreateSingleton('Vector3Value',
@@ -95,7 +95,7 @@ export namespace CharacterServer {
         // getting this from record means less chance of a mismatch, which has happened - you could imagine somebody
         // getting in a final blow right as they change from hero to monster, for example
         const attackingTeam = (attackerRecord instanceof Hero)?heroTeam:monsterTeam
-        DebugXL.logD( 'Combat', 'TakeFlexToolDamage attackingPlayer. '+attackingCharacter.Name+' hitCharacter. '+hitCharacter.Name )
+        DebugXL.logD( LogArea.Combat, 'TakeFlexToolDamage attackingPlayer. '+attackingCharacter.Name+' hitCharacter. '+hitCharacter.Name )
         const hitHumanoid = hitCharacter.FindFirstChild("Humanoid")
         if( hitHumanoid ) {
             const hitPlayer = Players.GetPlayerFromCharacter( hitCharacter )
@@ -104,7 +104,7 @@ export namespace CharacterServer {
                 const attackingPlayer = Players.GetPlayerFromCharacter( attackingCharacter )
             
                 if( attackingTeam === heroTeam ) {	
-                    DebugXL.logV( 'Combat', 'Hero damaging monster' )	
+                    DebugXL.logV( LogArea.Combat, 'Hero damaging monster' )	
                     DebugXL.Assert( attackingPlayer!==undefined )
                     if(( attackingPlayer )) {
                         heroesModule.DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
@@ -112,7 +112,7 @@ export namespace CharacterServer {
                 } else {
                     // can't just use tool's parent to determine attacking character because it might be lingering
                     // damage from a tool that has been put away
-                    DebugXL.logV( 'Combat', 'Monster damaging hero' )	
+                    DebugXL.logV( LogArea.Combat, 'Monster damaging hero' )	
                     Monsters.DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
                 }
             }

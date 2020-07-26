@@ -1,7 +1,7 @@
 import { CollectionService } from "@rbxts/services"
 
 import { PlayerServer } from "ServerStorage/TS/PlayerServer"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import CharacterClientI = require("ReplicatedStorage/Standard/CharacterClientI");
 

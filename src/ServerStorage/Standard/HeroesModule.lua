@@ -1,8 +1,10 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI('Executed', script:GetFullName())
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 
 --[[
 	
@@ -47,7 +49,7 @@ local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServe
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
-DebugXL:logD("Requires", "HeroesModule requires succesful")
+DebugXL:logD(LogArea.Requires, "HeroesModule requires succesful")
 
 local PhysicsService = game.PhysicsService
 
@@ -190,7 +192,7 @@ end
 
 function Heroes:CharacterAdded( character, player )
 	DebugXL:Assert( self == Heroes )
-	DebugXL:logD( 'Character', 'Heroes:CharacterAdded '..player.Name )
+	DebugXL:logD( LogArea.Characters, 'Heroes:CharacterAdded '..player.Name )
 	-- it can take longer to get the datastore than to spawn your first hero
 	local myPCData = PlayerServer.getCharacterRecordFromPlayerWait( player )
 	-- we might still be looking at our old monster data when we get here
@@ -245,7 +247,7 @@ function Heroes:CharacterAdded( character, player )
 	-- high level doesn't count
 
 	local dangerRatio = HeroServer.calculateDangerRatio( myPCData:getLocalLevel() )
-	DebugXL:logI( 'Gameplay', "HeroesModule: Danger ratio for "..player.Name..": "..dangerRatio )
+	DebugXL:logI( LogArea.Gameplay, "HeroesModule: Danger ratio for "..player.Name..": "..dangerRatio )
 	if dangerRatio >= 11/7 then
 		local x = (dangerRatio - 11/7) / ( 21 / 7 )
 		local dr = MathXL:Lerp( BalanceData.sidekickDamageReductionMin, BalanceData.sidekickDamageReductionMax, x )
@@ -465,7 +467,7 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 			local victimCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( victimCharacter )
 			if( victimCharacterRecord ) then  -- structures don't award xp
 				local xpValue = MonsterServer.calculateXPReward( victimCharacterRecord, not victimPlayer )
-				DebugXL:logD( "Gameplay", targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
+				DebugXL:logD( LogArea.Gameplay, targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
 				HeroServer.awardKillExperienceWait( player, xpValue, targetHumanoid.Parent )
 				Heroes:SaveHeroesWait( player )				
 			end

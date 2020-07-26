@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https.//github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { LogLevel, DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+import { LogArea, DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import * as  CharacterI from "ServerStorage/Standard/CharacterI"
 

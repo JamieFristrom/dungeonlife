@@ -1,7 +1,7 @@
 import { HttpXL } from "ServerStorage/TS/HttpXL"
 import { Analytics } from "ServerStorage/TS/Analytics";
 import { Workspace, Players } from "@rbxts/services";
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 
 // put in standard/ because we're replacing lua module
 namespace GameAnalyticsServer

@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI("Executed", script.GetFullName())
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { RunService } from "@rbxts/services"
 
@@ -41,7 +41,7 @@ export abstract class BaseWeaponUtility {
     getRange(): number {
         const range = this.baseData.rangeN
         if (!range) {
-            DebugXL.logW("Items", this.baseData.idS + " missing range")
+            DebugXL.logW(LogArea.Items, this.baseData.idS + " missing range")
         }
         return range ? range : 5
     }
@@ -74,7 +74,7 @@ export abstract class BaseWeaponUtility {
     }
 
     showAttack(character: Character, target?: Character) {
-        DebugXL.logD("Combat", character.Name + " showAttack")
+        DebugXL.logD(LogArea.Combat, character.Name + " showAttack")
         const wielderPrimaryPart = character.PrimaryPart
         if (!wielderPrimaryPart) return
 
@@ -89,14 +89,14 @@ export abstract class BaseWeaponUtility {
         const adjCooldown = GeneralWeaponUtility.getAdjustedCooldown(character, this.getCooldown())
         if (this.attackAnimTracks[this.attackIndex]) {
             const speed = wielderPrimaryPart!.Velocity.Magnitude
-            DebugXL.logV("Combat", "Speed is " + speed)
+            DebugXL.logV(LogArea.Combat, "Speed is " + speed)
             if (speed > 0.5)
                 this.attackUpperBodyAnimTracks[this.attackIndex].Play(0.1, 1, 0.6 / adjCooldown)
             else
                 this.attackAnimTracks[this.attackIndex].Play(0.1, 1, 0.6 / adjCooldown)
 
             this.attackIndex = (this.attackIndex + 1) % this.attackAnimTracks.size()
-            DebugXL.logV("Combat", "Attack index is " + this.attackIndex)
+            DebugXL.logV(LogArea.Combat, "Attack index is " + this.attackIndex)
         }
         else // fixme; only play if sword
         {
@@ -106,9 +106,9 @@ export abstract class BaseWeaponUtility {
         this._delayedEffects(adjCooldown / 2)
 
         const walkSpeedMulN = FlexEquipUtility.GetAdjStat(this.flexTool, "walkSpeedMulN")
-        DebugXL.logV("Combat", "Beginning cooldown for " + character.Name)
+        DebugXL.logV(LogArea.Combat, "Beginning cooldown for " + character.Name)
         GeneralWeaponUtility.cooldownWait(character, this.getCooldown(), walkSpeedMulN)
-        DebugXL.logV("Combat", "Cooldown finished for " + character.Name)
+        DebugXL.logV(LogArea.Combat, "Cooldown finished for " + character.Name)
 
         this._afterEffects()
 

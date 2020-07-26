@@ -1,16 +1,18 @@
-print( script:GetFullName().." executed" )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local CheatUtility      = require( game.ReplicatedStorage.TS.CheatUtility )
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
-local Crates            = require( game.ReplicatedStorage.Standard.Crates )
 
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
-local PlaceConfiguration = require( game.ReplicatedStorage.PlaceConfiguration )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local RankForStars      = require( game.ReplicatedStorage.RankForStars )
 
@@ -19,9 +21,6 @@ local DataStore2        = require( game.ServerStorage.Standard.DataStore2 )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
-local GameplayTestService = require( game.ServerStorage.TS.GameplayTestService ).GameplayTestService
-
-local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility).GameplayTestUtility
 
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 

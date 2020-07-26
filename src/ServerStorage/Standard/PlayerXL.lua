@@ -1,28 +1,31 @@
 
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI( 'Executed', script.Name )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 local CharacterPhysics = require( game.ReplicatedStorage.Standard.CharacterPhysics )
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: ReplicatedStorage require succesful' )
 local CharacterI       = require( game.ServerStorage.CharacterI )
-DebugXL:logD( 'Requires', 'PlayerXL: CharacterI require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: CharacterI require succesful' )
 local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
-DebugXL:logD( 'Requires', 'PlayerXL: AnalyticxXL require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: AnalyticxXL require succesful' )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
-DebugXL:logD( 'Requires', 'PlayerXL: GameAnalyticsServer require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: GameAnalyticsServer require succesful' )
 local Costumes         = require( game.ServerStorage.Standard.CostumesServer )
-DebugXL:logD( 'Requires', 'PlayerXL: Costumes require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: Costumes require succesful' )
 local Inventory        = require( game.ServerStorage.Standard.InventoryModule )
-DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: ReplicatedStorage require succesful' )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
-DebugXL:logD( 'Requires', 'PlayerXL: ReplicatedStorage.TS require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: ReplicatedStorage.TS require succesful' )
 
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
-DebugXL:logD( 'Requires', 'PlayerXL: ServerStorage.TS require succesful' )
+DebugXL:logD( LogArea.Requires, 'PlayerXL: ServerStorage.TS require succesful' )
 
 local PlayerXL = {}
 
@@ -141,7 +144,7 @@ function PlayerAdded( player )
 	local ultimateTeamChangeTime
 	
 	player.Changed:Connect( function( property )
-		DebugXL:logI( 'Player', player.Name.." player changed property "..property )
+		DebugXL:logI( LogArea.Players, player.Name.." player changed property "..property )
 		if property == "Team" then
 			if ultimateTeamChangeTime then  -- ignore first team change
 				GameAnalyticsServer.RecordDesignEvent( player, "TeamChange:"..player.Team.Name, time() - ultimateTeamChangeTime, 30, "secs" )
@@ -203,7 +206,7 @@ Instead, the flow looks like this:
 --]]
 
 function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart, levelSessionN, levelSessionFunc )
-	DebugXL:logD( 'Requires', "LoadCharacterWait "..player.Name )
+	DebugXL:logD( LogArea.Requires, "LoadCharacterWait "..player.Name )
 	DebugXL:Assert( not ( optionalSpawnCF and optionalSpawnPart ) ) -- pass in a CF or a part (or neither), not both
 	if loadingCharacterBT[ player ] then
 		DebugXL:Error( "LoadCharacterWait called for "..player.Name.." when load is already in progress. Traceback: "..loadingCharacterCallstackT[ player ])
@@ -242,7 +245,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 					and spawnPoint:IsDescendantOf( workspace )
 			end )
 			if #validSpawnPoints <= 0 then
-				DebugXL:logI( "GameManagement", "Couldn't find unused spawn for "..player.Name )
+				DebugXL:logI( LogArea.Players, "Couldn't find unused spawn for "..player.Name )
 				-- must be a monster/DL after all the spawn points have been cleared; spawn wherever you can, probably the hero point
 				validSpawnPoints = spawnPoints
 			end
@@ -251,7 +254,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 					return not element:FindFirstChild("CharacterClass") or element.CharacterClass.Value == characterClassS 
 				end )
 				if #validSpawnPoints <= 0 then
-					DebugXL:logI( "GameManagemenet", "Couldn't find matching spawn" )
+					DebugXL:logI( LogArea.GameManagement, "Couldn't find matching spawn" )
 					-- it's possible that the level can reload while you're loading your character, in which case we find any emergency spawn point
 					validSpawnPoints = TableXL:FindAllInAWhere( spawnPoints, function( element ) return element.Enabled.Value end )
 				end
@@ -281,7 +284,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 		-- 	DebugXL:Error( chosenSpawn.Name.." no longer in workspace. "..(levelSessionN == levelSessionFunc() and "but session didn't change" or "and sesssion changed" ) ) 
 		-- end		
 
---		--DebugXL:logD( 'Requires', "Player "..player.Name.." cframe will be set to spawn point "..chosenSpawn.Name )
+--		--DebugXL:logD( LogArea.Requires, "Player "..player.Name.." cframe will be set to spawn point "..chosenSpawn.Name )
 		
 		-- doesn't support rotated spawns yet
 		local minX = chosenSpawn.Position.X - chosenSpawn.Size.X / 2
@@ -294,7 +297,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 		spawnCF = CFrame.new( myX, myY, myZ )
 	end
 
-	--DebugXL:logD( 'Requires', "About to LoadCharacter "..player.Name ) 	
+	--DebugXL:logD( LogArea.Requires, "About to LoadCharacter "..player.Name ) 	
 	local srcCharacter
 	local noAttachSet = Costumes.allAttachmentsSet
 	if player.Team == game.Teams.Monsters then
@@ -319,14 +322,14 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 	-- end
 	DebugXL:Assert( player.Character )	
 
-	--DebugXL:logD( 'Requires', "Character loaded "..player.Name ) 	
+	--DebugXL:logD( LogArea.Requires, "Character loaded "..player.Name ) 	
 
 	if characterClassS ~= "DungeonLord" then  	-- don't let dungeonlord use up thingy
 		DebugXL:Assert( chosenSpawn )
 		if chosenSpawn then
 			local chosenSpawnLastCharacterValue = chosenSpawn:FindFirstChild("LastPlayer")
 			if chosenSpawnLastCharacterValue then
-	--			--DebugXL:logD( 'Requires', "Marking spawn "..chosenSpawn:GetFullName().." used by "..player.Name )
+	--			--DebugXL:logD( LogArea.Requires, "Marking spawn "..chosenSpawn:GetFullName().." used by "..player.Name )
 				chosenSpawnLastCharacterValue.Value = player
 			end
 		end
@@ -338,7 +341,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 
 	loadingCharacterBT[ player ] = nil  -- less leaky than false	
 
-	DebugXL:logD( 'Character', "LoadCharacterWait finished "..player.Name ) 	
+	DebugXL:logD( LogArea.Characters, "LoadCharacterWait finished "..player.Name ) 	
 			
 	return player.Character
 end

@@ -1,19 +1,19 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { ServerStorage, Players } from '@rbxts/services';
 
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS';
-DebugXL.logD('Requires', 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
+DebugXL.logD(LogArea.Requires, 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
 
 import { CreateToolParamsI } from 'ServerStorage/TS/CreateToolParamsI'
 import { PlayerServer } from './PlayerServer';
 
-DebugXL.logD('Requires', 'FlexibleToolServer: imports succesful')
+DebugXL.logD(LogArea.Requires, 'FlexibleToolServer: imports succesful')
 
 
 // thinking about things which can hold weapons
@@ -80,7 +80,7 @@ export namespace FlexibleToolsServer {
         // validate parameters so calling from Lua is safer
         DebugXL.Assert(destinationCharacter.IsA('Model'))
 
-        DebugXL.logI(script.Name, `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}`)
+        DebugXL.logI(LogArea.Items, `Creating ${flexTool.baseDataS} for ${destinationCharacter.Name}`)
 
         FlexibleToolsServer.setFlexToolInst(toolInstance, { flexToolInst: flexTool, character: destinationCharacter, possessionsKey: params.possessionsKey })
 

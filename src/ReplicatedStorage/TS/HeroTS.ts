@@ -7,7 +7,7 @@ import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
 import { CharacterRecord, GearPool } from "./CharacterRecord"
 import { Enhancements } from "./EnhancementsTS";
-import { DebugXL } from "./DebugXLTS";
+import { DebugXL, LogArea } from "./DebugXLTS";
 
 
 let nerfTest = 100000  // test nerfing to this level

@@ -1,5 +1,5 @@
 import { Workspace } from "@rbxts/services";
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 
 let messageGuiXL = Workspace.FindFirstChild('Standard')!.FindFirstChild('MessageGuiXL')!
 let messageRE = messageGuiXL.FindFirstChild('MessageRE') as RemoteEvent

@@ -1,7 +1,7 @@
 // felt the need to split quest data up on the client and server so server functions could reside here and include any other server functionality (Inventory)
 // that we needed
 import { QuestData } from "ReplicatedStorage/TS/QuestData"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 
 import { Workspace, Teams } from "@rbxts/services"
 

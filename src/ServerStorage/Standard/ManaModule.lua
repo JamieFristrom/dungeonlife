@@ -1,8 +1,10 @@
-print( script:GetFullName().." executed" )
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local HeroUtility = require( game.ReplicatedStorage.Standard.HeroUtility )
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 
 local Mana = {}

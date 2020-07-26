@@ -1,25 +1,19 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI('Executed', script:GetFullName())
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local startTime = tick()
 
-local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
-
-local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local InventoryClient  = require( game.ReplicatedStorage.InventoryClient )
-local PossessionData   = require( game.ReplicatedStorage.PossessionData )
 
 local AnalyticsClient = require( game.ReplicatedStorage.TS.AnalyticsClient ).AnalyticsClient
-local GameplayTestUtility = require( game.ReplicatedStorage.TS.GameplayTestUtility ).GameplayTestUtility
 local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local ServerGui = require( game.ReplicatedStorage.TS.ServerGui ).ServerGui
-
-local Crates           = require( game.ReplicatedStorage.Standard.Crates )
 
 local playerGui = script.Parent.Parent.Parent
 
@@ -27,23 +21,20 @@ local localPlayer = game.Players.LocalPlayer
 
 local displayDelay = 0.001  -- it's slower than I'd like but can't go any faster. isn't that interesting?
 
-
-local treasureArrow
-
-DebugXL:logD("UI", "Waiting for loading goo")
+DebugXL:logD(LogArea.UI, "Waiting for loading goo")
 GuiXL:waitForLoadingGoo()
-DebugXL:logD("UI", "Done waiting for loading goo")
+DebugXL:logD(LogArea.UI, "Done waiting for loading goo")
 
 -- also, the very first time we get here, check to see if we should invite to a different server
 if( Places.places.BeginnerServer and ServerGui.cachedHighestHeroLevel < Places.places.BeginnerServer.maxGrowthLevel and Places.getCurrentPlace() ~= Places.places.BeginnerServer )then
-	DebugXL:logI('UI', "Inviting to beginner server" )
+	DebugXL:logI(LogArea.UI, "Inviting to beginner server" )
 	if ServerGui:inviteToBeginnerServer() then
-		DebugXL:logI('UI', "Beginner server invitation accepted" )
+		DebugXL:logI(LogArea.UI, "Beginner server invitation accepted" )
 		return
 	end
 end
 
-DebugXL:logI( "UI", "Activating UI")
+DebugXL:logI( LogArea.UI, "Activating UI")
 playerGui:WaitForChild('CurtainGui').Enabled = true
 playerGui:WaitForChild('PlayerListGui').Enabled = true
 playerGui:WaitForChild('NoResetGui').Enabled = true
@@ -100,7 +91,7 @@ end
 	
 -- if localPlayer:WaitForChild("Tutorial").Value == 2 then
 	
--- 	DebugXL:logI('UI', "Tutorial: Let's go shopping" )
+-- 	DebugXL:logI(LogArea.UI, "Tutorial: Let's go shopping" )
 -- 	-- turn arrow off chest if it's still around
 -- 	-- close the furnishing gui for you
 -- 	playerGui.FurnishGui.Event:Fire( "Build" )

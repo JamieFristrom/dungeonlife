@@ -1,26 +1,21 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI('Executed', script:GetFullName())
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 --print( "ChooseHeroScript: CharacterClientI required" )
-local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
---print( "ChooseHeroScript: HeroUtility required" )
 local InventoryClient   = require( game.ReplicatedStorage.InventoryClient )
 --print( "ChooseHeroScript: InventoryClient required" )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 --print( "ChooseHeroScript: DeveloperProducts required" )
 
-local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
---print( "ChooseHeroScript: CheatUtilityXL required" )
 local InputXL           = require( game.ReplicatedStorage.Standard.InputXL )
 --print( "ChooseHeroScript: InputXL required" )
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 --print( "ChooseHeroScript: InstanceXL required" )
-local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
---print( "ChooseHeroScript: TableXL required" )
 
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 --print( "ChooseHeroScript: PossessionData required" )
@@ -46,7 +41,7 @@ local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 
 local function ChooseHero( slotN )
-	DebugXL:logD("GameManagement","Made hero choice "..slotN..": hiding menu")
+	DebugXL:logD(LogArea.Players,"Made hero choice "..slotN..": hiding menu")
 	workspace.Signals.HeroesRF:InvokeServer( "ChooseHero", slotN )
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.Visible = false
@@ -58,7 +53,7 @@ end
 
 local function CreateNewHero( slotN )
 	--workspace.Signals.HeroesRF:InvokeServer( "NewHero" )
-	DebugXL:logI("GameManagement","ChooseHeroScript CreateNewHero")
+	DebugXL:logI(LogArea.Players,"ChooseHeroScript CreateNewHero")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.ChooseClass.Visible = true
 end
@@ -119,7 +114,7 @@ local function DisplayChoices()
 				"No" )
 			if result[1]=="Yes" then				
 				chooseHeroFrame.Visible = false			
-				DebugXL:logI("GameManagement","Invoking DeleteHero for player "..game.Players.LocalPlayer:GetFullName())
+				DebugXL:logI(LogArea.Players,"Invoking DeleteHero for player "..game.Players.LocalPlayer:GetFullName())
 				savedPlayerCharacters = workspace.Signals.HeroesRF:InvokeServer( "DeleteHero", slotN )
 				DisplayChoices()
 				chooseHeroFrame.Visible = true			
@@ -211,13 +206,13 @@ end)
 local ChooseHeroRemote = {}
 
 function ChooseHeroRemote:ChooseHero()
-	DebugXL:logI("GameManagement","ChooseHeroRemote:ChooseHero")
+	DebugXL:logI(LogArea.Players,"ChooseHeroRemote:ChooseHero")
 	Display()
 end
 
 
 function ChooseHeroRemote:DefaultHeroChosen()
-	DebugXL:logI("GameManagement","ChooseHeroRemote:DefaultHeroChosen")
+	DebugXL:logI(LogArea.Players,"ChooseHeroRemote:DefaultHeroChosen")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.ChooseClass.Visible = false
 	heroGuiFrame.Visible = false	
@@ -225,7 +220,7 @@ end
 
 
 function ChooseHeroRemote:PrepareHero()
-	DebugXL:logI("GameManagement","ChooseHeroRemote:PrepareHero")
+	DebugXL:logI(LogArea.Players,"ChooseHeroRemote:PrepareHero")
 	chooseHeroFrame.Visible = false
 	heroGuiFrame.Visible = false
 	playerGui.CharacterSheetGui.CharacterSheet.Visible = true

@@ -1,3 +1,9 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 --[[
 	
 	Dungeon Builder 2.0
@@ -14,16 +20,12 @@
 	- daemon level (smaller, more open)
 	
 --]]
-print( script:GetFullName().." executed" )
-
-local DebugXL        = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL         = require( game.ReplicatedStorage.Standard.MathXL )
 local InstanceXL     = require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL        = require( game.ReplicatedStorage.Standard.TableXL )
 
 local FloorData      = require( game.ReplicatedStorage.FloorData )
 local MapTileData    = require( game.ReplicatedStorage.MapTileDataModule )
-local PossessionData = require( game.ReplicatedStorage.PossessionData )
 
 local TileServer = require( game.ServerStorage.TS.TileServer ).TileServer
 
@@ -50,12 +52,14 @@ function DownStaircaseConstructor( tileModel )
 		if not trapDoors or not trapDoorHumanoid or trapDoorHumanoid.Health <= 0 then
 			local humanoid = toucher.Parent:FindFirstChild("Humanoid")
 			if humanoid then
-	--			--print("Down staircase touched by "..toucher:GetFullName() ) 
+				DebugXL:logD(LogArea.GameManagement,"Down staircase touched by part "..toucher:GetFullName() ) 
 				local player = game.Players:GetPlayerFromCharacter( toucher.Parent )
 				if player then
-	--				warn("Down staircase touched by player "..player.Name) 
-					if nextLevelFunc( player )
-						then rainbowConnection:Disconnect()
+					DebugXL:logI(LogArea.GameManagement,"Down staircase touched by player "..player:GetFullName() ) 
+					DebugXL:Assert( nextLevelFunc)
+					if nextLevelFunc( player ) then 
+						DebugXL:logD(LogArea.GameManagement,"Disconnecting rainbow" ) 
+						rainbowConnection:Disconnect()
 					end					
 				end
 			end
@@ -334,7 +338,7 @@ end
 
 function Dungeon:BuildWait( _nextLevelFunc )
 	DebugXL:Assert( self == Dungeon )
-	warn("Building dungeon")
+	DebugXL:logW(LogArea.GameManagement, "Building dungeon")
 	nextLevelFunc = _nextLevelFunc
 	local staircaseV3 
 	-- once in a blue moon a map makes it impossible to place a staircase; keep going until we get one

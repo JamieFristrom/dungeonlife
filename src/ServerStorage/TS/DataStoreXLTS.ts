@@ -7,7 +7,7 @@
 */
 import { DataStoreService } from "@rbxts/services"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 
 const datastoreRetriesN = 3

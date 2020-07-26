@@ -1,10 +1,14 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 -- uses Game Analytics
 -- changed the name to RetentionAnalytics because engagement ended up being all I used it for
 
-print( script.Name.." executed" )
 -- the retention component of this is the only component I want to keep
-
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
 
 local CharacterClientI = require( game.ReplicatedStorage.Standard.CharacterClientI )
 
