@@ -118,9 +118,8 @@ export namespace MonsterServer {
             return 1
         }
         // choose a random hero to match
-        const heroes: Array<Hero> = []
-        PlayerServer.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
-        const myHero = heroes[MathXL.RandomInteger(0, heroes.size() - 1)]
+        const heroRecords = PlayerServer.getHeroRecords()
+        const myHero = heroRecords[MathXL.RandomInteger(0, heroRecords.size() - 1)]
         return determineMonsterSpawnLevelForHero(myHero, mobCap)
     }
 
