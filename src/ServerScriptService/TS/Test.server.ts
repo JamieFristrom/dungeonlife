@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { RunService, Teams, Players, Workspace, ReplicatedStorage } from "@rbxts/services"
 
@@ -16,7 +16,7 @@ if (RunService.IsStudio()) {
     for (let descendant of Workspace.GetDescendants()) {
         if (descendant.IsA("BasePart"))
             if (!descendant.Anchored) {
-                DebugXL.logW("Parts", descendant.GetFullName() + " is not anchored")
+                DebugXL.logW(LogArea.Parts, descendant.GetFullName() + " is not anchored")
             }
     }
 

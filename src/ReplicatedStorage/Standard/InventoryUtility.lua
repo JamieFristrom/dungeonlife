@@ -1,10 +1,13 @@
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
-
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
-
 
 local InventoryUtility = {}
 

@@ -1,14 +1,15 @@
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
 
-local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local HeroUtility      = require( game.ReplicatedStorage.Standard.HeroUtility )
 
 local FlexibleTools    = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 local Heroes           = require( game.ServerStorage.Standard.HeroesModule )
-
-local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 
 local WeaponServer = {}
 

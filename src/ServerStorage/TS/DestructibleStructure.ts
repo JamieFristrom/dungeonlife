@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { TweenService, CollectionService, Teams } from '@rbxts/services'
 
@@ -20,7 +20,7 @@ const heroesTeam = Teams.WaitForChild<Team>("Heroes")
 export class DestructibleStructure
 {
 	constructor( public destructibleInstance: Model ) {
-		DebugXL.logD("Gameplay", "Destructible.new called for "+destructibleInstance.GetFullName())
+		DebugXL.logD(LogArea.Gameplay, "Destructible.new called for "+destructibleInstance.GetFullName())
 		CollectionService.AddTag( destructibleInstance, "CharacterTag" )
 		CollectionService.AddTag( destructibleInstance, "Destructible" )
 		const humanoid = destructibleInstance.FindFirstChild<Humanoid>("Humanoid")
@@ -33,13 +33,13 @@ export class DestructibleStructure
 			DestructibleServer.calibrateHealth( destructibleInstance, averageHeroLocalLevel, numHeroes, dungeonDepth )
 			humanoid.Died.Connect( ()=>{
 				LootServer.destructibleDrop(destructibleInstance)
-				DebugXL.logI("Gameplay", destructibleInstance.GetFullName()+' died')
+				DebugXL.logI(LogArea.Gameplay, destructibleInstance.GetFullName()+' died')
 				destructibleInstance.PrimaryPart!.FindFirstChild<Sound>("Destroyed")!.Play()
 				this.flyApart()
 				wait(flyApartSeconds)
 				destructibleInstance.Parent = undefined
 			})
-			DebugXL.logD("Gameplay", humanoid.GetFullName()+" died connected")
+			DebugXL.logD(LogArea.Gameplay, humanoid.GetFullName()+" died connected")
 			const hitSoundEmitter = destructibleInstance.PrimaryPart!.FindFirstChild<Sound>("Hit")
 			let lastHealth = humanoid.Health
 			humanoid.HealthChanged.Connect( (newHealth: number)=>{

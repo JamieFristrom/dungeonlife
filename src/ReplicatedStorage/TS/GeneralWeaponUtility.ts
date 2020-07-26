@@ -1,8 +1,8 @@
 
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { DebugXL } from "./DebugXLTS"
-DebugXL.logI("Executed", script.Name)
+import { DebugXL, LogArea } from "./DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.Name)
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
 
 import * as WeaponUtility from "ReplicatedStorage/Standard/WeaponUtility"
@@ -41,23 +41,23 @@ export namespace GeneralWeaponUtility {
 
     export function findValidTargetsAndRanges(attackingCharacter: Character, maxRange: number): [Character, number][] {
         if (!attackingCharacter.Name) {
-            DebugXL.logD("WTF", "WTF")
+            DebugXL.logD(LogArea.Combat, "WTF")
         }
-        DebugXL.logV("Combat", "Find closest target for " + (attackingCharacter.Name ? attackingCharacter.Name : "(nil)"))
+        DebugXL.logV(LogArea.Combat, "Find closest target for " + (attackingCharacter.Name ? attackingCharacter.Name : "(nil)"))
         const characters = CollectionService.GetTagged("CharacterTag")
-        DebugXL.logV("Combat", "All characters: " + DebugXL.stringifyInstanceArray(characters))
+        DebugXL.logV(LogArea.Combat, "All characters: " + DebugXL.stringifyInstanceArray(characters))
         characters.forEach((char) => DebugXL.Assert(char.IsA("Model")))
         const modelCharacters = characters as Model[]
         const attackingPlayer = Players.GetPlayerFromCharacter(attackingCharacter)
         const attackingTeam = attackingPlayer ? attackingPlayer.Team : Teams.FindFirstChild<Team>("Monsters")
         const validTargetCharacters = modelCharacters.filter((char) => CharacterClientI.ValidTarget(attackingTeam!, char))
-        DebugXL.logV("Combat", "Valid targets: " + DebugXL.stringifyInstanceArray(validTargetCharacters))
+        DebugXL.logV(LogArea.Combat, "Valid targets: " + DebugXL.stringifyInstanceArray(validTargetCharacters))
         const primaryPartCharacters = validTargetCharacters.filter((char) => char.PrimaryPart !== undefined)
-        DebugXL.logV("Combat", "Targets with primary parts: " + DebugXL.stringifyInstanceArray(primaryPartCharacters))
+        DebugXL.logV(LogArea.Combat, "Targets with primary parts: " + DebugXL.stringifyInstanceArray(primaryPartCharacters))
         const forcefieldlessCharacters = primaryPartCharacters.filter((char) => char.FindFirstChild("ForceField") === undefined)
-        DebugXL.logV("Combat", "Targets without force fields: " + DebugXL.stringifyInstanceArray(forcefieldlessCharacters))
+        DebugXL.logV(LogArea.Combat, "Targets without force fields: " + DebugXL.stringifyInstanceArray(forcefieldlessCharacters))
         const charactersWithHeads = forcefieldlessCharacters.filter((char) => char.FindFirstChild("Head") !== undefined)
-        DebugXL.logV("Combat", "Targets with heads: " + DebugXL.stringifyInstanceArray(charactersWithHeads))
+        DebugXL.logV(LogArea.Combat, "Targets with heads: " + DebugXL.stringifyInstanceArray(charactersWithHeads))
         const targetsAndRanges: [Character, number][] = charactersWithHeads.map((char) =>
             [char, WeaponUtility.GetTargetPoint(char).sub(ModelUtility.getPrimaryPartCFrameSafe(attackingCharacter).p).Magnitude] as [Character, number])
         const filteredTargetsAndRanges = targetsAndRanges.filter((targetAndRange) => targetAndRange[1] < maxRange)
@@ -75,18 +75,18 @@ export namespace GeneralWeaponUtility {
                 // use head for target because some destructibles make their primary part something else for positioning purposes. Everyone has a head
                 const targetPart = targetsAndRanges[i][0].FindFirstChild<BasePart>("Head")
                 if (!targetPart) {
-                    DebugXL.logD("Combat", "Target " + targetsAndRanges[i][0].Name + " missing Head")
+                    DebugXL.logD(LogArea.Combat, "Target " + targetsAndRanges[i][0].Name + " missing Head")
                 }
                 else {
                     const losRay = new Ray(attackingCharacterPos, targetPart.Position.sub(attackingCharacterPos))
                     const [hitPart] = findNontransparentPartOnRayWithIgnoreList(losRay, [attackingCharacter, targetsAndRanges[i][0]])
                     if (!hitPart) {
                         // clear LOS
-                        DebugXL.logV("Combat", "Closest target: " + DebugXL.stringifyInstance(targetsAndRanges[i][0]))
+                        DebugXL.logV(LogArea.Combat, "Closest target: " + DebugXL.stringifyInstance(targetsAndRanges[i][0]))
                         return targetsAndRanges[i]
                     }
                     else {
-                        DebugXL.logV("Combat", "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
+                        DebugXL.logV(LogArea.Combat, "Blocked LOS between " + attackingCharacter.Name + " and " + targetsAndRanges[i][0].Name + " by " + hitPart.GetFullName())
                     }
                 }
             }
@@ -155,7 +155,7 @@ export namespace GeneralWeaponUtility {
         while (isCoolingDown(character)) {
             wait()
         }
-        DebugXL.logV("Combat", `${character.Name} took ${time() - startTime} seconds to cool down`)
+        DebugXL.logV(LogArea.Combat, `${character.Name} took ${time() - startTime} seconds to cool down`)
     }
 
     // garbage collection

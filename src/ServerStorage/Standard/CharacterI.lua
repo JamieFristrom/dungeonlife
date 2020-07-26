@@ -1,6 +1,10 @@
-print( script:GetFullName().." executed" )
 
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
@@ -20,7 +24,7 @@ function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attack
 	DebugXL:Assert( self == CharacterI )
 	DebugXL:Assert( attackingCharacter:IsA('Model') )
 	DebugXL:Assert( attackingTeam:IsA('Team') )
-	DebugXL:logD( 'Combat', 'TakeFlexToolDamage attackingPlayer: '..attackingCharacter.Name..' hitCharacter: '..hitCharacter.Name )
+	DebugXL:logD( LogArea.Combat, 'TakeFlexToolDamage attackingPlayer: '..attackingCharacter.Name..' hitCharacter: '..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
@@ -29,7 +33,7 @@ function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attack
 			local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
 		
 			if attackingTeam == game.Teams.Heroes then	
-				DebugXL:logV( 'Combat', 'Hero damaging monster' )	
+				DebugXL:logV( LogArea.Combat, 'Hero damaging monster' )	
 				DebugXL:Assert( attackingPlayer )
 				if( attackingPlayer )then
 					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
@@ -37,7 +41,7 @@ function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attack
 			else
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
-				DebugXL:logV( 'Combat', 'Monster damaging hero' )	
+				DebugXL:logV( LogArea.Combat, 'Monster damaging hero' )	
 				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
 			end
 		end
@@ -50,7 +54,7 @@ function CharacterI:TakeDirectDamage( hitCharacter, damage, attackingPlayer, dam
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	DebugXL:Assert( hitHumanoid )
 	if hitHumanoid then
-		DebugXL:logV( 'Combat', 'CharacterI:TakeDirectDamage - hitHumanoid '..hitHumanoid:GetFullName()..','..damage..','..attackingPlayer.Name )
+		DebugXL:logV( LogArea.Combat, 'CharacterI:TakeDirectDamage - hitHumanoid '..hitHumanoid:GetFullName()..','..damage..','..attackingPlayer.Name )
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
 --			--print( attackingPlayer.Name.." hits "..hitCharacter.Name.." for "..damage )

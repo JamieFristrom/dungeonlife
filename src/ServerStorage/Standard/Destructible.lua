@@ -1,11 +1,13 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 --
 --  Destructible structure
 --
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI( 'Executed', script.Name )
 
 local MathXL          = require( game.ReplicatedStorage.Standard.MathXL )
 
@@ -37,7 +39,7 @@ function Destructible:FlyApart( destructibleInstance, timeLength )
 end
 
 function Destructible.new( destructibleInstance )
-	DebugXL:logD('Gameplay','Destructible.new called for '..destructibleInstance:GetFullName())
+	DebugXL:logD(LogArea.Gameplay,'Destructible.new called for '..destructibleInstance:GetFullName())
 	local timeLength = 1
 	
 	game.CollectionService:AddTag( destructibleInstance, "CharacterTag" )
@@ -55,14 +57,14 @@ function Destructible.new( destructibleInstance )
 		destructibleInstance.Humanoid.Died:Connect( function()
 			LootServer.destructibleDrop(destructibleInstance)
 
-			DebugXL:logI('Gameplay', destructibleInstance:GetFullName()..' died')
+			DebugXL:logI(LogArea.Gameplay, destructibleInstance:GetFullName()..' died')
 			destructibleInstance.PrimaryPart.Destroyed:Play()
 			
 			Destructible:FlyApart( destructibleInstance, timeLength )
 			wait( timeLength )
 			destructibleInstance.Parent = nil
 		end )
-		DebugXL:logD('Gameplay', destructibleInstance.Humanoid:GetFullName()..' died connected')		
+		DebugXL:logD(LogArea.Gameplay, destructibleInstance.Humanoid:GetFullName()..' died connected')		
 		
 		local lastValue = destructibleInstance.Humanoid.Health
 		local hitSoundEmitter = destructibleInstance.PrimaryPart.Hit

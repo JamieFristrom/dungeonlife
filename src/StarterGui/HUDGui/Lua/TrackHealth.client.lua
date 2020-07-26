@@ -1,8 +1,9 @@
 
 -- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
-DebugXL:logI('Executed', script:GetFullName())
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
 
@@ -40,6 +41,6 @@ while wait(0.1) do
 		local furnishingMenuVisible = furnishGui and ( furnishGui:WaitForChild("ActiveCategoryListFrame").Visible or
 			furnishGui:WaitForChild("ActiveFurnishingListFrame").Visible )	
 		healthBall.Visible = not furnishingMenuVisible		
-		DebugXL:logV('UI', 'healthBall visible: '..tostring(healthBall.Visible))
+		DebugXL:logV(LogArea.UI, 'healthBall visible: '..tostring(healthBall.Visible))
 	end
 end

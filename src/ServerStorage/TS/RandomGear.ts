@@ -6,7 +6,7 @@ import { Randomisher } from 'ReplicatedStorage/TS/Randomisher'
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 
 import * as FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule'
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 
 export namespace RandomGear
 {

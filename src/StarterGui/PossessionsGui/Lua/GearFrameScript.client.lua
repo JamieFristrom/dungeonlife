@@ -1,19 +1,21 @@
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local InputXL          = require( game.ReplicatedStorage.Standard.InputXL )
 local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL ) 
 local GearUI = require( game.ReplicatedStorage.Standard.GearUI )
 
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
-local PossessionData   = require( game.ReplicatedStorage.PossessionData )
 
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local HeroUtility      = require( game.ReplicatedStorage.Standard.HeroUtility )
 local InventoryClient  = require( game.ReplicatedStorage.InventoryClient )
 
-local FlexToolClient = require( game.ReplicatedStorage.TS.FlexToolClient ).FlexToolClient
-local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local PCClient = require( game.ReplicatedStorage.TS.PCClient ).PCClient

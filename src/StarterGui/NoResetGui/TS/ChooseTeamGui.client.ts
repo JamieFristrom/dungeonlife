@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI("Executed", script.GetFullName())
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Players, Workspace } from "@rbxts/services"
 
@@ -43,6 +43,6 @@ closeButton.MouseButton1Click.Connect( ()=>chooseTeamFrame.Visible=false )
 let mainRE = Workspace.WaitForChild("Signals")!.WaitForChild("MainRE") as RemoteEvent
 
 chooseTeamButton.MouseButton1Click.Connect(function () {
-    DebugXL.logI("UI", "Choose team button clicked")
+    DebugXL.logI(LogArea.UI, "Choose team button clicked")
     chooseTeamFrame.Visible = !chooseTeamFrame.Visible
 })

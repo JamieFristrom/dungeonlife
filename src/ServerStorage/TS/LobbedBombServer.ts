@@ -1,8 +1,8 @@
 
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import * as CharacterI from 'ServerStorage/Standard/CharacterI'
 import * as FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule'

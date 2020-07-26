@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { ServerStorage, Workspace, CollectionService, RunService, Teams, PhysicsService } from '@rbxts/services'
 
@@ -58,11 +58,11 @@ class Attackable {
         const lastAttackerObject = this.humanoid.FindFirstChild<ObjectValue>("LastAttacker")
         if (lastAttackerObject) {
             if (!lastAttackerObject.Value) {
-                DebugXL.logE("Spawner", this.model.Name + " has invalid lastAttackerObject")
+                DebugXL.logE(LogArea.Spawner, this.model.Name + " has invalid lastAttackerObject")
                 return
             }
             if (!lastAttackerObject.Value.IsA("Model")) {
-                DebugXL.logE("Spawner", this.model.Name + " has lastAttacker " + lastAttackerObject.Value.GetFullName() + " that is not a model")
+                DebugXL.logE(LogArea.Spawner, this.model.Name + " has lastAttacker " + lastAttackerObject.Value.GetFullName() + " that is not a model")
                 return
             }
             if (lastAttackerObject.Value !== this.lastAttacker) {
@@ -149,7 +149,7 @@ export namespace MobServer {
         const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
         const mobTemplate = monsterFolder.FindFirstChild<Model>(modelName)
         if (!mobTemplate) {
-            DebugXL.logW('Mobs', 'No model for ' + modelName)
+            DebugXL.logW(LogArea.Mobs, 'No model for ' + modelName)
         }
         else {
             const mobModel = mobTemplate.Clone()
@@ -217,43 +217,53 @@ export namespace MobServer {
     // }
 
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
-        if( PlayerServer.getHeroRecords().size()>=1 ) {
-            if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
-                // boss spawnPart; only use if no monster players
-                if (monsterTeam.GetPlayers().size() === 0) {
-                    const spawner = spawnersMap.get(spawnPart)
-                    if (!spawnersMap.get(spawnPart)) {
-                        DebugXL.logI("Gameplay", "Spawning one use spawner " + spawnPart.GetFullName())
-                        spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
-                            undefined,
-                            spawnPart,
-                            curTick)
-                        createSpawnerForSpawnPart(spawnPart, curTick)
-                    }
+        if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
+            // boss spawnPart; only use if no monster players
+            if (monsterTeam.GetPlayers().size() === 0) {
+                const spawner = spawnersMap.get(spawnPart)
+                if (!spawnersMap.get(spawnPart)) {
+                    DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
+                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                        undefined,
+                        spawnPart,
+                        curTick)
+                    createSpawnerForSpawnPart(spawnPart, curTick)
                 }
             }
-            else {
-                const spawner = spawnersMap.get(spawnPart)
-                if (!spawner || (spawner.lastSpawnTick < curTick - mobSpawnPeriod)) {
-                    // have we already spawned enough for now?
-                    const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
-                    if (myMobs.size() < mobSpawnerCap) {
-                        spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
-                            undefined,
-                            spawnPart,
-                            curTick)
-                    }
+        }
+        else {
+            const spawner = spawnersMap.get(spawnPart)
+            if (!spawner || spawner.lastSpawnTick < curTick - mobSpawnPeriod) {
+                // have we already spawned enough for now?
+                const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
+                if (myMobs.size() < mobSpawnerCap) {
+                    DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from "+spawnPart.GetFullName())
+                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                        undefined,
+                        spawnPart,
+                        curTick)
                 }
             }
         }
     }
 
+    let lastSpawnersUpdateTick = 0
     export function spawnersUpdate(curTick: number) {
-        if (mobs.size() < mobGlobalCap) {
-            const monsterSpawns = FurnishServer.GetMonsterSpawners()
-            monsterSpawns.forEach((spawnPart) => {
-                spawnerCheckForSpawn(spawnPart, curTick)
-            })
+        if (curTick > lastSpawnersUpdateTick + 0.5) {
+            DebugXL.logV(LogArea.MobSpawn, "Updating spawners")
+            if (PlayerServer.getHeroRecords().size() >= 1) {
+                if (mobs.size() < mobGlobalCap) {
+                    DebugXL.logV(LogArea.MobSpawn, "Fewer than cap")
+                    const monsterSpawns = FurnishServer.GetMonsterSpawners()
+                    monsterSpawns.forEach((spawnPart) => {
+                        spawnerCheckForSpawn(spawnPart, curTick)
+                    })
+                }
+            }
+            else {
+                DebugXL.logD(LogArea.MobSpawn, "No heroes detected")
+            }
+            lastSpawnersUpdateTick = curTick
         }
         spawnersUpdateLastAttacker()
     }
@@ -292,7 +302,7 @@ export namespace MobServer {
                 }
             }
             // spawn on corner to be safe
-            DebugXL.logW("Mob", "Unable to find spawn point in 100 tries")
+            DebugXL.logW(LogArea.MobSpawn, "Unable to find spawn point in 100 tries")
             return new Vector3(maxX, 0, maxZ)
         }
 
@@ -339,7 +349,7 @@ export namespace MobServer {
                     for (let instance of this.model.GetDescendants()) {
                         if (instance.IsA("BasePart")) {
                             if (instance.Anchored) {
-                                DebugXL.logW("Parts", instance.GetFullName() + " is anchored. Should it be?")
+                                DebugXL.logW(LogArea.Parts, instance.GetFullName() + " is anchored. Should it be?")
                             }
                             else {
                                 instance.SetNetworkOwner(undefined)
@@ -365,7 +375,7 @@ export namespace MobServer {
                 if (possessionKey) {
                     const tool = CharacterRecord.getToolInstanceFromPossessionKey(this.model, characterRecord, possessionKey)
                     if (!tool) {
-                        DebugXL.logW("Items", "Couldn't find tool for " + this.model.Name + " weaponKey: " + possessionKey)
+                        DebugXL.logW(LogArea.Items, "Couldn't find tool for " + this.model.Name + " weaponKey: " + possessionKey)
                     }
                     else {
                         // check to make sure nobody else arl
@@ -386,7 +396,7 @@ export namespace MobServer {
                                 break
                             }
                             else {
-                                DebugXL.logW('Items', 'Weapon ' + tool.GetFullName() + ' not supported yet')
+                                DebugXL.logW(LogArea.Items, 'Weapon ' + tool.GetFullName() + ' not supported yet')
                             }
                         }
                     }
@@ -446,7 +456,7 @@ export namespace MobServer {
                         return spawner.getLastSpottedEnemyPosition()
                     }
                     else {
-                        DebugXL.logE("Spawner", this.model.GetFullName() + "'s spawner for " + this.spawnPart.GetFullName() + " not found in spawnersMap")
+                        DebugXL.logE(LogArea.Spawner, this.model.GetFullName() + "'s spawner for " + this.spawnPart.GetFullName() + " not found in spawnersMap")
                     }
                 }
             }
@@ -511,7 +521,7 @@ export namespace MobServer {
 
                         const destinationVec = lastSpottedEnemyPosition.sub(ModelUtility.getPrimaryPartCFrameSafe(this.model).p)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
-                        if( totalVec.Magnitude > 4 ) {  // don't do the cha-cha once you're stable
+                        if (totalVec.Magnitude > 4) {  // don't do the cha-cha once you're stable
                             const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
                             this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).p.add(shortenedVec))
                             //this.humanoid.Move(totalVec.Unit)

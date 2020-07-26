@@ -1,5 +1,9 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
 local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
-DebugXL:logI( 'Executed', script:GetFullName())
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 -- a 'bolt' is a projectile that travels at a fixed speed in a straight line; this code works for crossbows, arrows, fireballs, etc
 local BoltWeaponUtilityXL = require( game.ReplicatedStorage.Standard.BoltWeaponUtilityXL )
@@ -54,29 +58,29 @@ function BoltWeaponServerXL.new( Tool )
 	function RemoteFunctions.OnActivated( _, targetV3, boltCodeName )
 	--	if not Tool.Enabled or not CheckIfAlive() or not ToolEquipped then	
 		if not Character then
-			DebugXL:logW( 'Combat', 'Firing '..Tool:GetFullName()..' before Character set')
+			DebugXL:logW( LogArea.Combat, 'Firing '..Tool:GetFullName()..' before Character set')
 			return
 		end
-		DebugXL:logD( 'Combat', Character.Name..' activated bolt' )
+		DebugXL:logD( LogArea.Combat, Character.Name..' activated bolt' )
 		if not GeneralWeaponUtility.isEquippedBy( Tool, Character ) then  
-			DebugXL:logV( 'Combat', Character.Name.." unequipped, can't fire" )  -- not only that, variables might not be set up
+			DebugXL:logV( LogArea.Combat, Character.Name.." unequipped, can't fire" )  -- not only that, variables might not be set up
 			return			
 		end
 		if not WeaponServer:CheckRequirements( Tool, Player ) then return end
 		if not CheckIfAlive() then
-			DebugXL:logI( 'Combat', Character.Name.." not alive, can't fire" )
+			DebugXL:logI( LogArea.Combat, Character.Name.." not alive, can't fire" )
 			return
 		end
 
 		if GeneralWeaponUtility.isCoolingDown( Character ) then 
-			DebugXL:logI( 'Combat', Character.Name.." attempted to activate bolt while uncool")
+			DebugXL:logI( LogArea.Combat, Character.Name.." attempted to activate bolt while uncool")
 			return 
 		end
 		
 		local BoltDisplay = Tool:FindFirstChild("BoltDisplay")
 
 		if Mana:SpendMana( Character, flexToolInst:getManaCost() ) then				
-			DebugXL:logI( 'Combat', Character.Name.." firing bolt")
+			DebugXL:logI( LogArea.Combat, Character.Name.." firing bolt")
 			if BoltDisplay then
 				BoltDisplay.Transparency = 1
 			end
@@ -97,7 +101,7 @@ function BoltWeaponServerXL.new( Tool )
 	
 
 	local function Equipped(Mouse)
-		DebugXL:logD( 'Items', Tool:GetFullName()..' BoltWeaponServerXL OnEquipped' )
+		DebugXL:logD( LogArea.Items, Tool:GetFullName()..' BoltWeaponServerXL OnEquipped' )
 		Character = Tool.Parent
 		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
 		owningHumanoid = Character:FindFirstChild("Humanoid")
@@ -111,12 +115,12 @@ function BoltWeaponServerXL.new( Tool )
 	
 	Tool.BoltWeaponRE.OnServerEvent:Connect( function( player, funcName, ... )
 --		--print( player.Name.." fired bolt server event "..funcName )
-		DebugXL:logD( 'Combat', player.Name..' fired bolt server event '..funcName)
+		DebugXL:logD( LogArea.Combat, player.Name..' fired bolt server event '..funcName)
 		RemoteFunctions[ funcName ]( player, ... )
 	end)
 
 	Tool.RangedWeaponBE.Event:Connect( function( funcName, ... )
-		DebugXL:logD( 'Combat', 'Bolt bindable event '..funcName..' fired')
+		DebugXL:logD( LogArea.Combat, 'Bolt bindable event '..funcName..' fired')
 		RemoteFunctions[ funcName ]( nil, ... )
 	end)
 	

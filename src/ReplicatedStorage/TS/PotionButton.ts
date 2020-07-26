@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"

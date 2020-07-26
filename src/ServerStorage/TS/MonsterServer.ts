@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import { Teams, Workspace, Players } from "@rbxts/services";
 
@@ -23,7 +23,7 @@ import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
 import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 
-DebugXL.logD("Requires", "MonsterServer finished imports")
+DebugXL.logD(LogArea.Requires, "MonsterServer finished imports")
 
 type Character = Model
 interface MonsterPlayerInfo {
@@ -60,7 +60,7 @@ export namespace MonsterServer {
         let monsterLevel = 1
 
         const totalHeroLocalLevels = HeroServer.getTotalHeroEffectiveLocalLevels()
-        DebugXL.logI('Gameplay', "Average hero level for boss difficulty calc: " + totalHeroLocalLevels)
+        DebugXL.logI(LogArea.Gameplay, "Average hero level for boss difficulty calc: " + totalHeroLocalLevels)
         if (monsterDatum.tagsT.Boss) {
             monsterLevel = math.floor(totalHeroLocalLevels * 0.4)  // 0.4 to 0.8
         }
@@ -74,18 +74,18 @@ export namespace MonsterServer {
 
     function determineMonsterSpawnLevelForHero(underwhelmedHero: Hero, numMonsters: number) {
         const startingLevel = underwhelmedHero.getLocalLevel()
-        DebugXL.logI('Gameplay', "Hero level: " + startingLevel)
+        DebugXL.logI(LogArea.Gameplay, "Hero level: " + startingLevel)
 
         const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
         const numHeroes = Heroes.GetPlayers().size()
-        DebugXL.logI('Gameplay', "Hero level: " + startingLevel)
+        DebugXL.logI(LogArea.Gameplay, "Hero level: " + startingLevel)
 
         const dungeonDepthObj = Workspace.FindFirstChild('GameManagement')!.FindFirstChild('DungeonDepth') as NumberValue
         // floor difficulty was 0.1 before 8/22. I'm pretty sure that's too low, but testing a wider spread anyhow to be sure
         // 0.1666 as of 9/3
         const dungeonFloorDifficultyK = BalanceData.dungeonFloorDifficultyK // GameplayTestService.getServerTestGroup( 'FloorDifficulty' ) * 0.0333 + 0.0666  
         const dungeonFloorDifficulty = dungeonDepthObj.Value * dungeonFloorDifficultyK + 1
-        DebugXL.logI('Gameplay', `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}`)
+        DebugXL.logI(LogArea.Gameplay, `dungeonFloorDifficulty is ${dungeonFloorDifficulty} for ${dungeonFloorDifficultyK}`)
 
         // a level 1 hero should be able to take about 3 level 1 monsters and then some (because they respawn)
 
@@ -94,7 +94,7 @@ export namespace MonsterServer {
         // if a level 1 character has to be able to beat 3 level 1 monsters, then a level 8 character needs to be faced by 3 level 8 monsters - hence the *3, but there's
         // some wiggle room because monsters will level up
         const effectiveStartingLevel = startingLevel + BalanceData.effective0LevelStrength
-        DebugXL.logI('Gameplay', "Effective starting level " + effectiveStartingLevel)
+        DebugXL.logI(LogArea.Gameplay, "Effective starting level " + effectiveStartingLevel)
 
         // a factoid:  more monsters is harder than fewer monsters not just for outnumbering purposes but because it means less time from monster -> hero; a 9 player game is
         // a lot harder for the heroes than a 3 player game even though the outnumber is still 2-1. 
@@ -127,7 +127,7 @@ export namespace MonsterServer {
     // a level 2 monsters is pretty much twice as tough as a level 1 monster and so on; so we add effective0LevelStrength to player
     // level to get a toughness factor but don't subtract after running our difficulty calcs because that's how players work, not monsters
     export function determineMonsterSpawnLevel(player: Player) {
-        DebugXL.logV('Gameplay', "Determining spawn level for " + player.Name)
+        DebugXL.logV(LogArea.Gameplay, "Determining spawn level for " + player.Name)
         const monsterInfo = getMonsterInfo(player)
         const heroForMonster = monsterInfo.heroMatch
         let startingLevel = monsterInfo.startingLevel
@@ -138,7 +138,7 @@ export namespace MonsterServer {
             // find heroes who still exist ATM
             const heroes: Array<Hero> = []
             PlayerServer.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
-            DebugXL.logI('Gameplay', "Matching hero and monster: " + heroes.size() + " hero records found")
+            DebugXL.logI(LogArea.Gameplay, "Matching hero and monster: " + heroes.size() + " hero records found")
             if (heroes.size() > 0) {
                 const numMonstersToEachHero = heroes.map((hero) => monsterInfos.values().filter((v) => v.heroMatch === hero).size())
                 let minMonsters = math.huge
@@ -151,12 +151,12 @@ export namespace MonsterServer {
                 }
 
                 const underwhelmedHero = heroes[underwhelmedHeroIdx]
-                DebugXL.logV('Gameplay', "Matching hero to monster " + player.Name)
+                DebugXL.logV(LogArea.Gameplay, "Matching hero to monster " + player.Name)
                 monsterInfo.heroMatch = underwhelmedHero
 
                 monsterInfo.startingLevel = determineMonsterSpawnLevelForHero(underwhelmedHero, monsterTeam.GetPlayers().size()) // should we count dungeon lords or not?  let's say yes, because they'll be a threat before level is over
             }
-            DebugXL.logI('Gameplay', "Level " + startingLevel)
+            DebugXL.logI(LogArea.Gameplay, "Level " + startingLevel)
             return startingLevel
         }
         else {
@@ -165,7 +165,7 @@ export namespace MonsterServer {
             // it's not clear that lower level monsters should level faster than higher level monsters
             // it would be nice if it's offset rather than all monsters level at once
             const level = math.floor(monsterInfo.startingLevel + monsterInfo.xpLevel)
-            //DebugXL.logI( 'Gameplay', "Monster xp: "+ monsterInfo.xpLevel +" + starting level "+monsterInfo.startingLevel+" equals Level "+level)
+            //DebugXL.logI( LogArea.Gameplay, "Monster xp: "+ monsterInfo.xpLevel +" + starting level "+monsterInfo.startingLevel+" equals Level "+level)
             return level
 
             // we have two competing interests when a monster dies on how much to level up the monster difficulty
@@ -241,14 +241,14 @@ export namespace MonsterServer {
 
         monsterInfos.forEach(mpi => mpi.xpLevel += monsterIndividualXP)
 
-        DebugXL.logI('Gameplay', "Monster team xp. Damage " + monsterInfo.damageDoneThisSpawn + " of " + heroHealthSum + ". New value " + monsterIndividualXP)
+        DebugXL.logI(LogArea.Gameplay, "Monster team xp. Damage " + monsterInfo.damageDoneThisSpawn + " of " + heroHealthSum + ". New value " + monsterIndividualXP)
         monsterInfo.damageDoneThisSpawn = 0
     }
 
     export function recordMonsterDamageDone(monsterPlayer: Player, amount: number) {
         const monsterInfo = getMonsterInfo(monsterPlayer)
         monsterInfo.damageDoneThisSpawn += amount
-        //DebugXL.logI( 'Gameplay', "Monster did "+amount+" damage" )
+        //DebugXL.logI( LogArea.Gameplay, "Monster did "+amount+" damage" )
     }
 
     export function isHighLevelServer() {
@@ -285,7 +285,7 @@ export namespace MonsterServer {
 
     export function died(monster: Character) {
         DebugXL.Assert(monster.IsA('Model'))
-        DebugXL.logI("Character", "Monster " + monster.Name + " died")
+        DebugXL.logI(LogArea.Combat, "Monster " + monster.Name + " died")
 
         const monsterPlayer = Players.GetPlayerFromCharacter(monster)
         if (monsterPlayer) {

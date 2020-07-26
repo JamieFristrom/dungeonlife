@@ -1,6 +1,6 @@
 import { Players, RunService, LocalizationService } from "@rbxts/services";
 
-import { DebugXL } from "./DebugXLTS";
+import { DebugXL, LogArea } from "./DebugXLTS";
 print( "Localize: DebugXLTS required")
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 print( "Localize: PossessionData required")

@@ -1,26 +1,26 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Players } from "@rbxts/services"
 
 import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
-DebugXL.logD("Requires", 'PlayerServer: ReplicatedStorage/TS imports succesful')
+DebugXL.logD(LogArea.Requires, 'PlayerServer: ReplicatedStorage/TS imports succesful')
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
-DebugXL.logD("Requires", 'PlayerServer: GameAnalyticsServer imported')
+DebugXL.logD(LogArea.Requires, 'PlayerServer: GameAnalyticsServer imported')
 
 import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
-DebugXL.logD("Requires", 'PlayerServer: Replicated/Standard imports succesful')
+DebugXL.logD(LogArea.Requires, 'PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
 
 
-DebugXL.logD("Requires", 'PlayerServer: Analytics imports succesful')
+DebugXL.logD(LogArea.Requires, 'PlayerServer: Analytics imports succesful')
 
 type Character = Model
 
@@ -75,7 +75,7 @@ export namespace PlayerServer {
                 return record
             wait()
         }
-        DebugXL.logE('Players', 'PlayerServer.getCharacterRecrodFromPlayerWait timed out on ' + player.Name)
+        DebugXL.logE(LogArea.Players, 'PlayerServer.getCharacterRecrodFromPlayerWait timed out on ' + player.Name)
     }
 
     // used for AI mobs and when we don't know if there's a player
@@ -220,7 +220,7 @@ export namespace PlayerServer {
                 DebugXL.Assert(hitTracker[category] !== undefined)
                 if (hitTracker[category]) {
                     hitTracker[category].attacks += 1
-                    DebugXL.logV(script.Name, player.Name + " " + category + " hit ratio so far: " + hitTracker[category].hits + "/" + hitTracker[category].attacks)
+                    DebugXL.logV(LogArea.Combat, player.Name + " " + category + " hit ratio so far: " + hitTracker[category].hits + "/" + hitTracker[category].attacks)
                 }
             }
             else {

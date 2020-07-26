@@ -1,6 +1,6 @@
 import { Analytics } from "./Analytics"
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 import { TestGroups, TestInfoHolder } from "ReplicatedStorage/TS/GameplayTestUtility"
 
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"

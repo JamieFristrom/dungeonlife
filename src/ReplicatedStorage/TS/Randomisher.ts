@@ -1,4 +1,4 @@
-import { DebugXL } from "./DebugXLTS";
+import { DebugXL, LogArea } from "./DebugXLTS";
 
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 

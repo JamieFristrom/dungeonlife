@@ -1,4 +1,4 @@
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 import { Players, Workspace, GuiService, ContextActionService, ReplicatedFirst } from "@rbxts/services"
 

@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import * as InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
 
@@ -33,7 +33,7 @@ export namespace ThrownWeaponHelpers {
 		const inRoot = (velocityK * velocityK * velocityK * velocityK) - (grav * ((grav * dx * dx) + (2 * dy * velocityK * velocityK)))
 
 		if (inRoot <= 0) {
-			DebugXL.logI("Combat", "Computing out of range launch angle")
+			DebugXL.logI(LogArea.Combat, "Computing out of range launch angle")
 			return .25 * math.pi  // maximum distance you can throw, 45 degrees === pi/4
 		}
 		const root = math.sqrt(inRoot)
@@ -62,10 +62,10 @@ export namespace ThrownWeaponHelpers {
 				missile.Name = player.Name + projectileTemplate.Name + "_Projectile"
 				missile.Position = startPos
 				missile.Velocity = (new Vector3(vx, vy, vz)).mul(velocityK)
-				DebugXL.logD("Combat", missile.GetFullName() + " launched")
+				DebugXL.logD(LogArea.Combat, missile.GetFullName() + " launched")
 				return missile
 			}
 		}
-		DebugXL.logW("Combat", player.Name + " couldn't throw")
+		DebugXL.logW(LogArea.Combat, player.Name + " couldn't throw")
     }
 }

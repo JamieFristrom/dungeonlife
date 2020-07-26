@@ -1,4 +1,4 @@
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 import { ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes";

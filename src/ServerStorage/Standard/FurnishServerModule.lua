@@ -1,19 +1,18 @@
-print( script:GetFullName().." executed" )
 
-local CharacterI        = require( game.ServerStorage.CharacterI )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local Dungeon           = require( game.ServerStorage.DungeonModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
-local PlayerXL          = require( game.ServerStorage.Standard.PlayerXL )
-
-local DebugXL           = require( game.ReplicatedStorage.Standard.DebugXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
-local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local FloorData         = require( game.ReplicatedStorage.FloorData )
 local FurnishUtility    = require( game.ReplicatedStorage.FurnishUtility )
-local HeroUtility       = require( game.ReplicatedStorage.Standard.HeroUtility )
 local MapTileData       = require( game.ReplicatedStorage.MapTileDataModule )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 

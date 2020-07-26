@@ -1,3 +1,9 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 -------------------------------------------------------------------------------------------------------------------------------
 -- CostumesModule
 -- @Jamie_Fristrom, 2018
@@ -7,32 +13,17 @@
 -- Only supports R15
 --
 -------------------------------------------------------------------------------------------------------------------------------
-local DebugXL  = require( game.ReplicatedStorage.Standard.DebugXL )
 local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
 local FloorData = require( game.ReplicatedStorage.Standard.FloorData )
-local CostumesClient = require( game.ReplicatedStorage.Standard.CostumesClient )
-
-local rescaleAccessories = require(script:WaitForChild("RescaleAccessories"))
 
 local Costumes = {}
 
-
-	
-local giver = script.Parent
-local validatorSrc = script:WaitForChild("Validator")
-
-local insert = game:GetService("InsertService")
-local assets = game:GetService("AssetService")
-local debris = game:GetService("Debris")
-
-local cookie = 1  -- for debugging; seems like some messages are not getting through and don't know why
 -------------------------------------------------------------------------------------------------------------------------------
 -- Logic for applying 
 
 -- note:  this can fail if we try to set the costumes of two characters at the same time. my ears are ringing
 --        so we have a per-humanoid array
 --        surely not the most elegant way to do this
-local disableDeathRemoteFuncAcknowledgedB = {}
 
 local applyingCostumeB = {}
 
@@ -213,7 +204,7 @@ function Costumes:LoadCharacter( player, srcCharactersA, noAttachmentsSet, alsoC
 		destCharacter.Name = player.Name
 		player.Character = destCharacter
 		destCharacter.Parent = workspace
-		DebugXL:logD( 'Character', 'New character '..destCharacter.Name..' placed in workspace')
+		DebugXL:logD( LogArea.Characters, 'New character '..destCharacter.Name..' placed in workspace')
 		return destCharacter
 	end
 end

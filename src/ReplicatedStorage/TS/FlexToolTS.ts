@@ -1,17 +1,17 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { BalanceData } from "./BalanceDataTS"
-DebugXL.logD('Requires', "FlexTool: BalanceData required")
+DebugXL.logD(LogArea.Requires, "FlexTool: BalanceData required")
 import { Enhancements } from "./EnhancementsTS"
-DebugXL.logD('Requires', "FlexTool: Enhancements required")
+DebugXL.logD(LogArea.Requires, "FlexTool: Enhancements required")
 import { ToolData } from "./ToolDataTS"
-DebugXL.logD('Requires', "FlexTool: ToolData required")
+DebugXL.logD(LogArea.Requires, "FlexTool: ToolData required")
 import { Players, RunService, ServerStorage } from "@rbxts/services";
-DebugXL.logD('Requires', "FlexTool: Players required")
+DebugXL.logD(LogArea.Requires, "FlexTool: Players required")
 
 import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper'
 
@@ -381,14 +381,14 @@ export class FlexTool {
         if (!this.enhancementsA) this.enhancementsA = []
 
         const toolBaseDatum = ToolData.dataT[this.baseDataS]
-        if (!toolBaseDatum) DebugXL.logE(script.Name, `Unable to find possession ${this.baseDataS}`)
+        if (!toolBaseDatum) DebugXL.logE(LogArea.Items, `Unable to find possession ${this.baseDataS}`)
 
         let baseToolId = toolBaseDatum.baseToolS
         DebugXL.Assert(baseToolId !== undefined)
         if (baseToolId) {
             let textureSwapId = undefined
             if (!toolBaseDatum.skinType) {
-                DebugXL.logE(script.Name, `${toolBaseDatum.idS} has no skinType`)
+                DebugXL.logE(LogArea.Items, `${toolBaseDatum.idS} has no skinType`)
             }
             else {
                 if (activeSkins.get(toolBaseDatum.skinType)) {
@@ -428,7 +428,7 @@ export class FlexTool {
                                 nonDefaultFX = true
                             }
                             else {
-                                DebugXL.logE(script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}`)
+                                DebugXL.logE(LogArea.Items, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}`)
                             }
                         }
                     }
@@ -443,7 +443,7 @@ export class FlexTool {
                                 effect.Enabled = false
                             }
                             else {
-                                DebugXL.logE(script.Name, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}`)
+                                DebugXL.logE(LogArea.Items, `Unsupported enhancement fx type ${descendent.ClassName} on ${descendent.GetFullName()}`)
                             }
                             // delibaretely not enabling something already enabled because I think there's a perf hit
                             // and who knows, there may be tools with disabled default fx that were there for temp or testing

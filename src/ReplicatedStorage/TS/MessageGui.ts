@@ -1,4 +1,4 @@
-import { DebugXL } from './DebugXLTS'
+import { DebugXL, LogArea } from './DebugXLTS'
 print( 'MessageGui: DebugXL required' )
 import { RunService, Workspace, Players, LocalizationService } from "@rbxts/services";
 print( 'MessageGui: rbx-services required' )

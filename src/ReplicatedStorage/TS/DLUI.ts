@@ -1,6 +1,6 @@
 import { Players, Teams } from "@rbxts/services";
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 // dungeon life UI common code
 // doing it this way instead of namespace so on the Lua side it will use method calling :

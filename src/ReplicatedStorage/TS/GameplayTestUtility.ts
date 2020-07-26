@@ -1,4 +1,4 @@
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 
 export type TestGroups = Map<string,number>

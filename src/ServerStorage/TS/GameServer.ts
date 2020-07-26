@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
 
@@ -78,14 +78,14 @@ numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
 const gameManagementFolder = Workspace.WaitForChild<Folder>("GameManagement")
 const preparationCountdownValue = gameManagementFolder.WaitForChild<NumberValue>("PreparationCountdown")
 
+const heroRespawnDuration = gameManagementFolder.WaitForChild<BoolValue>("FastStart").Value ? 5 : 15
+
 const HeroTeam = Teams.WaitForChild<Team>("Heroes")
-DebugXL.Assert(HeroTeam !== undefined)
+const MonsterTeam = Teams.WaitForChild<Team>("Monsters")
 
 const signals = Workspace.WaitForChild<Folder>("Signals")
-DebugXL.Assert(signals !== undefined)
 
 const chooseHeroRE = signals.WaitForChild<RemoteEvent>("ChooseHeroRE")
-DebugXL.Assert(chooseHeroRE !== undefined)
 
 export namespace GameServer {
     export function numHeroesNeeded() {
@@ -128,9 +128,9 @@ export namespace GameServer {
                 for (let i = 0; i < monsterSpawnN; i++) {
                     const spawner = monsterSpawns[i]
                     if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
-                        DebugXL.logV("GameManagement", "Found a boss spawn for " + player.Name)
+                        DebugXL.logV(LogArea.GameManagement, "Found a boss spawn for " + player.Name)
                         if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {
-                            DebugXL.logV("GameManagement", "Unoccupied")
+                            DebugXL.logV(LogArea.GameManagement, "Unoccupied")
                             spawnPart = spawner
                             break
                         }
@@ -139,14 +139,14 @@ export namespace GameServer {
                         distantSpawns.push(spawner)
                     }
                     else {
-                        DebugXL.logV("GameManagement", "Spawner at " + tostring(spawner.Position) + " too close to hero")
+                        DebugXL.logV(LogArea.GameManagement, "Spawner at " + tostring(spawner.Position) + " too close to hero")
                         closeSpawns.push(spawner)
                     }
                 }
                 if (!spawnPart) {
-                    DebugXL.logV("GameManagement", "Acceptable spawn list for" + player.Name)
+                    DebugXL.logV(LogArea.GameManagement, "Acceptable spawn list for" + player.Name)
                     //DebugXL.Dump( acceptableSpawns )
-                    DebugXL.logV("GameManagement", "Fallback spawn list for" + player.Name)
+                    DebugXL.logV(LogArea.GameManagement, "Fallback spawn list for" + player.Name)
                     //DebugXL.Dump( monsterSpawns )
                     if (distantSpawns.size() > 0) {
                         spawnPart = distantSpawns[MathXL.RandomInteger(0, distantSpawns.size() - 1)]
@@ -189,12 +189,14 @@ export namespace GameServer {
         while (!done) {
             const preparationCountdown = math.ceil(preparationDuration - (time() - startCountdownTime))
             preparationCountdownValue.Value = preparationCountdown
+            // no monster players means no need for the preparation countdown
             done = preparationCountdown <= 0
             // we now wait for just *one* hero; preparation is over when 60 seconds is up AND one hero has decided to play.
             // otherwise monsters can go on
             done = done && HeroTeam.GetPlayers().filter((heroPlayer) =>
                 CharacterClientI.GetCharacterClass(heroPlayer) !== "" &&   // chosen a character class and spawned
                 heroPlayer.Character !== undefined).size() >= 1
+            done = done || MonsterTeam.GetPlayers().size()===0
             wait()
         }
         preparationCountdownValue.Value = 0

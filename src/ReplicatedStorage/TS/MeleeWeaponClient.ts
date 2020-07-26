@@ -1,7 +1,7 @@
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { DebugXL } from './DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from './DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
 import { BaseWeaponClient } from './BaseWeaponClient'

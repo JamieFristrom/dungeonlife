@@ -1,6 +1,6 @@
 import { Players } from "@rbxts/services";
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 import { SkinTypes } from "ReplicatedStorage/TS/SkinTypes"
 import { Enhancements } from "ReplicatedStorage/TS/EnhancementsTS"
 import { Localize } from "ReplicatedStorage/TS/Localize"

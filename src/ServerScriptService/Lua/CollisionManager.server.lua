@@ -2,10 +2,11 @@
 assert( not _G.collisionManagerExecuted )  -- using a regular assert for speed purposes; if it has been executed we don't need to do it again anyway
 _G.collisionManagerExecuted = true
 
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-print( script:GetFullName().." executed" )
-
-local DebugXL = require( game.ReplicatedStorage.Standard.DebugXL )
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local CollectionService = game.CollectionService
 local PhysicsService = game.PhysicsService

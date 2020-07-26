@@ -1,11 +1,11 @@
-local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 
-local CharacterUtility = require( game.ReplicatedStorage.Standard.CharacterUtility )
-local DebugXL          = require( game.ReplicatedStorage.Standard.DebugXL )
-local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local WeaponUtility = {}
-
 
 function WeaponUtility:GetTargetPoint( targetCharacter )
 	if targetCharacter.PrimaryPart then
@@ -14,8 +14,6 @@ function WeaponUtility:GetTargetPoint( targetCharacter )
 		return Vector3.new( math.huge, math.huge, math.huge )  -- will probably be out of range
 	end
 end
-
-
 
 return WeaponUtility
 

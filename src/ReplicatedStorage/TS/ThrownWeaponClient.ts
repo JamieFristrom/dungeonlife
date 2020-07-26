@@ -1,8 +1,8 @@
 
 // This file is part of Dungeon Life. See https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md for license details.
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import { RunService, Workspace, Players } from '@rbxts/services'
 
@@ -59,7 +59,7 @@ export class ThrownWeaponClient extends BaseWeaponClient {
 
 	onEquippedLocal(mouse: Mouse) {
 		if (mouse === undefined) {
-			DebugXL.logW("Combat", "Mouse not found")
+			DebugXL.logW(LogArea.Combat, "Mouse not found")
 		}
 		else {
 			mouse.Button1Down.Connect(() => this.onButton1Down(mouse))
@@ -67,6 +67,6 @@ export class ThrownWeaponClient extends BaseWeaponClient {
 	}
 
 	_mobActivate(target: Character) {
-		DebugXL.logE("Combat", "Thrown weapons for mobs never implemented")
+		DebugXL.logE(LogArea.Combat, "Thrown weapons for mobs never implemented")
 	}
 }

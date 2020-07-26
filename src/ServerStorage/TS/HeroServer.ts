@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS";
-DebugXL.logI('Executed', script.Name)
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
@@ -22,7 +22,7 @@ import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 
 import { MessageServer } from "./MessageServer"
 import { PlayerServer } from "./PlayerServer"
-DebugXL.logD('Requires', 'HeroServer imports finished')
+DebugXL.logD(LogArea.Requires, 'HeroServer imports finished')
 let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
 DebugXL.Assert(heroTeam !== undefined)
 
@@ -45,7 +45,7 @@ export namespace HeroServer {
             (hero.getActualLevel() > hero.lastShopResetLevel)) {
             hero.shopPool.clear()
             for (let i = 0; i < 25; i++) {
-                //DebugXL.logI( 'Items',( 'Shop item ' + i )
+                //DebugXL.logI( LogArea.Items,( 'Shop item ' + i )
                 let gearItem = undefined
                 let duplicateCount = 0
                 while (!gearItem) {
@@ -62,7 +62,7 @@ export namespace HeroServer {
                             // through roblox-ts's map using any method but this which means I can't break. That said our best case scenario sucks
                             // even with break so maybe not that big a deal
                             if (newItem!.identical(storeItem!)) {
-                                DebugXL.logI('Items', "HeroServer: Duplicate")
+                                DebugXL.logI(LogArea.Items, "HeroServer: Duplicate")
                                 duplicateCount++
                                 duplicate = true
                             }
@@ -130,7 +130,7 @@ export namespace HeroServer {
             if (!inventory) { return }
             const xpRate = 0.5
             experienceBonus *= xpRate
-            DebugXL.logD( "Gameplay", "Awarding (adjusted) "+experienceBonus+" xp to "+player.Name )	
+            DebugXL.logD( LogArea.Gameplay, "Awarding (adjusted) "+experienceBonus+" xp to "+player.Name )	
             const pcData = PlayerServer.getCharacterRecordFromPlayer(player)
             // only if hero has chosen class yet
             if (pcData instanceof Hero) {  // // your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
@@ -142,7 +142,7 @@ export namespace HeroServer {
                 const newExperience = pcDataStatsT.experienceN + math.ceil(experienceBonus)
                 DebugXL.Assert(MathXL.IsFinite(newExperience))
                 if (!MathXL.IsFinite(newExperience)) { return }
-                DebugXL.logI( "Gameplay", player.Name+" xp goes from "+pcDataStatsT.experienceN+" to "+newExperience)
+                DebugXL.logI( LogArea.Gameplay, player.Name+" xp goes from "+pcDataStatsT.experienceN+" to "+newExperience)
                 pcDataStatsT.experienceN = newExperience
 
                 let newLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
@@ -195,13 +195,13 @@ export namespace HeroServer {
             if (hero === killer) {
                 // give 50% to hero 
                 const adjustedXP = xp / (numHeroes > 1 ? 2 : 1)
-                DebugXL.logV("Gameplay", hero.Name+" gets "+adjustedXP)
+                DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
                 HeroServer.awardExperienceWait(hero, adjustedXP, "Kill", "Monster")
             }
             else {
                 // split the rest amongst the others
                 const adjustedXP = xp / 2 / math.max(1, numHeroes - 1) // math.max() prevents a div 0 if killer has left game
-                DebugXL.logV("Gameplay", hero.Name+" gets "+adjustedXP)
+                DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
                 HeroServer.awardExperienceWait(hero, adjustedXP, "Kill:Shared", "Monster")
             }
         }

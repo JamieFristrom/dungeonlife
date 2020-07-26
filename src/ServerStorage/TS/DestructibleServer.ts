@@ -3,7 +3,7 @@
 //
 import { CollectionService } from "@rbxts/services";
 
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 

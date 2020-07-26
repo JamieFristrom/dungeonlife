@@ -1,6 +1,6 @@
 import { HttpService } from "@rbxts/services"
 import { Config } from "ReplicatedStorage/TS/Config"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 
 
 export namespace HttpXL

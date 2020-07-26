@@ -1,19 +1,21 @@
-local DebugXL            = require( game.ReplicatedStorage.Standard.DebugXL )
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local InstanceXL         = require( game.ReplicatedStorage.Standard.InstanceXL )
 local InputXL            = require( game.ReplicatedStorage.Standard.InputXL )
 
-local CharacterClientI   = require( game.ReplicatedStorage.CharacterClientI )
-local DeveloperProducts  = require( game.ReplicatedStorage.DeveloperProducts )
 local InventoryClient    = require( game.ReplicatedStorage.InventoryClient )
 local PossessionData     = require( game.ReplicatedStorage.PossessionData )
 
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
-local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
 
 local heroGuiFrame = script.Parent.Parent:WaitForChild("HeroGui") 
 local chooseClassFrame = heroGuiFrame:WaitForChild("ChooseClass")
-local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local function ChooseClass( classNameS )
 	workspace.Signals.HeroesRE:FireServer( "ChooseClass", classNameS )

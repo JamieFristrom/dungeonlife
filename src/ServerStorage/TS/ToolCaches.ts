@@ -1,8 +1,8 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
-DebugXL.logI('Executed', script.GetFullName())
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Teams, ServerStorage } from "@rbxts/services"
 
@@ -23,7 +23,7 @@ export namespace ToolCaches {
 
 
     export function updateToolCache(characterKey: CharacterKey, characterRecord: CharacterRecord) {
-        DebugXL.logD('Items', `Updating ToolCache for characterKey: ${characterKey}`)
+        DebugXL.logD(LogArea.Items, `Updating ToolCache for characterKey: ${characterKey}`)
         DebugXL.Assert(typeOf(characterKey) === 'number')
         DebugXL.Assert(characterKey !== 0)
         let player = PlayerServer.getPlayer(characterKey)
@@ -83,7 +83,7 @@ export namespace ToolCaches {
             if (player)
                 publishPotions(player, characterRecord)
         }
-        DebugXL.logD('Items', `Finished updating ToolCache for characterKey: ${characterKey}`)
+        DebugXL.logD(LogArea.Items, `Finished updating ToolCache for characterKey: ${characterKey}`)
     }
 
     export function publishPotions(player: Player, characterRecord: CharacterRecord) {
