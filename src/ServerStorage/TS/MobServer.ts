@@ -217,30 +217,32 @@ export namespace MobServer {
     // }
 
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
-        if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
-            // boss spawnPart; only use if no monster players
-            if (monsterTeam.GetPlayers().size() === 0) {
-                const spawner = spawnersMap.get(spawnPart)
-                if (!spawnersMap.get(spawnPart)) {
-                    DebugXL.logI("Gameplay", "Spawning one use spawner " + spawnPart.GetFullName())
-                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
-                        undefined,
-                        spawnPart,
-                        curTick)
-                    createSpawnerForSpawnPart(spawnPart, curTick)
+        if( PlayerServer.getHeroRecords().size()>=1 ) {
+            if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
+                // boss spawnPart; only use if no monster players
+                if (monsterTeam.GetPlayers().size() === 0) {
+                    const spawner = spawnersMap.get(spawnPart)
+                    if (!spawnersMap.get(spawnPart)) {
+                        DebugXL.logI("Gameplay", "Spawning one use spawner " + spawnPart.GetFullName())
+                        spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                            undefined,
+                            spawnPart,
+                            curTick)
+                        createSpawnerForSpawnPart(spawnPart, curTick)
+                    }
                 }
             }
-        }
-        else {
-            const spawner = spawnersMap.get(spawnPart)
-            if (!spawner || (spawner.lastSpawnTick < curTick - mobSpawnPeriod)) {
-                // have we already spawned enough for now?
-                const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
-                if (myMobs.size() < mobSpawnerCap) {
-                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
-                        undefined,
-                        spawnPart,
-                        curTick)
+            else {
+                const spawner = spawnersMap.get(spawnPart)
+                if (!spawner || (spawner.lastSpawnTick < curTick - mobSpawnPeriod)) {
+                    // have we already spawned enough for now?
+                    const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
+                    if (myMobs.size() < mobSpawnerCap) {
+                        spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                            undefined,
+                            spawnPart,
+                            curTick)
+                    }
                 }
             }
         }
