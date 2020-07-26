@@ -7,13 +7,15 @@ DebugXL.logI('Executed', script.GetFullName())
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 import * as FloorData from "ReplicatedStorage/Standard/FloorData"
 
+import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
+
 import { Workspace } from "@rbxts/services"
 
 let gameManagement = Workspace.FindFirstChild<Folder>('GameManagement')!
 let DungeonDepthValueObj = gameManagement.FindFirstChild('DungeonDepth') as NumberValue
 let DungeonFloorValueObj = gameManagement.FindFirstChild('DungeonFloor') as NumberValue
 
-let disableShuffle = true // noship PlacesManifest.getCurrentPlace().maxAllowedLevel <= 4
+let disableShuffle = PlacesManifest.getCurrentPlace().maxAllowedLevel <= 4
 
 export class DungeonDeckClass {
     floorForDepth = new Array<number>()
