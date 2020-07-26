@@ -67,8 +67,7 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local TeamStyleChoice = require( game.ServerStorage.TS.PlayerServer ).TeamStyleChoice
 
 -- is there a one-line way to require a bunch of objects from a single file?
-local DungeonPlayerRequire = require( game.ServerStorage.TS.DungeonPlayer )
-local DungeonPlayer, PCState, PCStateRequest = DungeonPlayerRequire.DungeonPlayer, DungeonPlayerRequire.PCState, DungeonPlayerRequire.PCStateRequest
+local DungeonPlayer = require( game.ServerStorage.TS.DungeonPlayer ).DungeonPlayer
 DebugXL:logD('GameManagement', 'GameManagementModule: ServerStorage.TS requires succesful' )
 
 DebugXL:logD('GameManagement', 'GameManagementModule processing')
@@ -77,7 +76,7 @@ local StarterGui = game.StarterGui
 -- I have watched multiple heroes leave during a long prep; 60 is definitely too long. Sometimes they also get confused and wonder
 -- why there's a black screen, I think, though that may have been legitimate bugginess.
 -- We want *some* prep, though, particularly so after a TPK monsters can become heroes before we spawn the monsters and rebalance.
-local preparationDuration = workspace.GameManagement.FastStart.Value and 5 or Places:getCurrentPlace().preparationDuration
+local preparationDuration = workspace.GameManagement.FastStart.Value and 25 or Places:getCurrentPlace().preparationDuration
 
 local heroDeathSavoringSecondsK = 4
 
@@ -154,7 +153,7 @@ GameManagement.levelStartTime = time()
 
 function DungeonPlayer:Get( player )
 	if not dungeonPlayersT[ player ] then
-		dungeonPlayersT[ player ] = DungeonPlayer.new( player )		
+		dungeonPlayersT[ player ] = DungeonPlayer.new( player.UserId )		
 	end 
 	return dungeonPlayersT[ player ] 
 end
@@ -283,7 +282,7 @@ end
 local function MarkPlayersCharacterForDestruction( player )
 	DebugXL:logD('GameManagement', player.Name.." marked for destruction" )
 --	DebugXL:logV('GameManagement', debug.traceback())
-	DungeonPlayer:Get( player ).pcStateRequest = PCStateRequest.NeedsDestruction
+	DungeonPlayer:Get( player ):requestDestruction()
 end
 
 
@@ -307,15 +306,16 @@ function GameManagement:MarkPlayersCharacterForRespawn( player, optionalRespawnP
 		DebugXL:logW('GameManagement', debug.traceback() )
 	end
 	if player.Parent then
-		DungeonPlayer:Get( player ).pcStateRequest = PCStateRequest.NeedsRespawn 
+		DungeonPlayer:Get( player ):requestRespawn()
 		DungeonPlayer:Get( player ).respawnPart = optionalRespawnPart
 	end
 end 
 
+local staticAllHeroesDeadB = true
 
-local function TPK()
-	local allHeroesDeadB = true
+local function TPK()	
 	-- if #game.Teams.Heroes:GetPlayers()==0 then return false end  -- it doesn't count as a tpk if there are no heroes. But why not?
+	local allHeroesDeadB = true
 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do		
 		if player.Character then			
 			if player.Character:FindFirstChild("Humanoid") then
@@ -336,11 +336,13 @@ local function TPK()
 			DebugXL:logV('GameManagement', player.Name.." character missing" )
 		end
 		-- maybe you're dead or maybe you're a fresh hero about to be reassembled
-		if DungeonPlayer:Get( player ).pcState == PCState.Respawning then
+		if DungeonPlayer:Get( player ):isRespawning() then
 			allHeroesDeadB = false
 		end
 	end
-	return allHeroesDeadB
+	local TPKresult = not staticAllHeroesDeadB and allHeroesDeadB  -- only checking the change from someone alive to someone dead now
+	staticAllHeroesDeadB = allHeroesDeadB
+	return TPKresult
 end
 
 
@@ -354,7 +356,7 @@ end
 
 local function ChangeHeroToMonster( player )
 	local myDungeonPlayerT = DungeonPlayer:Get( player )	
-	myDungeonPlayerT.lastHeroDeathTime = time()
+	myDungeonPlayerT:markHeroDead()
 	local localTick = time()
 	-- if the rest of the characters die while we're lying in pieces
 	while GameManagement:LevelReady() and time() < localTick + 5 do
@@ -407,25 +409,25 @@ local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
 end
 
 
-local function InviteMonsterToBeHeroWait( player )
-	DebugXL:Assert( currentPlayerInvitedToHero == nil )
+-- local function InviteMonsterToBeHeroWait( player )
+-- 	DebugXL:Assert( currentPlayerInvitedToHero == nil )
 	
-	currentPlayerInvitedToHero = player
-	player.HeroInviteCountdown.Value = 10
-	-- doing this the less accurate way because I want external agents to be able to cancel countdown as well
-	while player.HeroInviteCountdown.Value > 0 and player.Parent do
-		wait(1)
-		player.HeroInviteCountdown.Value = player.HeroInviteCountdown.Value - 1
-	end
-	-- whether or not you deny invitation you'll have your hero express available for next round
-	-- ignored as of 12/3
-	player.HeroExpressReady.Value = true
-	if DungeonPlayer:Get( player ) then
-		DungeonPlayer:Get( player ).lastHeroDeathTime = time()
-	end
+-- 	currentPlayerInvitedToHero = player
+-- 	player.HeroInviteCountdown.Value = 10
+-- 	-- doing this the less accurate way because I want external agents to be able to cancel countdown as well
+-- 	while player.HeroInviteCountdown.Value > 0 and player.Parent do
+-- 		wait(1)
+-- 		player.HeroInviteCountdown.Value = player.HeroInviteCountdown.Value - 1
+-- 	end
+-- 	-- whether or not you deny invitation you'll have your hero express available for next round
+-- 	-- ignored as of 12/3
+-- 	player.HeroExpressReady.Value = true
+-- 	if DungeonPlayer:Get( player ) then
+-- 		DungeonPlayer:Get( player ).lastHeroDeathTime = time()
+-- 	end
 
-	currentPlayerInvitedToHero = nil
-end
+-- 	currentPlayerInvitedToHero = nil
+-- end
 
 
 function GameManagement:DenyHeroInvite( player )
@@ -541,15 +543,14 @@ local function MonitorPlayer( player )
 	while not myDungeonPlayerT.playerRemovingB do
 		local status, err = DisableablePcall( function()
 			DebugXL:logD( 'MonitorPlayer',  player.Name.." monitoring lifetime" )
-			myDungeonPlayerT.pcState = PCState.Limbo
+			myDungeonPlayerT:markDead()
 			--while not GameManagement:LevelReady() do wait() end
 			-- if time to be a hero
-			DebugXL:logV('GameManagement', player.Name.." waiting for respawn order" )
-			GameServer.waitForRespawn(player, myDungeonPlayerT)
-			myDungeonPlayerT.pcStateRequest = PCStateRequest.None
+			DebugXL:logV('MonitorPlayer', player.Name.." waiting for respawn order" )
+			GameServer.waitForRespawnRequest(player, myDungeonPlayerT)
+			myDungeonPlayerT:markRespawnStart()
 			local levelSessionN = levelSessionCounterN  -- for testing purposes
 			DebugXL:logD( 'MonitorPlayer', player.Name.." beginning respawn" )
-			myDungeonPlayerT.pcState = PCState.Respawning
 			if not GameManagement:LevelReady() then
 				DebugXL:Error( "Level not ready when "..player.Name.." triggered respawn" )
 			end
@@ -560,25 +561,25 @@ local function MonitorPlayer( player )
 			
 			-- megabosses override. well, this got ugly, mostly a dupe of below
 			local monsterSpawns = FurnishServer:GetMonsterSpawners()
-			DebugXL:logV('GameManagement', "Untrimmed monster spawn list for"..player.Name )
+			DebugXL:logV('MonitorPlayer', "Untrimmed monster spawn list for"..player.Name )
 			--DebugXL:Dump( monsterSpawns )
 
 			if player.Team == game.Teams.Monsters then
 				if PlayerServer.getTeamStyleChoice(player)==TeamStyleChoice.DungeonLord or
 					( Inventory:PlayerInTutorial( player ) and Inventory:GetCount( player, "TimeInvested" )<=450 ) then -- once they've been playing for 10 minutes just give up on trying to tutorialize them
-					DebugXL:logV('GameManagement', "No megaboss check")
+					DebugXL:logV('MonitorPlayer', "No megaboss check")
 					-- megaboss don't override
 				else
 					-- only be a megaboss when game goes so eager beavers don't snatch it away
 					if workspace.GameManagement.PreparationCountdown.Value <= 0 then
-						DebugXL:logV('GameManagement', "Megaboss check")
+						DebugXL:logV('MonitorPlayer', "Megaboss check")
 						for i, spawner in pairs( monsterSpawns ) do
 							if spawner.OneUse.Value then
-								DebugXL:logV('GameManagement', "Found a boss spawn for "..player.Name ) 
+								DebugXL:logV('MonitorPlayer', "Found a boss spawn for "..player.Name ) 
 								if spawner.LastPlayer.Value == nil then
-									DebugXL:logV('GameManagement', "Unoccupied" )
+									DebugXL:logV('MonitorPlayer', "Unoccupied" )
 									if CharacterClasses.monsterStats[ spawner.CharacterClass.Value ].tagsT.Superboss then
-										DebugXL:logV('GameManagement', "Megaboss" )
+										DebugXL:logV('MonitorPlayer', "Megaboss" )
 										spawnPart = spawner
 										spawner.LastPlayer.Value = player
 										CharacterI:SetCharacterClass( player, spawnPart.CharacterClass.Value )
@@ -595,7 +596,7 @@ local function MonitorPlayer( player )
 			if not spawnPart then 
 				spawnPart = GameServer.chooseSpawn(player, monsterSpawns)
 			end
-			DebugXL:logV('GameManagement', player.Name.." has spawnPart" )
+			DebugXL:logV('MonitorPlayer', player.Name.." has spawnPart" )
 			
 			if levelSessionCounterN ~= levelSessionN then
 				local diagS = "Session changed in the middle of "..player.Name.."'s spawn. levelSessionCounterN: "..
@@ -611,7 +612,7 @@ local function MonitorPlayer( player )
 				function() return levelSessionCounterN end )  -- for debugging
 			-- possible respawn failed here
 			if player.Character then
-				myDungeonPlayerT.pcState = PCState.Exists
+				myDungeonPlayerT:markRespawnFinish()
 				DebugXL:logD( 'MonitorPlayer', player.Name.." spawned character" )
 
 			--		-- wait until time to change
@@ -646,7 +647,7 @@ local function MonitorPlayer( player )
 								DebugXL:logD("GameManagement",player.Name.." death grace period over. Choosing hero.")
 								workspace.Signals.ChooseHeroRE:FireClient( player, "ChooseHero" )
 								-- putting you in limbo now otherwise it will trigger error in end-of-level watcher
-								myDungeonPlayerT.pcState = PCState.Limbo
+								myDungeonPlayerT:markDead()
 
 								KickoffChooseHero( player )
 
@@ -660,22 +661,22 @@ local function MonitorPlayer( player )
 								end
 								-- character might be gone by now
 								playerCharacter.Parent = nil
-							end
-							-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
-							if GameManagement:LevelReady() then
-								GameManagement:MarkPlayersCharacterForRespawn( player )
+								-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
+								if GameManagement:LevelReady() then
+									GameManagement:MarkPlayersCharacterForRespawn( player )
+								end
 							end
 							DebugXL:logD( 'MonitorPlayer', player.Name.." lifetime ended in death" ) 
 							break
 						end
-						if myDungeonPlayerT.pcStateRequest == PCStateRequest.NeedsDestruction then
+						if myDungeonPlayerT:needsDestruction() then
 							player.Character:Destroy()
-							DebugXL:logD( 'MonitorPlayer', player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
+							DebugXL:logD( 'MonitorPlayer', player.Name.." lifetime aborted: needs destruction" ) 
 							break				
 						end
-						if  myDungeonPlayerT.pcStateRequest == PCStateRequest.NeedsRespawn then
+						if  myDungeonPlayerT:needsRespawn() then
 							player.Character:Destroy()
-							DebugXL:logD( 'MonitorPlayer', player.Name.." lifetime aborted:"..myDungeonPlayerT.pcState ) 
+							DebugXL:logD( 'MonitorPlayer', player.Name.." lifetime aborted: needs respawn") 
 							break
 						end
 						-- not promotion requested
@@ -707,10 +708,8 @@ local function MonitorPlayer( player )
 				if player.Character then
 					player.Character:Destroy()					
 				end
-				if myDungeonPlayerT.pcStateRequest == PCStateRequest.None then
-					-- we probably need to respawn
-					GameManagement:MarkPlayersCharacterForRespawn( player )
-				end 
+				-- we probably need to respawn
+				GameManagement:MarkPlayersCharacterForRespawn( player )
 			else
 				myDungeonPlayerT.playerMonitoredB = false				
 				return
@@ -726,7 +725,7 @@ local function PlayerCharactersMissing()
 	for _, player in pairs( game.Players:GetPlayers() ) do
 		-- if dungeonPlayersT hasn't ben initialized for players I"m not going to count that as missing in case something goes wrong, long load time, whatever
 		if DungeonPlayer:Get( player ) then
-			if DungeonPlayer:Get( player ).pcState ~= PCState.Exists then   -- going to count respawning as not there yet
+			if DungeonPlayer:Get( player ):exists() then   -- going to count respawning as not there yet
 				pcsMissing = true
 			end 
 		end
@@ -741,14 +740,11 @@ end
 local function PlayerCharactersExist()
 	local pcsExist = false
 	for _, player in pairs( game.Players:GetPlayers() ) do
-		DebugXL:Assert( DungeonPlayer:Get( player ).pcState )
-		if DungeonPlayer:Get( player ).pcState then
-			if DungeonPlayer:Get( player ).pcState ~= PCState.Limbo then
-				DebugXL:logD( "Players", player.Name.." still exists state "..DungeonPlayer:Get( player ).pcState.."; request "..DungeonPlayer:Get( player ).pcStateRequest )
-				pcsExist = true
-				break
-			end 
-		end
+		if DungeonPlayer:Get( player ):exists() then
+			DebugXL:logD( "Players", player.Name.." still exists" )
+			pcsExist = true
+			break
+		end 
 --		if player.Character and player.Character.Parent then   -- this doesn't tell us if it's respawning
 --			pcsExist = true 
 --		end
@@ -808,7 +804,7 @@ local function PlayerAdded( player )
 		return
 	end
 	DebugXL:logV('GameManagement', "Initial LoadCharacter for "..player.Name.." finished" )	
-	--AnalyticsXL:ReportHistogram( player, "Duration: Initial Player Load", time() - startTime, 1, "second", player.Name, true)
+	AnalyticsXL:ReportHistogram( player, "Duration: Initial Player Load", time() - startTime, 1, "second", player.Name, true)
 
 	SaveOriginalPlayerCostumeWait( player )
 		
@@ -897,7 +893,7 @@ local function RemoveCharactersWait()
 	local startTime = time()
 	while PlayerCharactersExist() do 
 		for _, player in pairs( game.Players:GetPlayers() ) do			
-			if DungeonPlayer:Get( player ).pcStateRequest ~= PCStateRequest.NeedsDestruction and DungeonPlayer:Get( player ).pcState ~= PCState.Limbo then
+			if not DungeonPlayer:Get( player ):needsDestruction() and not DungeonPlayer:Get( player ):inLimbo() then
 				MarkPlayersCharacterForDestruction( player )
 			end
 		end
@@ -907,15 +903,12 @@ local function RemoveCharactersWait()
 			-- what's going on
 			local doubleCheck = false
 			for _, player in pairs( game.Players:GetPlayers() ) do
-				DebugXL:Assert( DungeonPlayer:Get( player ).pcState )
-				if DungeonPlayer:Get( player ).pcState then
-					if DungeonPlayer:Get( player ).pcState ~= PCState.Limbo then
-						local character = player.Character
-						local characterParent = character and character.Parent or nil
-						DebugXL:Error( "RemoveCharactersWait() timed out:".. player.Name.." still exists state "..DungeonPlayer:Get( player ).pcState.."; request "..DungeonPlayer:Get( player ).pcStateRequest.." character ".. tostring( character ) .."; character parent ".. tostring( characterParent ) )
-						doubleCheck = true
-					end 
-				end
+				if DungeonPlayer:Get( player ):exists() then
+					local character = player.Character
+					local characterParent = character and character.Parent or nil
+					DebugXL:Error( "RemoveCharactersWait() timed out:".. player.Name.." still exists: character ".. tostring( character ) .."; character parent ".. tostring( characterParent ) )
+					doubleCheck = true
+				end 
 			end			
 			if not doubleCheck then
 				DebugXL:Error( "RemoveCharactersWait() timed out even though nobody exists" )
@@ -1088,51 +1081,6 @@ local function InviteMonstersToBeHeroesWhileNecessaryWait()
 end
 ]]
 
-local function HeroesChooseCharactersWait()
-	-- this is allowed to migrate to next phase if HeroExpress hero hasn't finished choosing yet - they get all of their 60 seconds
-	-- actually I don't know why they have a time limit at all ... though I guess it's a good thing otherwise they could gunk up a hero
-	-- slot forever
-	local done = false
-	
-	-- don't invite people to be heroes on the last floor, that sucks
-	-- if( FloorData:CurrentFloor().exitStaircaseB )then
-	-- 	spawn( InviteMonstersToBeHeroesWhileNecessaryWait )
-	-- end
-		
-	local startCountdownTime = time()
-	while not done do
-		workspace.GameManagement.PreparationCountdown.Value = math.ceil( preparationDuration - ( time() - startCountdownTime ) )
-		done = true
-		-- we no longer wait for everyone to choose heroes, they can jump in later
-		-- for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-		-- 	if CharacterClientI:GetCharacterClass( player )=="" then
-		-- 		done = false
-		-- 		break
-		-- 	end
-		-- 	-- if you're hero expressing, throw your lot in with the group timer here; everyone spawns at the same time 
-		-- 	-- at end of prep phase
-		-- 	player.HeroRespawnCountdown.Value = 0
-		-- end
-		if done then
-			
-			-- but are we *really* done?
-			-- once they've been chosen, we begin if time has run out 
-			if workspace.GameManagement.PreparationCountdown.Value <= 0 then
-				-- yeah, we're definitely really done
-				break
-			end
-			-- or if all the heroes have signalled they're ready (this is only a test option IIRC)
-			-- for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-			-- 	if not DungeonPlayer:Get( player ).signalledReadyB then
-			-- 		done = false
-			-- 		break
-			-- 	end
-			-- end	
-		end
-		wait()
-	end
-	workspace.GameManagement.PreparationCountdown.Value = 0
-end
 
 
 local protectionDisabled = false
@@ -1242,7 +1190,7 @@ function GameManagement:Play()
 
 			GameServer.askPlayersToRate()
 
-			HeroesChooseCharactersWait()
+			GameServer.preparationPhaseWait(preparationDuration)
 
 			ChangeGameState( "RemoveCharactersWait" )
 

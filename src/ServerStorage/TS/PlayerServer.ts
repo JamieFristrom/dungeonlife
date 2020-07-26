@@ -8,6 +8,7 @@ import { Players } from "@rbxts/services"
 
 import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
 DebugXL.logD("Requires", 'PlayerServer: ReplicatedStorage/TS imports succesful')
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 DebugXL.logD("Requires", 'PlayerServer: GameAnalyticsServer imported')
@@ -17,6 +18,7 @@ import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 DebugXL.logD("Requires", 'PlayerServer: Replicated/Standard imports succesful')
 
 import { Analytics } from "ServerStorage/TS/Analytics"
+
 
 DebugXL.logD("Requires", 'PlayerServer: Analytics imports succesful')
 
@@ -143,6 +145,12 @@ export namespace PlayerServer {
     // on whether a mob or not
     export function getCharacterRecords() {
         return characterRecords
+    }
+
+    export function getHeroRecords() {
+        let heroes: Array<Hero> = []
+        PlayerServer.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
+        return heroes
     }
 
     export function getPlayerCharacterRecords() {
