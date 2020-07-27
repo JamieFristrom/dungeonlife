@@ -928,7 +928,7 @@ local function LoadCharactersWait()
 			GameManagement:MarkPlayersCharacterForRespawn( player, DungeonPlayer:Get( player ).respawnPart )
 		end
 	end
-	while PlayerCharactersMissing() do wait() end
+--	while PlayerCharactersMissing() do wait() end
 end
 
 
