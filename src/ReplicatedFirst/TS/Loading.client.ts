@@ -3,7 +3,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
 warn("DUNGEON LIFE 7/26/2020")
-warn("Type safe logging areas")
+warn("Not-spawning spec fix")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
