@@ -25,7 +25,7 @@ import { GameplayTestService } from "./GameplayTestService";
 import { MessageServer } from "./MessageServer";
 import { MobServer } from "./MobServer";
 import { PlayerServer } from "./PlayerServer";
-import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
+import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses";
 
 class AdminCommandsC {
   banListStore = DataStoreService.GetOrderedDataStore("BanList")
@@ -254,7 +254,7 @@ let CommandList: { [k: string]: unknown } =
       const x = tonumber(args[2])
       const z = tonumber(args[3])
       const position = x && z ? new Vector3(x, 0, z) : undefined
-      MobServer.spawnMob(characterClass, position)
+      MobServer.spawnMob(characterClass as CharacterClass, position)
     }
   },
 

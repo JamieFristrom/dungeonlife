@@ -1,6 +1,6 @@
 import { Workspace, Teams } from "@rbxts/services";
 
-import { HeroStatBlockI, CharacterClasses } from "./CharacterClasses"
+import { HeroStatBlockI, CharacterClasses, CharacterClass } from "./CharacterClasses"
 import { HeroI, RawHeroDataI } from "./HeroClassesTS"
 import { FlexTool } from "./FlexToolTS";
 import { ToolData } from "./ToolDataTS"
@@ -38,7 +38,7 @@ export class Hero extends CharacterRecord implements HeroI
 
     public shopPool: GearPool = new GearPool({})
    
-    constructor( heroId: string, stats: HeroStatBlockI, startingItems: FlexTool[] )
+    constructor( heroId: CharacterClass, stats: HeroStatBlockI, startingItems: FlexTool[] )
     {
         super( heroId, 
             //heroPrototype.imageId, 

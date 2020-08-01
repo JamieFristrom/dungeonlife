@@ -10,7 +10,7 @@ import { ToolData } from './ToolDataTS';
 import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 
-import { CharacterClasses } from './CharacterClasses';
+import { CharacterClass, CharacterClasses } from './CharacterClasses';
 import { SkinTypeEnum } from "./SkinTypes"
 import { Players, Teams } from '@rbxts/services';
 
@@ -31,7 +31,7 @@ function strcmp( a: string, b: string )
 export interface CharacterRecordI
 {
     gearPool: GearPool
-    idS: string
+    idS: CharacterClass
     getImageId() : string
     getWalkSpeed() : number
     getJumpPower() : number
@@ -250,7 +250,7 @@ export abstract class CharacterRecord implements CharacterRecordI
     private toolKeyServerN = 1
 
     constructor(
-        public idS: string,
+        public idS: CharacterClass,
         //public readableNameS: string,
         //public imageId: string,
         //public walkSpeedN: number,
@@ -484,7 +484,7 @@ export abstract class CharacterRecord implements CharacterRecordI
 
 export class CharacterRecordNull extends CharacterRecord
 {
-    constructor() { super("",[]) }
+    constructor() { super("NullClass",[]) }
     getLocalLevel() { return 0 }
     getActualLevel() { return 0 }
     getTeam() { return Teams.GetTeams()[0] }

@@ -13,11 +13,11 @@ local DungeonClient = require( game.ReplicatedStorage.Standard.DungeonClient )
 local FloorData  = require( game.ReplicatedStorage.FloorData )
 local MapTileData = require( game.ReplicatedStorage.MapTileDataModule )
 
-local MonsterUtility = require( game.ReplicatedStorage.MonsterUtility )
-
 local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
+
+local PCMonitor = require( game.ReplicatedStorage.TS.PCMonitor ).PCMonitor
 
 local playerGui = script.Parent.Parent.Parent
 
@@ -192,7 +192,7 @@ while wait(0.1) do
 				if player.Team == game.Players.LocalPlayer.Team or ( workspace.GameManagement.LevelTimeElapsed.Value >= 240 ) then
 					visibleB = true
 				else
-					if MonsterUtility:GetClassWait( game.Players.LocalPlayer.Character )=="Zombie" then
+					if PCMonitor.pc and PCMonitor.pc.idS=="Zombie" then
 						-- could have disappeared by now
 						if character.PrimaryPart then
 							if localPlayerPrimaryPart then
@@ -240,7 +240,7 @@ while wait(0.1) do
 							end
 						end
 					else			
-						if player.TeamColor ~= game.Players.LocalPlayer.TeamColor and CharacterClientI:GetCharacterClass( player )=="Werewolf" then
+						if player.TeamColor ~= game.Players.LocalPlayer.TeamColor and PCMonitor.getPublishedClass( player )=="Werewolf" then
 							characterDot.ImageColor3 = game.Players.LocalPlayer.TeamColor.Color
 						else
 							characterDot.ImageColor3 = player.TeamColor.Color

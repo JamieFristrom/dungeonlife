@@ -53,12 +53,19 @@ export interface MonsterStatBlockI {
     readonly victoryBadgeId?: number
 }
 
+
 /**
     The data for different character classes, both hero and monster.
  */
 export namespace CharacterClasses {
-    export const classData: { [k: string]: CharacterClassI } =
+    export const classData =
     {
+        NullClass:
+        {
+            walkSpeedN: 1,
+            jumpPowerN: 1,
+            badges: []
+        },
         Warrior:
         {
             idS: "Warrior",
@@ -113,6 +120,7 @@ export namespace CharacterClasses {
             //readableNameS   : "Dungeon Lord"
             walkSpeedN: 14,
             jumpPowerN: 35,
+            badges: [],
         },
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-
         // monsters
@@ -131,6 +139,7 @@ export namespace CharacterClasses {
             //readableNameS   : "Bluehead Dragon",			
             walkSpeedN: 8,
             jumpPowerN: 18,
+            badges: [],
         },
         CrystalDaemon:
         {
@@ -139,6 +148,7 @@ export namespace CharacterClasses {
             //readableNameS   : "Crystal Daemon",			
             walkSpeedN: 11,
             jumpPowerN: 30,
+            badges: [],
         },
         CrystalDaemonSuper:
         {
@@ -147,6 +157,7 @@ export namespace CharacterClasses {
             //readableNameS   : "Demon King Winter",			
             walkSpeedN: 11,
             jumpPowerN: 30,
+            badges: [],
         },
         Cyclops:
         {
@@ -154,6 +165,7 @@ export namespace CharacterClasses {
             //readableNameS : "Cyclops",
             walkSpeedN: 12,
             jumpPowerN: 15,
+            badges: [],
         },
         CyclopsSuper:
         {
@@ -161,6 +173,7 @@ export namespace CharacterClasses {
             //readableNameS : "Queen Cyclops",
             walkSpeedN: 12,
             jumpPowerN: 15,
+            badges: [],
         },
         // try to keep up with the heroes who get magical loot
         Zombie:
@@ -169,6 +182,7 @@ export namespace CharacterClasses {
             //readableNameS : "Zombie", 
             walkSpeedN: 11,
             jumpPowerN: 0,
+            badges: [],
         },
         Skeleton:
         {
@@ -176,6 +190,7 @@ export namespace CharacterClasses {
             //readableNameS : "Skeleton",
             walkSpeedN: 13,
             jumpPowerN: 40,
+            badges: [],
         },
         Werewolf:
         {
@@ -183,12 +198,14 @@ export namespace CharacterClasses {
             //readableNameS   : "Werewolf",
             walkSpeedN: 10,
             jumpPowerN: 60,
+            badges: [],
         },
         Ghost:
         {
             idS: "Ghost",
             walkSpeedN: 12,
             jumpPowerN: 35,
+            badges: [],
         },
         Gremlin:
         {
@@ -196,6 +213,7 @@ export namespace CharacterClasses {
             //readableNameS : "Gremlin",
             walkSpeedN: 14,  // 16 was too high - rogues couldn't stay ahead of them and neither could players with aura of courage - 10/29
             jumpPowerN: 60,
+            badges: [],
         },
         Orc:
         {
@@ -203,6 +221,7 @@ export namespace CharacterClasses {
             //readableNameS : "Orc",
             walkSpeedN: 12,
             jumpPowerN: 35,
+            badges: [],
         },
         Necromancer:
         {
@@ -210,6 +229,7 @@ export namespace CharacterClasses {
             //readableNameS : "Necromancer",
             walkSpeedN: 12,
             jumpPowerN: 35,
+            badges: [],
         },
         Sasquatch:
         {
@@ -217,6 +237,7 @@ export namespace CharacterClasses {
             //readableNameS : "Sasquatch",
             walkSpeedN: 12,
             jumpPowerN: 35,
+            badges: [],
         }
     }
 
@@ -728,3 +749,5 @@ export namespace CharacterClasses {
             ]
     }
 }
+
+export type CharacterClass = keyof typeof CharacterClasses.classData

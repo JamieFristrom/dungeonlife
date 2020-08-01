@@ -12,6 +12,7 @@ local WerewolfUtility   = require( game.ReplicatedStorage.WerewolfUtility )
 
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
+local PCMonitor = require( game.ReplicatedStorage.TS.PCMonitor ).PCMonitor
 
 game:GetService("StarterGui"):SetCoreGuiEnabled( Enum.CoreGuiType.PlayerList, false )
 
@@ -49,7 +50,7 @@ while wait( 0.25 ) do
 				end		
 				foundRows[ row ] = true
 										
-				local stealthWerewolfB = CharacterClientI:GetCharacterClass( player ) == "Werewolf" and WerewolfUtility:IsUndercover( player.Character )
+				local stealthWerewolfB = PCMonitor.getPublishedClass( player ) == "Werewolf" and WerewolfUtility:IsUndercover( player.Character )
 				for k, _ in pairs( dataColumnSA ) do
 					local data = leaderstats:FindFirstChild( k )
 					if data then

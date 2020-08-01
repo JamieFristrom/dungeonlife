@@ -110,13 +110,7 @@ end
 
 function CharacterI:SetCharacterClass( player, classS )  -- use "" for no class
 	DebugXL:Assert( self==CharacterI )
-	DebugXL:Assert( player:IsA("Player") )
---	--print( "Setting "..player.Name.." character class to "..classS )
-	InstanceXL.new( "StringValue", { Name = "CharacterClass", Value = classS, Parent = player }, true )
-	
-	-- whoops, duplicated data
-	InstanceXL.new( "StringValue", { Name = "Class", Parent = player.leaderstats, Value = classS }, true )
-
+	PlayerServer.setClassChoice( player, classS )
 end
 
 
