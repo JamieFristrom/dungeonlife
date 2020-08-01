@@ -1,10 +1,10 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea, LogLevel } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { Players } from "@rbxts/services"
+import { Players, Teams } from "@rbxts/services"
 
 import { CharacterKey, CharacterRecordI, CharacterRecordNull } from "ReplicatedStorage/TS/CharacterRecord"
 DebugXL.logD(LogArea.Requires, 'PlayerServer: ReplicatedStorage/TS imports succesful')
@@ -17,8 +17,12 @@ import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 DebugXL.logD(LogArea.Requires, 'PlayerServer: Replicated/Standard imports succesful')
 
+import { CharacterClass, CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+
 import { Analytics } from "ServerStorage/TS/Analytics"
 
+const heroTeam = Teams.WaitForChild<Team>("Heroes")
+const monsterTeam = Teams.WaitForChild<Team>("Monsters")
 
 DebugXL.logD(LogArea.Requires, 'PlayerServer: Analytics imports succesful')
 
@@ -39,6 +43,7 @@ export namespace PlayerServer {
 
     let characterRecords = new Map<CharacterKey, CharacterRecordI>()
     let currentMobKeys = new Map<Character, CharacterKey>()
+    let classChoices = new Map<Player, CharacterClass>()
 
     let characterKeyServer = 1;
 
@@ -109,6 +114,19 @@ export namespace PlayerServer {
         }
     }
 
+    export function publishCharacterClass(player: Player, charClass: CharacterClass) {
+        warn(player.Name + " publish class " + charClass)
+        DebugXL.dumpCallstack(LogLevel.Verbose, LogArea.Characters)
+        const leaderstats = player.WaitForChild<Folder>("leaderstats")
+        let classValueObj = leaderstats.FindFirstChild<StringValue>("Class")
+        if (!classValueObj) {
+            classValueObj = new Instance("StringValue")
+            classValueObj.Name = "Class"
+            classValueObj.Parent = leaderstats
+        }
+        classValueObj.Value = charClass === "NullClass" ? "" : charClass
+    }
+
     // doing assertions below because we're called from lua so can't always check at compile time
     export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecordI) {
         DebugXL.Assert(player.IsA('Player'))
@@ -119,10 +137,55 @@ export namespace PlayerServer {
             characterRecords.delete(oldCharacterKey)
         }
 
+        // publish to leaderstats
+        publishCharacterClass(player, characterRecord.idS)
+
         // this is also when we assign a characterKey        
         const newCharacterKey = instantiateCharacterRecord(characterRecord)
         currentPCKeys.set(player, newCharacterKey)
         return newCharacterKey
+    }
+
+    export function setClassChoice(player: Player, charClass: CharacterClass) {
+        DebugXL.Assert(player.IsA("Player"))
+        DebugXL.Assert((player.Team === heroTeam && (CharacterClasses.heroStartingStats[charClass]!==undefined))
+            || (player.Team === monsterTeam && (CharacterClasses.monsterStats[charClass]!==undefined)))
+        classChoices.set(player, charClass)
+
+        // publish'
+        publishCharacterClass(player, charClass)
+    }
+
+    // returns NullClass if haven't chosen, don't exist
+    export function getCharacterClass(player: Player) {
+        const record = PlayerServer.getCharacterRecordFromPlayer(player)
+        return record ? record.idS : "NullClass"
+    }
+
+    // waits until a non-null class is being played
+    export function getClassWait(player: Player) {
+        for (; ;) {
+            const cClass = getCharacterClass(player)
+            if (cClass !== "NullClass") {
+                return cClass;
+            }
+            wait()
+        }
+    }
+
+    export function getClassChoice(player: Player) {
+        return classChoices.get(player) || "NullClass"
+    }
+
+    // waits until a non-null class is chosen
+    export function getClassChoiceWait(player: Player) {
+        for (; ;) {
+            const cClass = getClassChoice(player)
+            if (cClass !== "NullClass") {
+                return cClass;
+            }
+            wait()
+        }
     }
 
     export function setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI) {
@@ -195,7 +258,7 @@ export namespace PlayerServer {
         Analytics.ReportEvent(player,
             'Death',
             lastAttackingPlayer ? tostring(lastAttackingPlayer.UserId) : "",
-            CharacterClientI.GetCharacterClass(player),
+            PlayerServer.getCharacterClass(player),
             lifetime)  // life will be a little easier if we include the attacking player's class here but we can determine that from sql
 
         return lifetime
@@ -273,8 +336,6 @@ export namespace PlayerServer {
         levelLabel.Name = 'Level'
         levelLabel.Value = localLevel === actualLevel ? tostring(localLevel) : `${localLevel} (${actualLevel})`
         levelLabel.Parent = player.FindFirstChild('leaderstats')
-        //        }
-        //        InstanceXL.new( "StringValue", { Name = "Level", Value =  level, Parent = player.leaderstats }, true )
     }
 
     function playerRemoving(player: Player) {

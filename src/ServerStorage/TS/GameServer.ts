@@ -6,7 +6,6 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
 
-import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
 
 import * as MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
@@ -19,6 +18,8 @@ import { MessageServer } from "./MessageServer"
 import { PlayerServer, TeamStyleChoice } from "./PlayerServer"
 import { DungeonPlayer } from './DungeonPlayer'
 import CharacterClientI from 'ReplicatedStorage/Standard/CharacterClientI'
+import { CharacterClass } from 'ReplicatedStorage/TS/CharacterClasses'
+import { SpawnerUtility } from 'ReplicatedStorage/TS/SpawnerUtility'
 
 
 
@@ -111,7 +112,9 @@ export namespace GameServer {
         const monsterSpawnN = monsterSpawns.size()
         if (player.Team === HeroTeam || monsterSpawnN === 0) {
             spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
-            CharacterI.SetCharacterClass(player, "DungeonLord")
+            if( player.Team !== HeroTeam) {
+                PlayerServer.setClassChoice(player, "DungeonLord")
+            }
             //spawnPart = workspace.StaticEnvironment.HeroSpawn
         }
         else {
@@ -119,7 +122,7 @@ export namespace GameServer {
                 (Inventory.PlayerInTutorial(player) && Inventory.GetCount(player, "TimeInvested") <= 450)) { // once they"ve been playing for 10 minutes just give up on trying to tutorialize them
                 // while heroes are prepping start off as "DungeonLord"; invulnerable monster that just builds
                 spawnPart = monsterSpawns[MathXL.RandomInteger(0, monsterSpawnN - 1)]
-                CharacterI.SetCharacterClass(player, "DungeonLord")
+                PlayerServer.setClassChoice(player, "DungeonLord")
             }
             else {
                 // bosses take priority
@@ -150,17 +153,19 @@ export namespace GameServer {
                     //DebugXL.Dump( monsterSpawns )
                     if (distantSpawns.size() > 0) {
                         spawnPart = distantSpawns[MathXL.RandomInteger(0, distantSpawns.size() - 1)]
-                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+                        PlayerServer.setClassChoice(player, SpawnerUtility.getClassToSpawn(spawnPart))
                     }
                     else if (closeSpawns.size() > 0) {
                         // couldn"t find a spot far away from us, give up and spawn close
                         spawnPart = closeSpawns[MathXL.RandomInteger(0, closeSpawns.size() - 1)]
-                        CharacterI.SetCharacterClass(player, spawnPart.FindFirstChild<StringValue>("CharacterClass")!.Value)
+                        PlayerServer.setClassChoice(player, SpawnerUtility.getClassToSpawn(spawnPart))
                     }
                     else {
                         // apparently there"s only one already used boss spawn on this level; fall back to hero spawner
                         spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
-                        CharacterI.SetCharacterClass(player, "DungeonLord")
+                        if( player.Team !== HeroTeam) {
+                            PlayerServer.setClassChoice(player, "DungeonLord")
+                        }
                     }
                 }
             }
@@ -194,9 +199,9 @@ export namespace GameServer {
             // we now wait for just *one* hero; preparation is over when 60 seconds is up AND one hero has decided to play.
             // otherwise monsters can go on
             done = done && HeroTeam.GetPlayers().filter((heroPlayer) =>
-                CharacterClientI.GetCharacterClass(heroPlayer) !== "" &&   // chosen a character class and spawned
+                PlayerServer.getCharacterClass(heroPlayer) !== "NullClass" &&   // chosen a character class and spawned
                 heroPlayer.Character !== undefined).size() >= 1
-            done = done || MonsterTeam.GetPlayers().size()===0
+            done = done || MonsterTeam.GetPlayers().size() === 0
             wait()
         }
         preparationCountdownValue.Value = 0

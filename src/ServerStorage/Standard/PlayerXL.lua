@@ -206,7 +206,7 @@ Instead, the flow looks like this:
 --]]
 
 function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart, levelSessionN, levelSessionFunc )
-	DebugXL:logD( LogArea.Requires, "LoadCharacterWait "..player.Name )
+	DebugXL:logD( LogArea.Characters, "LoadCharacterWait "..player.Name )
 	DebugXL:Assert( not ( optionalSpawnCF and optionalSpawnPart ) ) -- pass in a CF or a part (or neither), not both
 	if loadingCharacterBT[ player ] then
 		DebugXL:Error( "LoadCharacterWait called for "..player.Name.." when load is already in progress. Traceback: "..loadingCharacterCallstackT[ player ])
@@ -214,7 +214,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 	loadingCharacterBT[ player ] = true
 	loadingCharacterCallstackT[ player ] = debug.traceback()
 	
-	local characterClassS =  CharacterClientI:WaitForCharacterClass( player )
+	local characterClassS = PlayerServer.getClassChoiceWait( player )
 
 	local chosenSpawn = nil
 	if optionalSpawnPart then

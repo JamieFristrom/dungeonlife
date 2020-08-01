@@ -15,6 +15,8 @@ local InventoryUtility = require( game.ReplicatedStorage.InventoryUtility )
 
 local Crates           = require( game.ReplicatedStorage.Standard.Crates ) 
 
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+
 local function PlayerAdded( player )
 	print( "TutorialManager PlayerAdded "..player.Name)
 	local inventory = Inventory:GetWait( player )
@@ -54,7 +56,7 @@ local function PlayerAdded( player )
 			-- in case you accidentally do them in the wrong order, keep your best
 			Inventory:SetCount( player, "Tutorial", math.max( 2, Inventory:GetCount( player, "Tutorial" ) ) )
 		end
-		if CharacterClientI:GetCharacterClass( player )~="DungeonLord" then
+		if PlayerServer.getCharacterClass( player )~="DungeonLord" then
 			-- in case you accidentally do them in the wrong order, keep your best
 			Inventory:SetCount( player, "Tutorial", math.max( 3, Inventory:GetCount( player, "Tutorial" ) ) )
 		end
