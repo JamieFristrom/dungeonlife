@@ -1,8 +1,17 @@
+
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local CharacterI          = require( game.ServerStorage.CharacterI )
 local FurnishServerModule = require( game.ServerStorage.FurnishServerModule )
 local GameManagement      = require( game.ServerStorage.GameManagementModule )
 local Inventory           = require( game.ServerStorage.InventoryModule )
 local Monsters            = require( game.ServerStorage.MonstersModule )
+
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local MathXL              = require( game.ReplicatedStorage.Standard.MathXL )
 
@@ -58,7 +67,7 @@ remotes.PlaceInstanceRF.OnServerInvoke = function(player, name, position, rotati
 						furnishingDatum.furnishingType == PossessionData.FurnishingEnum.BossSpawn then
 					
 					-- kludge to prevent superboss player from ruining last level
-					local monsterInfo = CharacterClasses.monsterStats[ CharacterClientI:GetCharacterClass( player ) ]
+					local monsterInfo = CharacterClasses.monsterStats[ PlayerServer.getCharacterClass( player ) ]
 					if not monsterInfo or not monsterInfo.tagsT["Superboss"] then   -- letting heroes build for debug purposes
 						player.Team = game.Teams.Monsters -- necessery in Underhaven
 						CharacterI:SetCharacterClass( player, instance.MonsterSpawn.CharacterClass.Value )

@@ -21,7 +21,7 @@ import { MeleeWeaponUtility } from 'ReplicatedStorage/TS/MeleeWeaponUtility'
 import MathXL from 'ReplicatedStorage/Standard/MathXL'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 
-import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
+import { CharacterClass, CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 import { RangedWeaponUtility } from 'ReplicatedStorage/TS/RangedWeaponUtility'
 import { MonsterServer } from './MonsterServer'
 import { FlexibleToolsServer } from './FlexibleToolsServer'
@@ -133,7 +133,7 @@ export namespace MobServer {
         }
     }
 
-    export function spawnMob(characterClass: string, position?: Vector3, spawnPart?: SpawnPart, curTick?: number) {
+    export function spawnMob(characterClass: CharacterClass, position?: Vector3, spawnPart?: SpawnPart, curTick?: number) {
         if (spawnPart && curTick) {
             let mySpawner = spawnersMap.get(spawnPart)
             if (!mySpawner) {
@@ -223,7 +223,8 @@ export namespace MobServer {
                 const spawner = spawnersMap.get(spawnPart)
                 if (!spawnersMap.get(spawnPart)) {
                     DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
-                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                    const charClassStr = spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass
+                    spawnMob(charClassStr,
                         undefined,
                         spawnPart,
                         curTick)
@@ -238,7 +239,7 @@ export namespace MobServer {
                 const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
                 if (myMobs.size() < mobSpawnerCap) {
                     DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from "+spawnPart.GetFullName())
-                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value,
+                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass,
                         undefined,
                         spawnPart,
                         curTick)
@@ -306,7 +307,7 @@ export namespace MobServer {
             return new Vector3(maxX, 0, maxZ)
         }
 
-        constructor(model: Model, humanoid: Humanoid, characterClass: string, position?: Vector3, spawnPart?: SpawnPart) {
+        constructor(model: Model, humanoid: Humanoid, characterClass: CharacterClass, position?: Vector3, spawnPart?: SpawnPart) {
             super(model, humanoid)
             this.spawnPart = spawnPart
 

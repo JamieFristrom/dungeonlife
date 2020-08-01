@@ -6,6 +6,7 @@ import { PCMonitor } from "ReplicatedStorage/TS/PCMonitor"
 import { ReplicatedStorage, Players, Teams } from "@rbxts/services";
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS";
 import { Localize } from "ReplicatedStorage/TS/Localize";
+import { PCClient } from "ReplicatedStorage/TS/PCClient";
 
 // doing this on the client side so we can color appropriately for viewer, and also possibly show different info
 // for werewolves
@@ -39,9 +40,9 @@ while( true )
 						tag.Parent = head
 					}
 					
-					let className = CharacterClientI.GetCharacterClass( player )
+					let className = PCMonitor.getPublishedClass( player )
 
-					let undercoverWerewolfB = CharacterClientI.GetCharacterClass( player )==="Werewolf" && WerewolfUtility.IsUndercover( player.Character )
+					let undercoverWerewolfB = PCMonitor.getPublishedClass( player )==="Werewolf" && WerewolfUtility.IsUndercover( player.Character )
 
 					let theirLevelStr = PCMonitor.getPublishedLevel( player )
 					let theirLevel = theirLevelStr.match( '%d+' )[0] as unknown as number
@@ -73,7 +74,7 @@ while( true )
 					if( player.Team === monstersTeam ) 
 					{
 //						print( player.Name.." on other team" )
-						if( CharacterClientI.GetCharacterClass( player )==="Werewolf" && WerewolfUtility.IsUndercover( player.Character ) )
+						if( PCMonitor.getPublishedClass( player )==="Werewolf" && WerewolfUtility.IsUndercover( player.Character ) )
 						{
 							// hiding werewolf, better color their name blue if we're a hero
 							if( Players.LocalPlayer!.Team === heroesTeam ) 

@@ -12,7 +12,6 @@ local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
 local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
-local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
@@ -32,7 +31,7 @@ function Werewolf:TakeHumanFormWait( player )
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local character = player.Character
-	local taggerFlavorS = MonsterUtility:GetClassWait( character ) 
+	local taggerFlavorS = PlayerServer.getClassWait( character ) 
 	if taggerFlavorS == "Werewolf" then  -- safety check for hackers
 		local heldTool = character:FindFirstChildWhichIsA("Tool")
 		if heldTool then heldTool:Destroy() end
@@ -85,7 +84,7 @@ function Werewolf:WolfOutWait( player )
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local character = player.Character
-	local taggerFlavorS = MonsterUtility:GetClassWait( character )
+	local taggerFlavorS = PlayerServer.getClassWait( character )
 	if taggerFlavorS == "Werewolf" then		
 		local heldTool = player:FindFirstChildWhichIsA("Tool")
 		if heldTool then heldTool:Destroy() end
@@ -146,7 +145,7 @@ end
 
 workspace.Signals.WerewolfRE.OnServerEvent:Connect( function( player, funcName, ... )
 	if Werewolf[ funcName ] then
-		local classS = MonsterUtility:GetClassWait( player.Character )
+		local classS = PlayerServer.getClassWait( player.Character )
 		if classS == "Werewolf" then		
 			Werewolf[ funcName ]( Werewolf, player, ... )
 		end

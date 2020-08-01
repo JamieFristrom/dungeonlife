@@ -16,6 +16,8 @@ local AnalyticsXL = require( game.ServerStorage.Standard.AnalyticsXL )
 
 local Config = require( game.ReplicatedStorage.TS.Config ).Config
 
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+
 	
 local Settings = {
 	ApplyTax = false; -- This will send the R$ cost of something as math.floor(Input * .7)
@@ -162,7 +164,7 @@ function AnnotateEvent(Event, Player)
 		Event[i] = v
 	end
 	Event["client_ts"] = ClientTime
-	Event["custom_01"] = CharacterClientI:GetCharacterClass( Player )
+	Event["custom_01"] = PlayerServer.getCharacterClass( Player )
 	return Event
 end
 

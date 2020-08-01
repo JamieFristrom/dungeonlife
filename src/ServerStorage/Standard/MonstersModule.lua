@@ -110,10 +110,11 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 	player.Backpack:ClearAllChildren()
 --	warn( "Clearing "..player.Name.."'s backpack" )
 
-	local monsterClass = CharacterClientI:GetCharacterClass( player )
+	local monsterClass = PlayerServer.getClassChoice( player )
 
 	local humanoid = character.Humanoid
-	DebugXL:Assert( monsterClass ~= "" )
+	DebugXL:Assert( monsterClass ~= "NullClass" )
+	
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
 	DebugXL:Assert( monsterDatum )
 
@@ -184,8 +185,6 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 end
 
 
--- difference between this and MonsterUtility:GetClassWait is this doesn't wait
--- FIXME: Completely wrong
 function Monsters:GetClass( monsterCharacter )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:Assert( monsterCharacter:IsA("Model") )

@@ -22,7 +22,6 @@ local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local FloorData         = require( game.ReplicatedStorage.FloorData )
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
-local MonsterUtility    = require( game.ReplicatedStorage.MonsterUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 local RankForStars      = require( game.ReplicatedStorage.RankForStars )
 DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ReplicatedStorage requires succesful' )
@@ -220,14 +219,14 @@ local function MonsterAddedWait( character, player )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not Inventory:PlayerInTutorial( player ) then
 		if workspace.GameManagement.DungeonDepth.Value > 0 then  		-- if you're in the lobby it doesn't matter what you are and that message is just distracting. Maybe we should automake you a dungeon lord in that case
-			if MonsterUtility:GetClassWait( character ) == "DungeonLord" then
+			local class = PlayerServer.getClassWait( character )
+			if class == "DungeonLord" then
 				if workspace.GameManagement.PreparationCountdown.Value > 0 then
 					MessageServer.PostMessageByKey( player, "MsgWelcomeMonster" )				
 				else
 					MessageServer.PostMessageByKey( player, "MsgWelcomeDungeonLord" )
 				end
 			else
-				local class = MonsterUtility:GetClassWait( character )
 				if not PossessionData.dataT[ class ].readableNameS then
 					DebugXL:Error( character.Name.." class "..class.." has no readableName" )
 					return
@@ -869,7 +868,7 @@ local function LoungeModeOver()
 	if #game.Teams.Heroes:GetPlayers()==0 then
 		if #game.Players:GetPlayers()>=2 then
 			for _, player in pairs( game.Teams.Monsters:GetPlayers() ) do
-				local class = CharacterClientI:GetCharacterClass( player )
+				local class = PlayerServer.getCharacterClass( player )
 				if class ~= "DungeonLord" and class ~= "" then
 					return true
 				end 
@@ -1320,7 +1319,7 @@ function MainRemote.SignalReady( player )
 	local myDungeonPlayerT = dungeonPlayersT[ player ]
 	myDungeonPlayerT.signalledReadyB= true
 	if player.Team==game.Teams.Heroes then 
-		if CharacterClientI:GetCharacterClass( player )~="" then		
+		if PlayerServer.getCharacterClass( player )~="NullClass" then		
 			GameManagement:MarkPlayersCharacterForRespawn( player )
 		end
 	end
@@ -1367,7 +1366,7 @@ function MainRemote.MonsterChoice( player )
 	if player.Team ~= game.Teams.Monsters then	
 		ChangeHeroToMonster( player )
 	end
-	if CharacterClientI:GetCharacterClass( player )=='DungeonLord' then
+	if PlayerServer.getCharacterClass( player )=='DungeonLord' then
 		GameManagement:MarkPlayersCharacterForRespawn( player )
 	end
 end
@@ -1377,7 +1376,7 @@ function MainRemote.DungeonLordChoice( player )
 	if player.Team ~= game.Teams.Monsters then
 		ChangeHeroToMonster( player )
 	end
-	if CharacterClientI:GetCharacterClass( player )~='DungeonLord' then
+	if PlayerServer.getCharacterClass( player )~='DungeonLord' then
 		GameManagement:MarkPlayersCharacterForRespawn( player )
 	end
 end
