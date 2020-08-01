@@ -46,14 +46,15 @@ export enum LogArea {
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Warning
+    private defaultLogLevel = LogLevel.Info
 
     private logLevelForTag = new Map<LogArea, LogLevel>([
-        // [LogArea.Combat,LogLevel.Debug],
+        [LogArea.Combat,LogLevel.Warning],
         // [LogArea.Gameplay, LogLevel.Verbose],
         [LogArea.Executed,LogLevel.Info],
         // [LogArea.Requires,LogLevel.Verbose],
         // [LogArea.UI, LogLevel.Info],
+        [LogArea.Characters, LogLevel.Verbose],
         [LogArea.GameManagement, LogLevel.Verbose],
         [LogArea.MobSpawn, LogLevel.Verbose]
     ])
@@ -91,6 +92,11 @@ class DebugXLC {
 
     Dump(variable: unknown, tag: LogArea) {
         this.log(LogLevel.Info, tag, this.DumpToStr(variable))
+    }
+
+    dumpCallstack(logLevel: LogLevel, tag: LogArea ) {
+        const callstackStr = debug.traceback()
+        this.log(logLevel, tag, callstackStr)
     }
 
     setLogLevel(newLogLevel: LogLevel, tag?: LogArea) {

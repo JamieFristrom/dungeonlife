@@ -30,14 +30,14 @@ const testManaPotionButton = new PotionButton({
 
 const animationDummy = ReplicatedStorage.WaitForChild<Folder>("TestObjects").WaitForChild<Character>("AnimationDummy")
 
-const monsterRecord = new Monster("dummyMonster", [], 1)
+const monsterRecord = new Monster("Orc", [], 1)
 
 testManaPotionButton.refresh(animationDummy, monsterRecord)
 
 // one or the other is fine
 DebugXL.Assert(!manaPotionFrame.Visible || !manaPotionItemFrame.Visible)
 
-const heroWithPotRecord = new Hero("dummyHero", {
+const heroWithPotRecord = new Hero("Warrior", {
     strN: 1,
     dexN: 1,
     willN: 1,
@@ -53,7 +53,7 @@ testManaPotionButton.refresh(animationDummy, heroWithPotRecord)
 DebugXL.Assert(manaPotionFrame.Visible)
 DebugXL.Assert(manaPotionItemFrame.Visible)
 
-const heroRecord = new Hero("dummyHero", {
+const heroRecord = new Hero("Warrior", {
     strN: 1,
     dexN: 1,
     willN: 1,

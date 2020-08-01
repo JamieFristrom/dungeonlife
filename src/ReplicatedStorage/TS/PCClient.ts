@@ -2,6 +2,7 @@ print( script.GetFullName() + " executed" )
 import { CharacterRecord, CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { Workspace } from "@rbxts/services";
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
+import { CharacterClass } from "./CharacterClasses";
 
 let hotbarRE = Workspace.WaitForChild('Signals').WaitForChild('HotbarRE') as RemoteEvent
 

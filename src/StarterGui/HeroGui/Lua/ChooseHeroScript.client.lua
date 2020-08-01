@@ -29,7 +29,7 @@ local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
 --print( "ChooseHeroScript: Localize required" )
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
-
+local PCClient = require( game.ReplicatedStorage.TS.PCClient ).PCClient
 
 
 local heroGuiFrame    = script.Parent.Parent:WaitForChild("HeroGui")
@@ -157,15 +157,6 @@ local function DisplayChoices()
 			end
 		end
 	end
-	
-	--MakeRecommendation( savedPlayerCharacters )
-	
-	--[[for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-		spawn( function()
-			local levelO = player:WaitForChild("leaderstats"):WaitForChild("Level")
-			levelO.Changed:Connect( function() MakeRecommendation( savedPlayerCharacters ) end )
-		end )
-	end--]]
 end
 
 
@@ -176,12 +167,11 @@ local function Display()
 --	print( "Displaying hero choices" )
 --	warn( debug.traceback() )
 --  this doesn't work because class can replicate late
---	if CharacterClientI:GetCharacterClass( game.Players.LocalPlayer ) == "" then
 	DisplayChoices()
 --	print( "ChooseHero visibilefying" )
 	chooseHeroFrame.Visible = true
 	heroGuiFrame.Visible = true
-	while CharacterClientI:GetCharacterClass( game.Players.LocalPlayer ) == "" do wait(0.1) end
+	while PCClient.pc == nil or PCClient.pc.idS == "NullClass" do wait(0.1) end
 --	else
 --		print( "But class already chosen" )
 --	end 

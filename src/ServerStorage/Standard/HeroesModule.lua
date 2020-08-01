@@ -159,7 +159,7 @@ end
 
 function Heroes:ChooseHero( player, slotN )
 	if player.Team == game.Teams.Heroes then                             	-- protect against hackage   
-		if CharacterClientI:GetCharacterClass( player )=="" then            -- protect against hackage
+		if PlayerServer.getCharacterClass( player )=="NullClass" then            -- protect against hackage
 			PlayerServer.setCharacterRecordForPlayer( player, savedPlayerCharactersT[ PCKey( player ) ].heroesA[ slotN ] )
 			local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
 			pcData.slotN = slotN
@@ -264,7 +264,7 @@ function Heroes:CharacterAdded( character, player )
 
 	FlexEquip:ApplyEntireCostumeWait( player, myPCData, Inventory:GetActiveSkinsWait( player ).hero )
 
-	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Hero:"..CharacterClientI:GetCharacterClass( player ) )
+	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Hero:"..PlayerServer.getCharacterClass( player ) )
 
 	return myPCData, PlayerServer.getCharacterKeyFromPlayer( player )
 end
