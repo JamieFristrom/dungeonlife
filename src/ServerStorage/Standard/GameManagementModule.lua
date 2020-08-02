@@ -348,7 +348,7 @@ end
 
 
 function KickoffChooseHero( player )
-	CharacterI:SetCharacterClass( player, "" )
+	PlayerServer.setClassChoice( player, "NullClass" )
 	PlayerServer.publishLevel( player, 1, 1 )
 	DungeonPlayer:Get( player ):kickoffChooseHero()
 end	

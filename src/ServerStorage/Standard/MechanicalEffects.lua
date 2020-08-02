@@ -39,7 +39,7 @@ function MechanicalEffects.DamageInstant( targetHumanoid, _, damage )
 	-- usually this will accompany other damage so not bothering to record
 	-- last attacker
 	targetHumanoid:TakeDamage( damage )
-	require( game.ServerStorage.CharacterFX.HealthChange ):Activate( targetHumanoid.Parent, -damage, false )		
+	require( game.ServerStorage.Standard.HealthChange ):Activate( targetHumanoid.Parent, -damage, false )		
 end
 
 

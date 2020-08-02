@@ -159,15 +159,13 @@ end
 
 function Heroes:ChooseHero( player, slotN )
 	if player.Team == game.Teams.Heroes then                             	-- protect against hackage   
-		if PlayerServer.getCharacterClass( player )=="NullClass" then            -- protect against hackage
-			PlayerServer.setCharacterRecordForPlayer( player, savedPlayerCharactersT[ PCKey( player ) ].heroesA[ slotN ] )
-			local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
-			pcData.slotN = slotN
-			CharacterI:SetCharacterClass( player, pcData.idS )
-			HeroServer.calculateCurrentLevelCapWait()
-			HeroServer.republishAllHeroLevels()
-			birthTickT[ player ] = tick()
-		end
+		PlayerServer.setCharacterRecordForPlayer( player, savedPlayerCharactersT[ PCKey( player ) ].heroesA[ slotN ] )
+		local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
+		pcData.slotN = slotN
+		CharacterI:SetCharacterClass( player, pcData.idS )
+		HeroServer.calculateCurrentLevelCapWait()
+		HeroServer.republishAllHeroLevels()
+		birthTickT[ player ] = tick()
 	end
 end
 
@@ -457,7 +455,7 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 		
 		targetHumanoid:TakeDamage( damage )
 		--print( "Heroes:DoDirectDamage Damage done: "..damage )
-		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( targetHumanoid.Parent, -damage, critB )		
+		require( game.ServerStorage.Standard.HealthChange ):Activate( targetHumanoid.Parent, -damage, critB )		
 
 		if targetHumanoid.Health <= 0 then
 --		--print( targetHumanoid:GetFullName().." killed" )
@@ -766,7 +764,7 @@ function HeroRemote.TakeBestHealthPotion( player )
 			character.Humanoid.MaxHealth )
 		
 		require( game.ServerStorage.CharacterFX.MagicHealing ):Activate( character, Color3.new( 1, 0, 0 ) )
-		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( character, effectStrength, false )		
+		require( game.ServerStorage.Standard.HealthChange ):Activate( character, effectStrength, false )		
 
 		-- and good-bye potion
 		pcData.gearPool:delete( k )
