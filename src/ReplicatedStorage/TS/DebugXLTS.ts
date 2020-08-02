@@ -49,14 +49,14 @@ class DebugXLC {
     private defaultLogLevel = LogLevel.Info
 
     private logLevelForTag = new Map<LogArea, LogLevel>([
-        [LogArea.Combat,LogLevel.Warning],
-        // [LogArea.Gameplay, LogLevel.Verbose],
-        [LogArea.Executed,LogLevel.Info],
-        // [LogArea.Requires,LogLevel.Verbose],
-        // [LogArea.UI, LogLevel.Info],
-        [LogArea.Characters, LogLevel.Verbose],
-        [LogArea.GameManagement, LogLevel.Verbose],
-        [LogArea.MobSpawn, LogLevel.Verbose]
+        //[LogArea.Combat,LogLevel.Warning],
+        //[LogArea.Gameplay, LogLevel.Verbose],
+        //[LogArea.Executed,LogLevel.Info],
+        //[LogArea.Requires,LogLevel.Verbose],
+        //[LogArea.UI, LogLevel.Info],
+        //[LogArea.Characters, LogLevel.Verbose],
+        //[LogArea.GameManagement, LogLevel.Verbose],
+        //[LogArea.MobSpawn, LogLevel.Verbose]
     ])
 
     private testErrorCatcher?: (message: string) => void
