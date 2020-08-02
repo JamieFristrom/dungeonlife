@@ -354,7 +354,7 @@ function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid
 		end
 		DebugXL:logV( LogArea.Combat, targetHumanoid.Name..'humanoid:TakeDamage('..damage..')' )
 		targetHumanoid:TakeDamage( damage )
-		require( game.ServerStorage.CharacterFX.HealthChange ):Activate( targetPC, -damage, critB )
+		require( game.ServerStorage.Standard.HealthChange ):Activate( targetPC, -damage, critB )
 
 		-- build points for damage done; promotes killstealing unfortunately but I didn't want the UI clutter
 		-- for giving you stuff every hit, plus that would get you too much income, but I also don't want to give you points silently

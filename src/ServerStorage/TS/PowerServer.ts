@@ -30,7 +30,7 @@ interface Activateable {
 export namespace PowerServer {
 
     let magicHealingModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('MagicHealing')!
-    let healthChangeModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('HealthChange')!
+    let healthChangeModule = ServerStorage.FindFirstChild('Standard')!.FindFirstChild<ModuleScript>('HealthChange')!
     let auraGlowModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('AuraGlow')!
     let magicSprintModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('MagicSprint')!
 
