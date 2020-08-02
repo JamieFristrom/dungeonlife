@@ -13,7 +13,6 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import * as GameAnalyticsServer from "ServerStorage/Standard/GameAnalyticsServer"
 DebugXL.logD(LogArea.Requires, 'PlayerServer: GameAnalyticsServer imported')
 
-import * as CharacterClientI from "ReplicatedStorage/Standard/CharacterClientI"
 import * as CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 DebugXL.logD(LogArea.Requires, 'PlayerServer: Replicated/Standard imports succesful')
 
@@ -153,7 +152,9 @@ export namespace PlayerServer {
         classChoices.set(player, charClass)
 
         // publish'
-        publishCharacterClass(player, charClass)
+        if( charClass==="NullClass") {
+            publishCharacterClass(player, charClass)
+        }
     }
 
     // returns NullClass if haven't chosen, don't exist

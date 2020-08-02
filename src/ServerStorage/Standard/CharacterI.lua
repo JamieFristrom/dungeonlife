@@ -116,12 +116,12 @@ end
 
 function CharacterI:ChangeTeam( player, newTeam )
 	if player.Team ~= newTeam then
-		CharacterI:SetCharacterClass( player, "" )
+		pcall( function()
+			player.Team = newTeam
+		end )
+		PlayerServer.setClassChoice( player, "NullClass" )
 		InstanceXL.new( "StringValue", { Name = "Level", Value = "", Parent = player.leaderstats }, true )
 	end
-	pcall( function()
-		player.Team = newTeam
-	end )
 end
 
 
