@@ -243,17 +243,6 @@ export namespace CharacterClasses {
 
     export const heroStartingStats: { [k: string]: HeroStatBlockI } =
     {
-        NullClass:
-        {
-            strN: 0,  //// means if you draw a level 3 weapon you have a choice between putting in strength or con when you hit level 2
-            dexN: 0,
-            conN: 0,
-            willN: 0,
-            experienceN: 0,
-            goldN: 0,
-            deepestDungeonLevelN: 0,
-            totalTimeN: 0,
-        },
         Warrior:
         {
             strN: 11,  //// means if you draw a level 3 weapon you have a choice between putting in strength or con when you hit level 2
@@ -313,20 +302,6 @@ export namespace CharacterClasses {
 
     export const monsterStats: { [k: string]: MonsterStatBlockI } =
     {
-        NullClass:
-        {
-            baseGoldN: 0,
-            dropGoldPctN: 0,
-            dropItemPctN: 0,
-            goldPerLevelN: 0,
-            baseDamageBonusN: 0,
-            baseHealthN: 1,
-            scaleN: 1,
-            tagsT: {},
-            potentialWeaponsA: [],
-            numWeaponsN: 0,
-            defaultHideAccessoriesB: false
-        },
         DungeonLord:
         {
             prototypeObj: undefined,

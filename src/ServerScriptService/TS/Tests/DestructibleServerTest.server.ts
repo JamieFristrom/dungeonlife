@@ -1,3 +1,9 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.GetFullName())
+
 import { RunService, CollectionService, Workspace } from "@rbxts/services"
 
 import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
@@ -5,7 +11,6 @@ import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
 import { DestructibleServer } from "ServerStorage/TS/DestructibleServer"
-import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { GameplayTestService } from "ServerStorage/TS/GameplayTestService"
 
