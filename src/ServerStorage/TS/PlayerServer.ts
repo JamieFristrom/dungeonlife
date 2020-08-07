@@ -147,12 +147,13 @@ export namespace PlayerServer {
 
     export function setClassChoice(player: Player, charClass: CharacterClass) {
         DebugXL.Assert(player.IsA("Player"))
-        DebugXL.Assert((player.Team === heroTeam && (CharacterClasses.heroStartingStats[charClass]!==undefined))
-            || (player.Team === monsterTeam && (CharacterClasses.monsterStats[charClass]!==undefined)))
+        DebugXL.Assert(charClass === "NullClass"
+            || (player.Team === heroTeam && (CharacterClasses.heroStartingStats[charClass] !== undefined))
+            || (player.Team === monsterTeam && (CharacterClasses.monsterStats[charClass] !== undefined)))
         classChoices.set(player, charClass)
 
         // publish'
-        if( charClass==="NullClass") {
+        if (charClass === "NullClass") {
             publishCharacterClass(player, charClass)
         }
     }

@@ -1,6 +1,12 @@
-import { Analytics } from "./Analytics"
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+
+// For Analytics A-B and multivariate testing
+
+import { Analytics } from "./Analytics"
+
 import { TestGroups, TestInfoHolder } from "ReplicatedStorage/TS/GameplayTestUtility"
 
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
