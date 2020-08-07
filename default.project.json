@@ -160,6 +160,12 @@
       "TS": {
         "$path": "out/StarterGui/TS"
       }
+    },
+    "Chat": {
+      "$className": "Chat",
+      "ChatModules": {
+        "$path": "out/Chat/ChatModules"
+      }
     }
   }
 }
