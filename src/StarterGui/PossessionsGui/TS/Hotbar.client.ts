@@ -56,82 +56,6 @@ function WhatSlotCurrentlyEquipped() {
 }
 
 
-function Equip(slotN: HotbarSlot) {
-    //print( "Equip "..slotN )
-    DebugXL.Assert(PCClient.pc !== undefined)
-    if (PCClient.pc) {
-        let possessionKey = PCClient.pc.getPossessionKeyFromSlot(slotN)!
-        if (possessionKey) {
-            let localCharacter = localPlayer.Character
-            if (localCharacter) {
-                hotbarRE.FireServer("Equip", slotN)
-
-                // get tool for hotbar slot
-                let flexToolInst = PCClient.pc.getFlexTool(possessionKey)
-                if (flexToolInst)  // possible you've thrown out the tool and the hotbar is late on updating
-                {
-                    if (flexToolInst.getUseType() === "power") {
-                        let uiClick = playerGui.WaitForChild("Audio").WaitForChild("PowerActivate") as Sound
-                        uiClick.Play()
-
-                        // play effect now?
-                        if (flexToolInst.canLogicallyActivate(localCharacter)) {
-                            let manaValueObj = localCharacter.FindFirstChild<NumberValue>("ManaValue")
-                            if (manaValueObj) {
-                                let mana = manaValueObj.Value
-                                if (mana >= flexToolInst.getManaCost()) {
-                                    if (flexToolInst.powerCooldownPctRemaining(localPlayer) <= 0) {
-                                        flexToolInst.startPowerCooldown(localPlayer)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        let uiClick = playerGui.WaitForChild('Audio').WaitForChild('UIClick') as Sound
-                        uiClick.Play()
-                        if (!localCharacter.Parent) {
-                            // if we're on the character outfitting screen our tools won't have been instantiated
-                            return
-                        }
-
-                        let humanoid = localCharacter.FindFirstChild("Humanoid") as Humanoid
-                        if (humanoid) {
-                            let heldTool = localCharacter.FindFirstChildWhichIsA("Tool") as Tool
-                            if (heldTool && CharacterRecord.getToolPossessionKey(heldTool) === possessionKey) {
-                                // unequip
-                                DebugXL.logD(LogArea.Items, 'Unequipping')
-                                humanoid.UnequipTools()
-                                //SelectSlot(0)
-                            }
-                            else {
-                                let tool = CharacterRecord.getToolInstanceFromPossessionKey(localCharacter, PCClient.pc, possessionKey) as Tool
-                                if (tool) {
-                                    DebugXL.logD(LogArea.Items, 'Equipping')
-                                    humanoid.EquipTool(tool)  // error in EquipTool's type signature that has now been fixed
-                                }
-                                else {
-                                    // there may be some false positives here, but most of the time this means your backpack is improperly cacheing...                                                        
-                                    // I could see false positives coming from equipping a weapon that the inventory replication
-                                    // says you have before the instance actually gets replicated - perhaps waiting here is the right choice
-                                    const flexTool = PCClient.pc.getFlexTool(possessionKey)
-                                    if (flexTool) {
-                                        DebugXL.logW(LogArea.Items, "Hotbar failed to find instance for " + localCharacter.GetFullName() + " tool " + flexTool.baseDataS)
-                                    }
-                                    else {
-                                        DebugXL.Error("Hotbar had possession key for " + localCharacter.GetFullName() + " flextool that doesn't exist")
-                                    }
-                                }
-                                // put box around equipped tool in GUI
-                                //SelectSlot( slotN )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
     let hotbarItem = hotbar.WaitForChild("Item" + i)
@@ -141,7 +65,7 @@ for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
         if (PCClient.pc) {
             let itemDatum = CharacterClientI.GetPossessionFromSlot(PCClient.pc, slot)
             if (itemDatum) {
-                Equip(slot)
+                PCClient.equip(slot)
             }
         }
         else {
@@ -210,7 +134,9 @@ for (let i = 0; i < HotbarSlot.Max; i++) {
     //         false, ...equipKeyCodes[i-1] )
     // }
     ContextActionService.BindActionAtPriority("equip" + i, (actionName: string, inputState: Enum.UserInputState) => {
-        if (inputState === Enum.UserInputState.Begin) Equip(slot)
+        if (inputState === Enum.UserInputState.Begin) {
+            PCClient.equip(slot)
+        }
     },
         false, 3000, ...equipKeyCodes[i])
 }
