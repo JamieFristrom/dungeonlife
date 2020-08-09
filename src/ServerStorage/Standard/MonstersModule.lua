@@ -51,19 +51,19 @@ local Monsters = {}
 local function GiveWeapon( characterKey, flexToolPrototype )	
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw )
-	flexTool.levelN = math.ceil( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
+	flexTool.levelN = math.ceil( PlayerServer.getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
 	PlayerServer.getCharacterRecord( characterKey ):giveFlexTool( flexTool )
 end
 
 
-local function GiveUniqueWeapon( characterKey, potentialWeaponsA )
+local function GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
 	if #potentialWeaponsA == 0 then
-		DebugXL:logE( LogArea.Items, PlayerServer.getName( characterKey ).." | "..PlayerServer.getCharacterRecord( characterKey ).idS.." has no potential weapons" )
+		DebugXL:logE( LogArea.Items, playerTracker:getName( characterKey ).." | "..playerTracker:getCharacterRecord( characterKey ).idS.." has no potential weapons" )
 	end
 	local toolData        = TableXL:Map( potentialWeaponsA, function( weaponNameS ) return ToolData.dataT[ weaponNameS ] end )
 	local dropLikelihoods = TableXL:Map( toolData, function( x ) return x.monsterStartGearBiasN end )
 	if TableXL:GetN( dropLikelihoods ) == 0 then
-		DebugXL:logE( LogArea.Items, PlayerServer.getName( characterKey ).." has no drop likelihoods" )
+		DebugXL:logE( LogArea.Items, playerTracker:getName( characterKey ).." has no drop likelihoods" )
 	end
 	local toolN = MathXL:RandomBiasedInteger1toN( dropLikelihoods )
 	local weaponTemplate = toolData[ toolN ]
@@ -71,20 +71,20 @@ local function GiveUniqueWeapon( characterKey, potentialWeaponsA )
 		DebugXL:Dump( potentialWeaponsA )
 		DebugXL:Dump( toolData )
 		DebugXL:Dump( dropLikelihoods )
-		DebugXL:Error( PlayerServer.getName( characterKey ).." weapon template nil.")
+		DebugXL:Error( playerTracker:getName( characterKey ).." weapon template nil.")
 	end
 
 	-- slot here is hotbar slot
 	local _slotN = nil
 
-	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
+	local characterRecord = playerTracker:getCharacterRecord( characterKey )
 	-- hack to keep werewolf alternate weapons out of hotbar slot
 	if characterRecord.idS~="Werewolf" then
-		_slotN = PlayerServer.getCharacterRecord( characterKey ):countTools() + 1
+		_slotN = playerTracker:getCharacterRecord( characterKey ):countTools() + 1
 	end
 
 	local flexToolInst = { baseDataS = weaponTemplate.idS,
-		levelN = math.max( 1, math.floor( Monsters:GetLevelN( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
+		levelN = math.max( 1, math.floor( playerTracker:getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
 		enhancementsA = {},
 		slotN = _slotN }
 	local flexTool = FlexTool:objectify( flexToolInst )
@@ -102,7 +102,7 @@ end
 local monstersForHeroT = {}
 
 
-function Monsters:PlayerCharacterAddedWait( character, player )
+function Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
 	DebugXL:Assert( self == Monsters )
 	print("Waiting to load character "..character.Name.." appearance" )
 
@@ -110,7 +110,7 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 	player.Backpack:ClearAllChildren()
 --	warn( "Clearing "..player.Name.."'s backpack" )
 
-	local monsterClass = PlayerServer.getClassChoice( player )
+	local monsterClass = playerTracker:getClassChoice( player )
 
 	local humanoid = character.Humanoid
 	DebugXL:Assert( monsterClass ~= "NullClass" )
@@ -143,9 +143,9 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 		{},
 		monsterLevel )
 
-	PlayerServer.publishLevel( player, monsterLevel, monsterLevel )
-	local characterKey = PlayerServer.setCharacterRecordForPlayer( player, characterRecord )
-	Monsters:Initialize( character, characterKey, characterRecord:getWalkSpeed(), monsterClass, false )
+	playerTracker:publishLevel( player, monsterLevel, monsterLevel )
+	local characterKey = playerTracker:setCharacterRecordForPlayer( player, characterRecord )
+	Monsters:Initialize( playerTracker, character, characterKey, characterRecord:getWalkSpeed(), monsterClass )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
@@ -161,12 +161,6 @@ function Monsters:PlayerCharacterAddedWait( character, player )
 	end
 
 	workspace.Signals.HotbarRE:FireClient( player, "Refresh", characterRecord )
-	-- it's possible that by the time we get here the character will have been tapped to be changed to a hero in which case
-	-- its class will be gone.  Bail if that happens.  Todo: rewrite game and player loops so they're sequential
-	if Monsters:GetClass( character )=="" then
-		warn( "Aborting Monsters:PlayerCharacterAddedWait due to missing class")
-		return characterRecord, characterKey
-	end
 --	
 	DebugXL:Assert( type(monsterLevel)=="number" )
 	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Monster:"..monsterClass, monsterLevel, 1, "level" )
@@ -244,12 +238,7 @@ end
 function Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
 	DebugXL:Assert( self == Monsters )
 	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monsterCharacter )
-	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), Monsters:GetLevelN( characterKey ), flexToolInst )
-end
-
-
-function Monsters:GetLevelN( characterKey )
-	return PlayerServer.getLocalLevel( characterKey )
+	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), PlayerServer.getLocalLevel( characterKey ), flexToolInst )
 end
 
 
@@ -259,7 +248,7 @@ function Monsters:Died( monster )
 end
 
 
-function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, monsterClass, isMob )
+function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey, walkSpeedN, monsterClass )
 	DebugXL:Assert( self == Monsters )
 
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
@@ -268,7 +257,7 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 --	InstanceXL.new( "Folder", { Parent = monster, Name = "Configurations" }, true )
 --	InstanceXL.new( "NumberValue", { Parent = monster.Configurations, Name = "Level", Value = level }, true )
 
-	local characterRecord = PlayerServer.getCharacterRecord( characterKey )
+	local characterRecord = playerTracker:getCharacterRecord( characterKey )
 	local level = characterRecord:getActualLevel()
 	--local standardHealth = enemyData.baseHealthN + enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
 	local standardHealth = MonsterServer.calculateMaxHealth( monsterDatum, level, MonsterServer.isHighLevelServer()  )   -- monster hit points accrete faster than weapon damage accretes
@@ -300,13 +289,13 @@ function Monsters:Initialize( monsterCharacterModel, characterKey, walkSpeedN, m
 
 	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
 	for i = 1, monsterDatum.numWeaponsN do
-		GiveUniqueWeapon( characterKey, potentialWeaponsA )
+		GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
 	end
 
 	-- make sure you don't just have a one-shot weapon
 	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
 		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
-			GiveUniqueWeapon( characterKey, potentialWeaponsA )
+			GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
 		end
 	end
 	

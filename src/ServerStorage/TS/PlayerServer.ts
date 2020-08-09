@@ -20,6 +20,8 @@ import { CharacterClass, CharacterClasses } from "ReplicatedStorage/TS/Character
 
 import { Analytics } from "ServerStorage/TS/Analytics"
 
+import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
+
 const heroTeam = Teams.WaitForChild<Team>("Heroes")
 const monsterTeam = Teams.WaitForChild<Team>("Monsters")
 
@@ -33,48 +35,55 @@ export enum TeamStyleChoice {
     DungeonLord
 }
 
-export namespace PlayerServer {
+interface HitTrackerI {
+    [k: string]: { hits: number, attacks: number }
+}
+
+export class PlayerTracker {
     // you'd think a single map would be better but seems to mean more code; also these tend to be updated independently
-    let characterAddedFuncs = new Map<Player, (character: Character) => void>()
-    let birthTicks = new Map<Player, number>()
-    let currentPCKeys = new Map<Player, CharacterKey>()
-    let teamStyleChoices = new Map<Player, TeamStyleChoice>()
+    private characterAddedFuncs = new Map<Player, (character: Character) => void>()
+    private birthTicks = new Map<Player, number>()
+    private currentPCKeys = new Map<Player, CharacterKey>()
+    private teamStyleChoices = new Map<Player, TeamStyleChoice>()
 
-    let characterRecords = new Map<CharacterKey, CharacterRecordI>()
-    let currentMobKeys = new Map<Character, CharacterKey>()
-    let classChoices = new Map<Player, CharacterClass>()
+    private characterRecords = new Map<CharacterKey, CharacterRecordI>()
+    private currentMobKeys = new Map<Character, CharacterKey>()
+    private classChoices = new Map<Player, CharacterClass>()
 
-    let characterKeyServer = 1;
+    private hitTrackers = new Map<Player, HitTrackerI>()
 
-    export function getCharacterKeyFromPlayer(player: Player) {
-        const key = currentPCKeys.get(player)
+    private characterKeyServer = 1;
+
+    getCharacterKeyFromPlayer(player: Player) {
+        const key = this.currentPCKeys.get(player)
         return key ? key : 0
     }
 
-    export function getCharacterKeyFromCharacterModel(character: Character) {
+    getCharacterKeyFromCharacterModel(character: Character) {
         DebugXL.Assert(character.IsA('Model'))
         DebugXL.Assert(character.Parent !== undefined)
         const player = Players.GetPlayerFromCharacter(character)
         if (player) {
-            return getCharacterKeyFromPlayer(player)
+            return this.getCharacterKeyFromPlayer(player)
         }
         else {
-            const key = currentMobKeys.get(character)
+            const key = this.currentMobKeys.get(character)
             return key ? key : 0
         }
     }
 
     // used when you know the player exists but aren't sure if they currently have a character (between respawns and choosing heroes)
-    export function getCharacterRecordFromPlayer(player: Player) {
-        const currentCharacterKey = currentPCKeys.get(player)
-        return currentCharacterKey ? characterRecords.get(currentCharacterKey) : undefined
+    getCharacterRecordFromPlayer(player: Player) {
+        const currentCharacterKey = this.currentPCKeys.get(player)
+        return currentCharacterKey ? this.characterRecords.get(currentCharacterKey) : undefined
     }
 
-    const timeoutSeconds = 10
-    export function getCharacterRecordFromPlayerWait(player: Player) {
-        const timeout = tick() + timeoutSeconds
+    static readonly timeoutSeconds = 10
+
+    getCharacterRecordFromPlayerWait(player: Player) {
+        const timeout = tick() + PlayerTracker.timeoutSeconds
         while (tick() < timeout) {
-            const record = getCharacterRecordFromPlayer(player)
+            const record = this.getCharacterRecordFromPlayer(player)
             if (record !== undefined)
                 return record
             wait()
@@ -83,91 +92,87 @@ export namespace PlayerServer {
     }
 
     // used for AI mobs and when we don't know if there's a player
-    export function getCharacterRecord(characterKey: CharacterKey): CharacterRecordI {
+    getCharacterRecord(characterKey: CharacterKey): CharacterRecordI {
         DebugXL.Assert(characterKey !== undefined)
         if (characterKey) {
             DebugXL.Assert(typeOf(characterKey) === 'number')
-            const characterRecord = characterRecords.get(characterKey)
+            const characterRecord = this.characterRecords.get(characterKey)
             DebugXL.Assert(characterRecord !== undefined)
             return characterRecord!
         }
         return new CharacterRecordNull();
     }
 
-    export function getCharacterRecordFromCharacter(character: Character) {
-        const characterKey = getCharacterKeyFromCharacterModel(character)
+    getCharacterRecordFromCharacter(character: Character) {
+        const characterKey = this.getCharacterKeyFromCharacterModel(character)
         if (characterKey !== 0) {
-            return getCharacterRecord(characterKey)
+            return this.getCharacterRecord(characterKey)
         }
         else {
             return undefined // probably a structure
         }
     }
 
-    export function getCharacterRecordWait(characterKey: CharacterKey) {
+    getCharacterRecordWait(characterKey: CharacterKey) {
         for (; ;) {
-            let characterRecord = getCharacterRecord(characterKey)
+            let characterRecord = this.getCharacterRecord(characterKey)
             if (characterRecord)
                 return characterRecord
             wait()
         }
     }
 
-    export function publishCharacterClass(player: Player, charClass: CharacterClass) {
+    publishCharacterClass(player: Player, charClass: CharacterClass) {
         warn(player.Name + " publish class " + charClass)
         DebugXL.dumpCallstack(LogLevel.Verbose, LogArea.Characters)
-        const leaderstats = player.WaitForChild<Folder>("leaderstats")
-        let classValueObj = leaderstats.FindFirstChild<StringValue>("Class")
-        if (!classValueObj) {
-            classValueObj = new Instance("StringValue")
-            classValueObj.Name = "Class"
-            classValueObj.Parent = leaderstats
-        }
+        const leaderstats = InstanceUtility.findOrCreateChild<Model>(player, "leaderstats", "Model")
+        let classValueObj = InstanceUtility.findOrCreateChild<StringValue>(leaderstats, "Class", "StringValue")
         classValueObj.Value = charClass === "NullClass" ? "" : charClass
     }
 
     // doing assertions below because we're called from lua so can't always check at compile time
-    export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecordI) {
+    setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecordI) {
         DebugXL.Assert(player.IsA('Player'))
         DebugXL.Assert(characterRecord !== undefined)
         // clean garbage
-        const oldCharacterKey = currentPCKeys.get(player)
+        const oldCharacterKey = this.currentPCKeys.get(player)
         if (oldCharacterKey) {
-            characterRecords.delete(oldCharacterKey)
+            this.characterRecords.delete(oldCharacterKey)
         }
 
         // publish to leaderstats
-        publishCharacterClass(player, characterRecord.idS)
+        this.publishCharacterClass(player, characterRecord.idS)
 
         // this is also when we assign a characterKey        
-        const newCharacterKey = instantiateCharacterRecord(characterRecord)
-        currentPCKeys.set(player, newCharacterKey)
+        const newCharacterKey = this.instantiateCharacterRecord(characterRecord)
+        this.currentPCKeys.set(player, newCharacterKey)
         return newCharacterKey
     }
 
-    export function setClassChoice(player: Player, charClass: CharacterClass) {
+    setClassChoice(player: Player, charClass: CharacterClass) {
         DebugXL.Assert(player.IsA("Player"))
         DebugXL.Assert(charClass === "NullClass"
             || (player.Team === heroTeam && (CharacterClasses.heroStartingStats[charClass] !== undefined))
             || (player.Team === monsterTeam && (CharacterClasses.monsterStats[charClass] !== undefined)))
-        classChoices.set(player, charClass)
+        this.classChoices.set(player, charClass)
 
         // publish'
         if (charClass === "NullClass") {
-            publishCharacterClass(player, charClass)
+            this.publishCharacterClass(player, charClass)
         }
     }
 
     // returns NullClass if haven't chosen, don't exist
-    export function getCharacterClass(player: Player) {
+    getCharacterClass(player: Player) {
         const record = PlayerServer.getCharacterRecordFromPlayer(player)
         return record ? record.idS : "NullClass"
     }
 
     // waits until a non-null class is being played
-    export function getClassWait(player: Player) {
+    getClassWait(player: Player) {
+        DebugXL.Assert( player.IsA("Player"))
         for (; ;) {
-            const cClass = getCharacterClass(player)
+            const cClass = this.getCharacterClass(player)
             if (cClass !== "NullClass") {
                 return cClass;
             }
@@ -175,14 +180,14 @@ export namespace PlayerServer {
         }
     }
 
-    export function getClassChoice(player: Player) {
-        return classChoices.get(player) || "NullClass"
+    getClassChoice(player: Player) {
+        return this.classChoices.get(player) || "NullClass"
     }
 
     // waits until a non-null class is chosen
-    export function getClassChoiceWait(player: Player) {
+    getClassChoiceWait(player: Player) {
         for (; ;) {
-            const cClass = getClassChoice(player)
+            const cClass = this.getClassChoice(player)
             if (cClass !== "NullClass") {
                 return cClass;
             }
@@ -190,69 +195,64 @@ export namespace PlayerServer {
         }
     }
 
-    export function setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI) {
+    setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI) {
         // make sure we're not adding twice
-        DebugXL.Assert(currentMobKeys.get(characterModel) === undefined)
+        DebugXL.Assert(this.currentMobKeys.get(characterModel) === undefined)
 
-        const newCharacterKey = instantiateCharacterRecord(characterRecord)
-        currentMobKeys.set(characterModel, newCharacterKey)
+        const newCharacterKey = this.instantiateCharacterRecord(characterRecord)
+        this.currentMobKeys.set(characterModel, newCharacterKey)
         return newCharacterKey
     }
 
-    export function instantiateCharacterRecord(characterRecord: CharacterRecordI) {
+    instantiateCharacterRecord(characterRecord: CharacterRecordI) {
         DebugXL.Assert(characterRecord !== undefined)
-        const newCharacterKey = characterKeyServer++
-        characterRecords.set(newCharacterKey, characterRecord)
+        const newCharacterKey = this.characterKeyServer++
+        this.characterRecords.set(newCharacterKey, characterRecord)
         return newCharacterKey
     }
 
     // gets all records for _instantiated_ characters: this is keyed off either player or character depending
     // on whether a mob or not
-    export function getCharacterRecords() {
-        return characterRecords
+    getCharacterRecords() {
+        return this.characterRecords
     }
 
-    export function getHeroRecords() {
+    getHeroRecords() {
         let heroes: Array<Hero> = []
         PlayerServer.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
         return heroes
     }
 
-    export function getPlayerCharacterRecords() {
+    getPlayerCharacterRecords() {
         let pcRecords = new Map<Player, CharacterRecordI>()
-        for (let [k, v] of Object.entries(currentPCKeys)) {
-            pcRecords.set(k, getCharacterRecord(v))
+        for (let [k, v] of Object.entries(this.currentPCKeys)) {
+            pcRecords.set(k, this.getCharacterRecord(v))
         }
         return pcRecords
     }
 
+    
 
-    interface HitTrackerI {
-        [k: string]: { hits: number, attacks: number }
+    customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
+        DebugXL.Assert(!this.characterAddedFuncs.has(player))
+        this.characterAddedFuncs.set(player, charAddedFunc)
     }
 
-    export let hitTrackers = new Map<Player, HitTrackerI>()
-
-    export function customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
-        DebugXL.Assert(!characterAddedFuncs.has(player))
-        characterAddedFuncs.set(player, charAddedFunc)
-    }
-
-    export function callCharacterAdded(player: Player, character: Character) {
+    callCharacterAdded(player: Player, character: Character) {
         DebugXL.Assert(character.FindFirstChild("Humanoid") !== undefined)
-        let func = characterAddedFuncs.get(player)
+        let func = this.characterAddedFuncs.get(player)
         DebugXL.Assert(func !== undefined)
         if (func)
             spawn(function () { func!(character) })
-        birthTicks.set(player, tick())
+        this.birthTicks.set(player, tick())
     }
 
-    export function recordCharacterDeath(player: Player, character: Character) {
-        let birthTick = birthTicks.get(player)
+    recordCharacterDeath(player: Player, character: Character) {
+        let birthTick = this.birthTicks.get(player)
         let lifetime = 0
         if (birthTick) {
             lifetime = tick() - birthTick
-            birthTicks.delete(player)
+            this.birthTicks.delete(player)
         }
 
         let lastAttackingPlayer = CharacterUtility.GetLastAttackingPlayer(character);
@@ -266,9 +266,9 @@ export namespace PlayerServer {
         return lifetime
     }
 
-    export function markHit(player: Player, category: string) {
+    markHit(player: Player, category: string) {
         if (player.Parent) {
-            let hitTracker = hitTrackers.get(player)
+            let hitTracker = this.hitTrackers.get(player)
             DebugXL.Assert(hitTracker !== undefined)
             if (hitTracker) {
                 DebugXL.Assert(hitTracker[category] !== undefined)
@@ -278,9 +278,9 @@ export namespace PlayerServer {
         }
     }
 
-    export function markAttack(player: Player, category: string) {
+    markAttack(player: Player, category: string) {
         if (player.Parent) {
-            let hitTracker = hitTrackers.get(player)
+            let hitTracker = this.hitTrackers.get(player)
             if (hitTracker) {
                 DebugXL.Assert(hitTracker[category] !== undefined)
                 if (hitTracker[category]) {
@@ -291,29 +291,34 @@ export namespace PlayerServer {
             else {
                 let newHitTracker: HitTrackerI = { Ranged: { hits: 0, attacks: 0 }, Melee: { hits: 0, attacks: 0 } }
                 newHitTracker[category] = { hits: 0, attacks: 1 }
-                hitTrackers.set(player, newHitTracker)
+                this.hitTrackers.set(player, newHitTracker)
             }
         }
     }
 
-    export function recordHitRatio(player: Player) {
-        let hitTracker = hitTrackers.get(player)
+    recordHitRatio(player: Player) {
+        let hitTracker = this.hitTrackers.get(player)
         if (hitTracker) {
             for (let k of Object.keys(hitTracker))
                 if (hitTracker[k].attacks >= 5)    // if they've hardly attacked not really worth recording
                     GameAnalyticsServer.RecordDesignEvent(player, "SessionHitRatio:" + k, hitTracker[k].hits / hitTracker[k].attacks, 0.1, "%")
         }
-        hitTrackers.delete(player)
+        this.hitTrackers.delete(player)
     }
 
-    function playerAdded(player: Player) {
+    playerAdded(player: Player) {
         let numPlayers = Players.GetPlayers().size()
         warn("Player count changed: " + numPlayers)
     }
 
-    export function getLocalLevel(characterKey: CharacterKey) {
+    playerRemoving(player: Player) {
+        let numPlayers = Players.GetPlayers().size()
+        warn("Player count changed: " + numPlayers)
+    }
+
+    getLocalLevel(characterKey: CharacterKey) {
         DebugXL.Assert(typeOf(characterKey) === 'number')
-        let pcdata = getCharacterRecord(characterKey)
+        let pcdata = this.getCharacterRecord(characterKey)
         DebugXL.Assert(pcdata !== undefined)
         if (pcdata)
             return pcdata.getLocalLevel()
@@ -322,9 +327,9 @@ export namespace PlayerServer {
     }
 
 
-    export function getActualLevel(characterKey: CharacterKey) {
+    getActualLevel(characterKey: CharacterKey) {
         DebugXL.Assert(typeOf(characterKey) === 'number')
-        let pcdata = getCharacterRecord(characterKey)
+        let pcdata = this.getCharacterRecord(characterKey)
         DebugXL.Assert(pcdata !== undefined)
         if (pcdata)
             return pcdata.getActualLevel()
@@ -333,28 +338,23 @@ export namespace PlayerServer {
     }
 
 
-    export function publishLevel(player: Player, localLevel: number, actualLevel: number) {
-        let levelLabel = player.FindFirstChild('leaderstats')!.FindFirstChild<StringValue>('Level') || new Instance('StringValue')
-        levelLabel.Name = 'Level'
+    publishLevel(player: Player, localLevel: number, actualLevel: number) {
+        let leaderstats = InstanceUtility.findOrCreateChild<Model>(player, "leaderstats", "Model")
+        let levelLabel = InstanceUtility.findOrCreateChild<StringValue>(leaderstats, "Level", "StringValue")
         levelLabel.Value = localLevel === actualLevel ? tostring(localLevel) : `${localLevel} (${actualLevel})`
-        levelLabel.Parent = player.FindFirstChild('leaderstats')
     }
 
-    function playerRemoving(player: Player) {
-        let numPlayers = Players.GetPlayers().size()
-        warn("Player count changed: " + numPlayers)
-    }
 
-    export function pcExists(characterRecord: CharacterRecordI) {
-        for (let [k, v] of Object.entries(characterRecords)) {
+    pcExists(characterRecord: CharacterRecordI) {
+        for (let [k, v] of Object.entries(this.characterRecords)) {
             if (v === characterRecord)
                 return true
         }
         return false
     }
 
-    export function getPlayer(characterKey: CharacterKey) {
-        for (let [k, v] of Object.entries(currentPCKeys)) {
+    getPlayer(characterKey: CharacterKey) {
+        for (let [k, v] of Object.entries(this.currentPCKeys)) {
             if (v === characterKey) {
                 return k
             }
@@ -362,32 +362,203 @@ export namespace PlayerServer {
         return undefined
     }
 
-    export function getCharacterModel(characterKey: CharacterKey) {
-        for (let [k, v] of Object.entries(currentMobKeys)) {
+    getCharacterModel(characterKey: CharacterKey) {
+        for (let [k, v] of Object.entries(this.currentMobKeys)) {
             if (v === characterKey) {
                 return k
             }
         }
-        let player = getPlayer(characterKey)
+        let player = this.getPlayer(characterKey)
         if (player) {
             return player.Character
         }
         return undefined
     }
 
-    export function getName(characterKey: CharacterKey) {
-        const player = getPlayer(characterKey)
+    getName(characterKey: CharacterKey) {
+        const player = this.getPlayer(characterKey)
         if (player) { return player.Name }
-        const character = getCharacterModel(characterKey)
+        const character = this.getCharacterModel(characterKey)
         if (character) { return character.Name }
     }
 
+    setTeamStyleChoice(player: Player, teamStyleChoice: TeamStyleChoice) {
+        this.teamStyleChoices.set(player, teamStyleChoice)
+    }
+
+    getTeamStyleChoice(player: Player) {
+        return this.teamStyleChoices.get(player) || TeamStyleChoice.DungeonLord
+    }
+
+    collectGarbage() {
+        for (let [player, characterKey] of this.currentPCKeys.entries()) {
+            if (!player.Parent) {
+                this.characterRecords.delete(characterKey)
+                this.currentPCKeys.delete(player)
+            }
+        }
+    }
+}
+
+export namespace PlayerServer {
+    let playerTracker = new PlayerTracker()
+
+    export function getPlayerTracker() {
+        return playerTracker
+    }
+
+    export function getCharacterKeyFromPlayer(player: Player) {
+        return playerTracker.getCharacterKeyFromPlayer(player)
+    }
+
+    export function getCharacterKeyFromCharacterModel(character: Character) {
+        return playerTracker.getCharacterKeyFromCharacterModel(character)
+    }
+
+    // used when you know the player exists but aren't sure if they currently have a character (between respawns and choosing heroes)
+    export function getCharacterRecordFromPlayer(player: Player) {
+        return playerTracker.getCharacterRecordFromPlayer(player)
+    }
+
+    export function getCharacterRecordFromPlayerWait(player: Player) {
+        return playerTracker.getCharacterRecordFromPlayerWait(player)
+    }
+
+    // used for AI mobs and when we don't know if there's a player
+    export function getCharacterRecord(characterKey: CharacterKey): CharacterRecordI {
+        return playerTracker.getCharacterRecord(characterKey)
+    }
+
+    export function getCharacterRecordFromCharacter(character: Character) {
+        return playerTracker.getCharacterRecordFromCharacter(character)
+    }
+
+    export function getCharacterRecordWait(characterKey: CharacterKey) {
+        return playerTracker.getCharacterRecordWait(characterKey)
+    }
+
+    export function publishCharacterClass(player: Player, charClass: CharacterClass) {
+        return playerTracker.publishCharacterClass(player, charClass)
+    }
+
+    // doing assertions below because we're called from lua so can't always check at compile time
+    export function setCharacterRecordForPlayer(player: Player, characterRecord: CharacterRecordI) {
+        return playerTracker.setCharacterRecordForPlayer(player, characterRecord)
+    }
+
+    export function setClassChoice(player: Player, charClass: CharacterClass) {
+        playerTracker.setClassChoice(player, charClass)
+    }
+
+    // returns NullClass if haven't chosen, don't exist
+    export function getCharacterClass(player: Player) {
+        return playerTracker.getCharacterClass(player)
+    }
+
+    // waits until a non-null class is being played
+    export function getClassWait(player: Player) {
+        return playerTracker.getClassWait(player)
+    }
+
+    export function getClassChoice(player: Player) {
+        return playerTracker.getClassChoice(player)
+    }
+
+    // waits until a non-null class is chosen
+    export function getClassChoiceWait(player: Player) {
+        return playerTracker.getClassChoiceWait(player)
+    }
+
+    export function setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI) {
+        return playerTracker.setCharacterRecordForMob(characterModel, characterRecord)
+    }
+
+    export function instantiateCharacterRecord(characterRecord: CharacterRecordI) {
+        return playerTracker.instantiateCharacterRecord(characterRecord)
+    }
+
+    // gets all records for _instantiated_ characters: this is keyed off either player or character depending
+    // on whether a mob or not
+    export function getCharacterRecords() {
+        return playerTracker.getCharacterRecords()
+    }
+
+    export function getHeroRecords() {
+        return playerTracker.getHeroRecords()
+    }
+
+    export function getPlayerCharacterRecords() {
+        return playerTracker.getPlayerCharacterRecords()
+    }
+
+    export function customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
+        playerTracker.customCharacterAddedConnect(player, charAddedFunc)
+    }
+
+    export function callCharacterAdded(player: Player, character: Character) {
+        playerTracker.callCharacterAdded(player, character)
+    }
+
+    export function recordCharacterDeath(player: Player, character: Character) {
+        return playerTracker.recordCharacterDeath(player, character)
+    }
+
+    export function markHit(player: Player, category: string) {
+        playerTracker.markHit(player, category)
+    }
+
+    export function markAttack(player: Player, category: string) {
+        playerTracker.markHit(player, category)
+    }
+
+    export function recordHitRatio(player: Player) {
+        playerTracker.recordHitRatio(player)
+    }
+
+    function playerAdded(player: Player) {
+        playerTracker.playerAdded(player)
+    }
+
+    export function getLocalLevel(characterKey: CharacterKey) {
+        return playerTracker.getLocalLevel(characterKey)
+    }
+
+
+    export function getActualLevel(characterKey: CharacterKey) {
+        return playerTracker.getActualLevel(characterKey)
+    }
+
+
+    export function publishLevel(player: Player, localLevel: number, actualLevel: number) {
+        playerTracker.publishLevel(player, localLevel, actualLevel)
+    }
+
+    function playerRemoving(player: Player) {
+        playerTracker.playerRemoving(player)
+    }
+
+    export function pcExists(characterRecord: CharacterRecordI) {
+        return playerTracker.pcExists(characterRecord)
+    }
+
+    export function getPlayer(characterKey: CharacterKey) {
+        return playerTracker.getPlayer(characterKey)
+    }
+
+    export function getCharacterModel(characterKey: CharacterKey) {
+        return playerTracker.getCharacterModel(characterKey)
+    }
+
+    export function getName(characterKey: CharacterKey) {
+        return playerTracker.getName(characterKey)
+    }
+
     export function setTeamStyleChoice(player: Player, teamStyleChoice: TeamStyleChoice) {
-        teamStyleChoices.set(player, teamStyleChoice)
+        playerTracker.setTeamStyleChoice(player, teamStyleChoice)
     }
 
     export function getTeamStyleChoice(player: Player) {
-        return teamStyleChoices.get(player) || TeamStyleChoice.DungeonLord
+        return playerTracker.getTeamStyleChoice(player)
     }
 
     Players.GetPlayers().forEach(playerAdded)
@@ -399,15 +570,8 @@ export namespace PlayerServer {
         // garbage collection
         while (true) {
             wait(1.1)
-            for (let [player, characterKey] of currentPCKeys.entries()) {
-                if (!player.Parent) {
-                    characterRecords.delete(characterKey)
-                    currentPCKeys.delete(player)
-                }
-            }
+            playerTracker.collectGarbage()
         }
     })
 
 }
-
-

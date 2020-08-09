@@ -6,9 +6,6 @@ import { HttpXL } from 'ServerStorage/TS/HttpXL'
 
 import { PlayerAnalyticInfoI } from 'ReplicatedStorage/TS/AnalyticTypes'
 
-
-let serverUrl = 'http://73.140.153.63'
-
 let analyticsRF = Workspace.FindFirstChild('Signals')!.FindFirstChild('AnalyticsRF') as RemoteFunction
 let analyticsRE = Workspace.FindFirstChild('Signals')!.FindFirstChild('AnalyticsRE') as RemoteEvent
 

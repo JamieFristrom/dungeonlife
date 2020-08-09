@@ -16,9 +16,9 @@ game.Players.CharacterAutoLoads = false
 
 local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
+
 DebugXL:logD(LogArea.GameManagement,  'GameManagementModule: utilities requires succesful' )
 
-local CharacterClientI  = require( game.ReplicatedStorage.CharacterClientI )
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local FloorData         = require( game.ReplicatedStorage.FloorData )
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
@@ -50,8 +50,8 @@ DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ServerStorage requir
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
-local Hero = require( game.ReplicatedStorage.TS.HeroTS).Hero
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
+local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ReplicatedStorage.TS requires succesful' )
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
@@ -211,15 +211,14 @@ local function HeroAdded( character, player )
 	return pcData, characterKey
 end
 
-
-local function MonsterAddedWait( character, player )
+function GameManagement:MonsterAddedWait( character, player, playerTracker )
 --	DebugXL:logV(LogArea.GameManagement, "Monster added "..player.Name )
-	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( character, player, time() - GameManagement.levelStartTime )
+	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not Inventory:PlayerInTutorial( player ) then
 		if workspace.GameManagement.DungeonDepth.Value > 0 then  		-- if you're in the lobby it doesn't matter what you are and that message is just distracting. Maybe we should automake you a dungeon lord in that case
-			local class = PlayerServer.getClassWait( character )
+			local class = playerTracker:getClassWait( player )
 			if class == "DungeonLord" then
 				if workspace.GameManagement.PreparationCountdown.Value > 0 then
 					MessageServer.PostMessageByKey( player, "MsgWelcomeMonster" )				
@@ -232,7 +231,7 @@ local function MonsterAddedWait( character, player )
 					return
 				end
 				local lastLevel = lastMonsterLevels[ player ]
-				local thisLevel = Monsters:GetLevelN( characterKey )
+				local thisLevel = playerTracker:getLocalLevel( characterKey )
 				if lastLevel then
 					if thisLevel > lastLevel then
 						MessageServer.PostMessageByKey( player, "LevelUp" )
@@ -257,7 +256,7 @@ local function SetupPCWait( startingCharacterModel, player )
 		pcData, characterKey = HeroAdded( startingCharacterModel, player )
 	else
 		DebugXL:logD(LogArea.Characters,'Adding monster character')
-		pcData, characterKey = MonsterAddedWait( startingCharacterModel, player )
+		pcData, characterKey = GameManagement:MonsterAddedWait( startingCharacterModel, player, PlayerServer.getPlayerTracker() )
 	end
 	if not pcData then
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
@@ -430,9 +429,9 @@ end
 -- end
 
 
-function GameManagement:DenyHeroInvite( player )
-	player.HeroInviteCountdown.Value = 0
-end
+-- function GameManagement:DenyHeroInvite( player )
+-- 	player.HeroInviteCountdown.Value = 0
+-- end
 
 --[[
 -- used by constant hero churn version; waits up to 10 seconds for each player considering whether they want to be hero
@@ -771,19 +770,19 @@ end
 	
 local function PlayerAdded( player )
 	local startTime = time()	
-	InstanceXL:CreateSingleton( "NumberValue", { Value = Places.getCurrentPlace().startingBuildPoints, Name = "BuildPoints", Parent = player } )
-	local leaderstats = InstanceXL:CreateSingleton( "Model", { Name = "leaderstats", Parent = player } )
 	local starsN = Inventory:GetCount( player, "Stars" )
-	InstanceXL:CreateSingleton( "StringValue", { Name = "Rank", Parent = leaderstats, Value = RankForStars:GetRankForStars( starsN ) } ) 
-	InstanceXL:CreateSingleton( "StringValue", { Name = "VIP", Parent = leaderstats, Value = DeveloperProducts:UserOwnsGamePassWait( player, DeveloperProducts.vipPassId ) and "VIP" or "" } )
+	PlayerUtility.publishClientValues( player, 
+		100,
+		0,
+		RankForStars:GetRankForStars( starsN ), 
+		DeveloperProducts:UserOwnsGamePassWait( player, DeveloperProducts.vipPassId ))
 
 	-- ignored as of 12/3
-	InstanceXL:CreateSingleton( "BoolValue", { 
-		Value = true,-- #game.Players:GetPlayers() == 1,  	-- very first player can use hero express for their farming pleasure 
-		Name = "HeroExpressReady", 
-		Parent = player } )
-	InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroInviteCountdown", Value = 0, Parent = player } )
-	InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroRespawnCountdown", Value = 0, Parent = player } )		
+	-- InstanceXL:CreateSingleton( "BoolValue", { 
+	-- 	Value = true,-- #game.Players:GetPlayers() == 1,  	-- very first player can use hero express for their farming pleasure 
+	-- 	Name = "HeroExpressReady", 
+	-- 	Parent = player } )
+	-- InstanceXL:CreateSingleton( "NumberValue", { Name = "HeroInviteCountdown", Value = 0, Parent = player } )
 
 	-- they logged out already?  awww
 	if not player.Parent then return end
@@ -1335,12 +1334,12 @@ function MainRemote.TestCoreLoopError( player )
 end
 
 
-function MainRemote.AcceptHeroInvite( player )
-	if currentPlayerInvitedToHero == player then
-		GameManagement:BecomeHero( player )
-		player.HeroInviteCountdown.Value = 0	
-	end	
-end
+-- function MainRemote.AcceptHeroInvite( player )
+-- 	if currentPlayerInvitedToHero == player then
+-- 		GameManagement:BecomeHero( player )
+-- 		--player.HeroInviteCountdown.Value = 0	
+-- 	end	
+-- end
 
 
 function MainRemote.DenyHeroInvite( player )

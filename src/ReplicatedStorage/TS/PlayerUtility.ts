@@ -1,5 +1,12 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.GetFullName())
+
 import { Teams } from "@rbxts/services";
 import { PlacesManifest } from "./PlacesManifest";
+import { InstanceUtility } from "./InstanceUtility";
 
 export namespace PlayerUtility
 {
@@ -13,7 +20,6 @@ export namespace PlayerUtility
             warn( msg )
         return rank
     }
-
 
     export function IsPlayersCharacterAlive( player: Player )
     {
@@ -29,5 +35,20 @@ export namespace PlayerUtility
                                     return true
                         }
     return false
+    }
+
+    export function publishClientValues( location: Player, buildPoints: number, heroRespawnCountdown: number, rank: string, vip: boolean ) {
+        let buildPointsObject = InstanceUtility.findOrCreateChild<NumberValue>( location, "BuildPoints", "NumberValue" )
+        buildPointsObject.Value = buildPoints
+
+        let heroRespawnObject = InstanceUtility.findOrCreateChild<NumberValue>( location, "HeroRespawnCountdown", "NumberValue" )
+        heroRespawnObject.Value = heroRespawnCountdown
+        
+        let leaderstats = InstanceUtility.findOrCreateChild( location, "leaderstats", "Model" )
+        let rankObject = InstanceUtility.findOrCreateChild<StringValue>( leaderstats, "Rank", "StringValue" )
+        rankObject.Value = rank
+
+        let vipObject = InstanceUtility.findOrCreateChild<StringValue>( leaderstats, "VIP", "StringValue" )
+        vipObject.Value = vip?"VIP":""
     }
 }

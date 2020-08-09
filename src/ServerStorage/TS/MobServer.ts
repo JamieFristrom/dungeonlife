@@ -342,7 +342,7 @@ export namespace MobServer {
                 [],
                 mobLevel)
             const characterKey = PlayerServer.setCharacterRecordForMob(this.model, characterRecord)
-            Monsters.Initialize(this.model, characterKey, characterRecord.getWalkSpeed(), characterClass, true)
+            Monsters.Initialize( PlayerServer.getPlayerTracker(), this.model, characterKey, characterRecord.getWalkSpeed(), characterClass )
 
             // apparently this is necessary to stop client-side TP hacks; null
             delay(1,
