@@ -42,8 +42,8 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     DebugXL.Assert(convertedHero.gearPool.size() === 0)
 }
 
-let heroes = Teams.WaitForChild<Team>("Heroes")
 {
+    let heroes = Teams.WaitForChild<Team>("Heroes")
 
     // test associating a hero with player
     let heroPlayer = TestUtility.getTestPlayer()
@@ -52,14 +52,9 @@ let heroes = Teams.WaitForChild<Team>("Heroes")
         { strN: 10, dexN: 10, conN: 10, willN: 10, experienceN: 0, goldN: 0, deepestDungeonLevelN: 0, totalTimeN: 0 },
         []))
     DebugXL.Assert(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
-    TestUtility.cleanTestPlayer(heroPlayer)
-}
 
-{
-    // test associating a fake monster with player
-    let heroPlayer = TestUtility.getTestPlayer()
+    // test associating a fake monster with player and that the original hero record is still on the correct team
     let fakeMonsterPlayer = Workspace.FindFirstChild("Camera") as Player
-    let fakePlayerMap = new Map<Player, CharacterRecord>()
     fakePlayerMap.set(fakeMonsterPlayer, new Monster("Orc",
         [],
         1))
@@ -68,3 +63,9 @@ let heroes = Teams.WaitForChild<Team>("Heroes")
     TestUtility.cleanTestPlayer(heroPlayer)
 }
 
+declare const tests: Array<Instance>;
+for (const moduleScript of tests) {
+    if (moduleScript.IsA("ModuleScript")) {
+        require(moduleScript);
+    }
+}
