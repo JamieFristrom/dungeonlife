@@ -51,10 +51,6 @@ function Inventory.new()
 	}
 end
 
-local function StoreKey( player )
-	return "user"..player.UserId
-end
-
 -- we'll want to switch back and forth between two kinds of keys:  one is good for debugging,
 -- the other is more reliable in case we somehow miss playerremoving events
 local function CacheKey( player )
@@ -67,6 +63,9 @@ end
 
 function PlayerAddedWait( player )
 	--print( "Initializing "..player.Name.." inventory" )
+	while game.Workspace.GameManagement.TestsFinished.Value == false do
+		wait(0.1)
+	end
 
 	local inventoryStore = DataStore2( "Inventory", player )
 	local myInventory = inventoryStore:Get( Inventory.new() )
@@ -186,12 +185,6 @@ function Inventory:GetInventoryStoreWait( player )
 end
 
 
-
-
---function Inventory:PlayerAddedWait( player )
---	return Inventory:GetWait( player )
---end
-
 -- only for when we absolutely need it, such as when we spend Robux
 -- and maybe chest rewards?
 function Inventory:SaveWait( player )
@@ -205,6 +198,7 @@ function Inventory:SaveWait( player )
 --		InventoryStore:SetAsync( StoreKey( player ), inventoryCacheT[ CacheKey( player ) ] )
 --	end	
 end
+
 
 function Inventory:GetSessionTime( player )
 	local startingInfo = startingInfoT[ CacheKey( player ) ]

@@ -12,7 +12,7 @@ declare class GameManagementClass {
 
     SetLevelReady(ready: boolean): void
 
-    MonsterAddedWait(character: Character, player: Player, playerTracker: PlayerTracker): void
+    MonsterAddedWait(character: Character, player: Player, playerTracker: PlayerTracker, inTutorial: boolean): void
 }
 
 declare let GameManagement: GameManagementClass

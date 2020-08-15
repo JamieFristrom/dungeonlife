@@ -508,7 +508,7 @@ export namespace PlayerServer {
     }
 
     export function markAttack(player: Player, category: string) {
-        playerTracker.markHit(player, category)
+        playerTracker.markAttack(player, category)
     }
 
     export function recordHitRatio(player: Player) {

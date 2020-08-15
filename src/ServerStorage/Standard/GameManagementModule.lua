@@ -211,14 +211,14 @@ local function HeroAdded( character, player )
 	return pcData, characterKey
 end
 
-function GameManagement:MonsterAddedWait( character, player, playerTracker )
+function GameManagement:MonsterAddedWait( character, player, playerTracker, inTutorial )
 --	DebugXL:logV(LogArea.GameManagement, "Monster added "..player.Name )
 	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
-	if not Inventory:PlayerInTutorial( player ) then
+	if not inTutorial then
 		if workspace.GameManagement.DungeonDepth.Value > 0 then  		-- if you're in the lobby it doesn't matter what you are and that message is just distracting. Maybe we should automake you a dungeon lord in that case
-			local class = playerTracker:getClassWait( player )
+			local class = pcData.idS
 			if class == "DungeonLord" then
 				if workspace.GameManagement.PreparationCountdown.Value > 0 then
 					MessageServer.PostMessageByKey( player, "MsgWelcomeMonster" )				
@@ -231,7 +231,7 @@ function GameManagement:MonsterAddedWait( character, player, playerTracker )
 					return
 				end
 				local lastLevel = lastMonsterLevels[ player ]
-				local thisLevel = playerTracker:getLocalLevel( characterKey )
+				local thisLevel = pcData:getLocalLevel()
 				if lastLevel then
 					if thisLevel > lastLevel then
 						MessageServer.PostMessageByKey( player, "LevelUp" )
@@ -256,7 +256,7 @@ local function SetupPCWait( startingCharacterModel, player )
 		pcData, characterKey = HeroAdded( startingCharacterModel, player )
 	else
 		DebugXL:logD(LogArea.Characters,'Adding monster character')
-		pcData, characterKey = GameManagement:MonsterAddedWait( startingCharacterModel, player, PlayerServer.getPlayerTracker() )
+		pcData, characterKey = GameManagement:MonsterAddedWait( startingCharacterModel, player, PlayerServer.getPlayerTracker(), Inventory:PlayerInTutorial( player ) )
 	end
 	if not pcData then
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
@@ -408,123 +408,6 @@ local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
 end
 
 
--- local function InviteMonsterToBeHeroWait( player )
--- 	DebugXL:Assert( currentPlayerInvitedToHero == nil )
-	
--- 	currentPlayerInvitedToHero = player
--- 	player.HeroInviteCountdown.Value = 10
--- 	-- doing this the less accurate way because I want external agents to be able to cancel countdown as well
--- 	while player.HeroInviteCountdown.Value > 0 and player.Parent do
--- 		wait(1)
--- 		player.HeroInviteCountdown.Value = player.HeroInviteCountdown.Value - 1
--- 	end
--- 	-- whether or not you deny invitation you'll have your hero express available for next round
--- 	-- ignored as of 12/3
--- 	player.HeroExpressReady.Value = true
--- 	if DungeonPlayer:Get( player ) then
--- 		DungeonPlayer:Get( player ).lastHeroDeathTime = time()
--- 	end
-
--- 	currentPlayerInvitedToHero = nil
--- end
-
-
--- function GameManagement:DenyHeroInvite( player )
--- 	player.HeroInviteCountdown.Value = 0
--- end
-
---[[
--- used by constant hero churn version; waits up to 10 seconds for each player considering whether they want to be hero
-local function ChangeMonstersToHeroIfNecessaryWait( loadCharacterB )
---	DebugXL:logW(LogArea.GameManagement, "Choosing heroes" )
-	if #game.Players:GetPlayers() > 1 then
---		DebugXL:logV(LogArea.GameManagement, "More than one player" )
-		if #game.Teams.Heroes:GetPlayers() < GameServer.numHeroesNeeded() then
---			DebugXL:logV(LogArea.GameManagement, "Insufficient heroes" )
-			local heroRoundPairsA
-			-- don't iterate over dungeonPlayersT because there's a chance there's a record for a player who has left in there
-			heroRoundPairsA = {}
-			for _, player in pairs( game.Players:GetPlayers() ) do
-				if player.Team == game.Teams.Monsters  
-					and DungeonPlayer:Get( player ).addingCompleteB 
-					and Inventory:GetCount( player, "Tutorial" ) >= 3 then
-					table.insert( heroRoundPairsA, { k = player, v = DungeonPlayer:Get( player ) } )
-				end
-			end
-	
-			if #heroRoundPairsA >= 1 then
-				table.sort( heroRoundPairsA, function( x1, x2 ) return x1.v.lastHeroDeathTime < x2.v.lastHeroDeathTime end )		
-				local designatedMonsterPlayer = heroRoundPairsA[ 1 ].k
-				if not Inventory:PlayerInTutorial( designatedMonsterPlayer ) then           -- looks like we leave tutorial peeps at the front of the line indefinitely
-					DebugXL:logV(LogArea.GameManagement, "Found non dungeonlord monster "..designatedMonsterPlayer.Name )
-					local heroRoundPair = table.remove( heroRoundPairsA, 1 )
-					DebugXL:logV(LogArea.GameManagement, "Inviting "..designatedMonsterPlayer.Name.." to hero" )
-					InviteMonsterToBeHeroWait( designatedMonsterPlayer )
-				end
-			end
-		end
-	else
---		DebugXL:logV(LogArea.GameManagement, "One player" )
-		if workspace.GameManagement.TestHero.Value then
-			if game.Players:GetPlayers()[1].Team ~= game.Teams.Heroes then
-				ChangeMonsterToHero( game.Players:GetPlayers()[1] )
-			end	
-		end
-	end
-end
-
-
--- used by non-constant-hero-churn version
-local function ChangeMonstersToHeroIfNecessary( loadCharacterB )
---	DebugXL:logW(LogArea.GameManagement, "Choosing heroes" )
-	if #game.Players:GetPlayers() > 1 then
---		DebugXL:logV(LogArea.GameManagement, "More than one player" )
-		local heroRoundPairsA
-		-- don't iterate over dungeonPlayersT because there's a chance there's a record for a player who has left in there
-		heroRoundPairsA = {}
-		for _, player in pairs( game.Players:GetPlayers() ) do
-			if player.Team == game.Teams.Monsters  
-				and DungeonPlayer:Get( player ).addingCompleteB 
-				and Inventory:GetCount( player, "Tutorial" ) >= 3 then
-				table.insert( heroRoundPairsA, { k = player, v = DungeonPlayer:Get( player ) } )
-			end
-		end
-
-		table.sort( heroRoundPairsA, function( x1, x2 ) return x1.v.lastHeroDeathTime < x2.v.lastHeroDeathTime end )		
-		while #game.Teams.Heroes:GetPlayers() < GameServer.numHeroesNeeded() do
---			DebugXL:logV(LogArea.GameManagement, "Insufficient heroes" )
-			local foundOneB = false
-			for i = 1, #heroRoundPairsA do   
-				DebugXL:logV(LogArea.GameManagement, "Hero round pair "..i )
-				if not Inventory:PlayerInTutorial( heroRoundPairsA[i].k ) then
-					DebugXL:logV(LogArea.GameManagement, "Found non dungeonlord monster "..heroRoundPairsA[i].k.Name )
-					local heroRoundPair = table.remove( heroRoundPairsA, i )
-					local designatedMonsterPlayer = heroRoundPair.k
-					DebugXL:logD(LogArea.GameManagement, "Changing "..designatedMonsterPlayer.Name.." to hero" )
-					if heroRoundPair.v.lastHeroDeathTime > 0 then
-						-- we got here naturally and will be allowed to use hero express next time we're a monster
-						-- ignored as of 12/3
-						designatedMonsterPlayer.HeroExpressReady.Value = true
-					end
-					ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
-					foundOneB = true
-					break
-				end
-			end
-			if not foundOneB then break end
-		end
-	else
---		DebugXL:logV(LogArea.GameManagement, "One player" )
-		if workspace.GameManagement.TestHero.Value then
-			if #game.Players:GetPlayers() > 0 then   -- after all players left still performing some shutdown stuff
-				if game.Players:GetPlayers()[1].Team ~= game.Teams.Heroes then
-					ChangeMonsterToHero( game.Players:GetPlayers()[1] )
-				end	
-			end
-		end
-	end
-end
-	--]]
 
 -- for debug purposes:
 local crashPlayer

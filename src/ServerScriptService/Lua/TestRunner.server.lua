@@ -8,4 +8,5 @@ if( game:GetService("RunService"):IsStudio()) then
     end
 end
 
+game.Workspace.GameManagement.TestsFinished.Value = true
 warn("All tests run! Yay!")

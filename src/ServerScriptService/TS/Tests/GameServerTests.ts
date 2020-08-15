@@ -269,7 +269,7 @@ testPlayerTracker.setClassChoice(playerDummy,"Orc")
 // test that MonsterAddedWait returns before too long
 let result = undefined
 spawn( ()=>{
-    result = GameManagement.MonsterAddedWait(testCharacter, playerDummy, testPlayerTracker)
+    result = GameManagement.MonsterAddedWait(testCharacter, playerDummy, testPlayerTracker, false)
 })
 wait(5)
 DebugXL.Assert(result !== undefined)
