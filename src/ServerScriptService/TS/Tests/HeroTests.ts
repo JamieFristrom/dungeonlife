@@ -62,10 +62,3 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     DebugXL.Assert(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === Teams.WaitForChild<Team>("Monsters"))
     TestUtility.cleanTestPlayer(heroPlayer)
 }
-
-declare const tests: Array<Instance>;
-for (const moduleScript of tests) {
-    if (moduleScript.IsA("ModuleScript")) {
-        require(moduleScript);
-    }
-}
