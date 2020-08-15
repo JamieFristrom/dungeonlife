@@ -2,8 +2,8 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 8/7/2020")
-warn("Maybe now the leaderboard bug is safely fixed")
+warn("DUNGEON LIFE 8/15/2020")
+warn("Maybe _now_ the leaderboard bug is safely fixed")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
