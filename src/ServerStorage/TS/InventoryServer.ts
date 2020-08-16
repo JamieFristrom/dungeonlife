@@ -183,14 +183,14 @@ export namespace InventoryServer
         }
         else
         {
-            if( myInventory.settingsT.monstersT[ monsterIdS ][ setting ]===undefined )
+/*            if( myInventory.settingsT.monstersT[ monsterIdS ][ setting ]===undefined )
             {
                 AnalyticsXL.ReportEvent( player, "Invalid settings change", tostring(player.UserId), player.Name, 1, false )     
             }
             else
-            {
-                myInventory.settingsT.monstersT[ monsterIdS ][ setting ] = value
-            }       
+            {*/
+            myInventory.settingsT.monstersT[ monsterIdS ][ setting ] = value
+//            }       
         }
     }
 

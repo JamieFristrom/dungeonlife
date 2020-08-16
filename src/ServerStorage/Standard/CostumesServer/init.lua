@@ -27,7 +27,7 @@ local Costumes = {}
 
 local applyingCostumeB = {}
 
-local function CostumeKey( player )
+function Costumes:CostumeKey( player )
 	return "Costume"..player.UserId
 end
 
@@ -291,14 +291,14 @@ function Costumes:SaveCostumeWait( player )
 			partCopy.Parent = costumeCopy
 		end
 	end
-	costumeCopy.Name = CostumeKey( player )
+	costumeCopy.Name = Costumes:CostumeKey( player )
 	costumeCopy.Parent = game.ServerStorage.PlayerCostumes
 end
 
 
 
 function Costumes:GetSavedCostume( player )
-	return game.ServerStorage.PlayerCostumes[ CostumeKey( player ) ]
+	return game.ServerStorage.PlayerCostumes[ Costumes:CostumeKey( player ) ]
 end
 
 
@@ -368,7 +368,7 @@ spawn( function()
 		for _, child in pairs( game.ServerStorage.PlayerCostumes:GetChildren() ) do
 			local foundPlayer = false			
 			for _, player in pairs( game.Players:GetPlayers() ) do
-				if CostumeKey( player ) == child.Name then
+				if Costumes:CostumeKey( player ) == child.Name then
 					foundPlayer = true
 					break
 				end

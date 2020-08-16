@@ -9,9 +9,12 @@ import { Workspace } from '@rbxts/services';
 import { SkinTypes, SkinTypeEnum } from 'ReplicatedStorage/TS/SkinTypes'
 
 import * as FlexEquip from 'ServerStorage/Standard/FlexEquipModule'
+import * as Inventory from 'ServerStorage/Standard/InventoryModule'
 
 import { GearServer } from "ServerStorage/TS/GearServer"
-import * as Inventory from 'ServerStorage/Standard/InventoryModule'
+import { PlayerServer } from 'ServerStorage/TS/PlayerServer';
+
+
 
 const SignalsFolder = Workspace.WaitForChild<Folder>("Signals")
 const InventoryRE = SignalsFolder.WaitForChild<RemoteEvent>("InventoryRE")
@@ -30,7 +33,7 @@ namespace GearRemote {
                 InventoryRE.FireClient(player, "Update", inventory)
                 if (SkinTypes[toolSkinType].tagsT.worn) {
                     // has to come first otherwise you drop weapon
-                    FlexEquip.ApplyEntireCostumeIfNecessaryWait(player)
+                    FlexEquip.ApplyEntireCostumeIfNecessaryWait(PlayerServer.getPlayerTracker(), Inventory, player)
                 }
                 GearServer.reskinTools(player)
             }

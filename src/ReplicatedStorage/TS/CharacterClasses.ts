@@ -751,3 +751,4 @@ export namespace CharacterClasses {
 }
 
 export type CharacterClass = keyof typeof CharacterClasses.classData
+export type MonsterClasses = keyof typeof CharacterClasses.monsterStats

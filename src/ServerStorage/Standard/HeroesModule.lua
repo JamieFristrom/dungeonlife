@@ -47,6 +47,7 @@ local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServ
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local SkinUtility = require( game.ServerStorage.TS.SkinUtility ).SkinUtility
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 DebugXL:logD(LogArea.Requires, "HeroesModule requires succesful")
@@ -272,7 +273,7 @@ function GivePossession( player, myPCData, flexToolInst )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
 		myPCData:giveFlexTool( flexToolInst )
-		ToolCaches.updateToolCache( characterKey, myPCData )
+		ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(Inventory, player, myPCData) )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
@@ -280,7 +281,7 @@ function GivePossession( player, myPCData, flexToolInst )
 			myPCData:giveFlexTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
-			ToolCaches.updateToolCache( characterKey, myPCData )
+			ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(Inventory, player, myPCData) )
 			givenB = true
 		end  
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
@@ -854,7 +855,7 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
 			
 			local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-			ToolCaches.updateToolCache( characterKey, pcData )
+			ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, pcData, SkinUtility.getCurrentSkinset(Inventory, player, pcData) )
 			
 			Heroes:SaveHeroesWait( player )
 		end
@@ -904,7 +905,7 @@ function HeroRemote.SellItem( player, itemKey )
 				end
 
 				local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-				ToolCaches.updateToolCache( characterKey, pcData )
+				ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, pcData, SkinUtility.getCurrentSkinset(Inventory, player, pcData) )
 
 				Heroes:SaveHeroesWait( player )
 			end

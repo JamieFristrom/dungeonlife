@@ -6,9 +6,11 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { ServerStorage, Workspace, CollectionService, RunService, Teams, PhysicsService } from '@rbxts/services'
 
+import * as Inventory from 'ServerStorage/Standard/InventoryModule'
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
 import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
+import { SkinUtility } from 'ServerStorage/TS/SkinUtility'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
 import { CharacterRecord } from 'ReplicatedStorage/TS/CharacterRecord'
@@ -368,7 +370,7 @@ export namespace MobServer {
                 })
             }
 
-            ToolCaches.updateToolCache(characterKey, characterRecord)
+            ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, characterRecord)
 
             // prepare a weapon
             for (let i = 0; i < HotbarSlot.Max; i++) {

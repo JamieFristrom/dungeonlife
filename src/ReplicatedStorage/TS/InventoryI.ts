@@ -1,5 +1,5 @@
 
-import { ActiveSkins } from "ReplicatedStorage/TS/SkinTypes";
+import { ActiveSkins } from "ReplicatedStorage/TS/SkinTypes"
 import { QuestTrackerI } from "ReplicatedStorage/TS/QuestUtility"
 
 export enum ReviewEnum
@@ -12,8 +12,8 @@ export enum ReviewEnum
 
 export interface MonsterSettingsI 
 { 
-    [k:string]: boolean 
-    hideAccessoriesB: boolean 
+    [k:string]: boolean | undefined 
+    hideAccessoriesB: boolean | undefined
 }
 
 

@@ -6,22 +6,23 @@ DebugXL.logI(LogArea.Executed, script.Name)
 
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
+import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
-import { AuraServer } from "ServerStorage/TS/AuraServer"
+import { AuraServer } from "./AuraServer"
+import { AreaEffect } from "./AreaEffect"
+import { BarrierServer } from "./BarrierServer"
+import { PlayerServer } from "./PlayerServer"
 
-import { AreaEffect } from "ServerStorage/TS/AreaEffect"
-import { BarrierServer } from "ServerStorage/TS/BarrierServer"
-
+import * as CharacterI from "ServerStorage/Standard/CharacterI"
 import * as CharacterXL from "ServerStorage/Standard/CharacterXL"
+import * as Inventory from "ServerStorage/Standard/InventoryModule"
 import * as Mana from "ServerStorage/Standard/ManaModule"
 import * as Werewolf from "ServerStorage/Standard/WerewolfModule"
 
 import * as FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 
 import { ServerStorage, Workspace, TweenService, Teams } from "@rbxts/services"
-import * as CharacterI from "ServerStorage/Standard/CharacterI"
-import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility"
 
 interface Activateable {
     Activate(...args: unknown[]): void
@@ -101,7 +102,7 @@ export namespace PowerServer {
                                 ; (require(magicSprintModule) as Activateable).Activate(character, duration)
                         }
                         else if (toolBaseData.idS === "TransformWerewolf") {
-                            Werewolf.ToggleForm(player)
+                            Werewolf.ToggleForm(PlayerServer.getPlayerTracker(), Inventory, player)
                         }
                         else if (toolBaseData.idS === "MagicBarrier" || toolBaseData.idS === "NecroBarrier") {
                             let duration = toolBaseData.durationFunc!(toolBaseData, flexToolInst.levelN)

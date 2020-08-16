@@ -78,7 +78,7 @@ export class PlayerTracker {
         return currentCharacterKey ? this.characterRecords.get(currentCharacterKey) : undefined
     }
 
-    static readonly timeoutSeconds = 10
+    static readonly timeoutSeconds = 1
 
     getCharacterRecordFromPlayerWait(player: Player) {
         const timeout = tick() + PlayerTracker.timeoutSeconds
@@ -88,7 +88,7 @@ export class PlayerTracker {
                 return record
             wait()
         }
-        DebugXL.logE(LogArea.Players, 'PlayerServer.getCharacterRecrodFromPlayerWait timed out on ' + player.Name)
+        DebugXL.logE(LogArea.Players, 'getCharacterRecrodFromPlayerWait timed out on ' + player.Name)
     }
 
     // used for AI mobs and when we don't know if there's a player
@@ -164,7 +164,7 @@ export class PlayerTracker {
 
     // returns NullClass if haven't chosen, don't exist
     getCharacterClass(player: Player) {
-        const record = PlayerServer.getCharacterRecordFromPlayer(player)
+        const record = this.getCharacterRecordFromPlayer(player)
         return record ? record.idS : "NullClass"
     }
 
@@ -219,7 +219,7 @@ export class PlayerTracker {
 
     getHeroRecords() {
         let heroes: Array<Hero> = []
-        PlayerServer.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
+        this.getCharacterRecords().forEach((c) => { if (c instanceof Hero) heroes.push(c as Hero) })
         return heroes
     }
 
@@ -229,9 +229,7 @@ export class PlayerTracker {
             pcRecords.set(k, this.getCharacterRecord(v))
         }
         return pcRecords
-    }
-
-    
+    }    
 
     customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
         DebugXL.Assert(!this.characterAddedFuncs.has(player))
@@ -260,7 +258,7 @@ export class PlayerTracker {
         Analytics.ReportEvent(player,
             'Death',
             lastAttackingPlayer ? tostring(lastAttackingPlayer.UserId) : "",
-            PlayerServer.getCharacterClass(player),
+            this.getCharacterClass(player),
             lifetime)  // life will be a little easier if we include the attacking player's class here but we can determine that from sql
 
         return lifetime

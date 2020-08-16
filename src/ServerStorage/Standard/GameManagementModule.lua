@@ -65,6 +65,7 @@ local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 local TeamStyleChoice = require( game.ServerStorage.TS.PlayerServer ).TeamStyleChoice
+local SkinUtility = require( game.ServerStorage.TS.SkinUtility ).SkinUtility
 
 -- is there a one-line way to require a bunch of objects from a single file?
 local DungeonPlayer = require( game.ServerStorage.TS.DungeonPlayer ).DungeonPlayer
@@ -213,7 +214,7 @@ end
 
 function GameManagement:MonsterAddedWait( character, player, playerTracker, inTutorial )
 --	DebugXL:logV(LogArea.GameManagement, "Monster added "..player.Name )
-	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
+	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( Inventory, character, player, playerTracker )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not inTutorial then
@@ -265,7 +266,7 @@ local function SetupPCWait( startingCharacterModel, player )
 	local character = player.Character
 
 	player.Backpack:ClearAllChildren()
-	ToolCaches.updateToolCache( characterKey, pcData )
+	ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, pcData, SkinUtility.getCurrentSkinset(Inventory, player, pcData))
 
 	-- needs to come after costume applied or head gets replaced; apply costume probably sets it up for us, but not if dungeonlord
 	if not character:FindFirstChild("CharacterLight") then
@@ -487,7 +488,8 @@ local function MonitorPlayer( player )
 			end
 			DebugXL:logD( LogArea.GameManagement, player.Name.." calling LoadCharacterWait" )
 			
-			PlayerXL:LoadCharacterWait( player, 
+			PlayerXL:LoadCharacterWait( PlayerServer.getPlayerTracker(),
+				player, 
 				nil, 
 				spawnPart, 
 				levelSessionN,   -- for debugging

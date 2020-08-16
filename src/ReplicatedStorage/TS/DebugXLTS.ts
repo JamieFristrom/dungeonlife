@@ -46,7 +46,7 @@ export enum LogArea {
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Info
+    private defaultLogLevel = LogLevel.Debug
 
     private logLevelForTag = new Map<LogArea, LogLevel>([
         //[LogArea.Combat,LogLevel.Warning],

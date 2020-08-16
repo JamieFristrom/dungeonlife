@@ -9,23 +9,24 @@ import { Players, DataStoreService, HttpService, Workspace } from "@rbxts/servic
 import { ToolCaches } from "ServerStorage/TS/ToolCaches"
 
 import * as AnalyticsXL from "ServerStorage/Standard/AnalyticsXL"
-import * as CheatUtility from "ReplicatedStorage/TS/CheatUtility";
+import * as CheatUtility from "ReplicatedStorage/TS/CheatUtility"
 import * as Heroes from "ServerStorage/Standard/HeroesModule"
 import * as Inventory from "ServerStorage/Standard/InventoryModule"
 
 import * as CharacterI from "ServerStorage/Standard/CharacterI"
 
 
-import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
+import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS"
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
-import { ToolData } from "ReplicatedStorage/TS/ToolDataTS";
+import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
-import { Analytics } from "./Analytics";
-import { GameplayTestService } from "./GameplayTestService";
-import { MessageServer } from "./MessageServer";
-import { MobServer } from "./MobServer";
-import { PlayerServer } from "./PlayerServer";
-import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses";
+import { Analytics } from "./Analytics"
+import { GameplayTestService } from "./GameplayTestService"
+import { MessageServer } from "./MessageServer"
+import { MobServer } from "./MobServer"
+import { PlayerServer } from "./PlayerServer"
+import { SkinUtility } from "./SkinUtility"
+import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 
 class AdminCommandsC {
   banListStore = DataStoreService.GetOrderedDataStore("BanList")
@@ -91,7 +92,8 @@ let CommandList: { [k: string]: unknown } =
             gearDef.enhancementsA ? gearDef.enhancementsA : [])
           myPC.giveFlexTool(flexTool)
           const characterKey = PlayerServer.getCharacterKeyFromPlayer(sender)
-          ToolCaches.updateToolCache(characterKey, myPC)
+          const characterRecord = PlayerServer.getCharacterRecord(characterKey)
+          ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, myPC, SkinUtility.getCurrentSkinset(Inventory, sender, characterRecord) )
           Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("HotbarRE").FireClient(sender, "Refresh", myPC)
         }
       }

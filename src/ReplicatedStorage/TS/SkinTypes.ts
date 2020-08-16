@@ -1,10 +1,10 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI( LogArea.Executed, script.GetFullName())
 
-import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest";
+import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
 export type ActiveSkinSetI = Map<SkinTypeEnum, string>
 export type ActiveSkins = { [skinSetType: string]: ActiveSkinSetI, monster: ActiveSkinSetI, hero: ActiveSkinSetI }

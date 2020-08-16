@@ -83,6 +83,10 @@ end
 
 
 function PlayerAdded( player )
+	while game.Workspace.GameManagement.TestsFinished.Value == false do
+		wait(0.1)
+	end
+
 	playerTs[ player ] = PlayerT.new()
 	
 	-- now that we have our own custom LoadCharacter this only works with the very first load, but that's currently all we use it for
@@ -205,7 +209,7 @@ Instead, the flow looks like this:
 					
 --]]
 
-function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart, levelSessionN, levelSessionFunc )
+function PlayerXL:LoadCharacterWait( playerTracker, player, optionalSpawnCF, optionalSpawnPart, levelSessionN, levelSessionFunc )
 	DebugXL:logD( LogArea.Characters, "LoadCharacterWait "..player.Name )
 	DebugXL:Assert( not ( optionalSpawnCF and optionalSpawnPart ) ) -- pass in a CF or a part (or neither), not both
 	if loadingCharacterBT[ player ] then
@@ -214,7 +218,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 	loadingCharacterBT[ player ] = true
 	loadingCharacterCallstackT[ player ] = debug.traceback()
 	
-	local characterClassS = PlayerServer.getClassChoiceWait( player )
+	local characterClassS = playerTracker:getClassChoiceWait( player )
 
 	local chosenSpawn = nil
 	if optionalSpawnPart then
@@ -337,7 +341,7 @@ function PlayerXL:LoadCharacterWait( player, optionalSpawnCF, optionalSpawnPart,
 			
 	--wait()
 
-	PlayerServer.callCharacterAdded( player, player.Character )
+	playerTracker:callCharacterAdded( player, player.Character )
 
 	loadingCharacterBT[ player ] = nil  -- less leaky than false	
 

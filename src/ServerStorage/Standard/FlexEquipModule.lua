@@ -21,7 +21,7 @@ local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local FlexEquip = {}
 
 
-function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
+function FlexEquip:ApplyEntireCostumeWait( playerTracker, player, pcData, activeSkinsT )
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local equippedItemModelsA = {}
@@ -48,11 +48,11 @@ function FlexEquip:ApplyEntireCostumeWait( player, pcData, activeSkinsT )
 	DebugXL:logV( LogArea.Characters, 'FlexEquipModule - character loaded for '..player.Name )
 	
 	-- loading a character erases the backpack, so:
-	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-	ToolCaches.updateToolCache( characterKey, pcData )
+	local characterKey = playerTracker:getCharacterKeyFromPlayer( player )
+	ToolCaches.updateToolCache( playerTracker, characterKey, pcData, activeSkinsT )
 end
 
-function FlexEquip:ApplyEntireCostumeIfNecessaryWait( player )
+function FlexEquip:ApplyEntireCostumeIfNecessaryWait( playerTracker, inventoryManager, player )
 	if player.Team == game.Teams.Heroes then
 		local character = player.Character
 		if character then
@@ -61,11 +61,11 @@ function FlexEquip:ApplyEntireCostumeIfNecessaryWait( player )
 				if player.Team == game.Teams.Heroes then
 					skinOwnerS = "hero"
 				end
-				local allActiveSkinsT = Inventory:GetActiveSkinsWait( player )
+				local allActiveSkinsT = inventoryManager:GetActiveSkinsWait( player )
 				local _activeSkinsT = allActiveSkinsT[ skinOwnerS ]
 	
-				local pcData = CharacterI:GetPCDataWait( player )
-				FlexEquip:ApplyEntireCostumeWait( player, pcData, _activeSkinsT )
+				local pcData = playerTracker:getCharacterRecordFromPlayerWait( player )
+				FlexEquip:ApplyEntireCostumeWait( playerTracker, player, pcData, _activeSkinsT )
 			end
 		end
 	end

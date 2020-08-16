@@ -7,7 +7,6 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
-local CharacterI        = require( game.ServerStorage.CharacterI )
 local FlexEquip         = require( game.ServerStorage.FlexEquipModule )
 local Inventory         = require( game.ServerStorage.InventoryModule )
 
@@ -24,14 +23,14 @@ local Werewolf = {}
 -- werewolf module assumes we've used costumesserver to save the original player's costume
 
 
-function Werewolf:TakeHumanFormWait( player )
+function Werewolf:TakeHumanFormWait( playerTracker, player, activeSkins )
 	DebugXL:Assert( self == Werewolf )
 	DebugXL:Assert( player:IsA("Player") )
 	
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local character = player.Character
-	local taggerFlavorS = PlayerServer.getClassWait( character ) 
+	local taggerFlavorS = playerTracker:getClassWait( player ) 
 	if taggerFlavorS == "Werewolf" then  -- safety check for hackers
 		local heldTool = character:FindFirstChildWhichIsA("Tool")
 		if heldTool then heldTool:Destroy() end
@@ -41,7 +40,7 @@ function Werewolf:TakeHumanFormWait( player )
 		Costumes:LoadCharacter( player, {}, {}, false, character )
 		DebugXL:logV( LogArea.Characters, 'WerewolfModule - character loaded for '..player.Name )
 
-		local pcData = CharacterI:GetPCDataWait( player )
+		local pcData = playerTracker:getCharacterRecordFromPlayerWait( player )
 		pcData:equipAvailableArmor()		
 
 		-- we don't need to unequip held weapon, the costume application did that for us
@@ -49,7 +48,7 @@ function Werewolf:TakeHumanFormWait( player )
 		for i = 1,4 do
 			CharacterClientI:AssignPossessionToSlot( pcData, nil, i )
 		end
-		FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+		FlexEquip:ApplyEntireCostumeWait( playerTracker, player, pcData, activeSkins )
 
 		-- put non-claws in hotbar; not bothering to equip 
 		local slot = 1
@@ -63,8 +62,8 @@ function Werewolf:TakeHumanFormWait( player )
 			end
 		end )
 		
-		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		ToolCaches.updateToolCache( characterKey, pcData )
+		local characterKey = playerTracker:getCharacterKeyFromPlayer( player )
+		ToolCaches.updateToolCache( playerTracker, characterKey, pcData, activeSkins )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )		
 		
@@ -77,25 +76,18 @@ function Werewolf:TakeHumanFormWait( player )
 end
 
 
-function Werewolf:WolfOutWait( player )
+function Werewolf:WolfOutWait( playerTracker, player, activeSkins, noAttachSet )
 	DebugXL:Assert( self == Werewolf )
 	DebugXL:Assert( player:IsA("Player") )
 	
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local character = player.Character
-	local taggerFlavorS = PlayerServer.getClassWait( character )
+	local taggerFlavorS = playerTracker:getClassWait( player )
 	if taggerFlavorS == "Werewolf" then		
 		local heldTool = player:FindFirstChildWhichIsA("Tool")
 		if heldTool then heldTool:Destroy() end
 		
-		local inventory = Inventory:GetWait( player )
-		local noAttachSet = Costumes.allAttachmentsSet
-		if inventory then
-			if not inventory.settingsT.monstersT[ "Werewolf" ].hideAccessoriesB then
-				noAttachSet = {}
-			end
-		end	
 		local destCharacter = Costumes:LoadCharacter( player, { game.ServerStorage.Monsters.Werewolf }, noAttachSet, true, character )
 		
 		local humanoid = destCharacter:FindFirstChild("Humanoid")
@@ -105,7 +97,7 @@ function Werewolf:WolfOutWait( player )
 
 		-- we don't need to unequip held weapon, the costume application did that for us
 		-- remove cosmetic armor
-		local pcData = CharacterI:GetPCDataWait( player )
+		local pcData = playerTracker:getCharacterRecordFromPlayerWait( player )
 		pcData.gearPool:forEach( function(item)
 			item.equippedB = nil
 		end )
@@ -124,20 +116,28 @@ function Werewolf:WolfOutWait( player )
 			end
 		end )
 		
-		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		ToolCaches.updateToolCache( characterKey, pcData )
+		local characterKey = playerTracker:getCharacterKeyFromPlayer( player )
+
+		ToolCaches.updateToolCache( playerTracker, characterKey, pcData, activeSkins )
 
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
 	end
 end
 
 
-function Werewolf:ToggleForm( player )
+function Werewolf:ToggleForm( playerTracker, inventoryManager, player )
 	if not Costumes:ApplyingCostume( player.Character ) then
 		if player.Character:FindFirstChild("Werewolf Head") then
-			Werewolf:TakeHumanFormWait( player )
+			Werewolf:TakeHumanFormWait( playerTracker, player, inventoryManager:GetActiveSkinsWait( player ).hero )
 		else
-			Werewolf:WolfOutWait( player )
+			local inventory = inventoryManager:GetWait( player )
+			local noAttachSet = Costumes.allAttachmentsSet
+			if inventory then
+				if not inventory.settingsT.monstersT[ "Werewolf" ].hideAccessoriesB then
+					noAttachSet = {}
+				end
+			end	
+			Werewolf:WolfOutWait( playerTracker, player, inventoryManager:GetActiveSkinsWait( player ).monster, noAttachSet )
 		end
 	end
 end
@@ -147,7 +147,7 @@ workspace.Signals.WerewolfRE.OnServerEvent:Connect( function( player, funcName, 
 	if Werewolf[ funcName ] then
 		local classS = PlayerServer.getClassWait( player.Character )
 		if classS == "Werewolf" then		
-			Werewolf[ funcName ]( Werewolf, player, ... )
+			Werewolf[ funcName ]( Werewolf, PlayerServer.getPlayerTracker(), Inventory, player, ... )
 		end
 	else
 		-- probably a hacker 

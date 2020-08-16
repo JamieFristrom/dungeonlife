@@ -48,11 +48,11 @@ local Monsters = {}
 
 --local playerCharactersT = {}
 
-local function GiveWeapon( characterKey, flexToolPrototype )	
+local function GiveWeapon( playerTracker, characterKey, flexToolPrototype )	
 	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
 	local flexTool = FlexTool:objectify( flexToolRaw )
-	flexTool.levelN = math.ceil( PlayerServer.getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
-	PlayerServer.getCharacterRecord( characterKey ):giveFlexTool( flexTool )
+	flexTool.levelN = math.ceil( playerTracker:getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
+	playerTracker:getCharacterRecord( characterKey ):giveFlexTool( flexTool )
 end
 
 
@@ -102,7 +102,7 @@ end
 local monstersForHeroT = {}
 
 
-function Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
+function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player, playerTracker )
 	DebugXL:Assert( self == Monsters )
 	print("Waiting to load character "..character.Name.." appearance" )
 
@@ -149,7 +149,7 @@ function Monsters:PlayerCharacterAddedWait( character, player, playerTracker )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
-		local inventory = Inventory:GetWait( player )
+		local inventory = inventoryManager:GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
 		characterRecord:giveRandomArmor( hideAccessoriesB )
 	end
@@ -283,7 +283,7 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
-			GiveWeapon( characterKey, weapon )
+			GiveWeapon( playerTracker, characterKey, weapon )
 		end
 	end
 
