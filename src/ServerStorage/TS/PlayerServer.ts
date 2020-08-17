@@ -55,13 +55,13 @@ export class PlayerTracker {
     private characterKeyServer = 1;
 
     getCharacterKeyFromPlayer(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         const key = this.currentPCKeys.get(player)
         return key ? key : 0
     }
 
     getCharacterKeyFromCharacterModel(character: Character) {
         DebugXL.Assert(character.IsA('Model'))
-        DebugXL.Assert(character.Parent !== undefined)
         const player = Players.GetPlayerFromCharacter(character)
         if (player) {
             return this.getCharacterKeyFromPlayer(player)
@@ -74,6 +74,7 @@ export class PlayerTracker {
 
     // used when you know the player exists but aren't sure if they currently have a character (between respawns and choosing heroes)
     getCharacterRecordFromPlayer(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         const currentCharacterKey = this.currentPCKeys.get(player)
         return currentCharacterKey ? this.characterRecords.get(currentCharacterKey) : undefined
     }
@@ -81,6 +82,7 @@ export class PlayerTracker {
     static readonly timeoutSeconds = 1
 
     getCharacterRecordFromPlayerWait(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         const timeout = tick() + PlayerTracker.timeoutSeconds
         while (tick() < timeout) {
             const record = this.getCharacterRecordFromPlayer(player)
@@ -104,6 +106,7 @@ export class PlayerTracker {
     }
 
     getCharacterRecordFromCharacter(character: Character) {
+        DebugXL.Assert(character.IsA("Model"))
         const characterKey = this.getCharacterKeyFromCharacterModel(character)
         if (characterKey !== 0) {
             return this.getCharacterRecord(characterKey)
@@ -114,6 +117,7 @@ export class PlayerTracker {
     }
 
     getCharacterRecordWait(characterKey: CharacterKey) {
+        DebugXL.Assert(typeOf(characterKey) === "string")
         for (; ;) {
             let characterRecord = this.getCharacterRecord(characterKey)
             if (characterRecord)
@@ -123,6 +127,8 @@ export class PlayerTracker {
     }
 
     publishCharacterClass(player: Player, charClass: CharacterClass) {
+        DebugXL.Assert(player.IsA("Player"))
+        DebugXL.Assert(typeOf(charClass) === "string")
         warn(player.Name + " publish class " + charClass)
         DebugXL.dumpCallstack(LogLevel.Verbose, LogArea.Characters)
         const leaderstats = InstanceUtility.findOrCreateChild<Model>(player, "leaderstats", "Model")
@@ -164,13 +170,14 @@ export class PlayerTracker {
 
     // returns NullClass if haven't chosen, don't exist
     getCharacterClass(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         const record = this.getCharacterRecordFromPlayer(player)
         return record ? record.idS : "NullClass"
     }
 
     // waits until a non-null class is being played
     getClassWait(player: Player) {
-        DebugXL.Assert( player.IsA("Player"))
+        DebugXL.Assert(player.IsA("Player"))
         for (; ;) {
             const cClass = this.getCharacterClass(player)
             if (cClass !== "NullClass") {
@@ -181,11 +188,13 @@ export class PlayerTracker {
     }
 
     getClassChoice(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         return this.classChoices.get(player) || "NullClass"
     }
 
     // waits until a non-null class is chosen
     getClassChoiceWait(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         for (; ;) {
             const cClass = this.getClassChoice(player)
             if (cClass !== "NullClass") {
@@ -196,6 +205,7 @@ export class PlayerTracker {
     }
 
     setCharacterRecordForMob(characterModel: Character, characterRecord: CharacterRecordI) {
+        DebugXL.Assert(characterModel.IsA("Model"))
         // make sure we're not adding twice
         DebugXL.Assert(this.currentMobKeys.get(characterModel) === undefined)
 
@@ -229,7 +239,7 @@ export class PlayerTracker {
             pcRecords.set(k, this.getCharacterRecord(v))
         }
         return pcRecords
-    }    
+    }
 
     customCharacterAddedConnect(player: Player, charAddedFunc: (character: Character) => void) {
         DebugXL.Assert(!this.characterAddedFuncs.has(player))
@@ -246,6 +256,7 @@ export class PlayerTracker {
     }
 
     recordCharacterDeath(player: Player, character: Character) {
+        DebugXL.Assert(player.IsA("Player"))
         let birthTick = this.birthTicks.get(player)
         let lifetime = 0
         if (birthTick) {
@@ -265,6 +276,7 @@ export class PlayerTracker {
     }
 
     markHit(player: Player, category: string) {
+        DebugXL.Assert(player.IsA("Player"))
         if (player.Parent) {
             let hitTracker = this.hitTrackers.get(player)
             DebugXL.Assert(hitTracker !== undefined)
@@ -277,6 +289,7 @@ export class PlayerTracker {
     }
 
     markAttack(player: Player, category: string) {
+        DebugXL.Assert(player.IsA("Player"))
         if (player.Parent) {
             let hitTracker = this.hitTrackers.get(player)
             if (hitTracker) {
@@ -295,6 +308,7 @@ export class PlayerTracker {
     }
 
     recordHitRatio(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         let hitTracker = this.hitTrackers.get(player)
         if (hitTracker) {
             for (let k of Object.keys(hitTracker))
@@ -305,11 +319,13 @@ export class PlayerTracker {
     }
 
     playerAdded(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         let numPlayers = Players.GetPlayers().size()
         warn("Player count changed: " + numPlayers)
     }
 
     playerRemoving(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         let numPlayers = Players.GetPlayers().size()
         warn("Player count changed: " + numPlayers)
     }
@@ -337,6 +353,9 @@ export class PlayerTracker {
 
 
     publishLevel(player: Player, localLevel: number, actualLevel: number) {
+        DebugXL.Assert(player.IsA("Player"))
+        DebugXL.Assert(typeOf(localLevel)==="number")
+        DebugXL.Assert(typeOf(actualLevel)==="number")
         let leaderstats = InstanceUtility.findOrCreateChild<Model>(player, "leaderstats", "Model")
         let levelLabel = InstanceUtility.findOrCreateChild<StringValue>(leaderstats, "Level", "StringValue")
         levelLabel.Value = localLevel === actualLevel ? tostring(localLevel) : `${localLevel} (${actualLevel})`
@@ -352,6 +371,7 @@ export class PlayerTracker {
     }
 
     getPlayer(characterKey: CharacterKey) {
+        DebugXL.Assert( typeOf(characterKey)==="number" )
         for (let [k, v] of Object.entries(this.currentPCKeys)) {
             if (v === characterKey) {
                 return k
@@ -361,6 +381,7 @@ export class PlayerTracker {
     }
 
     getCharacterModel(characterKey: CharacterKey) {
+        DebugXL.Assert( typeOf(characterKey)==="number" )
         for (let [k, v] of Object.entries(this.currentMobKeys)) {
             if (v === characterKey) {
                 return k
@@ -374,6 +395,7 @@ export class PlayerTracker {
     }
 
     getName(characterKey: CharacterKey) {
+        DebugXL.Assert( typeOf(characterKey)==="number" )
         const player = this.getPlayer(characterKey)
         if (player) { return player.Name }
         const character = this.getCharacterModel(characterKey)
@@ -381,10 +403,12 @@ export class PlayerTracker {
     }
 
     setTeamStyleChoice(player: Player, teamStyleChoice: TeamStyleChoice) {
+        DebugXL.Assert(player.IsA("Player"))
         this.teamStyleChoices.set(player, teamStyleChoice)
     }
 
     getTeamStyleChoice(player: Player) {
+        DebugXL.Assert(player.IsA("Player"))
         return this.teamStyleChoices.get(player) || TeamStyleChoice.DungeonLord
     }
 

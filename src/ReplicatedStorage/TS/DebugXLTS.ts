@@ -39,6 +39,7 @@ export enum LogArea {
     Players,
     Parts,
     Spawner,          // spawner furnishing behavior, both mob and non-mob
+    Test,
     Requires,         // tracking which files have been succesfully required/imported
     UI,               // 
 }

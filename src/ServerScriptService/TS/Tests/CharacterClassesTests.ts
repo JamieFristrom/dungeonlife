@@ -5,7 +5,8 @@ import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CharacterClass, CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // test number of hero classes
 const numStartingStatBlocks = Object.keys( CharacterClasses.heroStartingStats ).size()
-DebugXL.Assert( numStartingStatBlocks === 5 )
+TestUtility.assertTrue( numStartingStatBlocks === 5 )

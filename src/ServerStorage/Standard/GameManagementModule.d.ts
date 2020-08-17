@@ -7,10 +7,9 @@ import { CharacterRecord, CharacterKey } from "ReplicatedStorage/TS/CharacterRec
 type Character = Model
 
 declare class GameManagementClass {
+    GetLevelSession(): number
     MonitorPlayerbase(): void
-
     MarkPlayersCharacterForRespawn(player: Player, optionalRespawnPart?: BasePart): void
-
     SetLevelReady(ready: boolean): void
 
     // also returns a CharacterKey but does it Lua style so we'd have to refactor if we want that

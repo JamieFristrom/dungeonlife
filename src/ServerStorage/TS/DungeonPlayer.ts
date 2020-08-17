@@ -4,6 +4,8 @@
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
+// maybe this can evolve to be our Player proxy as well?
+
 // export enum PCState {
 //     Limbo = "Limbo",
 //     Respawning = "Respawning",
@@ -107,5 +109,16 @@ export class DungeonPlayer {
 
     stateIsStable() {
         return !this.isRespawning() && !this.needsDestruction() && !this.needsRespawn()
+    }
+}
+
+export class DungeonPlayerMap {
+    dungeonPlayers = new Map<Player,DungeonPlayer>()
+
+    get(player: Player) {
+        if( !this.dungeonPlayers.has(player)) {
+            this.dungeonPlayers.set(player, new DungeonPlayer(tostring(player.UserId)))
+        }
+        return this.dungeonPlayers.get(player)!
     }
 }

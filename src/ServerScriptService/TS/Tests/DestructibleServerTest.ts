@@ -13,6 +13,7 @@ import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { DestructibleServer } from "ServerStorage/TS/DestructibleServer"
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { GameplayTestService } from "ServerStorage/TS/GameplayTestService"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 function TestDestructible( destructibleName: string, heroAvgLevel: number, numHeroes: number, dungeonDepth: number )
 {
@@ -34,15 +35,15 @@ function TestDestructible( destructibleName: string, heroAvgLevel: number, numHe
         ( 1 + BalanceData.dungeonFloorDifficultyK * dungeonDepth )  // depth 3
     if( correctAnswer === 0 )
     {
-        DebugXL.Assert( humanoid.MaxHealth > 0 )
+        TestUtility.assertTrue( humanoid.MaxHealth > 0 )
     }
     else
     {
         // if our formula was in the exact same order as the internal formula we could use ===
         // instead using ApproxEqual, that'll let us move things around a bit without hassle
-        DebugXL.Assert( MathXL.ApproxEqual( humanoid.MaxHealth, correctAnswer, 0.001 ) )
+        TestUtility.assertTrue( MathXL.ApproxEqual( humanoid.MaxHealth, correctAnswer, 0.001 ) )
     }
-    DebugXL.Assert( humanoid.Health === humanoid.MaxHealth )
+    TestUtility.assertTrue( humanoid.Health === humanoid.MaxHealth )
     destructible.Destroy()
 }
 

@@ -10,9 +10,14 @@ import { PlayerProxy, PlayerSessionKey } from "ReplicatedStorage/TS/PlayerProxy"
 import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 import { PlayerTracker } from 'ServerStorage/TS/PlayerServer'
 
-import { Players, Workspace, ReplicatedStorage, Teams } from '@rbxts/services'
+import { Players, Workspace, ReplicatedStorage, Teams, ServerStorage } from '@rbxts/services'
 import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
-import { TestUtility } from 'ReplicatedStorage/TS/TestUtility'
+import { TestUtility, TypicalTestSetup } from 'ReplicatedStorage/TS/TestUtility'
+import { GameServer, LevelResultEnum } from 'ServerStorage/TS/GameServer'
+import { DungeonPlayerMap } from 'ServerStorage/TS/DungeonPlayer'
+import Costumes from 'ServerStorage/Standard/CostumesServer'
+import { Hero } from 'ReplicatedStorage/TS/HeroTS'
+import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 
 
 class InstanceFake implements Instance {
@@ -255,25 +260,71 @@ class PlayerFake extends InstanceFake {
 // }
 
 // Test New Fakes
-let testNewProxy = new InstanceFake()
-DebugXL.Assert(testNewProxy !== undefined)
+{
+    let testNewProxy = new InstanceFake()
+    TestUtility.assertTrue(testNewProxy !== undefined)
+}
 
-const testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("AnimationDummy")!.Clone()
-let playerDummy = TestUtility.getTestPlayer()
-PlayerUtility.publishClientValues( playerDummy, 0, 0, "", false )
-playerDummy.Team = Teams.FindFirstChild<Team>("Monsters")
-//const playerDummy = new Instance("Player") as Player // ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Folder>("PlayerDummy")!.Clone() as unknown as Player
-let testPlayerTracker = new PlayerTracker
-testPlayerTracker.playerAdded(playerDummy)
-testPlayerTracker.setClassChoice(playerDummy,"Orc")
 // test that MonsterAddedWait returns before too long
-let result = undefined
-spawn( ()=>{
-    result = GameManagement.MonsterAddedWait(testCharacter, playerDummy, testPlayerTracker, false)
-})
-wait(5)
-DebugXL.Assert(result !== undefined)
-TestUtility.cleanTestPlayer(playerDummy)
+{
+    const testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("AnimationDummy")!.Clone()
+    let playerDummy = TestUtility.getTestPlayer()
+    PlayerUtility.publishClientValues(playerDummy, 0, 0, "", false)
+    playerDummy.Team = Teams.FindFirstChild<Team>("Monsters")
+    //const playerDummy = new Instance("Player") as Player // ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Folder>("PlayerDummy")!.Clone() as unknown as Player
+    let testPlayerTracker = new PlayerTracker
+    testPlayerTracker.playerAdded(playerDummy)
+    testPlayerTracker.setClassChoice(playerDummy, "Orc")
+    let result = undefined
+    spawn(() => {
+        result = GameManagement.MonsterAddedWait(testCharacter, playerDummy, testPlayerTracker, false)
+    })
+    wait(1)
+    TestUtility.assertTrue(result !== undefined)
+    TestUtility.cleanTestPlayer(playerDummy)
+}
 
+// test regular play
+{
+    let testSetup = new TypicalTestSetup()
+    let dungeonPlayerMap = new DungeonPlayerMap()
+    testSetup.player.Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
+    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
+    testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
+    // starting as a werewolf
+    let testCharacter = Costumes.LoadCharacter(
+        testSetup.player,
+        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Werewolf")!],
+        {},
+        true,
+        undefined,
+        new CFrame()
+    )
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+}
 
+// test TPK
+{
+    let testSetup = new TypicalTestSetup()
+    let dungeonPlayerMap = new DungeonPlayerMap()
+    testSetup.player.Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
+    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
+    testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
 
+    // starting as a werewolf
+    let testCharacter = Costumes.LoadCharacter(
+        testSetup.player,
+        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Werewolf")!],
+        {},
+        true,
+        undefined,
+        new CFrame()
+    )
+    DebugXL.Assert(testCharacter !== undefined)
+    if (testCharacter) {
+        testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
+    }
+}

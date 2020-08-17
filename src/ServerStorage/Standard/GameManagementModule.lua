@@ -59,6 +59,7 @@ local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).D
 local DungeonDeck = require( game.ServerStorage.TS.DungeonDeck ).DungeonDeck
 local Furnisher = require( game.ServerStorage.TS.Furnisher ).Furnisher
 local GameServer = require( game.ServerStorage.TS.GameServer ).GameServer
+local LevelResultEnum = require( game.ServerStorage.TS.GameServer ).LevelResultEnum  -- wishlist FloorResultEnum better name
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
@@ -69,6 +70,8 @@ local SkinUtility = require( game.ServerStorage.TS.SkinUtility ).SkinUtility
 
 -- is there a one-line way to require a bunch of objects from a single file?
 local DungeonPlayer = require( game.ServerStorage.TS.DungeonPlayer ).DungeonPlayer
+local DungeonPlayerMap = require( game.ServerStorage.TS.DungeonPlayer ).DungeonPlayerMap
+
 DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ServerStorage.TS requires succesful' )
 
 DebugXL:logD(LogArea.GameManagement, 'GameManagementModule processing')
@@ -79,24 +82,14 @@ local StarterGui = game.StarterGui
 -- We want *some* prep, though, particularly so after a TPK monsters can become heroes before we spawn the monsters and rebalance.
 local preparationDuration = workspace.GameManagement.FastStart.Value and 10 or Places:getCurrentPlace().preparationDuration
 
-local heroDeathSavoringSecondsK = 4
-
 local timeToThrowARodB = false
 
 local vipPassId = 5185882  
 
 local levelReadyB = false
 
-local LevelResultEnum = 
-{
-	TPK            = "TPK",
-	ExitReached    = "ExitReached",
-	LoungeModeOver = "LoungeModeOver",
-	BeatSuperboss  = "BeatSuperboss"
-}
-
-
 local gameStateStart = tick()
+
 
 local lastMonsterLevels = {} 
 
@@ -121,15 +114,13 @@ spawn(
 	end )
 
 -- data
-local dungeonPlayersT = {}
+local dungeonPlayers = DungeonPlayerMap.new()
 
 local roundCounterN = 1
 
 local heroExpressServerN = -100000
 
 local reachedExitB = false
-
-local levelSessionCounterN = 1
 
 local currentPlayerInvitedToHero
 
@@ -152,11 +143,8 @@ GameManagement.levelStartTime = time()
 
 
 
-function DungeonPlayer:Get( player )
-	if not dungeonPlayersT[ player ] then
-		dungeonPlayersT[ player ] = DungeonPlayer.new( player.UserId )		
-	end 
-	return dungeonPlayersT[ player ] 
+function GameManagement:GetDungeonPlayer( player )
+	return dungeonPlayers:get( player )
 end
 
 
@@ -164,7 +152,7 @@ end
 local GameManagementRemote = {}
 
 function GameManagementRemote.AcknowledgeGuiLoaded( player )
-	DungeonPlayer:Get( player ).guiLoadedB = true
+	GameManagement:GetDungeonPlayer( player ).guiLoadedB = true
 
 	DebugXL:logV(LogArea.GameManagement, player.Name.." gui acknowledged" )
 end
@@ -177,7 +165,7 @@ DebugXL:logW(LogArea.GameManagement, "Time until GameManagementRE connected: "..
 workspace.Signals.ChooseHeroRE.OnServerEvent:Connect( function( player, code )
 	DebugXL:Assert( code == "ack")
 	DebugXL:logD(LogArea.GameManagement, player.Name.." ChooseHeroRE acknowledged" )
-	DungeonPlayer:Get( player ).chooseHeroREAckedB = true
+	GameManagement:GetDungeonPlayer( player ).chooseHeroREAckedB = true
 end )
 
 
@@ -212,9 +200,13 @@ local function HeroAdded( character, player )
 	return pcData, characterKey
 end
 
+function GameManagement:GetLevelSession()
+	return GameServer.levelSession
+end
+
 function GameManagement:MonsterAddedWait( character, player, playerTracker, inTutorial )
 --	DebugXL:logV(LogArea.GameManagement, "Monster added "..player.Name )
-	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( Inventory, character, player, playerTracker )
+	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( Inventory, character, player, playerTracker, GameServer.getSuperbossManager(), GameServer.levelSession )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not inTutorial then
@@ -282,7 +274,7 @@ end
 local function MarkPlayersCharacterForDestruction( player )
 	DebugXL:logD(LogArea.GameManagement, player.Name.." marked for destruction" )
 --	DebugXL:logV(LogArea.GameManagement, debug.traceback())
-	DungeonPlayer:Get( player ):requestDestruction()
+	GameManagement:GetDungeonPlayer( player ):requestDestruction()
 end
 
 
@@ -306,56 +298,24 @@ function GameManagement:MarkPlayersCharacterForRespawn( player, optionalRespawnP
 		DebugXL:logW(LogArea.GameManagement, debug.traceback() )
 	end
 	if player.Parent then
-		DungeonPlayer:Get( player ):requestRespawn()
-		DungeonPlayer:Get( player ).respawnPart = optionalRespawnPart
+		GameManagement:GetDungeonPlayer( player ):requestRespawn()
+		GameManagement:GetDungeonPlayer( player ).respawnPart = optionalRespawnPart
 	end
 end 
 
 local staticAllHeroesDeadB = true
-
-local function TPK()	
-	-- if #game.Teams.Heroes:GetPlayers()==0 then return false end  -- it doesn't count as a tpk if there are no heroes. But why not?
-	local allHeroesDeadB = true
-	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do		
-		if player.Character then			
-			if player.Character:FindFirstChild("Humanoid") then
-				if player.Character.Humanoid.Health > 0 then
-					if Heroes:HeroChosen( player ) then
-						allHeroesDeadB = false
-						break					
-					else
-						DebugXL:logV(LogArea.GameManagement, player.Name.." not HeroChosen" )
-					end
-				else
-					DebugXL:logV(LogArea.GameManagement, player.Name.." health 0" )
-				end
-			else
-				DebugXL:logV(LogArea.GameManagement, player.Name.." no humanoid" )
-			end
-		else
-			DebugXL:logV(LogArea.GameManagement, player.Name.." character missing" )
-		end
-		-- maybe you're dead or maybe you're a fresh hero about to be reassembled
-		if DungeonPlayer:Get( player ):isRespawning() then
-			allHeroesDeadB = false
-		end
-	end
-	local TPKresult = not staticAllHeroesDeadB and allHeroesDeadB  -- only checking the change from someone alive to someone dead now
-	staticAllHeroesDeadB = allHeroesDeadB
-	return TPKresult
-end
 
 
 
 function KickoffChooseHero( player )
 	PlayerServer.setClassChoice( player, "NullClass" )
 	PlayerServer.publishLevel( player, 1, 1 )
-	DungeonPlayer:Get( player ):kickoffChooseHero()
+	GameManagement:GetDungeonPlayer( player ):kickoffChooseHero()
 end	
 
 
 local function ChangeHeroToMonster( player )
-	local myDungeonPlayerT = DungeonPlayer:Get( player )	
+	local myDungeonPlayerT = dungeonPlayers:get( player )	
 	myDungeonPlayerT:markHeroDead()
 	local localTick = time()
 	-- if the rest of the characters die while we're lying in pieces
@@ -375,7 +335,7 @@ local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
 	
 	DebugXL:logD(LogArea.GameManagement,"ChooseHeroRE:FireClient:ChooseHero:"..designatedMonsterPlayer.Name)
 	spawn( function()
-		while not DungeonPlayer:Get( designatedMonsterPlayer ).chooseHeroREAckedB do wait(0.1) end
+		while not dungeonPlayers:get( designatedMonsterPlayer ).chooseHeroREAckedB do wait(0.1) end
 		DebugXL:logD(LogArea.GameManagement,"ChooseHeroRE:FireClient:ChooseHero:"..designatedMonsterPlayer.Name.." fired")
 		workspace.Signals.ChooseHeroRE:FireClient( designatedMonsterPlayer, "ChooseHero" )
 	end )
@@ -419,8 +379,11 @@ local crashPlayer
 	
 -- we watch and handle the character in a loop rather than let events trigger changes
 -- so things don't overlap
+
+-- it's a bit weird that we're doing this in one yielding thread per player instead of one main nonyielding/polling thread that checks every player
+-- I forget how it evolved to be this way
 local function MonitorPlayer( player )
-	local myDungeonPlayerT = DungeonPlayer:Get( player )
+	local myDungeonPlayerT = dungeonPlayers:get( player )
 	myDungeonPlayerT.playerMonitoredB = true
 	local monitorCyclesN = 0
 	while not myDungeonPlayerT.playerRemovingB do
@@ -432,7 +395,7 @@ local function MonitorPlayer( player )
 			DebugXL:logV(LogArea.GameManagement, player.Name.." waiting for respawn order" )
 			GameServer.waitForRespawnRequest(player, myDungeonPlayerT)
 			myDungeonPlayerT:markRespawnStart()
-			local levelSessionN = levelSessionCounterN  -- for testing purposes
+			local levelSessionN = GameServer.levelSession  -- for testing purposes
 			DebugXL:logD( LogArea.GameManagement, player.Name.." beginning respawn" )
 			if not GameManagement:LevelReady() then
 				DebugXL:Error( "Level not ready when "..player.Name.." triggered respawn" )
@@ -481,9 +444,9 @@ local function MonitorPlayer( player )
 			end
 			DebugXL:logV(LogArea.GameManagement, player.Name.." has spawnPart" )
 			
-			if levelSessionCounterN ~= levelSessionN then
+			if GameServer.levelSession ~= levelSessionN then
 				local diagS = "Session changed in the middle of "..player.Name.."'s spawn. levelSessionCounterN: "..
-					levelSessionCounterN.." levelSessionN: "..levelSessionN.." monitorCyclesN: "..monitorCyclesN.." gameStateDesc: "..workspace.GameManagement.GameState.Value
+					GameServer.levelSession.." levelSessionN: "..levelSessionN.." monitorCyclesN: "..monitorCyclesN.." gameStateDesc: "..workspace.GameManagement.GameState.Value
 				DebugXL:Error( diagS )
 			end
 			DebugXL:logD( LogArea.GameManagement, player.Name.." calling LoadCharacterWait" )
@@ -492,8 +455,8 @@ local function MonitorPlayer( player )
 				player, 
 				nil, 
 				spawnPart, 
-				levelSessionN,   -- for debugging
-				function() return levelSessionCounterN end )  -- for debugging
+				GameServer.levelSession,   -- for debugging
+				function() return GameServer.levelSession end )  -- for debugging
 			-- possible respawn failed here
 			if player.Character then
 				myDungeonPlayerT:markRespawnFinish()
@@ -523,7 +486,7 @@ local function MonitorPlayer( player )
 --								GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Fail:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
 								Heroes:Died( player )  
 								-- if the rest of the characters die while we're lying in pieces
-								while GameManagement:LevelReady() and time() < localTick + heroDeathSavoringSecondsK do
+								while GameManagement:LevelReady() and time() < localTick + GameServer.heroDeathSavoringSecondsK do
 									wait()
 								end
 								playerCharacter.Parent = nil
@@ -538,11 +501,27 @@ local function MonitorPlayer( player )
 								--ChangeHeroToMonster( player )
 							else
 								local localTick = time()
-								Monsters:Died( playerCharacter )  
+								local pcr = PlayerServer.getCharacterRecordFromPlayer( player )
+								Monsters:Died( playerCharacter, pcr )  
+
+								-- if I was superboss then there's a kludge here; I don't know if this code is triggered
+								-- first or the end-of-level code. So wait until the end-of-level code triggers. If they happen
+								-- in the wrong order there's some touchiness.
+								if CharacterClasses.monsterStats[pcr.idS].tagsT.Superboss then
+									while GameServer.levelSession == GameServer:getSuperbossManager():getMyLevelSession() do
+										wait()
+									end
+								end
+
 								-- if the rest of the characters die while we're lying in pieces
+								DebugXL:logD( LogArea.Players, player.Name.." died" )
+
+								-- this no longer looks right to me, I'd think it would wait until the level WAS ready instead of until it wasn't, but 
+								-- trying the other way messed things up, unsurprisingly
 								while GameManagement:LevelReady() and time() < localTick + 2 do
 									wait()
 								end
+								DebugXL:logD( LogArea.Players, player.Name.." death 2+ second delay done" )
 								-- character might be gone by now
 								playerCharacter.Parent = nil
 								-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
@@ -604,27 +583,11 @@ local function MonitorPlayer( player )
 end
 
 
-local function PlayerCharactersMissing()
-	local pcsMissing = false
-	for _, player in pairs( game.Players:GetPlayers() ) do
-		-- if dungeonPlayersT hasn't ben initialized for players I"m not going to count that as missing in case something goes wrong, long load time, whatever
-		if DungeonPlayer:Get( player ) then
-			if DungeonPlayer:Get( player ):exists() then   -- going to count respawning as not there yet
-				pcsMissing = true
-			end 
-		end
---		if not player.Character or not player.Character.Parent then  -- this doesn't really tell us if it's respawning or destroying 
---			pcsMissing = true 
---		end
-	end
-	return pcsMissing	
-end
-
 
 local function PlayerCharactersExist()
 	local pcsExist = false
 	for _, player in pairs( game.Players:GetPlayers() ) do
-		if DungeonPlayer:Get( player ):exists() then
+		if dungeonPlayers:get( player ):exists() then
 			DebugXL:logD( LogArea.GameManagement, player.Name.." still exists" )
 			pcsExist = true
 			break
@@ -694,7 +657,7 @@ local function PlayerAdded( player )
 		
 	--and we can't destroy the avatar because then the UI might not finish loading
 	startTime = time()	
-	while not DungeonPlayer:Get( player ).guiLoadedB do 
+	while not dungeonPlayers:get( player ).guiLoadedB do 
 		if time() - startTime > 30 then  -- player, name, category, label, integer, includeDevsB
 			AnalyticsXL:ReportEvent( player, "Gui Unacknowledged", player.Name, "", 1, true)
 			break
@@ -703,14 +666,6 @@ local function PlayerAdded( player )
 	end	
 	AnalyticsXL:ReportHistogram( player, "Duration: Gui Acknowledged", time() - startTime, 1, "second", "", true)
 
-	
-	-- rather than destroy your character, we'll keep the screen black when you're on the wrong team
-	-- you'll spawn in the holding pit
-	--while not player.Character do wait() end
---	if DungeonPlayer:Get( player ).guiLoadedB then   -- if we failed to load the interface, better be safe and not destroy the character for now	
---		player.Character:Destroy()
---	end
-	
 	PlayerServer.customCharacterAddedConnect( player, function( character )
 		DebugXL:logV(LogArea.GameManagement, "Character added: "..character.Name )
 		SetupPCWait( character, player )
@@ -722,18 +677,13 @@ local function PlayerAdded( player )
 
 	spawn( function() MonitorPlayer( player ) end )
 	
-	DungeonPlayer:Get( player ).addingCompleteB = true
+	dungeonPlayers:get( player ).addingCompleteB = true
 	DebugXL:logD(LogArea.GameManagement, player.Name.." adding complete" )
 	-- is safe because if we're between levels it won't respawn
 	
 	if GameManagement:LevelReady() then
 		GameManagement:MarkPlayersCharacterForRespawn( player )
 	end 
-end
-
-
-local function PlayerRemoving( player )
-	DungeonPlayer:Get( player ).playerRemovingB = true
 end
 
 
@@ -777,7 +727,7 @@ local function RemoveCharactersWait()
 	local startTime = time()
 	while PlayerCharactersExist() do 
 		for _, player in pairs( game.Players:GetPlayers() ) do			
-			if not DungeonPlayer:Get( player ):needsDestruction() and not DungeonPlayer:Get( player ):inLimbo() then
+			if not dungeonPlayers:get( player ):needsDestruction() and not dungeonPlayers:get( player ):inLimbo() then
 				MarkPlayersCharacterForDestruction( player )
 			end
 		end
@@ -787,7 +737,7 @@ local function RemoveCharactersWait()
 			-- what's going on
 			local doubleCheck = false
 			for _, player in pairs( game.Players:GetPlayers() ) do
-				if DungeonPlayer:Get( player ):exists() then
+				if dungeonPlayers:get( player ):exists() then
 					local character = player.Character
 					local characterParent = character and character.Parent or nil
 					DebugXL:Error( "RemoveCharactersWait() timed out:".. player.Name.." still exists: character ".. tostring( character ) .."; character parent ".. tostring( characterParent ) )
@@ -808,20 +758,19 @@ local function LoadCharactersWait()
 	for _, player in pairs( game.Players:GetPlayers() ) do	
 		-- this is only called when we go from preparation to actual play; monsters need to stay what they are and jump back to a spawn point
 		if player.Team == game.Teams.Monsters then -- heroes now get to choose when to spawn, they can spend as much time in the menu as they like
-			GameManagement:MarkPlayersCharacterForRespawn( player, DungeonPlayer:Get( player ).respawnPart )
+			GameManagement:MarkPlayersCharacterForRespawn( player, dungeonPlayers:get( player ).respawnPart )
 		end
 	end
---	while PlayerCharactersMissing() do wait() end
 end
 
 
-local function LoadHeroesWait()
-	DebugXL:Assert( GameManagement:LevelReady() )
-	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do		
-		GameManagement:MarkPlayersCharacterForRespawn( player )
-	end
-	while PlayerCharactersMissing() do wait() end  -- what happens when new player shows up?  Do they get appropriately created as monster?
-end
+-- local function LoadHeroesWait()
+-- 	DebugXL:Assert( GameManagement:LevelReady() )
+-- 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do		
+-- 		GameManagement:MarkPlayersCharacterForRespawn( player )
+-- 	end
+-- 	while PlayerCharactersMissing() do wait() end  -- what happens when new player shows up?  Do they get appropriately created as monster?
+-- end
 
 
 function GameManagement:ReachedExit( player )
@@ -839,7 +788,7 @@ end
 
 
 function GameManagement:DoBeatSuperbossStuff()
-	DebugXL:logI(LogArea.GameManagement,"BeatSuperboss()")
+	DebugXL:logI(LogArea.GameManagement,"DoBeatSuperbossStuff()")
 
 	firstLevelB = true
 
@@ -860,7 +809,7 @@ local function LoadLevelWait()
 	local numHeroes = #game.Teams.Heroes:GetPlayers()
 	Furnisher.furnishWithRandomSpawns(numHeroes)
 	FurnishServer:FurnishWithRandomChests()
-	levelSessionCounterN = levelSessionCounterN + 1
+	GameServer.levelSession = GameServer.levelSession + 1
 	levelReadyB = true
 end
 
@@ -888,13 +837,14 @@ local function PlayLevelWait()
 	DestructibleServer.calibrateAllDestructiblesHealth( averageHeroLocalLevel, numHeroes, dungeonDepth )
 	
 	DebugXL:logW(LogArea.GameManagement, "All characters loaded. Playing." )
-	local levelResult
+	local floorResult = LevelResultEnum.InProgress
 	-- wait for level to be complete either through TPK 
 	-- (includes all heroes leaving before monster promoted)
 	-- or heroes getting to next level 
 	MonsterServer.resetLevelBalancer()
 	lastMonsterLevels = {}
-	while wait() do 
+	while floorResult == LevelResultEnum.InProgress do 
+		wait()
 		workspace.GameManagement.LevelTimeElapsed.Value = time() - GameManagement.levelStartTime	
 		MobServer.spawnersUpdate(time())
 		MonsterServer.awardTeamXPForTimeElapsed()
@@ -904,51 +854,23 @@ local function PlayLevelWait()
 			local emptyTable = {}
 			emptyTable[ nil ] = 'die'
 		end
-		if TPK() then
-			DebugXL:logI(LogArea.GameManagement,"TPK detected")
-			levelResult = LevelResultEnum.TPK
-			-- give it some time. the player monitor and this should complete at roughly the same time
-			-- and if I've coded it right then it won't matter which is done first
-			wait(heroDeathSavoringSecondsK) 
-			DebugXL:logI(LogArea.GameManagement,"TPK grace period over")
-			break
-		-- probably didn't need to duplicate state here with bools *and* a state variable
-		elseif reachedExitB then		
-			local newDungeonDepth = DungeonDeck:goToNextFloor()
-			DebugXL:logV(LogArea.GameManagement, "Awarding next level awards" )
-			for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
---				GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Complete:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
-				Heroes:NewDungeonLevel( player, newDungeonDepth )
-				HeroServer.awardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor" )				
-				Inventory:AdjustCount( player, "Stars", 10, "Progress", "Floor" )
-				Inventory:EarnRubies( player, 10, "Progress", "Floor" )
-				Heroes:SaveHeroesWait( player )
-			end
-			for _, player in pairs( game.Teams.Monsters:GetPlayers() ) do
-				Monsters:AdjustBuildPoints( player, 50 )
-			end
-				
-			levelResult = LevelResultEnum.ExitReached
-			break
-		elseif not FloorData.CurrentFloor().exitStaircaseB then
-			if not MonsterServer.isThereLivingSuperboss() then
-				DebugXL:logW(LogArea.GameManagement, "Setting BeatSuperboss state" )
-				levelResult = LevelResultEnum.BeatSuperboss
-				GameManagement:DoBeatSuperbossStuff()
-				break
-			end
-		end
+		floorResult = GameServer.checkFloorSessionComplete(dungeonPlayers, staticAllHeroesDeadB, reachedExitB)
+		staticAllHeroesDeadB = floorResult==LevelResultEnum.TPK 
 	end
+	if floorResult==LevelResultEnum.BeatSuperboss then
+		GameManagement.DoBeatSuperbossStuff()
+	end
+
 	
 	levelReadyB = false
-	for _, playerData in pairs( dungeonPlayersT ) do
+	for _, playerData in pairs( dungeonPlayers.dungeonPlayers ) do
 		playerData.signalledReadyB = false
 	end
 	
 	RemoveCharactersWait()
 	HeroServer.resetCurrentLevelCap()
 	DebugXL:logD(LogArea.GameManagement, "Level finished and swept" )
-	return levelResult
+	return floorResult
 end
 
 
@@ -971,7 +893,7 @@ end
 
 
 
-local protectionDisabled = false
+local protectionDisabled = true
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()
@@ -1027,7 +949,7 @@ function GameManagement:Play()
 		while not weHavePlayerB do
 			wait()
 			for _, player in pairs( game.Players:GetPlayers() ) do
-				if DungeonPlayer:Get( player ).addingCompleteB then
+				if dungeonPlayers:get( player ).addingCompleteB then
 					weHavePlayerB = true
 				end
 			end
@@ -1130,41 +1052,6 @@ function GameManagement:BecomeHero( player )
 	ChangeMonsterToHero( player, true ) 				
 end
 
---[[
--- you may use Hero Express if you *didn't* use Hero Express to get to your last hero run
-function GameManagement:HeroExpress( player )
-	-- want to communicate it to the server
-	-- ignored as of 12/3
-	player.HeroExpressReady.Value = true
-	
-	-- there is a chance that right as they click the button they'll be promoted to hero anyway, so check:
-	if player.Team ~= game.Teams.Heroes then
-		-- if making him a hero right now would still mean fewer heroes than monsters, then let's do it
-		-- new way, 12/3, only available if there aren't too many heroes already. If people juke the box and 
---		if #game.Players:GetPlayers()==1 or ( #game.Teams.Heroes:GetPlayers() + 1 <= #game.Teams.Monsters:GetPlayers() - 1 ) then
-		if #game.Players:GetPlayers()==1 or ( #game.Teams.Monsters:GetPlayers() >= 2 ) then
---			ChatMessages:SayMessage( player.Name .. " used Hero Express" )
-			GameManagement:BecomeHero( player )
-		else
-			-- otherwise jump to the front of the line. A question is if a second hero cuts to the front of the line
-			-- they shouldn't end up in front of the first hero - so how do we make sure that doesn't happen
-			-- the answer:  heroExpressServerN is a really low number. So when a hero cuts in line they'll get a lower number
-			-- than all the plebes. But if another hero does the same thing their number will be higher than the previous
-			-- expresser	
-			if DungeonPlayer:Get( player ).lastHeroDeathTime >= 0 then
-				DungeonPlayer:Get( player ).lastHeroDeathTime = heroExpressServerN
-				heroExpressServerN = heroExpressServerN + 1
-				MessageServer.PostMessageByKey( player, "HeroExpressLine", false )
-			else
-				-- they're already in line. unfortunately we took their money anyway;
-				-- if this comes up a lot we'll have to fix it
-				DebugXL:Error( player.Name.." paid twice for same hero express" )
-			end
-		end
-	end
-end 
---]]
-
 -- this may seem odd but I'm going to try letting it leak and see what happens
 -- at some point the size of the dungeonPlayers dictionary might become unwieldy but it's probably a log search and not too bad?
 -- I doubt it will leak faster than the known Roblox sound memory leaks
@@ -1200,7 +1087,7 @@ end
 
 
 function MainRemote.SignalReady( player )
-	local myDungeonPlayerT = dungeonPlayersT[ player ]
+	local myDungeonPlayerT = dungeonPlayers:get(player)
 	myDungeonPlayerT.signalledReadyB= true
 	if player.Team==game.Teams.Heroes then 
 		if PlayerServer.getCharacterClass( player )~="NullClass" then		

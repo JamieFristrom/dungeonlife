@@ -6,14 +6,12 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { ServerStorage, Workspace, CollectionService, RunService, Teams, PhysicsService } from '@rbxts/services'
 
-import * as Inventory from 'ServerStorage/Standard/InventoryModule'
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
-import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
-import { SkinUtility } from 'ServerStorage/TS/SkinUtility'
+import { PlayerServer, PlayerTracker } from 'ServerStorage/TS/PlayerServer'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
-import { CharacterRecord } from 'ReplicatedStorage/TS/CharacterRecord'
+import { CharacterRecord, CharacterRecordNull } from 'ReplicatedStorage/TS/CharacterRecord'
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
 
@@ -30,6 +28,8 @@ import { FlexibleToolsServer } from './FlexibleToolsServer'
 import { BaseWeaponUtility } from 'ReplicatedStorage/TS/BaseWeaponUtility'
 import { HeroServer } from './HeroServer'
 import { ModelUtility } from 'ReplicatedStorage/TS/ModelUtility'
+import { SuperbossManager } from './SuperbossManager'
+import { GameServer } from './GameServer'
 
 type Character = Model
 
@@ -135,7 +135,15 @@ export namespace MobServer {
         }
     }
 
-    export function spawnMob(characterClass: CharacterClass, position?: Vector3, spawnPart?: SpawnPart, curTick?: number) {
+    export function spawnMob(
+        playerTracker: PlayerTracker,
+        characterClass: CharacterClass, 
+        superbossManager: SuperbossManager, 
+        currentLevelSession: number,
+        position?: Vector3, 
+        spawnPart?: SpawnPart, 
+        curTick?: number ) {
+
         if (spawnPart && curTick) {
             let mySpawner = spawnersMap.get(spawnPart)
             if (!mySpawner) {
@@ -158,9 +166,12 @@ export namespace MobServer {
             const humanoid = mobModel.FindFirstChild<Humanoid>('Humanoid')
             DebugXL.Assert(humanoid !== undefined)
             if (humanoid) {
-                mobs.add(new Mob(mobModel, humanoid, characterClass, position, spawnPart))
+                mobs.add(new Mob(playerTracker, mobModel, humanoid, characterClass, superbossManager, currentLevelSession, position, spawnPart))
+                return mobModel
             }
         }
+        // null model
+        return new Instance("Model")
     }
 
     RunService.Stepped.Connect((time, step) => {
@@ -177,7 +188,7 @@ export namespace MobServer {
             if (mob.humanoid.Health <= 0 || mob.model.Parent === undefined) {
                 mob.updateLastAttacker()  // because it passes through to the team
                 mobs.delete(mob)
-                Monsters.Died(mob.model)
+                Monsters.Died(mob.model, mob.getCharacterRecord())
                 delay(2, () => {
                     mob.model.Parent = undefined
                 })
@@ -193,31 +204,6 @@ export namespace MobServer {
         mobFolder.GetChildren().forEach((mobModel) => mobModel.Parent = undefined)
     }
 
-    // export function spawnMobs(curTick: number) {
-
-    //     DebugXL.logV('Mobs', 'MobServer.spawnMobs()')
-    //     for( let spawner in spawnersMap ) {
-
-    //     }
-    //     const monsterSpawnParts = FurnishServer.GetMonsterSpawners()
-    //     if (!monsterSpawnParts.isEmpty()) {
-    //         DebugXL.logD('Mobs', 'Spawners available')
-    //         // for now mobs will not be bosses or superbosses
-    //         const minionSpawners = monsterSpawnParts.filter((spawnPart) =>
-    //             spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value === false)
-    //         if (!minionSpawners.isEmpty()) {
-    //             DebugXL.logV('Mobs', 'Minion spawners available')
-    //             const distantSpawners = minionSpawners.filter((spawnPart) =>
-    //                 Hero.distanceToNearestHeroXZ(spawnPart.Position) > MapTileData.tileWidthN * 2.5)
-    //             const acceptableSpawners = distantSpawners.isEmpty() ? minionSpawners : distantSpawners
-    //             const desiredSpawn = acceptableSpawners[MathXL.RandomInteger(0, acceptableSpawners.size() - 1)]
-    //             const characterClass = desiredSpawn.FindFirstChild<StringValue>('CharacterClass')!.Value
-    //             spawnMob(characterClass, undefined, desiredSpawn, curTick)
-    //         }
-    //     }
-    //     }
-    // }
-
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
         if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
             // boss spawnPart; only use if no monster players
@@ -226,7 +212,11 @@ export namespace MobServer {
                 if (!spawnersMap.get(spawnPart)) {
                     DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
                     const charClassStr = spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass
-                    spawnMob(charClassStr,
+                    spawnMob(
+                        PlayerServer.getPlayerTracker(),
+                        charClassStr,
+                        GameServer.getSuperbossManager(),
+                        GameServer.levelSession,
                         undefined,
                         spawnPart,
                         curTick)
@@ -241,7 +231,11 @@ export namespace MobServer {
                 const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
                 if (myMobs.size() < mobSpawnerCap) {
                     DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from "+spawnPart.GetFullName())
-                    spawnMob(spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass,
+                    spawnMob(
+                        PlayerServer.getPlayerTracker(),
+                        spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass,
+                        GameServer.getSuperbossManager(),
+                        GameServer.levelSession,
                         undefined,
                         spawnPart,
                         curTick)
@@ -284,9 +278,16 @@ export namespace MobServer {
         spawnPart?: SpawnPart
         lastSpottedEnemyPosition?: Vector3
         lastAttacker?: Character
+        playerTracker: PlayerTracker
 
         getCharacterRecord() {
-            return PlayerServer.getCharacterRecord(PlayerServer.getCharacterKeyFromCharacterModel(this.model))
+            // having the playerTracker seems weird even though it doesn't 'duplicate data', maybe this is an appropriate time to just store the character record
+            // (still not a duplication since it would index same class)
+            let characterRecord = this.playerTracker.getCharacterRecordFromCharacter(this.model)
+            if( !characterRecord ) {
+                characterRecord = new CharacterRecordNull()
+            }
+            return characterRecord
         }
 
         findSpawnPos(spawnCenter: Vector3, spawnSize: Vector3, exclusionCenter: Vector3, exclusionRadius: number) {
@@ -309,8 +310,18 @@ export namespace MobServer {
             return new Vector3(maxX, 0, maxZ)
         }
 
-        constructor(model: Model, humanoid: Humanoid, characterClass: CharacterClass, position?: Vector3, spawnPart?: SpawnPart) {
+        constructor(
+            playerTracker: PlayerTracker,
+            model: Model, 
+            humanoid: Humanoid,
+            characterClass: CharacterClass, 
+            superbossManager: SuperbossManager,
+            currentLevelSession: number,
+            position?: Vector3, 
+            spawnPart?: SpawnPart) {
+                
             super(model, humanoid)
+            this.playerTracker = playerTracker
             this.spawnPart = spawnPart
 
             // position mob
@@ -343,8 +354,15 @@ export namespace MobServer {
             let characterRecord = new Monster(characterClass,
                 [],
                 mobLevel)
-            const characterKey = PlayerServer.setCharacterRecordForMob(this.model, characterRecord)
-            Monsters.Initialize( PlayerServer.getPlayerTracker(), this.model, characterKey, characterRecord.getWalkSpeed(), characterClass )
+            const characterKey = this.playerTracker.setCharacterRecordForMob(this.model, characterRecord)
+            Monsters.Initialize( 
+                playerTracker, 
+                this.model, 
+                characterKey, 
+                characterRecord.getWalkSpeed(), 
+                characterClass,
+                superbossManager,
+                currentLevelSession )
 
             // apparently this is necessary to stop client-side TP hacks; null
             delay(1,
@@ -370,7 +388,7 @@ export namespace MobServer {
                 })
             }
 
-            ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, characterRecord)
+            ToolCaches.updateToolCache(this.playerTracker, characterKey, characterRecord)
 
             // prepare a weapon
             for (let i = 0; i < HotbarSlot.Max; i++) {

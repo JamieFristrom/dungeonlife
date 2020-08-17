@@ -1,11 +1,18 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage } from "@rbxts/services"
-import { DebugXL } from "./DebugXLTS"
+import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace } from "@rbxts/services"
+import { DebugXL, LogArea } from "./DebugXLTS"
+
 import Costumes from "ServerStorage/Standard/CostumesServer"
 
+import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
+import { InventoryManagerStub } from "ServerStorage/TS/InventoryManagerStub"
+
 export namespace TestUtility {
+    let currentModuleName = ""
+    let assertionCount = 0
+
     export function getTestPlayer(): Player {
         while (Players.GetPlayers().size() === 0) {
             wait()
@@ -15,8 +22,14 @@ export namespace TestUtility {
         return testPlayer
     }
 
+    export function getTestCharacter() {
+        let testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
+        testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
+        return testCharacter
+    }
+
     export function saveCostumeStub(player: Player) {
-        const costume = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")
+        const costume = getTestCharacter()
         DebugXL.Assert( costume !== undefined )
         if( costume ) {
             let costumeCopy = costume.Clone()
@@ -33,6 +46,7 @@ export namespace TestUtility {
     }
 
     export function cleanTestPlayer(player: Player) {
+        player.Team = undefined
         if( player.Character ) {
             player.Character.Destroy()
         }
@@ -48,5 +62,33 @@ export namespace TestUtility {
             }
         }
         cleanCostumeStub(player)
+    }
+
+    export function setCurrentModuleName( name: string ) {
+        currentModuleName = name
+        assertionCount = 0
+    }
+
+    export function assertTrue( assertion: boolean, message = "" ) {
+        if( assertion ) {
+            warn( `Test ${currentModuleName}(${assertionCount}) (${message}) passed` )
+        } 
+        else {
+            DebugXL.Error( `Test ${currentModuleName}(${assertionCount}) (${message}) failed` )
+        }
+    }
+}
+
+export class TypicalTestSetup {
+    inventory = new InventoryManagerStub()
+    playerTracker = new PlayerTracker
+    player = TestUtility.getTestPlayer()
+
+    constructor() {
+        TestUtility.saveCostumeStub(this.player)
+    }
+
+    clean() {
+        TestUtility.cleanTestPlayer(this.player)
     }
 }

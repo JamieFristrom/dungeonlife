@@ -20,7 +20,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     })
     wait(1)
     let retrievedRecord = testTracker.getCharacterRecordFromPlayer(testPlayer)
-    DebugXL.Assert(testRecord === retrievedRecord)
+    TestUtility.assertTrue(testRecord === retrievedRecord)
     TestUtility.cleanTestPlayer( testPlayer )
 }
 
@@ -33,8 +33,8 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     })
     wait(1)    
     let leaderstats = testPlayer.FindFirstChild<Model>("leaderstats")!
-    DebugXL.Assert( leaderstats !== undefined )
-    DebugXL.Assert( leaderstats.FindFirstChild<StringValue>("Class")!.Value === "Necromancer")
+    TestUtility.assertTrue( leaderstats !== undefined )
+    TestUtility.assertTrue( leaderstats.FindFirstChild<StringValue>("Class")!.Value === "Necromancer")
     TestUtility.cleanTestPlayer( testPlayer )
 }
 
@@ -47,7 +47,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     })
     wait(1)    
     let leaderstats = testPlayer.FindFirstChild<Model>("leaderstats")!
-    DebugXL.Assert( leaderstats !== undefined )
-    DebugXL.Assert( leaderstats.FindFirstChild<StringValue>("Level")!.Value === "666 (333)")
+    TestUtility.assertTrue( leaderstats !== undefined )
+    TestUtility.assertTrue( leaderstats.FindFirstChild<StringValue>("Level")!.Value === "666 (333)")
     TestUtility.cleanTestPlayer( testPlayer )
 }

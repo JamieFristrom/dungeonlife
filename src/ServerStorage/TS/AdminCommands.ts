@@ -27,6 +27,8 @@ import { MobServer } from "./MobServer"
 import { PlayerServer } from "./PlayerServer"
 import { SkinUtility } from "./SkinUtility"
 import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
+import GameManagement from 'ServerStorage/Standard/GameManagementModule';
+import { GameServer } from './GameServer';
 
 class AdminCommandsC {
   banListStore = DataStoreService.GetOrderedDataStore("BanList")
@@ -93,7 +95,7 @@ let CommandList: { [k: string]: unknown } =
           myPC.giveFlexTool(flexTool)
           const characterKey = PlayerServer.getCharacterKeyFromPlayer(sender)
           const characterRecord = PlayerServer.getCharacterRecord(characterKey)
-          ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, myPC, SkinUtility.getCurrentSkinset(Inventory, sender, characterRecord) )
+          ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, myPC, SkinUtility.getCurrentSkinset(Inventory, sender, characterRecord))
           Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("HotbarRE").FireClient(sender, "Refresh", myPC)
         }
       }
@@ -256,7 +258,12 @@ let CommandList: { [k: string]: unknown } =
       const x = tonumber(args[2])
       const z = tonumber(args[3])
       const position = x && z ? new Vector3(x, 0, z) : undefined
-      MobServer.spawnMob(characterClass as CharacterClass, position)
+      MobServer.spawnMob(
+        PlayerServer.getPlayerTracker(),
+        characterClass as CharacterClass,
+        GameServer.getSuperbossManager(),
+        1,
+        position) // "1" currently only affects superbosses
     }
   },
 

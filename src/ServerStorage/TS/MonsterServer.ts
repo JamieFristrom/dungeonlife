@@ -257,7 +257,7 @@ export namespace MonsterServer {
 
     export function calculateMaxHealth(monsterDatum: MonsterStatBlockI, level: number, isHighLevelServer: boolean) {
         const monsterHealthPerLevelN = (isHighLevelServer ? BalanceData.monsterHealthPerLevelHighLevelServerN : BalanceData.monsterHealthPerLevelN) * 0.666
-        return monsterDatum.baseHealthN * monsterHealthPerLevelN * level
+        return math.max( 1, monsterDatum.baseHealthN * monsterHealthPerLevelN * level )
     }
 
     export function calculateXPReward(characterRecord: CharacterRecord, isMob: boolean) {
@@ -283,7 +283,7 @@ export namespace MonsterServer {
         return xp
     }
 
-    export function died(monster: Character) {
+    export function died(monster: Character, characterRecord: CharacterRecord) {
         DebugXL.Assert(monster.IsA('Model'))
         DebugXL.logI(LogArea.Combat, "Monster " + monster.Name + " died")
 
@@ -293,7 +293,6 @@ export namespace MonsterServer {
             PlayerServer.recordCharacterDeath(monsterPlayer, monster)
         }
 
-        const characterRecord = PlayerServer.getCharacterRecordFromCharacter(monster)
         DebugXL.Assert(characterRecord !== undefined)
         if (characterRecord) {
             const monsterLevel = characterRecord.getLocalLevel()
@@ -359,16 +358,16 @@ export namespace MonsterServer {
         return false
     }
     
-    export function isThereLivingSuperboss() {
-        // if we're on a superboss level and there's no superboss left we must have beat them
-        // so we get the points even if a player playing the superboss quits or cross-teams, which favors non-cheater characters
-        // (Just because the superboss player quit doesn't mean I should be robbed, does it? Maybe, because we didn't put in the effort, but it did take a while to even get to this level.)
-        if( checkFolderForSuperboss(mobsFolder)) {
-            return true
-        }
-        if( checkFolderForSuperboss(Workspace)) {
-            return true
-        }
+    // export function isThereLivingSuperboss() {
+    //     // if we're on a superboss level and there's no superboss left we must have beat them
+    //     // so we get the points even if a player playing the superboss quits or cross-teams, which favors non-cheater characters
+    //     // (Just because the superboss player quit doesn't mean I should be robbed, does it? Maybe, because we didn't put in the effort, but it did take a while to even get to this level.)
+    //     if( checkFolderForSuperboss(mobsFolder)) {
+    //         return true
+    //     }
+    //     if( checkFolderForSuperboss(Workspace)) {
+    //         return true
+    //     }
 
-    }
+    // }
 }

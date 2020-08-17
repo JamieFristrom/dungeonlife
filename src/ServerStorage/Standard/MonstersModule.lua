@@ -102,7 +102,7 @@ end
 local monstersForHeroT = {}
 
 
-function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player, playerTracker )
+function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player, playerTracker, superbossManager, currentLevelSession )
 	DebugXL:Assert( self == Monsters )
 	print("Waiting to load character "..character.Name.." appearance" )
 
@@ -145,7 +145,7 @@ function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player,
 
 	playerTracker:publishLevel( player, monsterLevel, monsterLevel )
 	local characterKey = playerTracker:setCharacterRecordForPlayer( player, characterRecord )
-	Monsters:Initialize( playerTracker, character, characterKey, characterRecord:getWalkSpeed(), monsterClass )
+	Monsters:Initialize( playerTracker, character, characterKey, characterRecord:getWalkSpeed(), monsterClass, superbossManager, currentLevelSession )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
@@ -242,13 +242,13 @@ function Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
 end
 
 
-function Monsters:Died( monster )
-	MonsterServer.died( monster )
+function Monsters:Died( monster, characterRecord )
+	MonsterServer.died( monster, characterRecord )
 	LootServer.checkMonsterDrop( monster )
 end
 
 
-function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey, walkSpeedN, monsterClass )
+function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey, walkSpeedN, monsterClass, superbossManager, currentLevelSession )
 	DebugXL:Assert( self == Monsters )
 
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
@@ -309,6 +309,10 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 		CostumesServer:Colorify( monsterCharacterModel, monsterDatum.colorify3 )
 	end
 	CostumesServer:Scale( monsterCharacterModel, monsterDatum.scaleN )
+
+	if monsterDatum.tagsT.Superboss then
+		superbossManager:noteSuperbossSpawned( monsterCharacterModel, currentLevelSession )
+	end
 end
 
 function Monsters:AdjustBuildPoints( player, amountN )

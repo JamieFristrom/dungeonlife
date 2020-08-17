@@ -13,7 +13,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 
 {
     let errorMessage = ""
-     // test updating an obsolete broken hero
+    // test updating an obsolete broken hero
     const rawHeroData = {
         statsT: {
             strN: 11,  //// means if you draw a level 3 weapon you have a choice between putting in strength or con when you hit level 2
@@ -37,9 +37,9 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     })
     const convertedHero = Hero.convertFromPersistent(rawHeroData, 3, "TestHeroName")
     DebugXL.stopCatchingErrors()
-    DebugXL.Assert(errorMessage.find("had neither gearPool nor itemsT") !== undefined)
-    DebugXL.Assert(convertedHero.gearPool !== undefined)
-    DebugXL.Assert(convertedHero.gearPool.size() === 0)
+    TestUtility.assertTrue(errorMessage.find("had neither gearPool nor itemsT") !== undefined)
+    TestUtility.assertTrue(convertedHero.gearPool !== undefined)
+    TestUtility.assertTrue(convertedHero.gearPool.size() === 0)
 }
 
 {
@@ -51,14 +51,14 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     fakePlayerMap.set(heroPlayer, new Hero("Warrior",
         { strN: 10, dexN: 10, conN: 10, willN: 10, experienceN: 0, goldN: 0, deepestDungeonLevelN: 0, totalTimeN: 0 },
         []))
-    DebugXL.Assert(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
+    TestUtility.assertTrue(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
 
     // test associating a fake monster with player and that the original hero record is still on the correct team
     let fakeMonsterPlayer = Workspace.FindFirstChild("Camera") as Player
     fakePlayerMap.set(fakeMonsterPlayer, new Monster("Orc",
         [],
         1))
-    DebugXL.Assert(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
-    DebugXL.Assert(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === Teams.WaitForChild<Team>("Monsters"))
+    TestUtility.assertTrue(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
+    TestUtility.assertTrue(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === Teams.WaitForChild<Team>("Monsters"))
     TestUtility.cleanTestPlayer(heroPlayer)
 }

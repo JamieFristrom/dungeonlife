@@ -165,7 +165,7 @@ end
 
 
 for _, player in pairs( game.Players:GetPlayers() ) do
-	PlayerAdded( player )
+	spawn( function() PlayerAdded( player ) end )
 end
 
 game.Players.PlayerAdded:Connect( PlayerAdded )

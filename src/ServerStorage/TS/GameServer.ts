@@ -6,27 +6,42 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
 
-import * as Inventory from "ServerStorage/Standard/InventoryModule"
+import Inventory from "ServerStorage/Standard/InventoryModule"
 
-import * as MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
-import * as MathXL from "ReplicatedStorage/Standard/MathXL"
+import MapTileData from "ReplicatedStorage/Standard/MapTileDataModule"
+import MathXL from "ReplicatedStorage/Standard/MathXL"
 
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
+import Heroes from "ServerStorage/Standard/HeroesModule"
 
 import { MessageServer } from "./MessageServer"
-import { PlayerServer, TeamStyleChoice } from "./PlayerServer"
-import { DungeonPlayer } from './DungeonPlayer'
-import CharacterClientI from 'ReplicatedStorage/Standard/CharacterClientI'
-import { CharacterClass } from 'ReplicatedStorage/TS/CharacterClasses'
-import { SpawnerUtility } from 'ReplicatedStorage/TS/SpawnerUtility'
+import { PlayerServer, TeamStyleChoice, PlayerTracker } from "./PlayerServer"
+import { DungeonPlayer, DungeonPlayerMap } from './DungeonPlayer'
+import { SuperbossManager } from './SuperbossManager'
 
+import { SpawnerUtility } from 'ReplicatedStorage/TS/SpawnerUtility'
+import { DungeonDeck } from './DungeonDeck'
+import { HeroServer } from './HeroServer'
+
+import FloorData from "ReplicatedStorage/Standard/FloorData"
+
+import Monsters from 'ServerStorage/Standard/MonstersModule'
+
+
+export enum LevelResultEnum {
+    InProgress = "InProgress",
+    TPK = "TPK",
+    ExitReached = "ExitReached",
+    LoungeModeOver = "LoungeModeOver",
+    BeatSuperboss = "BeatSuperboss"
+}
 
 
 // // it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
 // -- swarm on exit and entrance
 // -- constants
-// --const numHeroesNeededPerPlayer = 
+// --const numHeroTeamNeededPerPlayer = 
 // --{
 // --	[1] = 0,   
 // --	[2] = 1,   -- 1v1
@@ -89,6 +104,13 @@ const signals = Workspace.WaitForChild<Folder>("Signals")
 const chooseHeroRE = signals.WaitForChild<RemoteEvent>("ChooseHeroRE")
 
 export namespace GameServer {
+    let superbossManager = new SuperbossManager()
+    export let levelSession = 0
+
+    export function getSuperbossManager() {
+        return superbossManager
+    }
+
     export function numHeroesNeeded() {
         let nonNoobs = Players.GetPlayers().filter((player) => !Inventory.PlayerInTutorial(player))
         return numHeroesNeededPerPlayer[nonNoobs.size()]
@@ -112,7 +134,7 @@ export namespace GameServer {
         const monsterSpawnN = monsterSpawns.size()
         if (player.Team === HeroTeam || monsterSpawnN === 0) {
             spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
-            if( player.Team !== HeroTeam) {
+            if (player.Team !== HeroTeam) {
                 PlayerServer.setClassChoice(player, "DungeonLord")
             }
             //spawnPart = workspace.StaticEnvironment.HeroSpawn
@@ -163,7 +185,7 @@ export namespace GameServer {
                     else {
                         // apparently there"s only one already used boss spawn on this level; fall back to hero spawner
                         spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
-                        if( player.Team !== HeroTeam) {
+                        if (player.Team !== HeroTeam) {
                             PlayerServer.setClassChoice(player, "DungeonLord")
                         }
                     }
@@ -206,4 +228,85 @@ export namespace GameServer {
         }
         preparationCountdownValue.Value = 0
     }
+
+    export function isTPK(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, wereAllHeroesDead: boolean) {
+        // if #game.Teams.HeroTeam:GetPlayers()==0 ) { return false }  -- it doesn't count as a tpk if there are no heroes. But why not?
+        let allHeroesDeadB = true
+        for (let player of HeroTeam.GetPlayers()) {
+            if (player.Character) {
+                const humanoid = player.Character.FindFirstChild<Humanoid>("Humanoid")
+                if (humanoid) {
+                    if (humanoid.Health > 0) {
+                        const pcrecord = playerTracker.getCharacterRecordFromPlayer(player)
+                        if( pcrecord ) {
+                            if( pcrecord instanceof Hero) {
+                                allHeroesDeadB = false
+                                break
+                            }
+                            else {
+                                DebugXL.logV(LogArea.GameManagement, player.Name + " record not hero")
+                            }
+                        }
+                        else {
+                            DebugXL.logV(LogArea.GameManagement, player.Name + " no record")
+                        }
+                    }
+                    else {
+                        DebugXL.logV(LogArea.GameManagement, player.Name + " health 0")
+                    }
+                }
+                else {
+                    DebugXL.logV(LogArea.GameManagement, player.Name + " no humanoid")
+                }
+            }
+            else {
+                DebugXL.logV(LogArea.GameManagement, player.Name + " character missing")
+            }
+            //maybe you're dead or maybe you're a fresh hero about to be reassembled
+
+            if (dungeonPlayers.get(player).isRespawning()) {
+                allHeroesDeadB = false
+            }
+        }
+        const TPKresult = !wereAllHeroesDead && allHeroesDeadB  //only checking the change from someone alive to someone dead now
+        return TPKresult
+    }
+
+    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, wereAllHeroesDead: boolean, reachedExit: boolean) {
+        let levelResult = LevelResultEnum.InProgress
+        if (isTPK(playerTracker, dungeonPlayers, wereAllHeroesDead)) {
+            DebugXL.logI(LogArea.GameManagement, "TPK detected")
+            levelResult = LevelResultEnum.TPK
+            //give it some time.the player monitor and this should complete at roughly the same time
+            //and if I've coded it right ) { it won't matter which is done first
+            wait(heroDeathSavoringSecondsK)
+            DebugXL.logI(LogArea.GameManagement, "TPK grace period over")
+            levelResult = LevelResultEnum.TPK
+        }
+        else if (reachedExit) { //probably didn't need to duplicate state here with bools *and* a state variable
+            const newDungeonDepth = DungeonDeck.goToNextFloor()
+            DebugXL.logV(LogArea.GameManagement, "Awarding next level awards")
+            for (let player of HeroTeam.GetPlayers()) {
+                //GameAnalyticsServer.ServerEvent({ ["category"] = "progression", ["event_id"] = "Complete.SubdwellerColony."+tostring(workspace.GameManagement.DungeonFloor.Value) }, player)
+                Heroes.NewDungeonLevel(player, newDungeonDepth)
+                HeroServer.awardExperienceWait(player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor")
+                Inventory.AdjustCount(player, "Stars", 10, "Progress", "Floor")
+                Inventory.EarnRubies(player, 10, "Progress", "Floor")
+                Heroes.SaveHeroesWait(player)
+            }
+            for (let player of MonsterTeam.GetPlayers()) {
+                Monsters.AdjustBuildPoints(player, 50)
+            }
+            levelResult = LevelResultEnum.ExitReached
+        }        
+        else if (!FloorData.CurrentFloor().exitStaircaseB) {
+            if( false ) {
+                DebugXL.logW(LogArea.GameManagement, "Setting BeatSuperboss state")
+                levelResult = LevelResultEnum.BeatSuperboss
+            }
+        }
+        return levelResult
+    }
+
+    export const heroDeathSavoringSecondsK = 4
 }

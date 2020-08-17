@@ -336,12 +336,6 @@ function Heroes:Died( player )
 end
 
 
-function Heroes:HeroChosen( player )
-	return PlayerServer.getCharacterRecordFromPlayer( player )	
-end
-
-
-
 function Heroes:GetExperienceWait( player )
 	return Heroes:GetPCDataWait( player ).statsT.experienceN
 end

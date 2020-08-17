@@ -7,6 +7,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { Workspace, ReplicatedStorage } from "@rbxts/services"
 
 import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility";
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 
 {   // make sure nothing unanchored
     for (let descendant of Workspace.GetDescendants()) {
@@ -24,9 +25,7 @@ import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility";
     })
     const cframe = ModelUtility.getPrimaryPartCFrameSafe(modelNoPrimaryPart)
     DebugXL.stopCatchingErrors()
-    DebugXL.Assert(cframe !== undefined)
-    DebugXL.Assert(cframe.p === new Vector3(0, 0, 0))
-    DebugXL.Assert(errorMessage === "ReplicatedStorage.TestObjects.ModelNoPrimaryPart is missing its PrimaryPart")
-
- 
+    TestUtility.assertTrue(cframe !== undefined)
+    TestUtility.assertTrue(cframe.p === new Vector3(0, 0, 0))
+    TestUtility.assertTrue(errorMessage === "ReplicatedStorage.TestObjects.ModelNoPrimaryPart is missing its PrimaryPart")
 }

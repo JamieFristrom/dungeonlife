@@ -7,13 +7,14 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 
 import { ServerStorage } from "@rbxts/services"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 let createdChild = InstanceUtility.findOrCreateChild<NumberValue>( ServerStorage, "TestChild", "NumberValue")
-DebugXL.Assert( createdChild !== undefined )
-DebugXL.Assert( createdChild.Parent === ServerStorage )
+TestUtility.assertTrue( createdChild !== undefined )
+TestUtility.assertTrue( createdChild.Parent === ServerStorage )
 
 let duplicatedChild = InstanceUtility.findOrCreateChild<NumberValue>( ServerStorage, "TestChild", "NumberValue")
-DebugXL.Assert( duplicatedChild !== undefined )
-DebugXL.Assert( duplicatedChild === createdChild )
+TestUtility.assertTrue( duplicatedChild !== undefined )
+TestUtility.assertTrue( duplicatedChild === createdChild )
 
 createdChild.Destroy()
