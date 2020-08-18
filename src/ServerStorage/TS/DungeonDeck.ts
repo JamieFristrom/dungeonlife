@@ -26,7 +26,7 @@ export class DungeonDeckClass {
 
     shuffle(dungeonName: string) {
         //        let numNonbossLevels = 0  // for testing superboss level
-        let numNonbossLevels = 0
+        let numNonbossLevels = 3
 
         // always put the boss level on the bottom
         // if it's winter's crypt, always put the palace on the top - 

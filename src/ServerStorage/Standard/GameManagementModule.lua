@@ -588,17 +588,16 @@ local function MonitorPlayer( player )
 end
 
 
-function GameManagement:PlayerCharactersExist()
+-- recording the state of whether you're respawning or not looks on the surface like it's not very FP / DRY; 
+-- but the Roblox API doesn't give us a way to query if we've started a spawn. So we record our respawns
+function GameManagement:PlayerCharactersExist(dungeonPlayersMap)
 	local pcsExist = false
 	for _, player in pairs( game.Players:GetPlayers() ) do
-		if dungeonPlayers:get( player ):exists() then
+		if dungeonPlayersMap:get( player ):exists() then
 			DebugXL:logD( LogArea.GameManagement, player.Name.." still exists" )
 			pcsExist = true
 			break
 		end 
---		if player.Character and player.Character.Parent then   -- this doesn't tell us if it's respawning
---			pcsExist = true 
---		end
 	end
 	return pcsExist
 end
@@ -720,7 +719,7 @@ end
 
 local function RemoveCharactersWait()
 	local startTime = time()
-	while GameManagement:PlayerCharactersExist() do 
+	while GameManagement:PlayerCharactersExist(dungeonPlayers) do 
 		for _, player in pairs( game.Players:GetPlayers() ) do			
 			if not dungeonPlayers:get( player ):needsDestruction() and not dungeonPlayers:get( player ):inLimbo() then
 				MarkPlayersCharacterForDestruction( player )

@@ -138,7 +138,7 @@ local function Run(ChatService)
 				if player.Character then 
 					if PCMonitor.getPublishedClass( player ) == "Werewolf" then
 						if WerewolfUtility:IsUndercover( player.Character ) then
-							DebugXL.logD( LogArea.UI, player.Name.." is undercover werewolf" )
+							DebugXL:logD( LogArea.UI, player.Name.." is undercover werewolf" )
 							return game.Teams.Heroes.TeamColor.Color
 						end
 					end
