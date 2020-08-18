@@ -6,8 +6,6 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import * as GameManagement from "ServerStorage/Standard/GameManagementModule"
 
-import { PlayerProxy, PlayerSessionKey } from "ReplicatedStorage/TS/PlayerProxy"
-import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 import { PlayerTracker } from 'ServerStorage/TS/PlayerServer'
 
 import { Players, Workspace, ReplicatedStorage, Teams, ServerStorage } from '@rbxts/services'
@@ -301,7 +299,7 @@ class PlayerFake extends InstanceFake {
         undefined,
         new CFrame()
     )
-    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
 }
 
 // test TPK
@@ -312,11 +310,9 @@ class PlayerFake extends InstanceFake {
     testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
-
-    // starting as a werewolf
     let testCharacter = Costumes.LoadCharacter(
         testSetup.player,
-        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Werewolf")!],
+        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Warrior")!],
         {},
         true,
         undefined,
@@ -325,6 +321,16 @@ class PlayerFake extends InstanceFake {
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) !== LevelResultEnum.TPK)
     }
+}
+
+{
+    let testSetup = new TypicalTestSetup()
+    let dungeonPlayerMap = new DungeonPlayerMap()
+    dungeonPlayerMap.get(testSetup.player).markRespawnStart()
+    TestUtility.assertTrue(GameManagement.PlayerCharactersExist(dungeonPlayerMap), "PCs exist when player and character exist")
+    testSetup.clean()
 }

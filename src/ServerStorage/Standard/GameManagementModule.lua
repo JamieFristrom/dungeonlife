@@ -3,6 +3,7 @@
 
 local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
 local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+local LogLevel = require( game.ReplicatedStorage.TS.DebugXLTS ).LogLevel
 DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 -- putting global game state operation messages in warn()
@@ -290,6 +291,7 @@ end
 
 function GameManagement:MarkPlayersCharacterForRespawn( player, optionalRespawnPart )
 	DebugXL:logD(LogArea.GameManagement, player.Name.." marked for respawn" )
+	DebugXL:dumpCallstack(LogLevel.Debug, LogArea.GameManagement)
 	if optionalRespawnPart then
 		DebugXL:Assert( optionalRespawnPart:IsA("BasePart") )
 	end
@@ -303,7 +305,7 @@ function GameManagement:MarkPlayersCharacterForRespawn( player, optionalRespawnP
 	end
 end 
 
-local staticAllHeroesDeadB = true
+--local staticAllHeroesDeadB = true
 
 
 
@@ -383,6 +385,9 @@ local crashPlayer
 -- it's a bit weird that we're doing this in one yielding thread per player instead of one main nonyielding/polling thread that checks every player
 -- I forget how it evolved to be this way
 local function MonitorPlayer( player )
+	if player.Character then
+		player.Character:Destroy()  -- code assumes we start from a blank slate; we may have come out of initialization with a charccter for costume saving purposes
+	end
 	local myDungeonPlayerT = dungeonPlayers:get( player )
 	myDungeonPlayerT.playerMonitoredB = true
 	local monitorCyclesN = 0
@@ -583,8 +588,7 @@ local function MonitorPlayer( player )
 end
 
 
-
-local function PlayerCharactersExist()
+function GameManagement:PlayerCharactersExist()
 	local pcsExist = false
 	for _, player in pairs( game.Players:GetPlayers() ) do
 		if dungeonPlayers:get( player ):exists() then
@@ -635,10 +639,11 @@ local function PlayerAdded( player )
 	-- they logged out already?  awww
 	if not player.Parent then return end
 
-	-- hack: we need to spawn your avatar once right away to initialize the UI
+	-- hack: we need to spawn your avatar once right away to initialize the UI		
 	DebugXL:logV(LogArea.GameManagement, "Begin initial LoadCharacter for "..player.Name )	
 	local status, err = pcall( function()
 		DebugXL:logD(LogArea.Characters, "Loading character model for "..player.Name)
+		dungeonPlayers:get( player ):markRespawnStart()
 		player:LoadCharacter()  -- this seems to still be throwing an error even though we check on the previous line. thanks Roblox
 		DebugXL:logD(LogArea.Characters, "Character model load returned for "..player.Name)
 	end )	
@@ -713,19 +718,9 @@ local function LoungeModeOver()
 end
 
 
--- old busted
---local function RemoveCharactersWait()
---	for _, player in pairs( game.Players:GetPlayers() ) do
---		MarkPlayersCharacterForDestruction( player )
---	end
---	while PlayerCharactersExist() do wait() end
---end
-
-
--- new hotness
 local function RemoveCharactersWait()
 	local startTime = time()
-	while PlayerCharactersExist() do 
+	while GameManagement:PlayerCharactersExist() do 
 		for _, player in pairs( game.Players:GetPlayers() ) do			
 			if not dungeonPlayers:get( player ):needsDestruction() and not dungeonPlayers:get( player ):inLimbo() then
 				MarkPlayersCharacterForDestruction( player )
@@ -764,15 +759,6 @@ local function LoadCharactersWait()
 end
 
 
--- local function LoadHeroesWait()
--- 	DebugXL:Assert( GameManagement:LevelReady() )
--- 	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do		
--- 		GameManagement:MarkPlayersCharacterForRespawn( player )
--- 	end
--- 	while PlayerCharactersMissing() do wait() end  -- what happens when new player shows up?  Do they get appropriately created as monster?
--- end
-
-
 function GameManagement:ReachedExit( player )
 	if player.Team == game.Teams.Heroes then
 		
@@ -800,8 +786,8 @@ function GameManagement:DoBeatSuperbossStuff()
 end
 
 
-
 local function LoadLevelWait()
+	GameServer.checkForPCs()
 	MobServer.clearMobs()
 	Dungeon:BuildWait( function( player ) 
 		return GameManagement:ReachedExit( player ) 
@@ -814,9 +800,8 @@ local function LoadLevelWait()
 end
 
 
-
 local function PlayLevelWait()
-	staticAllHeroesDeadB = true
+--	staticAllHeroesDeadB = true
 	reachedExitB = false
 	GameManagement.levelStartTime = time()
 --	LoadLevelWait()
@@ -854,13 +839,14 @@ local function PlayLevelWait()
 			local emptyTable = {}
 			emptyTable[ nil ] = 'die'
 		end
-		floorResult = GameServer.checkFloorSessionComplete(dungeonPlayers, staticAllHeroesDeadB, reachedExitB)
-		staticAllHeroesDeadB = floorResult==LevelResultEnum.TPK 
+		floorResult = GameServer.checkFloorSessionComplete(PlayerServer.getPlayerTracker(), dungeonPlayers, reachedExitB)
 	end
 	if floorResult==LevelResultEnum.BeatSuperboss then
 		GameManagement.DoBeatSuperbossStuff()
 	end
-
+	if floorResult==LevelResultEnum.BeatSuperboss or floorResult==LevelResultEnum.TPK then
+		wait( GameServer.heroDeathSavoringSecondsK )
+	end
 	
 	levelReadyB = false
 	for _, playerData in pairs( dungeonPlayers.dungeonPlayers ) do
@@ -893,7 +879,7 @@ end
 
 
 
-local protectionDisabled = true
+local protectionDisabled = false
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()
@@ -955,6 +941,7 @@ function GameManagement:Play()
 			end
 		end
 
+		RemoveCharactersWait()  
 		while true do
 			-- set up lounge and wait while heroes choose their characters
 			workspace.GameManagement.PreparationCountdown.Value = preparationDuration    -- it doesn't actually start counting down right away, but this reminds the very first hero not to wait their full thing

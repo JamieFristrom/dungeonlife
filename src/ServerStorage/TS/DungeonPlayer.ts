@@ -104,7 +104,9 @@ export class DungeonPlayer {
     }
 
     exists() {
-        return this.lastRespawnFinishEventNum > this.lastDeathEventNum
+        // beginning a respawn counts as existing. Deliberately leaving this as > because kicking off a respawn might
+        // happen the same tick as a death
+        return this.lastRespawnStartEventNum > this.lastDeathEventNum  
     }
 
     stateIsStable() {

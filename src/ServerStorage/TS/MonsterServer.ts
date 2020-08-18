@@ -257,7 +257,7 @@ export namespace MonsterServer {
 
     export function calculateMaxHealth(monsterDatum: MonsterStatBlockI, level: number, isHighLevelServer: boolean) {
         const monsterHealthPerLevelN = (isHighLevelServer ? BalanceData.monsterHealthPerLevelHighLevelServerN : BalanceData.monsterHealthPerLevelN) * 0.666
-        return math.max( 1, monsterDatum.baseHealthN * monsterHealthPerLevelN * level )
+        return math.max(1, monsterDatum.baseHealthN * monsterHealthPerLevelN * level)
     }
 
     export function calculateXPReward(characterRecord: CharacterRecord, isMob: boolean) {
@@ -301,8 +301,8 @@ export namespace MonsterServer {
 
             const monsterDatum = CharacterClasses.monsterStats[monsterClass]
             if (!monsterDatum) {
-                if( monsterPlayer ) {
-                    DebugXL.Error("Couldn't find monster " + monsterClass +" of player " + monsterPlayer.Name)
+                if (monsterPlayer) {
+                    DebugXL.Error("Couldn't find monster " + monsterClass + " of player " + monsterPlayer.Name)
                 }
                 else {
                     DebugXL.Error("Couldn't find mob monster " + monsterClass)
@@ -324,7 +324,7 @@ export namespace MonsterServer {
                 // 	["category"] = "design",
                 // 	["event_id"] = "Kill:Shared:"+monsterClass
                 // }, player )
-                messageRE.FireAllClients("SuperbossDefeated", [ monsterClass ] )
+                messageRE.FireAllClients("SuperbossDefeated", [monsterClass])
             }
             else {
                 // otherwise just the one who got the kill
@@ -335,18 +335,18 @@ export namespace MonsterServer {
         }
     }
 
-    export function checkFolderForSuperboss( folder: Instance ) {
-        for( let character of folder.GetChildren() ) {
-            if( character.IsA("Model")) {
+    export function checkFolderForSuperboss(folder: Instance) {
+        for (let character of folder.GetChildren()) {
+            if (character.IsA("Model")) {
                 const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
-                if( humanoid ) {
-                    if( humanoid.Health > 0 ) {
-                        const characterRecord = PlayerServer.getCharacterRecordFromCharacter( character )
-                        DebugXL.Assert( characterRecord !== undefined )
-                        if( characterRecord ) {
+                if (humanoid) {
+                    if (humanoid.Health > 0) {
+                        const characterRecord = PlayerServer.getCharacterRecordFromCharacter(character)
+                        DebugXL.Assert(characterRecord !== undefined)
+                        if (characterRecord) {
                             const monsterStats = CharacterClasses.monsterStats[characterRecord.idS]
-                            if( monsterStats ) {
-                                if( monsterStats.tagsT.Superboss ) {
+                            if (monsterStats) {
+                                if (monsterStats.tagsT.Superboss) {
                                     return true
                                 }
                             }
@@ -357,17 +357,4 @@ export namespace MonsterServer {
         }
         return false
     }
-    
-    // export function isThereLivingSuperboss() {
-    //     // if we're on a superboss level and there's no superboss left we must have beat them
-    //     // so we get the points even if a player playing the superboss quits or cross-teams, which favors non-cheater characters
-    //     // (Just because the superboss player quit doesn't mean I should be robbed, does it? Maybe, because we didn't put in the effort, but it did take a while to even get to this level.)
-    //     if( checkFolderForSuperboss(mobsFolder)) {
-    //         return true
-    //     }
-    //     if( checkFolderForSuperboss(Workspace)) {
-    //         return true
-    //     }
-
-    // }
 }

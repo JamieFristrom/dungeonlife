@@ -11,6 +11,10 @@ import { ServerStorage, Teams } from "@rbxts/services";
 import Monsters from "ServerStorage/Standard/MonstersModule";
 import { MobServer } from "ServerStorage/TS/MobServer";
 import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
+import { Hero } from "ReplicatedStorage/TS/HeroTS";
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
+import { GameServer, LevelResultEnum } from "ServerStorage/TS/GameServer";
+import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 
 // unit tests on manager
 {
@@ -60,7 +64,7 @@ import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
 // integration test of golden path  - player superboss
 {
     let testSetup = new TypicalTestSetup()
-    let superbossMgr = new SuperbossManager() 
+    let superbossMgr = new SuperbossManager()
     testSetup.player.Team = Teams.FindFirstChild<Team>("Monsters")
     testSetup.playerTracker.setClassChoice(testSetup.player, "CyclopsSuper")
 
@@ -97,29 +101,47 @@ import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
         }
     }
 
-    // clean
     testSetup.clean()
 }
 
-// integration test of golden path  - mob superboss
+// integration test of golden path  - mob superboss, player hero
 {
-    let superbossMgr = new SuperbossManager()
+    let testSetup = new TypicalTestSetup()
+    let dungeonPlayerMap = new DungeonPlayerMap()
+    let superbossMgr = GameServer.getSuperbossManager()
     let playerTracker = new PlayerTracker()
-    let testCharacter = MobServer.spawnMob(playerTracker,"CyclopsSuper", superbossMgr, 1)
+    testSetup.player.Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
+    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
+    testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
+
+    let testCharacter = MobServer.spawnMob(playerTracker, "CyclopsSuper", superbossMgr, GameServer.levelSession)
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     DebugXL.Assert(testCharacter.Parent !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
-        TestUtility.assertTrue(!superbossMgr.superbossDefeated(1), "Superboss not defeated yet")
+        TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss not defeated yet")
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
         testCharacter.Destroy()
-        TestUtility.assertTrue(superbossMgr.superbossDefeated(1), "Superboss defeated")
-        TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated")
+        TestUtility.assertTrue(superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss defeated")
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.BeatSuperboss)
+
+        // test to make sure we don't think it's a TPK after; simulate loading next level
+        testSetup.player.Character!.Destroy()
+        GameServer.levelSession++
+        GameServer.preparationPhaseWait(0.5)
+
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
+
+        TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated")
         // let's make a new superboss
-        let testCharacter2 = MobServer.spawnMob(playerTracker, "CyclopsSuper", superbossMgr, 2)
+
+        let testCharacter2 = MobServer.spawnMob(playerTracker, "CyclopsSuper", superbossMgr, GameServer.levelSession)
         DebugXL.Assert(testCharacter2 !== undefined)  // this would be a malfunction in the test system, not a test assert
         if (testCharacter2) {
-            TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated after spawn")
+            TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated after spawn")
             testCharacter2.Destroy()
-            TestUtility.assertTrue(superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated after spawn")
+            TestUtility.assertTrue(superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated after spawn")
         }
     }
+    testSetup.clean()
 }

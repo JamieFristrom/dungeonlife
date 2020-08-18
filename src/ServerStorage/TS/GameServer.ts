@@ -106,6 +106,8 @@ const chooseHeroRE = signals.WaitForChild<RemoteEvent>("ChooseHeroRE")
 export namespace GameServer {
     let superbossManager = new SuperbossManager()
     export let levelSession = 0
+    export const heroDeathSavoringSecondsK = 3
+    let previousCheckHeroesDead = true
 
     export function getSuperbossManager() {
         return superbossManager
@@ -212,6 +214,7 @@ export namespace GameServer {
     export function preparationPhaseWait(preparationDuration: number) {
         let done = false
 
+        previousCheckHeroesDead = true  // so empty room won't trigger TPK if there were living heroes at end of last level
         const startCountdownTime = time()
         while (!done) {
             const preparationCountdown = math.ceil(preparationDuration - (time() - startCountdownTime))
@@ -229,8 +232,8 @@ export namespace GameServer {
         preparationCountdownValue.Value = 0
     }
 
-    export function isTPK(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, wereAllHeroesDead: boolean) {
-        // if #game.Teams.HeroTeam:GetPlayers()==0 ) { return false }  -- it doesn't count as a tpk if there are no heroes. But why not?
+
+    export function isTPK(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap) {
         let allHeroesDeadB = true
         for (let player of HeroTeam.GetPlayers()) {
             if (player.Character) {
@@ -238,8 +241,8 @@ export namespace GameServer {
                 if (humanoid) {
                     if (humanoid.Health > 0) {
                         const pcrecord = playerTracker.getCharacterRecordFromPlayer(player)
-                        if( pcrecord ) {
-                            if( pcrecord instanceof Hero) {
+                        if (pcrecord) {
+                            if (pcrecord instanceof Hero) {
                                 allHeroesDeadB = false
                                 break
                             }
@@ -268,20 +271,23 @@ export namespace GameServer {
                 allHeroesDeadB = false
             }
         }
-        const TPKresult = !wereAllHeroesDead && allHeroesDeadB  //only checking the change from someone alive to someone dead now
-        return TPKresult
+        const tpk = !previousCheckHeroesDead && allHeroesDeadB
+        previousCheckHeroesDead = allHeroesDeadB
+        return tpk
     }
 
-    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, wereAllHeroesDead: boolean, reachedExit: boolean) {
+    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, reachedExit: boolean) {
+        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+        DebugXL.Assert(dungeonPlayers instanceof DungeonPlayerMap)
+        DebugXL.Assert(typeOf(reachedExit) === "boolean")
+
         let levelResult = LevelResultEnum.InProgress
-        if (isTPK(playerTracker, dungeonPlayers, wereAllHeroesDead)) {
+        if (isTPK(playerTracker, dungeonPlayers)) {
             DebugXL.logI(LogArea.GameManagement, "TPK detected")
             levelResult = LevelResultEnum.TPK
             //give it some time.the player monitor and this should complete at roughly the same time
             //and if I've coded it right ) { it won't matter which is done first
-            wait(heroDeathSavoringSecondsK)
-            DebugXL.logI(LogArea.GameManagement, "TPK grace period over")
-            levelResult = LevelResultEnum.TPK
+            //wait(heroDeathSavoringSecondsK)
         }
         else if (reachedExit) { //probably didn't need to duplicate state here with bools *and* a state variable
             const newDungeonDepth = DungeonDeck.goToNextFloor()
@@ -298,9 +304,9 @@ export namespace GameServer {
                 Monsters.AdjustBuildPoints(player, 50)
             }
             levelResult = LevelResultEnum.ExitReached
-        }        
+        }
         else if (!FloorData.CurrentFloor().exitStaircaseB) {
-            if( false ) {
+            if (getSuperbossManager().superbossDefeated(levelSession)) {
                 DebugXL.logW(LogArea.GameManagement, "Setting BeatSuperboss state")
                 levelResult = LevelResultEnum.BeatSuperboss
             }
@@ -308,5 +314,14 @@ export namespace GameServer {
         return levelResult
     }
 
-    export const heroDeathSavoringSecondsK = 4
+    export function checkForPCs() {
+        for (let player of Players.GetPlayers()) {
+            if (player.Character) {
+                if (player.Character.Parent) {
+                    DebugXL.Error(`Lingering player character: ${player.Name}`)
+                }
+            }
+        }
+    }
+
 }
