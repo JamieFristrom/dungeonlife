@@ -838,7 +838,7 @@ local function PlayLevelWait()
 			local emptyTable = {}
 			emptyTable[ nil ] = 'die'
 		end
-		floorResult = GameServer.checkFloorSessionComplete(PlayerServer.getPlayerTracker(), dungeonPlayers, reachedExitB)
+		floorResult = GameServer.checkFloorSessionComplete(PlayerServer.getPlayerTracker(), dungeonPlayers, not FloorData:CurrentFloor().exitStaircaseB, reachedExitB)
 	end
 	if floorResult==LevelResultEnum.BeatSuperboss then
 		GameManagement.DoBeatSuperbossStuff()
@@ -878,7 +878,7 @@ end
 
 
 
-local protectionDisabled = false
+local protectionDisabled = true
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()

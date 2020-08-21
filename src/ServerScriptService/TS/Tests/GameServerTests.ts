@@ -299,7 +299,7 @@ class PlayerFake extends InstanceFake {
         undefined,
         new CFrame()
     )
-    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
 }
 
 // test TPK
@@ -321,9 +321,9 @@ class PlayerFake extends InstanceFake {
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) !== LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
     }
 }
 

@@ -276,7 +276,7 @@ export namespace GameServer {
         return tpk
     }
 
-    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, reachedExit: boolean) {
+    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, bossFloor: boolean, reachedExit: boolean) {
         DebugXL.Assert(playerTracker instanceof PlayerTracker)
         DebugXL.Assert(dungeonPlayers instanceof DungeonPlayerMap)
         DebugXL.Assert(typeOf(reachedExit) === "boolean")
@@ -305,7 +305,7 @@ export namespace GameServer {
             }
             levelResult = LevelResultEnum.ExitReached
         }
-        else if (!FloorData.CurrentFloor().exitStaircaseB) {
+        else if (bossFloor) {
             if (getSuperbossManager().superbossDefeated(levelSession)) {
                 DebugXL.logW(LogArea.GameManagement, "Setting BeatSuperboss state")
                 levelResult = LevelResultEnum.BeatSuperboss

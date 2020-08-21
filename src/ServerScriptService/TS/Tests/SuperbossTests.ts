@@ -120,17 +120,17 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
     DebugXL.Assert(testCharacter.Parent !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss not defeated yet")
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, true, false) === LevelResultEnum.InProgress)
         testCharacter.Destroy()
         TestUtility.assertTrue(superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss defeated")
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.BeatSuperboss)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, true, false) === LevelResultEnum.BeatSuperboss)
 
         // test to make sure we don't think it's a TPK after; simulate loading next level
         testSetup.player.Character!.Destroy()
         GameServer.levelSession++
         GameServer.preparationPhaseWait(0.5)
 
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false) === LevelResultEnum.InProgress)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, true, false) === LevelResultEnum.InProgress)
 
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated")
         // let's make a new superboss
