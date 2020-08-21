@@ -5,7 +5,7 @@ import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
 
 declare class FlexEquipClass
 {
-    ApplyEntireCostumeWait( player: Player, pcData: CharacterRecord, activeSkins: ActiveSkins) : void
+    ApplyEntireCostumeWait( playerTracker: PlayerTracker, player: Player, pcData: CharacterRecord, activeSkins: ActiveSkins) : void
     ApplyEntireCostumeIfNecessaryWait( playerTracker: PlayerTracker, inventoryManager: InventoryManagerI, player: Player ) : void
 }
 

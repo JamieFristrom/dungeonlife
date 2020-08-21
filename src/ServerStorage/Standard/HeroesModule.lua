@@ -261,7 +261,7 @@ function Heroes:CharacterAdded( character, player )
 		end ) 
 	end
 
-	FlexEquip:ApplyEntireCostumeWait( player, myPCData, Inventory:GetActiveSkinsWait( player ).hero )
+	FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, myPCData, Inventory:GetActiveSkinsWait( player ).hero )
 
 	GameAnalyticsServer.RecordDesignEvent( player, "Spawn:Hero:"..PlayerServer.getCharacterClass( player ) )
 
@@ -712,7 +712,7 @@ function HeroRemote.Wear( player, itemKey, equipB )
 			if player.Character.Parent then
 				Heroes:ReconfigureDerivativeStats( player, pcData )
 				HeroUtility:RecheckItemRequirements( pcData )
-				FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+				FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
 			end
 		end	
 		Heroes:SaveHeroesWait( player )
@@ -893,7 +893,7 @@ function HeroRemote.SellItem( player, itemKey )
 					HeroServer.adjustGold( player, pcData, item:getSellPrice(), "Sell", item.baseDataS )
 					if item.equippedB then
 						if player.Character then
-							FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+							FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
 						end
 					end
 				end
@@ -928,7 +928,7 @@ function HeroRemote.SetHideItem( player, itemKey, hideItemB )
 			item.hideItemB = hideItemB
 			if item.equippedB then
 				if player.Character then
-					FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+					FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
 				end
 			end
 		end
@@ -948,7 +948,7 @@ function HeroRemote.SetHideAccessories( player, itemKey, hideAccessoriesB )
 			item.hideAccessoriesB = hideAccessoriesB
 			if item.equippedB then
 				if player.Character then
-					FlexEquip:ApplyEntireCostumeWait( player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
+					FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
 				end
 			end
 		end

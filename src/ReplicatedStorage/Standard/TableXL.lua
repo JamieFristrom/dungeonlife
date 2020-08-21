@@ -255,6 +255,27 @@ function TableXL:ConcatenateA( destA, srcA )
 end
 
 
+-- check if a table is an instance of a class; taken from Roblox-TS
+function TableXL:InstanceOf( obj, class )
+	DebugXL:Assert( type(obj)=="table" ) 
+
+	-- metatable check
+	obj = getmetatable(obj)
+	while obj ~= nil do
+		if obj == class then
+			return true
+		end
+		local mt = getmetatable(obj)
+		if mt then
+			obj = mt.__index
+		else
+			obj = nil
+		end
+	end
+	return false
+end
+
+
 
 
 return TableXL

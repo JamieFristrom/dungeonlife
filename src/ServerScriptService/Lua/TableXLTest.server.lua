@@ -50,3 +50,51 @@ DebugXL:Assert( testCatA1[5] == 'e' )
 DebugXL:Assert( testCatA1[6] == 'f' )
 
 DebugXL:Assert( TableXL:SumA( { 1, 2, 3, 4 } )==10 )
+
+Base = {}
+Base.__index = Base
+
+function Base:getName()
+	return "Base"
+end
+
+function Base:test()
+	return "Test"
+end
+
+function Base.new() 
+	local o = {}
+	setmetatable(o, Base)
+	Base.__index = o
+	return o
+end
+
+Child = Base.new()
+Child.__index = Child
+setmetatable(Child, {__index=Base})
+
+function Child:getName()
+	return "Child"
+end
+
+function Child.new()
+	local o = {}
+	setmetatable(o, Child)
+	Child.__index = o
+	return o
+end
+
+local sampleObject = Base.new()
+DebugXL:Assert( Base:test()=="Test")
+DebugXL:Assert( Base:getName()=="Base")
+DebugXL:Assert( TableXL:InstanceOf( sampleObject, Base ))
+DebugXL:Assert( not TableXL:InstanceOf( sampleObject, Child ))
+
+local sampleChild = Child.new()
+DebugXL:Assert( Child:test()=="Test")
+DebugXL:Assert( Child:getName()=="Child")
+DebugXL:Assert( TableXL:InstanceOf( sampleChild, Base ))
+DebugXL:Assert( TableXL:InstanceOf( sampleChild, Child ))
+
+local unrelatedObject = { length = 1, breadth = 1 }
+DebugXL:Assert( not TableXL:InstanceOf( unrelatedObject, Base ))

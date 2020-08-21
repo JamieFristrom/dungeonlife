@@ -7,21 +7,28 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local Costumes          = require( game.ServerStorage.Standard.CostumesServer )
 
-local CharacterI        = require( game.ServerStorage.CharacterI )
-local Inventory         = require( game.ServerStorage.InventoryModule )
-
-local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local PlayerTracker = require( game.ServerStorage.TS.PlayerServer ).PlayerTracker
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
 
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
+local CharacterRecord = require( game.ReplicatedStorage.TS.CharacterRecord ).CharacterRecord
+local ActiveSkins = require( game.ReplicatedStorage.TS.SkinTypes ).ActiveSkins
+
+local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
 local FlexEquip = {}
 
 
 function FlexEquip:ApplyEntireCostumeWait( playerTracker, player, pcData, activeSkinsT )
+	DebugXL:Assert( self==FlexEquip )
+	DebugXL:Assert( TableXL:InstanceOf( playerTracker, PlayerTracker ))
+	DebugXL:Assert( player:IsA("Player") )
+	DebugXL:Assert( TableXL:InstanceOf( pcData, CharacterRecord ))
+	DebugXL:Assert( type(activeSkinsT)=="table" )
+
 	if( not PlayerUtility.IsPlayersCharacterAlive( player )) then return end
 
 	local equippedItemModelsA = {}
