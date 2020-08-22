@@ -281,7 +281,7 @@ let CommandList: { [k: string]: unknown } =
 
   testmessage: function (sender: Player, args: string[]) {
     let messageKey = args[1]
-    MessageServer.PostMessageByKey(sender, messageKey, true, 0.0001, true)
+    MessageServer.PostMessageByKey(sender, messageKey, false, 0.0001, true)
   },
 }
 
