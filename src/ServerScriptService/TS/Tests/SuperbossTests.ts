@@ -20,7 +20,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 {
     // assert that superboss isn't defeated until they're defeated
     let superbossMgr = new SuperbossManager()
-    let character = TestUtility.getTestCharacter()
+    let character = TestUtility.createTestCharacter()
     superbossMgr.noteSuperbossSpawned(character, 1)
     TestUtility.assertTrue(!superbossMgr.superbossDefeated(1), "New character not defeated")
 }
@@ -28,7 +28,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 {
     // assert that superboss is defeated when their health <= 0
     let superbossMgr = new SuperbossManager()
-    let character = TestUtility.getTestCharacter()
+    let character = TestUtility.createTestCharacter()
     superbossMgr.noteSuperbossSpawned(character, 2)
     character.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
     TestUtility.assertTrue(superbossMgr.superbossDefeated(2), "Health 0 superboss defeated")
@@ -37,7 +37,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 {
     // assert that superboss that is lost is defeated
     let superbossMgr = new SuperbossManager()
-    let character = TestUtility.getTestCharacter()
+    let character = TestUtility.createTestCharacter()
     superbossMgr.noteSuperbossSpawned(character, 3)
     character.Parent = undefined
     TestUtility.assertTrue(superbossMgr.superbossDefeated(3), "lost superboss defeated")
@@ -46,7 +46,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 {
     // assert that superboss that is destroyed is defeated
     let superbossMgr = new SuperbossManager()
-    let character = TestUtility.getTestCharacter()
+    let character = TestUtility.createTestCharacter()
     superbossMgr.noteSuperbossSpawned(character, 4)
     character.Destroy()
     TestUtility.assertTrue(superbossMgr.superbossDefeated(4), "destroyed superboss defeated")
@@ -55,7 +55,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 {
     // assert that superboss destroyed in a previous session doesn't count 
     let superbossMgr = new SuperbossManager()
-    let character = TestUtility.getTestCharacter()
+    let character = TestUtility.createTestCharacter()
     superbossMgr.noteSuperbossSpawned(character, 1)
     character.Destroy()
     TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "destroyed superboss previous session not defeated")
@@ -67,15 +67,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
     let superbossMgr = new SuperbossManager()
     testSetup.player.Team = Teams.FindFirstChild<Team>("Monsters")
     testSetup.playerTracker.setClassChoice(testSetup.player, "CyclopsSuper")
-
-    let testCharacter = Costumes.LoadCharacter(
-        testSetup.player,
-        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("CyclopsSuper")!],
-        {},
-        true,
-        undefined,
-        new CFrame()
-    )
+    let testCharacter =testSetup.getTestPlayerCharacter("CyclopsSuper")
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
         Monsters.PlayerCharacterAddedWait(testSetup.inventory, testCharacter, testSetup.player, testSetup.playerTracker, superbossMgr, 1)
@@ -84,14 +76,8 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
         TestUtility.assertTrue(superbossMgr.superbossDefeated(1), "Superboss defeated")
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated")
         // let's make a new superboss
-        let testCharacter2 = Costumes.LoadCharacter(
-            testSetup.player,
-            [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("CyclopsSuper")!],
-            {},
-            true,
-            undefined,
-            new CFrame()
-        )
+        let testCharacter2 = testSetup.getTestPlayerCharacter("CyclopsSuper")
+
         DebugXL.Assert(testCharacter2 !== undefined)  // this would be a malfunction in the test system, not a test assert
         if (testCharacter2) {
             Monsters.PlayerCharacterAddedWait(testSetup.inventory, testCharacter2, testSetup.player, testSetup.playerTracker, superbossMgr, 2)

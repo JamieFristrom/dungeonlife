@@ -6,7 +6,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Teams, ServerStorage } from "@rbxts/services"
 
-import { CharacterKey, CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
+import { CharacterKey, CharacterRecord, CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { SkinTypeEnum, ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes"
 
@@ -26,7 +26,7 @@ export namespace ToolCaches {
     export function updateToolCache(
         playerTracker: PlayerTracker,
         characterKey: CharacterKey,
-        characterRecord: CharacterRecord,
+        characterRecord: CharacterRecordI,
         activeSkins: ActiveSkinSetI = new Map<SkinTypeEnum,string>()) {
 
         DebugXL.logD(LogArea.Items, `Updating ToolCache for characterKey: ${characterKey}`)
@@ -89,7 +89,7 @@ export namespace ToolCaches {
         DebugXL.logD(LogArea.Items, `Finished updating ToolCache for characterKey: ${characterKey}`)
     }
 
-    export function publishPotions(player: Player, characterRecord: CharacterRecord) {
+    export function publishPotions(player: Player, characterRecord: CharacterRecordI) {
         let potions = characterRecord.countBaseDataQuantity('Healing')
         InstanceXL.CreateSingleton("NumberValue", { Name: "NumHealthPotions", Value: potions, Parent: player })
     }

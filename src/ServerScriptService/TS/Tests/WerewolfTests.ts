@@ -22,14 +22,8 @@ import { ServerStorage, Teams } from "@rbxts/services"
     testSetup.playerTracker.setClassChoice(testSetup.player, "Werewolf")
 
     // starting as a werewolf
-    let testCharacter = Costumes.LoadCharacter(
-        testSetup.player,
-        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Werewolf")!],
-        {},
-        true,
-        undefined,
-        new CFrame()
-    )
+    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
+
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
         Monsters.PlayerCharacterAddedWait(testSetup.inventory, testCharacter, testSetup.player, testSetup.playerTracker, new SuperbossManager(), 1)

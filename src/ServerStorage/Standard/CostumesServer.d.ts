@@ -12,7 +12,7 @@ declare class CostumeManager {
         noAttachmentsSet: { [k:string]:boolean }, 
         alsoClothesB: boolean, 
         characterToReplace: Character | undefined,
-        cframe: CFrame ) : Character | void
+        cframe: CFrame ) : Character | undefined
 }
 
 declare let Costumes: CostumeManager

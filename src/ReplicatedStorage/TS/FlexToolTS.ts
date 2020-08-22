@@ -93,7 +93,7 @@ export class FlexTool {
     }
 
 
-    getStatRequirement() {
+    getStatRequirement() : [number, string] {
         let totalLevels = this.levelN + this.getTotalEnhanceLevels()
         let baseData = ToolData.dataT[this.baseDataS]
         if (baseData.statReqS) {
@@ -108,31 +108,7 @@ export class FlexTool {
             // in your primary stat you'll be able to use weapons a couple levels ahead of you
             return [statReqN, statName]
         }
-        return [undefined, undefined]
-        /*
-        local levelReq = flexToolInst:getLevelRequirement()
-        local baseData = ToolData.dataT[ flexToolInst.baseDataS ]
-        local typeS = baseData.equipType
-        if baseData.statReqS then
-            local statName = baseData.statReqS
-                
-            -- it's a little awkward because of the change from 5 points a level to 3 points a level where I want to leave it at a
-            -- starting 45 points, so to make a nice spread of weapons at the beginning but not to fall behind I need the discontinuity
-            -- in the formula
-            local statReqN
-            if levelReq <= 4 then
-                statReqN = levelReq * 2 + 8  -- 1 --> 10, 2 --> 12, 3 --> 14, 4 --> 16
-            else
-                statReqN = math.ceil( 1.5 * levelReq + 10 )  -- 5 --> 18, 6 --> 19
-            end
-            -- I chose 1.5 because at that number as long as you keep investing half your experience
-            -- in your primary stat you'll be able to use weapons a couple levels ahead of you
-            
-            return statReqN, statName
-        else
-            return nil, nil
-        end
-        */
+        return [0, ""]
     }
 
 

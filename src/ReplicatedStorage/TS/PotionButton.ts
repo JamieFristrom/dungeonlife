@@ -5,7 +5,7 @@ import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
+import { CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { Workspace, Players, Teams } from "@rbxts/services"
 
 type Character = Model
@@ -43,7 +43,7 @@ export class PotionButton {
         })
     }
 
-    refresh(character: Character, pcData: CharacterRecord) {
+    refresh(character: Character, pcData: CharacterRecordI) {
         // wishlist - monsters could have potions someday. that day has just gotten closer with this refactor
         this.potionButtonConfiguration.potionFrame.Visible = pcData instanceof Hero
         this.guiFrame.Visible = pcData instanceof Hero

@@ -266,7 +266,7 @@ class PlayerFake extends InstanceFake {
 // test that MonsterAddedWait returns before too long
 {
     const testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("AnimationDummy")!.Clone()
-    let playerDummy = TestUtility.getTestPlayer()
+    let playerDummy = TestUtility.createTestPlayer()
     PlayerUtility.publishClientValues(playerDummy, 0, 0, "", false)
     playerDummy.Team = Teams.FindFirstChild<Team>("Monsters")
     //const playerDummy = new Instance("Player") as Player // ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Folder>("PlayerDummy")!.Clone() as unknown as Player
@@ -291,15 +291,9 @@ class PlayerFake extends InstanceFake {
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
     // starting as a werewolf
-    let testCharacter = Costumes.LoadCharacter(
-        testSetup.player,
-        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Werewolf")!],
-        {},
-        true,
-        undefined,
-        new CFrame()
-    )
+    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
     TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+    testSetup.clean()
 }
 
 // test TPK
@@ -310,14 +304,7 @@ class PlayerFake extends InstanceFake {
     testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
-    let testCharacter = Costumes.LoadCharacter(
-        testSetup.player,
-        [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>("Warrior")!],
-        {},
-        true,
-        undefined,
-        new CFrame()
-    )
+    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
@@ -325,6 +312,7 @@ class PlayerFake extends InstanceFake {
         TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
         TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
     }
+    testSetup.clean()
 }
 
 {

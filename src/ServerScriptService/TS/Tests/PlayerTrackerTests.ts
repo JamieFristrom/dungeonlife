@@ -12,7 +12,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 // test setting / retrieving record
 {
     let testTracker = new PlayerTracker()
-    let testPlayer = TestUtility.getTestPlayer()
+    let testPlayer = TestUtility.createTestPlayer()
     let testRecord = new Monster("Orc", [], 1)
     spawn(() => {
         testTracker.setCharacterRecordForPlayer(testPlayer, testRecord)
@@ -26,7 +26,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 // test publishing class
 {
     let testTracker = new PlayerTracker()
-    let testPlayer = TestUtility.getTestPlayer()
+    let testPlayer = TestUtility.createTestPlayer()
     spawn(() => {
         testTracker.publishCharacterClass(testPlayer, "Necromancer")
     })
@@ -40,7 +40,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 // test publishing level
 {
     let testTracker = new PlayerTracker()
-    let testPlayer = TestUtility.getTestPlayer()
+    let testPlayer = TestUtility.createTestPlayer()
     spawn(() => {
         testTracker.publishLevel(testPlayer, 666, 333)
     })

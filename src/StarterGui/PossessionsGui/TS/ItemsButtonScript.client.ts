@@ -61,7 +61,7 @@ const hotKeyCode = Enum.KeyCode.G
 ContextActionService.BindAction("ToggleInventoryFrame",
 	(actionName, inputState, inputObj) => {
 		if (inputState === Enum.UserInputState.Begin) {
-			if( hotbarItemsButton.Visible ) {
+			if (hotbarItemsButton.Visible) {
 				print("ToggleInventoryFrame")
 				ToggleInventoryFrame()
 			}
@@ -95,7 +95,7 @@ while (true) {
 						pcRecord.gearPool.forEach((item: FlexTool) => {
 							if (!CharacterClientI.GetPossessionSlot(pcRecord, item)) {
 								if (ToolData.dataT[item.baseDataS].useTypeS === "held" || ToolData.dataT[item.baseDataS].useTypeS === "power") {
-									if (HeroUtility.CanUseGear(pcRecord, item)) {
+									if (pcRecord.canUseGear(item)) {
 										uiArrow.Visible = true
 									}
 								}
@@ -105,12 +105,12 @@ while (true) {
 
 					if (uiArrow.Visible) {
 						// not tutorializing weapons. what about armor?
-						for (const slot of Object.keys(ToolData.EquipSlotEnum) ) {
+						for (const slot of Object.keys(ToolData.EquipSlotEnum)) {
 							const equipInSlot = pcRecord.gearPool.getFromEquipSlot(slot as ToolData.EquipSlotEnum)[1]
 							if (!equipInSlot) {
 								const usableArmorCount = pcRecord.gearPool.countIf((item: FlexTool) => {
 									return ToolData.dataT[item.baseDataS].equipSlot === slot &&
-										HeroUtility.CanUseGear(pcRecord, item)
+										pcRecord.canUseGear(item)
 								})
 								if (usableArmorCount >= 1) {
 									uiArrow.Visible = true

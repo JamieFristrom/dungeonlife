@@ -18,7 +18,7 @@ export namespace BoltServerUtility
     {
         let flexToolInst = FlexibleTools.GetFlexToolFromInstance( tool )
         let attackingPlayer = ToolXL.GetOwningPlayer( tool )        // fixme: needs to be get owning character
-        CharacterI.TakeFlexToolDamage( character, attackingPlayer.Character!, attackingPlayer.Team!, flexToolInst )
+        CharacterI.TakeFlexToolDamage( character, attackingPlayer.Character!, flexToolInst )
         if( attackingPlayer !== undefined )
         {
             PlayerServer.markHit( attackingPlayer, "Ranged" )

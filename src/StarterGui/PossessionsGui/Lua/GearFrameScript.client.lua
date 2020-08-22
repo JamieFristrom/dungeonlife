@@ -101,7 +101,7 @@ function WireInfoFrame( flexToolIdx )
 				local assignmentButtonFrame = assignBar:WaitForChild( "Slot"..i )
 				assignmentButtonFrame.ImageLabel.Visible = currentAssignedSlot == i
 			end
-			local weaponGood = HeroUtility:CanUseGear( PCClient.pc, flexToolInst )
+			local weaponGood = PCClient.pc:canUseGear( flexToolInst )
 			if not weaponGood then
 				itemInfoFrame.Requires.TextColor3 = Color3.new( 1, 0, 0 )
 				assignBar.Visible = false
@@ -117,7 +117,7 @@ function WireInfoFrame( flexToolIdx )
 		end
 
 		if baseData.useTypeS == "worn" then
-			local weaponGood = HeroUtility:CanUseGear( PCClient.pc, flexToolInst )
+			local weaponGood = PCClient.pc:canUseGear( flexToolInst )
 			if weaponGood then
 				itemInfoFrame.Wear.Visible = true
 				if CharacterClientI:GetEquipped( flexToolInst ) then
@@ -395,7 +395,7 @@ while wait(0.1) do
 				local usableWeapons = PCClient.pc.gearPool:findAllWhere( function( item ) 
 					return not CharacterClientI:GetPossessionSlot( PCClient.pc, item ) and
 						( ToolData.dataT[ item.baseDataS ].useTypeS == "held" or ToolData.dataT[ item.baseDataS ].useTypeS == "power" ) and
-						HeroUtility:CanUseGear( PCClient.pc, item ) 
+						PCClient.pc:canUseGear( item ) 
 				end )
 				
 				local item, _, itemId = TableXL:FindBestFitMax( usableWeapons, function( item )
@@ -424,7 +424,7 @@ while wait(0.1) do
 					if not equipInSlot then
 						local usableArmor = PCClient.pc.gearPool:findAllWhere( function( item )
 							return ToolData.dataT[ item.baseDataS ].equipSlot == slot and
-								HeroUtility:CanUseGear( PCClient.pc, item)
+								PCClient.pc:canUseGear( item )
 						end )
 						local item, _, itemId = TableXL:FindBestFitMax( usableArmor, function( item ) 
 							return item:getActualLevel()

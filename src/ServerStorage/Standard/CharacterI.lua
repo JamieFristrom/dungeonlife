@@ -13,6 +13,13 @@ local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 print( "CharacterI: PlayerServer required succesfully" )
 local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
 
+local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
+local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
+local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
+
+local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
+
+
 -- *** deliberately does not require heroes or monsters in the header to avoid circular requires ***
 
 -- the interface between encapsulated game components and this particular game's specific characters;
@@ -20,29 +27,34 @@ local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).Charact
 local CharacterI = {}
 
 
-function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, attackingTeam, flexTool )
+function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, flexTool )
 	DebugXL:Assert( self == CharacterI )
 	DebugXL:Assert( attackingCharacter:IsA('Model') )
-	DebugXL:Assert( attackingTeam:IsA('Team') )
+	DebugXL:Assert( TableXL:InstanceOf( flexTool, FlexTool ) )
+
 	DebugXL:logD( LogArea.Combat, 'TakeFlexToolDamage attackingPlayer: '..attackingCharacter.Name..' hitCharacter: '..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
-		if not hitPlayer or hitPlayer.Team ~= attackingTeam then
+		local attackingCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( attackingCharacter )
+		if not hitPlayer or hitPlayer.Team ~= attackingCharacterRecord:getTeam() then
 			CharacterServer.setLastAttacker( hitCharacter, attackingCharacter )
 			local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
 		
-			if attackingTeam == game.Teams.Heroes then	
+			-- ...it's almost polymorphic...  wishlist fix
+			if TableXL:InstanceOf( attackingCharacterRecord, Hero ) then	
 				DebugXL:logV( LogArea.Combat, 'Hero damaging monster' )	
 				DebugXL:Assert( attackingPlayer )
-				if( attackingPlayer )then
-					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, flexTool, hitHumanoid )
+				if attackingPlayer then
+					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, attackingCharacter, flexTool, hitHumanoid )
 				end
-			else
+			elseif TableXL:InstanceOf( attackingCharacterRecord, Monster ) then
 				-- can't just use tool's parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
 				DebugXL:logV( LogArea.Combat, 'Monster damaging hero' )	
 				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
+			else
+				DebugXL:Error( "Null character record doing damage")
 			end
 		end
 	end

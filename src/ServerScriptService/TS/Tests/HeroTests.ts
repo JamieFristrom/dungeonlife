@@ -46,7 +46,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     let heroes = Teams.WaitForChild<Team>("Heroes")
 
     // test associating a hero with player
-    let heroPlayer = TestUtility.getTestPlayer()
+    let heroPlayer = TestUtility.createTestPlayer()
     let fakePlayerMap = new Map<Player, CharacterRecord>()
     fakePlayerMap.set(heroPlayer, new Hero("Warrior",
         { strN: 10, dexN: 10, conN: 10, willN: 10, experienceN: 0, goldN: 0, deepestDungeonLevelN: 0, totalTimeN: 0 },

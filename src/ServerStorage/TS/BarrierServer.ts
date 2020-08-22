@@ -23,8 +23,7 @@ export namespace BarrierServer {
             if (partParent.FindFirstChild("Humanoid")) {
                 if (!burntStuff.has(partParent)) {
                     const attackingPlayer = Players.GetPlayerFromCharacter( attackingCharacter )
-                    const attackingTeam = attackingPlayer ? attackingPlayer.Team! : Teams.FindFirstChild<Team>("Monsters")!
-                    CharacterI.TakeFlexToolDamage(partParent, attackingCharacter, attackingTeam, flexTool)
+                    CharacterI.TakeFlexToolDamage(partParent, attackingCharacter, flexTool)
                     burntStuff.set(partParent, true)
                 }
             }

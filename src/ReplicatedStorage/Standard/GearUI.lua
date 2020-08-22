@@ -81,7 +81,7 @@ function GearUI.PopulateGearFrame( gearFrame, gearTemplate, itemInfoFrame, gearP
 			local baseLevelN = item:getActualLevel()
 
 			newItem.Level.Text = Localize.formatByKey( "Lvl", { item:getActualLevel() } ) -- FlexEquipUtility:GetLevelRequirement( item )			
-			local weaponGood = HeroUtility:CanUseGear( PCClient.pc, item )
+			local weaponGood = PCClient.pc:canUseGear( item )
 			if weaponGood then
 				newItem.Level.TextColor3 = Color3.fromRGB( 255, 201, 124 )
 			else

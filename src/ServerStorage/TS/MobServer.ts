@@ -507,7 +507,7 @@ export namespace MobServer {
                     return
                 }
                 else {
-                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.model, 80)
+                    const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.model, this.getCharacterRecord().getTeam(), 80)
                     if (closestTarget) {
                         // if enemy in aggro range approach that spot (even if they go out of sight)
                         this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(closestTarget).p

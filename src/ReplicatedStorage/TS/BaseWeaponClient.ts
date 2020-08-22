@@ -11,6 +11,7 @@ import { FlexTool } from './FlexToolTS'
 import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 
 import { MessageGui } from 'ReplicatedStorage/TS/MessageGui'
+import { PCClient } from './PCClient'
 
 type Character = Model
 
@@ -42,7 +43,7 @@ export abstract class BaseWeaponClient {
         }
         else {
             this._onActivated(character, mouse)
-            const [bestTarget] = GeneralWeaponUtility.findClosestVisibleTarget(character, this.weaponUtility.getRange())
+            const [bestTarget] = GeneralWeaponUtility.findClosestVisibleTarget(character, PCClient.pc.getTeam(), this.weaponUtility.getRange())
             this.weaponUtility.showAttack(character, bestTarget)
         }
     }
@@ -50,14 +51,18 @@ export abstract class BaseWeaponClient {
     _onActivated(character: Character, mouse: Mouse) { }
 
     onEquippedLocal(mouse: Mouse) {
+        DebugXL.logD(LogArea.Items, "onEquippedLocal" )
         if (!mouse) {
-            DebugXL.logW(LogArea.UI, 'OnEquippedLocal: Mouse not found')
+            DebugXL.logW(LogArea.UI, "OnEquippedLocal: Mouse not found")
             return
         }
 
         const character = this.tool.Parent as Character
         DebugXL.Assert(character !== undefined)
-        if (!character) return
+        if (!character) {
+            DebugXL.logI(LogArea.Items, "Couldn't find character to equip")
+            return
+        }
 
         mouse.Button1Down.Connect(() => { this.onActivated(character, mouse) })
         DebugXL.logD(LogArea.Combat, this.tool.GetFullName() + ' mouse button connected')

@@ -22,9 +22,16 @@ local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUti
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local MeleeWeaponServerXL = {}
+MeleeWeaponServerXL.__index = MeleeWeaponServerXL
 
 function MeleeWeaponServerXL.new( Tool )
+	local meleeWeaponServerXL = {}
+	setmetatable( meleeWeaponServerXL, MeleeWeaponServerXL )
+
 	DebugXL:Assert( Tool )
+	DebugXL:Assert( Tool:IsA("Tool") )
+	
+	meleeWeaponServerXL.Tool = Tool
 	DebugXL:logI( LogArea.Items, 'MeleeWeaponServerXL.new('..Tool:GetFullName()..')' )
 	local Handle = Tool:FindFirstChild("Handle")
 	DebugXL:Assert( Handle )
@@ -35,67 +42,63 @@ function MeleeWeaponServerXL.new( Tool )
 		DebugXL:Error( Tool:GetFullName().." missing Hit sound" )
 	end
 	
-	local Player
-	local Character
-	local Humanoid
-	local flexToolInst
+	meleeWeaponServerXL.unsheathSound = Handle:WaitForChild("Unsheath")
+	meleeWeaponServerXL.unsheathSound.Volume = 1
 	
-	local UnsheathSound = Handle:WaitForChild("Unsheath")
-	UnsheathSound.Volume = 1
-	
-	local function OnActivated()		
-		DebugXL:logD( LogArea.Combat, 'MeleeWeaponServerXL::OnActivated')
-		if not WeaponServer:CheckRequirements( Tool, Player ) then
-			DebugXL:logD( LogArea.Combat, Character.Name.." does not meet requirements for "..Tool.Name ) 
-			return 
-		end
-		if GeneralWeaponUtility.isCoolingDown( Character ) then 
-			DebugXL:logV( LogArea.Combat, Character.Name.."'s weapon still cooling down" ) 
-			return 
-		end
-		
-		-- had trouble deciding whether to put this in cooldown or not
-		if Humanoid.Health <= 0 then 
-			DebugXL:logV( LogArea.Combat, Character.Name.." attacking while dead" ) 
-			return 
-		end
---		
-		if Player then
-			PlayerServer.markAttack( Player, "Melee" )
-		end
-
-		local range = flexToolInst:getBaseData().rangeN
-		local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( Character, range ) )
-		if bestTarget then
---			--print( Character.Name.." found target "..bestTarget.Name )
-			DebugXL:logI( LogArea.Combat, Character.Name.." in range. Applying damage to "..bestTarget.Name )
-			CharacterI:TakeFlexToolDamage( bestTarget, Character, Player and Player.Team or game.Teams.Monsters, flexToolInst )
-			if Player then
-				PlayerServer.markHit( Player, "Melee" )
-			end			
-
-			FlexibleTools:CreateExplosionIfNecessary( Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
-		end
-
-		GeneralWeaponUtility.cooldownWait( Character, flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( flexToolInst, "walkSpeedMulN" ) )
-	end
-	
-	local function OnEquipped()
-		DebugXL:logD( LogArea.Items, Tool:GetFullName()..' MeleeWeaponServerXL OnEquipped' )
-		Character = Tool.Parent
-		flexToolInst = FlexibleTools:GetFlexToolFromInstance( Tool )
-		Humanoid = Character:FindFirstChildOfClass('Humanoid')
-		Player = game.Players:GetPlayerFromCharacter(Character)
-		if WeaponServer:CheckRequirements( Tool, Player ) then
-			UnsheathSound:Play()
-		end
-	end
-	
-	
-	Tool.Activated:Connect(OnActivated)
-	Tool.Equipped:Connect(OnEquipped)
+	Tool.Activated:Connect(function() meleeWeaponServerXL:OnActivated() end)
+	Tool.Equipped:Connect(function() meleeWeaponServerXL:OnEquipped() end)
 	DebugXL:logD( LogArea.Items, Tool:GetFullName()..' events connected' )
 
+	return meleeWeaponServerXL
+end
+
+function MeleeWeaponServerXL:OnActivated()		
+	DebugXL:logD( LogArea.Combat, 'MeleeWeaponServerXL::OnActivated')
+	if not WeaponServer:CheckRequirements( self.Tool, self.Player ) then
+		DebugXL:logD( LogArea.Combat, self.Character.Name.." does not meet requirements for "..self.Tool.Name ) 
+		return 
+	end
+	if GeneralWeaponUtility.isCoolingDown( self.Character ) then 
+		DebugXL:logV( LogArea.Combat, self.Character.Name.."'s weapon still cooling down" ) 
+		return 
+	end
+	
+	-- had trouble deciding whether to put this in cooldown or not
+	if self.Humanoid.Health <= 0 then 
+		DebugXL:logV( LogArea.Combat, self.Character.Name.." attacking while dead" ) 
+		return 
+	end
+--		
+	if self.Player then
+		PlayerServer.markAttack( self.Player, "Melee" )
+	end
+
+	local range = self.flexToolInst:getBaseData().rangeN
+	local cr = PlayerServer.getCharacterRecordFromCharacter( self.Character )
+	local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( self.Character, cr.getTeam(), range ) )
+	if bestTarget then
+--			--print( self.Character.Name.." found target "..bestTarget.Name )
+		DebugXL:logI( LogArea.Combat, self.Character.Name.." in range. Applying damage to "..bestTarget.Name )
+		CharacterI:TakeFlexToolDamage( bestTarget, self.Character, self.flexToolInst )
+		if self.Player then
+			PlayerServer.markHit( self.Player, "Melee" )
+		end			
+
+		FlexibleTools:CreateExplosionIfNecessary( self.Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
+	end
+
+	GeneralWeaponUtility.cooldownWait( self.Character, self.flexToolInst:getBaseData().cooldownN, FlexEquipUtility:GetAdjStat( self.flexToolInst, "walkSpeedMulN" ) )
+end
+
+function MeleeWeaponServerXL:OnEquipped()
+	DebugXL:logD( LogArea.Items, self.Tool:GetFullName()..' MeleeWeaponServerXL OnEquipped' )
+	self.Character = self.Tool.Parent
+	self.flexToolInst = FlexibleTools:GetFlexToolFromInstance( self.Tool )
+	self.Humanoid = self.Character:FindFirstChildOfClass('Humanoid')
+	self.Player = game.Players:GetPlayerFromCharacter(self.Character)
+	if WeaponServer:CheckRequirements( self.Tool, self.Player ) then
+		self.unsheathSound:Play()
+	end
 end
 
 

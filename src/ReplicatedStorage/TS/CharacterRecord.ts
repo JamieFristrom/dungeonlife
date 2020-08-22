@@ -32,12 +32,18 @@ export interface CharacterRecordI
 {
     gearPool: GearPool
     idS: CharacterClass
+    countBaseDataQuantity(baseDataKind: string) : number
+    getActualLevel() : number
+    getClass() : string
+    getFlexTool( itemKey: string ) : FlexTool | undefined
     getImageId() : string
-    getWalkSpeed() : number
     getJumpPower() : number
     getLocalLevel() : number
-    getActualLevel() : number
+    getPossessionKeyFromSlot( slot: HotbarSlot ) : string | undefined
+    getSlotFromPossessionKey( possessionKey: PossessionKey ) : number | undefined
     getTeam() : Team
+    getWalkSpeed() : number
+    giveFlexTool(flexTool: FlexTool) : void
     removeTool( itemKey: string ) : void
 }
 
@@ -245,18 +251,18 @@ export class GearPool
 export abstract class CharacterRecord implements CharacterRecordI
 {   
     gearPool: GearPool
+    
+    private team: Team;
 
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
     private toolKeyServerN = 1
 
     constructor(
-        public idS: CharacterClass,
-        //public readableNameS: string,
-        //public imageId: string,
-        //public walkSpeedN: number,
-        //public jumpPowerN: number,        
-        _startItems: GearDefinition[] )
+        public idS: CharacterClass, 
+        _startItems: GearDefinition[],
+        team = Teams.FindFirstChild<Team>("Unassigned")! )
         {
+            this.team = team
             this.itemsT = undefined  // just used for persistence in old system
             this.gearPool = new GearPool({})
             for( let i = 0; i < _startItems.size(); i++ )
@@ -286,7 +292,7 @@ export abstract class CharacterRecord implements CharacterRecordI
         }
 
     static convertFromRemote( rawPCData: CharacterRecordI )
-    {        
+    {
         let pc = setmetatable( rawPCData, CharacterRecord as LuaMetatable<CharacterRecordI> ) as CharacterRecord
         DebugXL.Assert( pc.itemsT === undefined )
         setmetatable( pc.gearPool, GearPool as LuaMetatable<GearPool> )
@@ -388,7 +394,7 @@ export abstract class CharacterRecord implements CharacterRecordI
     // or a mob's tool cache. so far characterKeys are server-side only, though that will probably change
     // It may seem redundant that we have both character & characterRecord since you can derive one from the other but this
     // is more Demeter principle and it means we're not dependent on PlayerServer (which is already dependent on us)
-    static getToolInstanceFromPossessionKey( character: Character, characterRecord: CharacterRecord, possessionKey: PossessionKey )
+    static getToolInstanceFromPossessionKey( character: Character, characterRecord: CharacterRecordI, possessionKey: PossessionKey )
     {
         DebugXL.Assert( character !== undefined )        
         let tool: Tool | undefined = undefined
@@ -473,19 +479,28 @@ export abstract class CharacterRecord implements CharacterRecordI
         return CharacterClasses.classData[this.idS].jumpPowerN
     }
 
+    canUseGear(flexTool: FlexTool) : boolean
+    {
+        DebugXL.Assert( flexTool instanceof FlexTool )
+        return true
+    }
+
     abstract getLocalLevel() : number
 
     abstract getActualLevel() : number
 
     // not data-driving this so we aren't duplicating data
-    abstract getTeam(): Team
+    getTeam() {
+        return this.team
+    }
 }
 
 
 export class CharacterRecordNull extends CharacterRecord
 {
-    constructor() { super("NullClass",[]) }
+    constructor() { 
+        super("NullClass",[])
+    }
     getLocalLevel() { return 0 }
     getActualLevel() { return 0 }
-    getTeam() { return Teams.GetTeams()[0] }
 }

@@ -15,7 +15,7 @@ import * as InventoryClient from "ReplicatedStorage/Standard/InventoryClientStd"
 import { HotbarSlot } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 
-import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
+import { CharacterRecord, CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 
 import { Localize } from "ReplicatedStorage/TS/Localize"
 import { PCClient } from "ReplicatedStorage/TS/PCClient"
@@ -100,14 +100,14 @@ function Equip(slotN: HotbarSlot) {
                             let heldTool = localCharacter.FindFirstChildWhichIsA("Tool") as Tool
                             if (heldTool && CharacterRecord.getToolPossessionKey(heldTool) === possessionKey) {
                                 // unequip
-                                DebugXL.logD(LogArea.Items, 'Unequipping')
+                                DebugXL.logD(LogArea.Items, 'Unequipping from hotbar')
                                 humanoid.UnequipTools()
                                 //SelectSlot(0)
                             }
                             else {
                                 let tool = CharacterRecord.getToolInstanceFromPossessionKey(localCharacter, PCClient.pc, possessionKey) as Tool
                                 if (tool) {
-                                    DebugXL.logD(LogArea.Items, 'Equipping')
+                                    DebugXL.logD(LogArea.Items, 'Equipping from hotbar')
                                     humanoid.EquipTool(tool)  // error in EquipTool's type signature that has now been fixed
                                 }
                                 else {
@@ -151,7 +151,7 @@ for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
 }
 
 
-function HotbarRefresh(pc: CharacterRecord) {
+function HotbarRefresh(pc: CharacterRecordI) {
     print("Refreshing hotbar")
     let allActiveSkins = InventoryClient.inventory.activeSkinsT
     let activeSkinsT = localPlayer.Team === Teams.WaitForChild('Heroes') ? allActiveSkins.hero : allActiveSkins.monster

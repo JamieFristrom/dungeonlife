@@ -21,6 +21,7 @@ import { CharacterClass, CharacterClasses } from "ReplicatedStorage/TS/Character
 import { Analytics } from "ServerStorage/TS/Analytics"
 
 import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
+import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 
 const heroTeam = Teams.WaitForChild<Team>("Heroes")
 const monsterTeam = Teams.WaitForChild<Team>("Monsters")
@@ -112,7 +113,7 @@ export class PlayerTracker {
             return this.getCharacterRecord(characterKey)
         }
         else {
-            return undefined // probably a structure
+            return new CharacterRecordNull() 
         }
     }
 

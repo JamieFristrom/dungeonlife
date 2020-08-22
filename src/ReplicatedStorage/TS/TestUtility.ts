@@ -1,7 +1,7 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace } from "@rbxts/services"
+import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
 import { DebugXL, LogArea } from "./DebugXLTS"
 
 import Costumes from "ServerStorage/Standard/CostumesServer"
@@ -10,11 +10,13 @@ import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
 import { InventoryManagerStub } from "ServerStorage/TS/InventoryManagerStub"
 import { GameServer } from "ServerStorage/TS/GameServer"
 
+type Character = Model
+
 export namespace TestUtility {
     let currentModuleName = ""
     let assertionCount = 0
 
-    export function getTestPlayer(): Player {
+    export function createTestPlayer(): Player {
         while (Players.GetPlayers().size() === 0) {
             wait()
         }
@@ -23,14 +25,19 @@ export namespace TestUtility {
         return testPlayer
     }
 
-    export function getTestCharacter() {
+    export function createTestCharacter() {
         let testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
         testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
+        CollectionService.AddTag(testCharacter, "CharacterTag")  // wishlist fix; duplication of data problem
         return testCharacter
     }
 
     export function saveCostumeStub(player: Player) {
-        const costume = getTestCharacter()
+        // we didn't forget to clean did we?
+        let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
+        DebugXL.Assert(costumeStub === undefined)
+        
+        const costume = createTestCharacter()
         DebugXL.Assert(costume !== undefined)
         if (costume) {
             let costumeCopy = costume.Clone()
@@ -62,7 +69,19 @@ export namespace TestUtility {
                 }
             }
         }
-        cleanCostumeStub(player)
+    }
+
+    export function cleanTestCharacters() {
+        for(;;) {
+            let testCharacter = Workspace.FindFirstChild<Model>("TestDummy")
+            if( testCharacter ) {
+                testCharacter.Parent = undefined
+            }
+            else {
+                break
+            }
+
+        }
     }
 
     export function setCurrentModuleName(name: string) {
@@ -83,7 +102,7 @@ export namespace TestUtility {
 export class TypicalTestSetup {
     inventory = new InventoryManagerStub()
     playerTracker = new PlayerTracker
-    player = TestUtility.getTestPlayer()
+    player = TestUtility.createTestPlayer()
 
     constructor() {
         GameServer.levelSession++
@@ -92,5 +111,20 @@ export class TypicalTestSetup {
 
     clean() {
         TestUtility.cleanTestPlayer(this.player)
+        TestUtility.cleanCostumeStub(this.player)
+        TestUtility.cleanTestCharacters()
+    }
+
+    getTestPlayerCharacter(className: string): Character {
+        let testCharacter = Costumes.LoadCharacter(
+            this.player,
+            [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>(className)!],
+            {},
+            true,
+            undefined,
+            new CFrame()
+        )!
+        testCharacter.Parent = Workspace
+        return testCharacter
     }
 }

@@ -39,7 +39,9 @@ export namespace GeneralWeaponUtility {
         }
     }
 
-    export function findValidTargetsAndRanges(attackingCharacter: Character, maxRange: number): [Character, number][] {
+    export function findValidTargetsAndRanges(attackingCharacter: Character, attackingTeam: Team, maxRange: number): [Character, number][] {
+        DebugXL.Assert( attackingCharacter.IsA("Model"))
+        DebugXL.Assert( attackingTeam.IsA("Team"))
         if (!attackingCharacter.Name) {
             DebugXL.logD(LogArea.Combat, "WTF")
         }
@@ -48,8 +50,6 @@ export namespace GeneralWeaponUtility {
         DebugXL.logV(LogArea.Combat, "All characters: " + DebugXL.stringifyInstanceArray(characters))
         characters.forEach((char) => DebugXL.Assert(char.IsA("Model")))
         const modelCharacters = characters as Model[]
-        const attackingPlayer = Players.GetPlayerFromCharacter(attackingCharacter)
-        const attackingTeam = attackingPlayer ? attackingPlayer.Team : Teams.FindFirstChild<Team>("Monsters")
         const validTargetCharacters = modelCharacters.filter((char) => CharacterClientI.ValidTarget(attackingTeam!, char))
         DebugXL.logV(LogArea.Combat, "Valid targets: " + DebugXL.stringifyInstanceArray(validTargetCharacters))
         const primaryPartCharacters = validTargetCharacters.filter((char) => char.PrimaryPart !== undefined)
@@ -64,8 +64,10 @@ export namespace GeneralWeaponUtility {
         return filteredTargetsAndRanges
     }
 
-    export function findClosestVisibleTarget(attackingCharacter: Character, maxRange: number): [Character | undefined, number] {
-        const targetsAndRanges = findValidTargetsAndRanges(attackingCharacter, maxRange)
+    export function findClosestVisibleTarget(attackingCharacter: Character, attackingTeam: Team, maxRange: number): [Character | undefined, number] {
+        DebugXL.Assert( attackingCharacter.IsA("Model") )
+        DebugXL.Assert( attackingTeam.IsA("Team") )
+        const targetsAndRanges = findValidTargetsAndRanges(attackingCharacter, attackingTeam, maxRange)
         if (!targetsAndRanges.isEmpty()) {
             // stupid optimization? It does nothing for the worst case ; all heroes are in range but behind walls
             // probably better to sporadically collect los on n*m options

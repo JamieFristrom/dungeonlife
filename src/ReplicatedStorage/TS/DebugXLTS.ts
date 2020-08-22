@@ -36,6 +36,7 @@ export enum LogArea {
     Items,
     Mobs,             // mob behavior but not spawning
     MobSpawn,         // mob spawning
+    Network,          // replication
     Players,
     Parts,
     Spawner,          // spawner furnishing behavior, both mob and non-mob
@@ -47,7 +48,9 @@ export enum LogArea {
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private defaultLogLevel = LogLevel.Debug
+    private inlineErrors = false
+
+    private defaultLogLevel = LogLevel.Info
 
     private logLevelForTag = new Map<LogArea, LogLevel>([
         //[LogArea.Combat,LogLevel.Warning],
@@ -67,7 +70,12 @@ class DebugXLC {
         if (this.testErrorCatcher) {
             this.testErrorCatcher(message)
         } else {
-            spawn(() => { this.log(LogLevel.Error, LogArea.Error, script.Name + ": " + message + " " + callstackS) }) // -- so analytics will pick it up
+            if( this.inlineErrors ) {
+                this.log(LogLevel.Error, LogArea.Error, script.Name + ": " + message + " " + callstackS)
+            }
+            else {
+                spawn(() => { this.log(LogLevel.Error, LogArea.Error, script.Name + ": " + message + " " + callstackS) }) // -- so analytics will pick it up
+            }
         }
     }
 

@@ -178,21 +178,6 @@ local function Display()
 
 end
 
--- used to automatically display on a character reset; shouldn't need anymore (and can be redundant on first load)
---if game.Players.LocalPlayer.Team == game.Teams.Heroes then Display() end
-
--- this doesn't work be
---[[
-game.Players.LocalPlayer.Changed:Connect( function( property )
-	if property=="Team" then
-		print( "Detecting team change" )
-		if game.Players.LocalPlayer.Team == game.Teams.Heroes then
-			Display()
-		end
-	end
-end)
---]]
-
 local ChooseHeroRemote = {}
 
 function ChooseHeroRemote:ChooseHero()

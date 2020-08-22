@@ -14,13 +14,16 @@ export class Monster extends CharacterRecord {
         id: CharacterClass,
         items: FlexTool[],
         public monsterLevel: number) {
-        super(id, items)
+        super(id, items, Teams.FindFirstChild<Team>("Unassigned")!)
+    }
+
+    static convertFromRemote(rawData: Monster) {
+        CharacterRecord.convertFromRemote(rawData)
+        let monster = setmetatable(rawData, Monster as LuaMetatable<Monster>) as Monster
+        return monster
     }
 
     getLocalLevel() { return this.monsterLevel }
     getActualLevel() { return this.monsterLevel }
-    getTeam() {
-        return Teams.FindFirstChild<Team>('Monsters')!
-    }
 }
 

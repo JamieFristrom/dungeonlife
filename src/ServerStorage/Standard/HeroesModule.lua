@@ -215,7 +215,7 @@ function Heroes:CharacterAdded( character, player )
 	
 	-- if hero doesn't have a usable melee weapon, give them one
 	local meleeWeaponCount = myPCData.gearPool:countIf( function( possession ) 
-		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and HeroUtility:CanUseGear( myPCData, possession ) end )
+		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and myPCData:canUseGear( possession ) end )
 	if meleeWeaponCount==0 then
 		-- a weak melee weapon. a 1st level wizard could chuck their staff and rejoin and do all right... 
 		GivePossession( player, myPCData, FlexTool.new( "Shortsword", math.max( 1, level-1 ), {} ) ) 
@@ -406,18 +406,25 @@ function Heroes:RecordTool( player, flexToolInst )
 end
 
 
-function Heroes:GetDamageBonus( player, typeS, weaponInst )
-	return HeroUtility:GetDamageBonus( Heroes:GetPCDataWait( player ), typeS, weaponInst )
+function Heroes:GetDamageBonus( character, typeS, weaponInst )
+	DebugXL:Assert( character:IsA("Model") )
+	DebugXL:Assert( type(typeS)=="string" )
+	DebugXL:Assert( TableXL:InstanceOf( weaponInst, FlexTool) )
+	local heroRecord = PlayerServer.getCharacterRecordFromCharacter( character )
+	return HeroUtility:GetDamageBonus( heroRecord, typeS, weaponInst )
 end
 
 
 -- NOTE: returns packed pair damage, critB
-function Heroes:DetermineFlexToolDamageN( player, flexToolInst, critResistantB )
+function Heroes:DetermineFlexToolDamageN( character, flexToolInst, critResistantB )
 	DebugXL:Assert( self == Heroes )
-	local myPCData = Heroes:GetPCDataWait( player )
+	DebugXL:Assert( character:IsA("Model") )
+	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ))
+
+	local myPCData = PlayerServer.getCharacterRecordFromCharacter( character )
 	local damage1, damage2 = unpack( FlexEquipUtility:GetDamageNs( flexToolInst, myPCData:getActualLevel(), Hero:getCurrentMaxHeroLevel() ) )
 	local typeS = flexToolInst:getBaseData().equipType
-	local damageBonusN = Heroes:GetDamageBonus( player, typeS, flexToolInst )
+	local damageBonusN = Heroes:GetDamageBonus( character, typeS, flexToolInst )
 	local damageN = MathXL:RandomInteger( damage1, damage2 )
 	local critB = ( not critResistantB ) and ( MathXL:RandomNumber() < BalanceData.baseCritChance )
 	if( critB )then
@@ -478,13 +485,20 @@ end
 
 
 -- if this game ever starts to pay for the time invested please fix this fucking mess
-function Heroes:DoFlexToolDamage( player, flexToolInst, targetHumanoid )
+-- you might think, "But can't we get the character from the player?"
+-- The player's character might theoretically change before this gets processed; we need the one that matches the flexToolInst
+function Heroes:DoFlexToolDamage( player, character, flexToolInst, targetHumanoid )
 	DebugXL:Assert( self == Heroes )
+	DebugXL:Assert( player:IsA("Player") )
+	DebugXL:Assert( character:IsA("Model") )
+	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ) )
+	DebugXL:Assert( targetHumanoid:IsA("Humanoid"))
+	
 	if targetHumanoid.Health > 0 then
 
-		FlexibleTools:ResolveFlexToolEffects( flexToolInst, targetHumanoid, player )
+		FlexibleTools:ResolveFlexToolEffects( flexToolInst, targetHumanoid, player )  -- fixme: should use character, not player
 		local critResistantB = targetHumanoid.Parent:FindFirstChild('DestructibleScript') -- structures don't get critted. it's weird
-		local damageN, critB = unpack( Heroes:DetermineFlexToolDamageN( player, flexToolInst, critResistantB ) )
+		local damageN, critB = unpack( Heroes:DetermineFlexToolDamageN( character, flexToolInst, critResistantB ) )
 
 		local targetCharacter = targetHumanoid.Parent
 		local targetPlayer = game.Players:GetPlayerFromCharacter( targetCharacter )
@@ -699,7 +713,7 @@ function HeroRemote.Wear( player, itemKey, equipB )
 	if not item then return end  -- I guess it's possible to click throw away and then rapidly quick equip
 	if item.equippedB ~= equipB then
 		if equipB then
-			if HeroUtility:CanUseGear( pcData, item ) then
+			if pcData:canUseGear( item ) then
 				local equipSlot = ToolData.dataT[ item.baseDataS ].equipSlot
 				local currentItem = CharacterClientI:GetEquipFromSlot( pcData, equipSlot )
 				if currentItem then
@@ -845,7 +859,7 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 
 	local item = pcData.gearPool:get( itemKey )
 	if item then  -- it's possible to sell off a weapon and click on it in your inventory before it's gone and send other spurious commands
-		if HeroUtility:CanUseGear( pcData, item ) then
+		if pcData:canUseGear( item ) then
 			CharacterClientI:AssignPossessionToSlot( pcData, itemKey, slotN )
 			
 			local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )

@@ -5,28 +5,29 @@ local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
 local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
 DebugXL:logI(LogArea.Executed, script:GetFullName())
 
-local InstanceXL       = require( game.ReplicatedStorage.Standard.InstanceXL )
-local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
-local SoundXL          = require( game.ReplicatedStorage.Standard.SoundXL )
-local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
+local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
+local MathXL = require( game.ReplicatedStorage.Standard.MathXL )
+local SoundXL = require( game.ReplicatedStorage.Standard.SoundXL )
+local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
+local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
-local Ghost            = require( game.ServerStorage.GhostModule )
-local Inventory        = require( game.ServerStorage.InventoryModule )
+local Ghost = require( game.ServerStorage.GhostModule )
+local Inventory = require( game.ServerStorage.InventoryModule )
 
-local BalanceData      = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
-local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
-local AnalyticsXL      = require( game.ServerStorage.Standard.AnalyticsXL )
-local CostumesServer   = require( game.ServerStorage.Standard.CostumesServer )
+local AnalyticsXL = require( game.ServerStorage.Standard.AnalyticsXL )
+local CostumesServer = require( game.ServerStorage.Standard.CostumesServer )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
 
+local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
+local CharacterRecord = require( game.ReplicatedStorage.TS.CharacterRecord ).CharacterRecord
 local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 
-local LootServer       = require( game.ServerStorage.TS.LootServer).LootServer
+local LootServer = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
@@ -237,6 +238,7 @@ end
 -- returns { damageN, critB } pair
 function Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
 	DebugXL:Assert( self == Monsters )
+	DebugXL:Assert( TableXL:InstanceOf(flexToolInst, FlexTool))
 	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monsterCharacter )
 	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), PlayerServer.getLocalLevel( characterKey ), flexToolInst )
 end

@@ -61,38 +61,13 @@ function HeroUtility:GetLevel( player )
 end
 
 
--- also used for armor, bad name
-function HeroUtility:CanUseGear( pcData, flexTool )
-	local gearGood = false
-	local statReqN, statName = FlexEquipUtility:GetStatRequirement( flexTool )
-	local levelReqN = flexTool:getLevelRequirement()
-	if not statReqN then
-		gearGood = true
-	elseif levelReqN <= Hero:levelForExperience( pcData.statsT.experienceN ) then 
-		gearGood = true 
-	else
-		if not pcData.statsT[ statName ] then
-			DebugXL:Error( "gear "..flexTool.baseDataS.." looking for stat "..statName )
-		end
-		-- by not passing our held weapon in here, you can't use a +strength weapon to equip a higher level weapon than required	
-		-- and by ignoring the current equip slot you can't use your current gear to help wear a higher level gear	
-		local adjBaseStatN = pcData:getActualAdjBaseStat( statName, flexTool.equipSlot )		
-		--local adjBaseStatN = HeroUtility:GetAdjBaseStat( pcData, statName )
-		if adjBaseStatN >= statReqN then 
-			gearGood = true
-		end
-	end
-	return gearGood
-end
-
-
 function HeroUtility:RecheckItemRequirements( pcData )
 	local dirtyB = true
 	while dirtyB do
 		dirtyB = false
 		pcData.gearPool:forEach( function( item, _ )
 			if item.equippedB or item.slotN then
-				if not HeroUtility:CanUseGear( pcData, item ) then
+				if not pcData:canUseGear(item) then
 					item.equippedB = nil
 					item.slotN = nil
 					dirtyB = true
@@ -101,7 +76,6 @@ function HeroUtility:RecheckItemRequirements( pcData )
 		end )
 	end
 end
-
 
 
 function HeroUtility:GetDamageBonus( pcData, typeS, weaponInst )

@@ -22,13 +22,11 @@ function WeaponServer:CheckRequirements( tool, player )
 	
 	local flexToolInst     = FlexibleTools:GetFlexToolFromInstance( tool )
 	local pcData = Heroes:GetPCDataWait( player )
-	if HeroUtility:CanUseGear( pcData, flexToolInst ) then return true end
+	if pcData:canUseGear(flexToolInst) then return true end
 	local humanoid = player.Character:FindFirstChild("Humanoid")
 		-- not sure we need this now that we have custom inventory:
 	delay( 0.1, function() if humanoid then humanoid:UnequipTools() end end )
 	return false
---	return true -- fixme, should return false when you can't really use weapon to stop hackers. But there's a weird bug with this code so
-	-- I'm deactivating it for now
 end
 
 

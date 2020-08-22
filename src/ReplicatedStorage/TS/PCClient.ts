@@ -1,8 +1,9 @@
 print( script.GetFullName() + " executed" )
 import { CharacterRecord, CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { Workspace } from "@rbxts/services";
-import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { CharacterClass } from "./CharacterClasses";
+import { Hero } from "./HeroTS"
+import { Monster } from "./Monster";
+import { DebugXL, LogArea } from "./DebugXLTS";
 
 let hotbarRE = Workspace.WaitForChild('Signals').WaitForChild('HotbarRE') as RemoteEvent
 
@@ -26,15 +27,20 @@ export namespace PCClient
             //print( PCClient )
             return pc
         }
-        else
+        else if( pcData.monsterLevel )
         {
             //print( "Local player pcdata is monster")
-            return CharacterRecord.convertFromRemote( pcData as unknown as CharacterRecord )
+            return Monster.convertFromRemote( pcData as unknown as Monster )
+        }
+        else {
+            DebugXL.logE(LogArea.Network, "Corrupt incoming character record")
+            DebugXL.Dump(pcData, LogArea.Network)
+            return CharacterRecord.convertFromRemote( pcData as unknown as CharacterRecordI )
         }
     }
 
     //let pcDataRaw = hotbarRF.InvokeServer( "GetPCData") as { [k:string]:unknown }
-    export let pc: CharacterRecord | undefined
+    export let pc: CharacterRecordI
     //print( "CharacterRecord client aquired initial pc data" )
 
     let defaultConnection = hotbarRE.OnClientEvent.Connect( function( ...args: unknown[] )
@@ -49,7 +55,7 @@ export namespace PCClient
         }
     })
 
-    export function pcUpdatedConnect( func: ( pc: CharacterRecord )=>void )
+    export function pcUpdatedConnect( func: ( pc: CharacterRecordI )=>void )
     {
 	    defaultConnection.Disconnect()
         return hotbarRE.OnClientEvent.Connect( function( ...args: unknown[] )

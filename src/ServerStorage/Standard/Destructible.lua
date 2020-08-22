@@ -66,8 +66,9 @@ function Destructible.new( destructibleInstance )
 		end )
 		DebugXL:logD(LogArea.Gameplay, destructibleInstance.Humanoid:GetFullName()..' died connected')		
 		
+		destructibleInstance.Humanoid.NameDisplayDistance = 0
 		local lastValue = destructibleInstance.Humanoid.Health
-		local hitSoundEmitter = destructibleInstance.PrimaryPart.Hit
+		local hitSoundEmitter = destructibleInstance.PrimaryPart.Hit		
 		destructibleInstance.Humanoid.HealthChanged:Connect( function( value )
 			if value < lastValue then
 				hitSoundEmitter:Play()
