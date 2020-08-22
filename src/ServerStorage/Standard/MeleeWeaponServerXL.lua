@@ -75,7 +75,7 @@ function MeleeWeaponServerXL:OnActivated()
 
 	local range = self.flexToolInst:getBaseData().rangeN
 	local cr = PlayerServer.getCharacterRecordFromCharacter( self.Character )
-	local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( self.Character, cr.getTeam(), range ) )
+	local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( self.Character, cr:getTeam(), range ) )
 	if bestTarget then
 --			--print( self.Character.Name.." found target "..bestTarget.Name )
 		DebugXL:logI( LogArea.Combat, self.Character.Name.." in range. Applying damage to "..bestTarget.Name )

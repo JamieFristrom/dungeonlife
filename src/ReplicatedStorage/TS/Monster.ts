@@ -14,7 +14,7 @@ export class Monster extends CharacterRecord {
         id: CharacterClass,
         items: FlexTool[],
         public monsterLevel: number) {
-        super(id, items, Teams.FindFirstChild<Team>("Unassigned")!)
+        super(id, items, Teams.FindFirstChild<Team>("Monsters")!)
     }
 
     static convertFromRemote(rawData: Monster) {
