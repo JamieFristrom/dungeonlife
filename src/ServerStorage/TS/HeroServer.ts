@@ -123,7 +123,7 @@ export namespace HeroServer {
         // being careful because somehow a player ended up with nan experience
         DebugXL.Assert(type(experienceBonus) === "number")
         DebugXL.Assert((experienceBonus === experienceBonus))
-        DebugXL.Assert(type(boostActive)=="boolean")        
+        DebugXL.Assert(type(boostActive)==="boolean")        
 
         if (MathXL.IsFinite(experienceBonus)) {
             if (boostActive) {
