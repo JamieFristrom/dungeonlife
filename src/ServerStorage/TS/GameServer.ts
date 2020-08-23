@@ -295,7 +295,7 @@ export namespace GameServer {
             for (let player of HeroTeam.GetPlayers()) {
                 //GameAnalyticsServer.ServerEvent({ ["category"] = "progression", ["event_id"] = "Complete.SubdwellerColony."+tostring(workspace.GameManagement.DungeonFloor.Value) }, player)
                 Heroes.NewDungeonLevel(player, newDungeonDepth)
-                HeroServer.awardExperienceWait(player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor")
+                HeroServer.awardExperience(player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor", Inventory.BoostActive(player))
                 Inventory.AdjustCount(player, "Stars", 10, "Progress", "Floor")
                 Inventory.EarnRubies(player, 10, "Progress", "Floor")
                 Heroes.SaveHeroesWait(player)
