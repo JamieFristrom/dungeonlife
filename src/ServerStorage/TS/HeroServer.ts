@@ -114,20 +114,21 @@ export namespace HeroServer {
         }
     }
 
-    export function awardExperienceWait(player: Player,
+    export function awardExperience(player: Player,
         experienceBonus: number,
         analyticsItemType: string,
-        analyticsItemId: string) {
+        analyticsItemId: string,
+        boostActive: boolean ) {
 
         // being careful because somehow a player ended up with nan experience
         DebugXL.Assert(type(experienceBonus) === "number")
         DebugXL.Assert((experienceBonus === experienceBonus))
+        DebugXL.Assert(type(boostActive)=="boolean")        
+
         if (MathXL.IsFinite(experienceBonus)) {
-            if (Inventory.BoostActive(player)) {
+            if (boostActive) {
                 experienceBonus *= 2
             }
-            const inventory = Inventory.GetWait(player)
-            if (!inventory) { return }
             const xpRate = 0.5
             experienceBonus *= xpRate
             DebugXL.logD( LogArea.Gameplay, "Awarding (adjusted) "+experienceBonus+" xp to "+player.Name )	
@@ -190,19 +191,20 @@ export namespace HeroServer {
         // temp: killer gets half xp, rest divided amongst other players whether they touched bad guy or not;
         // this is so the low level people on the floor don't get crazy points
         // so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
+        const boostActive = Inventory.BoostActive(killer)
         const numHeroes = heroTeam.GetPlayers().size()
         for (let hero of heroTeam.GetPlayers()) {
             if (hero === killer) {
                 // give 50% to hero 
                 const adjustedXP = xp / (numHeroes > 1 ? 2 : 1)
                 DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
-                HeroServer.awardExperienceWait(hero, adjustedXP, "Kill", "Monster")
+                HeroServer.awardExperience(hero, adjustedXP, "Kill", "Monster", boostActive)
             }
             else {
                 // split the rest amongst the others
                 const adjustedXP = xp / 2 / math.max(1, numHeroes - 1) // math.max() prevents a div 0 if killer has left game
                 DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
-                HeroServer.awardExperienceWait(hero, adjustedXP, "Kill:Shared", "Monster")
+                HeroServer.awardExperience(hero, adjustedXP, "Kill:Shared", "Monster", boostActive)
             }
         }
     }

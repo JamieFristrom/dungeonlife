@@ -11,7 +11,6 @@ import { PlayerServer } from "./PlayerServer";
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { MonsterDatumI } from "ReplicatedStorage/TS/MonsterDatum";
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord";
 import { CharacterClasses, MonsterStatBlockI } from "ReplicatedStorage/TS/CharacterClasses";
 import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
@@ -270,7 +269,8 @@ export namespace MonsterServer {
                 totalDamageEstimate = totalDamageEstimate + average
             }
         })
-        totalDamageEstimate = totalDamageEstimate / characterRecord.countTools()
+        const toolCount =  characterRecord.countTools()
+        totalDamageEstimate = toolCount > 0 ? totalDamageEstimate / characterRecord.countTools() : 0
 
         const monsterDatum = CharacterClasses.monsterStats[characterRecord.getClass()]
         const damageBonusN = monsterDatum.baseDamageBonusN + characterRecord.getLocalLevel() * 0.15 // monsterDatum.damageBonusPerLevelN  // not using anymore to keep xp same after nerfing high level server monsters
