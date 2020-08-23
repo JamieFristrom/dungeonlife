@@ -12,6 +12,8 @@ import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
 
+import { ReplicatedStorage, Workspace, Players, Teams } from '@rbxts/services'
+
 let testKeys = [
     { k: "IntroMessage" },
     { k: "strN" },
@@ -102,4 +104,30 @@ ToolData.dataA.forEach((baseData) => {
     DebugXL.Assert(shadowLabel.Text === "Hot monkey brains")
     labelToBeShadowed.TextTransparency = 0.5
     DebugXL.Assert(shadowLabel.TextTransparency === 0.5)
+}
+
+// test whether chest shows hint
+{    
+    let chest = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Chest")!.Clone()   
+    chest.Parent = Workspace.FindFirstChild<Folder>("Building")
+    const chestOrigin = chest.FindFirstChild<BasePart>("Origin")
+    wait()
+    DebugXL.Assert(chestOrigin!.FindFirstChild<BillboardGui>("ChestGui")===undefined)
+    for(;Players.LocalPlayer.Character===undefined;) {
+        wait()
+    }
+    for(;Players.LocalPlayer.Character.PrimaryPart===undefined;) {
+        wait()
+    }
+    chest.SetPrimaryPartCFrame( Players.LocalPlayer.Character!.GetPrimaryPartCFrame() )    
+    Players.LocalPlayer.Team = Teams.FindFirstChild<Team>("Heroes")
+    wait(0.5)
+    const chestGui = chestOrigin!.FindFirstChild<BillboardGui>("ChestGui")
+    DebugXL.Assert(chestGui!==undefined)
+    if( chestGui ) {
+        DebugXL.Assert(chestGui.Enabled)
+        const instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
+        DebugXL.Assert(instructions!==undefined)
+        // won't actually check text since it should be magically localized
+    }
 }
