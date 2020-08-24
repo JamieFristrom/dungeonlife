@@ -300,8 +300,24 @@ export namespace CharacterClasses {
         }
     }
 
+    // there's an inconsistency here - we put a NullClass in monsters stats for the 'null monsters component'
+    // but we don't do the same with Heroes; if we did it with Heroes the num-heroes counter would return an incorrect value
     export const monsterStats: { [k: string]: MonsterStatBlockI } =
     {
+        NullClass:
+        {
+            scaleN: 1,
+            baseHealthN: 0,
+            baseDamageBonusN: 0,
+            dropGoldPctN: 0,
+            baseGoldN: 0,
+            goldPerLevelN: 0,
+            dropItemPctN: 0,
+            tagsT: {},
+            numWeaponsN: 0,
+            potentialWeaponsA: [],
+            defaultHideAccessoriesB: false,
+        },
         DungeonLord:
         {
             prototypeObj: undefined,

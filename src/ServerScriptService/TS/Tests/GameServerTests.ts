@@ -10,7 +10,7 @@ import { PlayerTracker } from 'ServerStorage/TS/PlayerServer'
 
 import { Players, Workspace, ReplicatedStorage, Teams, ServerStorage } from '@rbxts/services'
 import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
-import { TestUtility, TypicalTestSetup } from 'ReplicatedStorage/TS/TestUtility'
+import { TestUtility, TestContext } from 'ReplicatedStorage/TS/TestUtility'
 import { GameServer, LevelResultEnum } from 'ServerStorage/TS/GameServer'
 import { DungeonPlayerMap } from 'ServerStorage/TS/DungeonPlayer'
 import Costumes from 'ServerStorage/Standard/CostumesServer'
@@ -284,41 +284,41 @@ class PlayerFake extends InstanceFake {
 
 // test regular play
 {
-    let testSetup = new TypicalTestSetup()
+    let testSetup = new TestContext()
     let dungeonPlayerMap = new DungeonPlayerMap()
-    testSetup.player.Team = Teams.FindFirstChild<Team>("Heroes")
-    testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
+    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
-    testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
     // starting as a werewolf
     let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
-    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
     testSetup.clean()
 }
 
 // test TPK
 {
-    let testSetup = new TypicalTestSetup()
+    let testSetup = new TestContext()
     let dungeonPlayerMap = new DungeonPlayerMap()
-    testSetup.player.Team = Teams.FindFirstChild<Team>("Heroes")
-    testSetup.playerTracker.setClassChoice(testSetup.player, "Warrior")
+    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
-    testSetup.playerTracker.setCharacterRecordForPlayer(testSetup.player, testRecord)
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
     let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.playerTracker, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
     }
     testSetup.clean()
 }
 
 {
-    let testSetup = new TypicalTestSetup()
+    let testSetup = new TestContext()
     let dungeonPlayerMap = new DungeonPlayerMap()
-    dungeonPlayerMap.get(testSetup.player).markRespawnStart()
+    dungeonPlayerMap.get(testSetup.getPlayer()).markRespawnStart()
     TestUtility.assertTrue(GameManagement.PlayerCharactersExist(dungeonPlayerMap), "PCs exist when player and character exist")
     testSetup.clean()
 }

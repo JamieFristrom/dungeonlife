@@ -72,7 +72,7 @@ local Dungeon = {}
 --------------------------------------------------------------------------------------------------------------------
 -- Dungeon generation 
 --------------------------------------------------------------------------------------------------------------------
-local map = {}  -- map is a 2d array, x first
+local map = {}  -- map is a 2d array, x first, of { tileName: string, compassRotation: number }
 local mapVisited = {}
 local mapCompleteB = false
 

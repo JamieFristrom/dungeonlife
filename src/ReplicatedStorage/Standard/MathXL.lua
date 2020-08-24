@@ -26,7 +26,7 @@ end
 function MathXL:RandomKey( tbl )
 	DebugXL:Assert( self == MathXL )
 	local keys = {}
-	for k, v in pairs( tbl ) do
+	for k, _ in pairs( tbl ) do
 		table.insert( keys, k )
 	end
 	return keys[ MathXL:RandomInteger( 1, #keys ) ]

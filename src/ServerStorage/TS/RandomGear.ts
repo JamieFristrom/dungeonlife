@@ -92,7 +92,7 @@ export namespace RandomGear
         const gearDrop = winningGearPile[ winningGearIndex-1 ]
 
         const gearInstance = new FlexTool( gearDrop.idS, toolLevelN, [], undefined, undefined, alreadyBoosted )
-        FlexibleTools.AddRandomEnhancements( gearInstance, useBoost )
+        gearInstance.addRandomEnhancements( useBoost )
         return gearInstance
     }
 }

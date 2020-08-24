@@ -30,6 +30,8 @@ declare namespace PossessionData   // namespace for info about possessions
         balanceAgainstNumHeroesB?: boolean
         textureSwapId?: string
         getReadableName: ( self: PossessionDatumI )=>string
+        clickableByTeam?: Set<string>
+        buildCostN?: number
     }
 
     interface SkinDatumI extends PossessionDatumI

@@ -49,51 +49,6 @@ local Monsters = {}
 
 --local playerCharactersT = {}
 
-local function GiveWeapon( playerTracker, characterKey, flexToolPrototype )	
-	local flexToolRaw = TableXL:DeepCopy( flexToolPrototype )
-	local flexTool = FlexTool:objectify( flexToolRaw )
-	flexTool.levelN = math.ceil( playerTracker:getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN )  -- made ceil to make sure no 0 level weapon
-	playerTracker:getCharacterRecord( characterKey ):giveFlexTool( flexTool )
-end
-
-
-local function GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
-	if #potentialWeaponsA == 0 then
-		DebugXL:logE( LogArea.Items, playerTracker:getName( characterKey ).." | "..playerTracker:getCharacterRecord( characterKey ).idS.." has no potential weapons" )
-	end
-	local toolData        = TableXL:Map( potentialWeaponsA, function( weaponNameS ) return ToolData.dataT[ weaponNameS ] end )
-	local dropLikelihoods = TableXL:Map( toolData, function( x ) return x.monsterStartGearBiasN end )
-	if TableXL:GetN( dropLikelihoods ) == 0 then
-		DebugXL:logE( LogArea.Items, playerTracker:getName( characterKey ).." has no drop likelihoods" )
-	end
-	local toolN = MathXL:RandomBiasedInteger1toN( dropLikelihoods )
-	local weaponTemplate = toolData[ toolN ]
-	if not weaponTemplate then
-		DebugXL:Dump( potentialWeaponsA )
-		DebugXL:Dump( toolData )
-		DebugXL:Dump( dropLikelihoods )
-		DebugXL:Error( playerTracker:getName( characterKey ).." weapon template nil.")
-	end
-
-	-- slot here is hotbar slot
-	local _slotN = nil
-
-	local characterRecord = playerTracker:getCharacterRecord( characterKey )
-	-- hack to keep werewolf alternate weapons out of hotbar slot
-	if characterRecord.idS~="Werewolf" then
-		_slotN = playerTracker:getCharacterRecord( characterKey ):countTools() + 1
-	end
-
-	local flexToolInst = { baseDataS = weaponTemplate.idS,
-		levelN = math.max( 1, math.floor( playerTracker:getLocalLevel( characterKey ) * BalanceData.monsterWeaponLevelMultiplierN ) ),
-		enhancementsA = {},
-		slotN = _slotN }
-	local flexTool = FlexTool:objectify( flexToolInst )
-	characterRecord:giveFlexTool( flexTool )
-
-	TableXL:RemoveFirstElementFromA( potentialWeaponsA, weaponTemplate.idS )
-	return flexToolInst
-end
 
 
 function Monsters:GetPCDataWait( characterKey )
@@ -285,19 +240,19 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
-			GiveWeapon( playerTracker, characterKey, weapon )
+			MonsterServer.giveWeapon( playerTracker, characterKey, weapon )
 		end
 	end
 
 	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
 	for i = 1, monsterDatum.numWeaponsN do
-		GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
+		MonsterServer.giveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
 	end
 
 	-- make sure you don't just have a one-shot weapon
 	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
 		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
-			GiveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
+			MonsterServer.giveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
 		end
 	end
 	

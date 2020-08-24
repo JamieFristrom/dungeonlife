@@ -7,12 +7,13 @@ DebugXL.logI(LogArea.Executed, script.Name)
 import { Teams, Workspace, Players } from "@rbxts/services";
 
 import { HeroServer } from "./HeroServer"
-import { PlayerServer } from "./PlayerServer";
+import { PlayerServer, PlayerTracker } from "./PlayerServer";
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord";
+import { CharacterRecord, CharacterKey, GearPool } from "ReplicatedStorage/TS/CharacterRecord";
 import { CharacterClasses, MonsterStatBlockI } from "ReplicatedStorage/TS/CharacterClasses";
+import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
 import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
@@ -21,6 +22,7 @@ import Inventory from "ServerStorage/Standard/InventoryModule"
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
 import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
+
 
 DebugXL.logD(LogArea.Requires, "MonsterServer finished imports")
 
@@ -269,7 +271,7 @@ export namespace MonsterServer {
                 totalDamageEstimate = totalDamageEstimate + average
             }
         })
-        const toolCount =  characterRecord.countTools()
+        const toolCount = characterRecord.countTools()
         totalDamageEstimate = toolCount > 0 ? totalDamageEstimate / characterRecord.countTools() : 0
 
         const monsterDatum = CharacterClasses.monsterStats[characterRecord.getClass()]
@@ -333,6 +335,58 @@ export namespace MonsterServer {
                 }
             }
         }
+    }
+
+    export function giveWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, flexToolPrototype: GearDefinition) {
+        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+
+        const flexTool = new FlexTool( flexToolPrototype.baseDataS,
+            math.ceil(playerTracker.getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN),
+            flexToolPrototype.enhancementsA )
+
+        playerTracker.getCharacterRecord(characterKey).giveFlexTool(flexTool)
+        return flexTool
+    }
+
+    export function giveUniqueWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, shrinkingWepaonList: string[]) {
+        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+
+        if (shrinkingWepaonList.size() === 0) {
+            DebugXL.logE(LogArea.Items, playerTracker.getName(characterKey) + " | " + playerTracker.getCharacterRecord(characterKey).idS + " has no potential weapons")
+        }
+        const toolData = shrinkingWepaonList.map((weaponNameS) => ToolData.dataT[weaponNameS])
+        const dropLikelihoods = toolData.map((x) => x.monsterStartGearBiasN || 0)
+
+        if (dropLikelihoods.size() === 0) {
+            DebugXL.logE(LogArea.Items, playerTracker.getName(characterKey) + " has no drop likelihoods")
+        }
+        const toolN = MathXL.RandomBiasedInteger1toN(dropLikelihoods)-1
+        const weaponTemplate = toolData[toolN]
+        if (!weaponTemplate) {
+            DebugXL.Dump(shrinkingWepaonList, LogArea.Items)
+            DebugXL.Dump(toolData, LogArea.Items)
+            DebugXL.Dump(dropLikelihoods, LogArea.Items)
+            DebugXL.Error(playerTracker.getName(characterKey) + " weapon template nil.")
+        }
+
+        // slot here is hotbar slot
+        let _slotN = undefined
+
+        const characterRecord = playerTracker.getCharacterRecord(characterKey)
+        // hack to keep werewolf alternate weapons out of hotbar slot
+        if (characterRecord.idS !== "Werewolf") {
+            _slotN = playerTracker.getCharacterRecord(characterKey).countTools() + 1
+        }
+
+        const flexTool = new FlexTool(
+            weaponTemplate.idS,
+            math.max(1, math.floor(playerTracker.getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN)),
+            [],
+            _slotN)
+        characterRecord.giveFlexTool(flexTool)
+
+        shrinkingWepaonList.unorderedRemove(toolN)
+        return flexTool
     }
 
     export function checkFolderForSuperboss(folder: Instance) {

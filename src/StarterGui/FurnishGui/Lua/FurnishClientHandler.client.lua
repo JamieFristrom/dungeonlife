@@ -167,7 +167,7 @@ local function moveGhost( targetV3 )
 end
 
 local function GetBlueprintCountInfo( blueprint )
-	local totalBuiltN, personalBuiltN = FurnishUtility:CountFurnishings( blueprint.idS, player )	
+	local totalBuiltN, personalBuiltN = unpack( FurnishUtility:CountFurnishings( blueprint.idS, player ))
 
 	local availableB = FloorData:CurrentFloor().availableBlueprintsT[ blueprint.idS ] 
 	local forbiddenB = FloorData:CurrentFloor().forbiddenBlueprintsT[ blueprint.idS ] 
@@ -352,22 +352,6 @@ function CountTotalAvailableFurnishings( furnishingType )
 	local count = 0
 	for _, furnishing in pairs( PossessionData:GetDataAOfFlavor( PossessionData.FlavorEnum.Furnishing ) ) do
 		if furnishing.furnishingType == furnishingType then
---			local totalBuiltN, personalBuiltN = FurnishUtility:CountFurnishings( furnishing.idS, player )	
---		
---			local availableB = FloorData:CurrentFloor().availableBlueprintsT[ furnishing.idS ] 
---			local blueprintsN = InventoryClient:GetCount( furnishing.idS )
---			local capN = availableB and furnishing.buildCapN or math.min( blueprintsN, furnishing.buildCapN )
---			local numLeftN = math.clamp( capN - personalBuiltN, 0, math.max( furnishing.levelCapN - totalBuiltN, 0 ) )
---			-- that's right, I copy and pasted code three times
---			-- shame on me
---			-- hackity hack hack
---			if numLeftN == 0 then
---				if possessionDatum.idS == "Chest" and InventoryClient:GetTutorialLevel()==0 then
---					numLeftN = 1
---				elseif possessionDatum.idS == "SpawnOrc" and InventoryClient:GetTutorialLevel()==2 then
---					numLeftN = 1
---				end
---			end
 			local totalBuiltN, personalBuiltN, capN, numLeftN, blueprintsN, availableB = GetBlueprintCountInfo( furnishing ) 		
 			
 			count = count + numLeftN			
@@ -395,18 +379,6 @@ function UpdateFurnishingListButtonInstance( frameInstance, furnishing )
 	frameInstance.Cost.TextColor3 = furnishing.buildCostN > cachedBuildPointsN and Color3.fromRGB( 255, 0, 0 ) or 
 	                            furnishing.buildCostN < 0 and Color3.fromRGB( 0, 255, 0 ) or Color3.fromRGB( 255, 255, 255 )		
 	
-	
---	local totalBuiltN, personalBuiltN = FurnishUtility:CountFurnishings( furnishing.idS, player )	
---	
---	local availableB = FloorData:CurrentFloor().availableBlueprintsT[ furnishing.idS ] 
---	local blueprintsN = InventoryClient:GetCount( furnishing.idS )
---	local capN = availableB and furnishing.buildCapN or math.min( blueprintsN, furnishing.buildCapN )
---	local numLeftN = math.clamp( capN - personalBuiltN, 0, math.max( furnishing.levelCapN - totalBuiltN, 0 ) )
---	
---		-- hackity hack hack
---	if numLeftN == 0 and furnishing.idS == "Chest" and InventoryClient:GetTutorialLevel()<1 then
---		numLeftN = 1
---	end
 	local totalBuiltN, personalBuiltN, capN, numLeftN, blueprintsN, availableB = GetBlueprintCountInfo( furnishing ) 		
 
 	local available = frameInstance:FindFirstChild("Available")
@@ -765,7 +737,7 @@ local function PlaceFurnishing()
 			local availableB = FloorData:CurrentFloor().availableBlueprintsT[ BlueprintUtility.getPossessionName(ghostInstance) ]
 			local ghostRegion = Region3.new( ghostV3 - ghostInstance:GetExtentsSize() / 2,
 				ghostV3 + ghostInstance:GetExtentsSize() / 2 )
-			local totalN, personalN = FurnishUtility:CountFurnishings( BlueprintUtility.getPossessionName(ghostInstance), player )						
+			local totalN, personalN = unpack( FurnishUtility:CountFurnishings( BlueprintUtility.getPossessionName(ghostInstance), player ) )
 			if totalN >= possessionDatum.levelCapN and not InventoryClient:AmIInTutorial() then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
 				MessageGui:PostParameterizedMessage( "FurnishingFloorMax", { possessionDatum.readableNameS }, false )
 				audio.Failure:Play()						

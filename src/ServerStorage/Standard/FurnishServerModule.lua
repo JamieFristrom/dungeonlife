@@ -6,17 +6,23 @@ local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
 DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local Dungeon           = require( game.ServerStorage.DungeonModule )
-local Inventory         = require( game.ServerStorage.InventoryModule )
 
 local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
 local FloorData         = require( game.ReplicatedStorage.FloorData )
 local FurnishUtility    = require( game.ReplicatedStorage.FurnishUtility )
+local InventoryUtility = require( game.ReplicatedStorage.Standard.InventoryUtility )
 local MapTileData       = require( game.ReplicatedStorage.MapTileDataModule )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )
 
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
+
+local StructureFactory = require( game.ServerStorage.TS.StructureFactory ).StructureFactory
+
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
+
+local InventoryMock = require( game.ServerStorage.TS.InventoryMock ).InventoryMock
 
 local FurnishServer = {}
 
@@ -101,7 +107,7 @@ function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 					end
 				end
 				local position = FurnishUtility:SnapV3( Vector3.new( positionX, 1.2, positionZ ), spawnChoice.gridSubdivisionsN, spawnChoice.placementType )
-				if( FurnishServer:Furnish( nil, spawnChoice.idS, position, rotY ) )then
+				if( FurnishServer:Furnish( MainContext.get(), Dungeon:GetMap(), nil, spawnChoice.idS, position, rotY ) )then
 					numPlaced = numPlaced + 1
 				end
 			end
@@ -173,7 +179,7 @@ function FurnishServer:GetNumMonsterSpawns()
 end
 
 
-function FurnishServer:Furnish( creator, name, position, rotation )
+function FurnishServer:Furnish( context, map, creator, name, position, rotation )
 	local furnishingDatum = PossessionData.dataT[ name ]
 
 	-- validating parameters
@@ -210,15 +216,15 @@ function FurnishServer:Furnish( creator, name, position, rotation )
 --	end
 
 	if FurnishUtility:IsWithinBoundaries(baseplate.Position, baseplate.Size, position, instance.PrimaryPart.Size, rotation)
-		and FurnishUtility:IsInMap( Dungeon:GetMap(), position )	
+		and FurnishUtility:IsInMap( map, position )	
 		and not FurnishUtility:CharacterWithinRegion( ghostRegion ) 
 		and not FurnishUtility:GridPointOccupied( position, instance:GetExtentsSize(), furnishingDatum.gridSubdivisionsN, furnishingDatum.placementType ) then
 
-		local totalN, personalN = FurnishUtility:CountFurnishings( name, creator )		
-		-- this will need to say 'still in tutorial' if we want to make Dungeon Lords a thing				
+		local totalN, personalN = unpack( FurnishUtility:CountFurnishings( name, creator ))
+		local inventory = creator and context:getInventoryMgr():GetWait(creator) or InventoryMock.new()
 		if totalN >= furnishingDatum.levelCapN then
 --			--print( "Higher than cap" )
-			if creator and Inventory:PlayerInTutorial( creator ) then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
+			if creator and InventoryUtility:IsInTutorial( inventory ) then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
 				--print( "In tutorial though" )
 			else
 				return nil
@@ -228,7 +234,7 @@ function FurnishServer:Furnish( creator, name, position, rotation )
 			return nil
 		end	
 		local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
-		if not availableB and personalN >= Inventory:GetCount( creator, furnishingDatum.idS ) then -- furnishingDatum.buildCapN then
+		if not availableB and personalN >= inventory.itemsT[furnishingDatum.idS] then -- furnishingDatum.buildCapN then
 			return nil
 		else
 			instance:SetPrimaryPartCFrame(CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0))
@@ -243,12 +249,11 @@ function FurnishServer:Furnish( creator, name, position, rotation )
 		BlueprintUtility.hideDebugInfo( instance )
 		instance.Parent = workspace.Building
 
-		return instance		
+		return { instance, StructureFactory.createStructure(context, instance) }
 	else
 		instance:Destroy()
 		return nil
 	end
 end
-
 
 return FurnishServer

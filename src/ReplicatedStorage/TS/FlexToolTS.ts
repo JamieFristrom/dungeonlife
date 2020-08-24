@@ -1,5 +1,5 @@
 
-// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+// Copyright (c) Happion Laboratories - see license at https`:`//github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI(LogArea.Executed, script.GetFullName())
@@ -17,6 +17,8 @@ import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper'
 
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { ActiveSkinSetI } from "./SkinTypes"
+
+import MathXL from "ReplicatedStorage/Standard/MathXL"
 
 type PossessionKey = string
 
@@ -60,7 +62,7 @@ export class FlexTool {
         incomingEnhancementsA: Array<Enhancements.EnhancementI>,
         public slotN?: HotbarSlot,
         public equippedB?: boolean,
-        public readonly boostedB?: boolean,
+        public boostedB?: boolean,
         public hideItemB?: boolean,
         public hideAccessoriesB?: boolean
     ) {
@@ -93,7 +95,7 @@ export class FlexTool {
     }
 
 
-    getStatRequirement() : [number, string] {
+    getStatRequirement(): [number, string] {
         let totalLevels = this.levelN + this.getTotalEnhanceLevels()
         let baseData = ToolData.dataT[this.baseDataS]
         if (baseData.statReqS) {
@@ -111,6 +113,9 @@ export class FlexTool {
         return [0, ""]
     }
 
+    getBoosted() {
+        return this.boostedB || false
+    }
 
     getActualLevel() {
         return this.levelN
@@ -176,24 +181,6 @@ export class FlexTool {
 
         defense = math.floor(defense + defense * BalanceData.armorDefensePerLevelN * (this.getLocalLevel(heroActualLevel, currentMaxHeroLevel) - 1))
         return defense
-        /*
-        // lua code
-        function FlexEquipUtility:GetDefense( flexToolInst, attackType )
-            local toolBaseData = ToolData.dataT[ flexToolInst.baseDataS ]
-            if not toolBaseData then
-                DebugXL:Error( "Couldn't find possession "..flexToolInst.baseDataS )
-                return 0
-            end
-            
-            local defenseN = toolBaseData.baseDefensesT[ attackType ]
-            if not defenseN then
-                DebugXL:Error( "Couldn't find defense for "..toolBaseData.idS.." for attack type "..attackType )
-                return 0
-            end
-            defenseN = math.floor( defenseN + defenseN * BalanceData.armorDefensePerLevelN * ( flexToolInst.levelN - 1 ) )
-            return defenseN 	
-        end
-        */
     }
 
     // I could use a getter but then I'd have to figure out how to call it from lua
@@ -369,7 +356,7 @@ export class FlexTool {
             else {
                 if (activeSkins.get(toolBaseDatum.skinType)) {
                     const skinTag = activeSkins.get(toolBaseDatum.skinType)
-                    if( skinTag ) {
+                    if (skinTag) {
                         const reskin = PossessionData.dataT[skinTag]
                         if (reskin && reskin.baseToolS) {
                             baseToolId = reskin.baseToolS
@@ -443,6 +430,86 @@ export class FlexTool {
         return undefined
     }
 
+    addEnhancement(enhancementKeyS: string) {
+        DebugXL.Assert(typeIs(enhancementKeyS, "string"))
+
+        // being locked down by a melee weapon is no fun, might as well be instant kill. actually same goes for a ranged
+        // weapon
+        if (enhancementKeyS === "explosive" && (this.baseDataS === "Bomb" || this.baseDataS === "MagicBarrier")) {
+            return
+        }
+
+        // if( enhancement already there then level it up
+        for (let enhancement of this.enhancementsA) {
+            if (enhancement.flavorS === enhancementKeyS) {
+                enhancement.levelN = enhancement.levelN + 1
+                return
+            }
+        }
+
+        // otherwise it's new
+        let newEnhancement = {
+            flavorS: enhancementKeyS,
+            levelN: 1
+        }
+
+        this.enhancementsA.push(newEnhancement)
+    }
+
+    addRandomEnhancements(boostB: boolean, minNumber = 0, invalidChoices: string[] = []) {
+        DebugXL.Assert(typeIs(boostB, "boolean"))
+        const equipData = ToolData.dataT[this.baseDataS]
+        if (equipData.equipType === "potion" || equipData.equipType === "power") { return }
+
+        // realized later if( we don't adjust the diecap you can get some higher powered loot than you should at low
+        // levels... a level 3 sword is more likely to have 2 enchantments than just 1
+        const toolLevelN = this.getActualLevel()
+        const dieCap =
+            (toolLevelN > 4) ? 15 :
+                (toolLevelN > 3) ? 14 :
+                    (toolLevelN > 2) ? 12 :
+                        (toolLevelN > 1) ? 9 : 5
+
+        const enhancementDieRoll = MathXL.RandomInteger(1, dieCap)
+        const additionalEnhances = (enhancementDieRoll >= 15) ? 4 :
+            (enhancementDieRoll >= 13) ? 3 :     // rolled a 13 || 14
+                (enhancementDieRoll >= 10) ? 2 :     // rolled a 10, || 11, 12
+                    (enhancementDieRoll >= 6) ? 1 :  // rolled a 6, 7, || 8 || 9
+                        0             // rolled a 1,2,3 || 4, 5
+
+        const numEnhancements = minNumber + additionalEnhances
+
+        let boostedEnhancementsN = numEnhancements
+        if (boostB) {
+            if (MathXL.RandomNumber() < 0.5) {
+                if (numEnhancements < 4) {
+                    boostedEnhancementsN = numEnhancements + 1
+                }
+            }
+        }
+
+        const finalEnhancements = math.min(boostedEnhancementsN, this.getActualLevel() - 1)
+        if (finalEnhancements > numEnhancements) {
+            this.boostedB = true
+        }
+        const enhancementKeys = Object.keys(Enhancements.enhancementFlavorInfos) as string[]
+        const validEnhancementKeys = enhancementKeys.filter((enhanceKey) =>
+            Enhancements.enhancementFlavorInfos[enhanceKey].allowedTypesT[equipData.equipType]).filter((enhanceKey) =>
+                invalidChoices.indexOf(enhanceKey) === -1)  // -1 means not in invalidChoices array 
+
+        for (let i = 0; i < finalEnhancements; i++) {
+            if (this.enhancementsA.size() === 0 || MathXL.RandomNumber() < 0.5) {
+                const newEnhancementIdx = MathXL.RandomInteger(0, validEnhancementKeys.size() - 1)
+                this.addEnhancement(validEnhancementKeys[newEnhancementIdx])
+            }
+            else {
+                // 50% chance of secondary enhancements bolstering original ones. 
+                const newEnhancementIdx = MathXL.RandomInteger(0, this.enhancementsA.size() - 1)
+                const newEnhancement = this.enhancementsA[newEnhancementIdx].flavorS
+                this.addEnhancement(newEnhancement)
+            }
+        }
+    }
 
     static nullTool = new FlexTool('NullTool', 1, [])
 }

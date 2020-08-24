@@ -765,7 +765,7 @@ end
 
 
 function FloorData:CurrentFloorSize()
-	return workspace.GameManagement.FloorSize.Value
+	return workspace:WaitForChild("GameManagement"):WaitForChild("FloorSize").Value
 end
 
 

@@ -1,14 +1,17 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
 import { DebugXL, LogArea } from "./DebugXLTS"
+
+import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
 
 import Costumes from "ServerStorage/Standard/CostumesServer"
 
 import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
-import { InventoryManagerStub } from "ServerStorage/TS/InventoryManagerStub"
+import { InventoryManagerMock } from "ServerStorage/TS/InventoryManagerStub"
 import { GameServer } from "ServerStorage/TS/GameServer"
+import { ServerContext } from "ServerStorage/TS/ServerContext"
+import { GameManagerMock } from "ServerStorage/TS/GameManagerMock"
 
 type Character = Model
 
@@ -96,15 +99,15 @@ export namespace TestUtility {
         else {
             DebugXL.Error(`Test ${currentModuleName}(${assertionCount}) (${message}) failed`)
         }
+        assertionCount++
     }
 }
 
-export class TypicalTestSetup {
-    inventory = new InventoryManagerStub()
-    playerTracker = new PlayerTracker
-    player = TestUtility.createTestPlayer()
+export class TestContext extends ServerContext {
+    private player = TestUtility.createTestPlayer()
 
     constructor() {
+        super( new GameManagerMock(), new InventoryManagerMock(), new PlayerTracker )
         GameServer.levelSession++
         TestUtility.saveCostumeStub(this.player)
     }
@@ -126,5 +129,11 @@ export class TypicalTestSetup {
         )!
         testCharacter.Parent = Workspace
         return testCharacter
+    }
+
+    getPlayer() { return this.player }
+
+    getInventoryMock() { 
+        return (this.getInventoryMgr() as InventoryManagerMock).inventoryMock
     }
 }

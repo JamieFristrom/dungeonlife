@@ -35,7 +35,8 @@ local PossessionData =
 		Cosmetic     = "Cosmetic",
 		Lighting     = "Lighting",
 		WaterFeature = "Water Feature",
-		Trap         = "Trap"
+		Trap         = "Trap",
+		Utility      = "Utility"
 	},
 	
 	PlacementTypeEnum =
@@ -64,6 +65,7 @@ PossessionData.furnishingTypesT =
 	[PossessionData.FurnishingEnum.Spawn]         = { dpTypeS = "expense" },
 	[PossessionData.FurnishingEnum.Trap]          = { dpTypeS = "expense" },
 	[PossessionData.FurnishingEnum.Barrier]       = { dpTypeS = "expense" },
+	[PossessionData.FurnishingEnum.Utility]       = { dpTypeS = "expense" },
 	[PossessionData.FurnishingEnum.Treasure]      = { dpTypeS = "income" },
 	[PossessionData.FurnishingEnum.Cosmetic]      = { dpTypeS = "income" },
 	[PossessionData.FurnishingEnum.Lighting]      = { dpTypeS = "income" },
@@ -1233,6 +1235,7 @@ PossessionData.dataA =
 			placementType     = PossessionData.PlacementTypeEnum.Open,
 			gridSubdivisionsN = 3,
 			buildCapN = 2,
+			clickableByTeam = {Heroes=true},
 					
 			levelCapN = 11,   
 			-- let every monster build at least one, which means we have to let all but one build two. in a 9 player game that's 6 monsters or 11 chests
@@ -1262,6 +1265,24 @@ PossessionData.dataA =
 			baseDamageN = 68,    -- half of level 0 character
 			damagePerLevelN = 2,  -- so always more than half if you put nothing into con. this should be very effective now that chests are the only way to get potions
 
+			startingCountN  = 0,
+			rarityN = 3,
+			clickableByTeam = {Heroes=true},
+			flavor = PossessionData.FlavorEnum.Furnishing			
+		},
+		{
+			idS           = "WeaponsRack",
+			readableNameS = "Weapons Rack",
+			buildCostN    = 100,
+			imageId       = "http://www.roblox.com/Game/Tools/ThumbnailAsset.ashx?aid=5610538353&fmt=png&wd=420&ht=420",
+			furnishingType = PossessionData.FurnishingEnum.Utility,
+			placementType     = PossessionData.PlacementTypeEnum.Open,
+			gridSubdivisionsN = 3,
+			healthPerLevelN = 3,
+			clickableByTeam = {Monsters=true},
+			buildCapN = 2,		
+			levelCapN = 4,
+			purchaseCapN = 2,
 			startingCountN  = 0,
 			rarityN = 3,
 			flavor = PossessionData.FlavorEnum.Furnishing			

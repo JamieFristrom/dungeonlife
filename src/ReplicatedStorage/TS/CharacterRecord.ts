@@ -14,6 +14,7 @@ import { CharacterClass, CharacterClasses } from './CharacterClasses';
 import { SkinTypeEnum } from "./SkinTypes"
 import { Players, Teams } from '@rbxts/services';
 
+
 // we need an unchangeable characterKey; we can't just use Character because a) sometimes they're not instantiated and b) costume changes change characters
 export type CharacterKey = number
 
@@ -33,6 +34,7 @@ export interface CharacterRecordI
     gearPool: GearPool
     idS: CharacterClass
     countBaseDataQuantity(baseDataKind: string) : number
+    countTools() : number
     getActualLevel() : number
     getClass() : string
     getFlexTool( itemKey: string ) : FlexTool | undefined
@@ -492,6 +494,12 @@ export abstract class CharacterRecord implements CharacterRecordI
     // not data-driving this so we aren't duplicating data
     getTeam() {
         return this.team
+    }
+
+    getBaseDamageBonus() { return 0 }
+
+    calculateMaxHealth(level: number, isHighLevelServer: boolean) {
+        return 0;
     }
 }
 

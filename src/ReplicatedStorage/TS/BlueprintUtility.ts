@@ -2,6 +2,7 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 export namespace BlueprintUtility {
@@ -18,5 +19,9 @@ export namespace BlueprintUtility {
         if (mobExclusion) {
             mobExclusion.Transparency = 1
         }
+    }
+
+    export function getBlueprintDatum(furnishing: Model) {
+        return PossessionData.dataT[getPossessionName(furnishing)]
     }
 }

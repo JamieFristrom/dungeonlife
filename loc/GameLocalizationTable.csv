@@ -1150,3 +1150,10 @@ explosiveDescription,explosiveDescription,60% explosion damage,{amount:int}% exp
 FloorFullName,FloorFullName,Subdweller Colony Floor 2: Subcellar,{dungeonname} Floor {depth:int}: {floorname},„{dungeonname}“-Ebene {depth:int}: {floorname},{dungeonname} Floor {depth:int}: {floorname},{dungeonname} - Étage {depth:int}: {floorname},{dungeonname}フロア{depth:int}: {floorname},{dungeonname}층 {depth:int}: {floorname},{dungeonname} Andar {depth:int}: {floorname},{dungeonname}层{depth:int}：{floorname},{dungeonname}關卡 {depth:int}：{floorname}
 ,,button for deleting item or character,💀Delete 💀,💀Löschen 💀,💀Delete 💀,💀Supprimer 💀,💀消す💀,💀삭제 💀,💀Deletar💀,💀删除💀,💀刪除💀
 ,,,💀Throw Away 💀,💀Wegwerfen 💀,💀Throw Away 💀,💀Jeter 💀,💀捨てる💀,💀버리기 💀,💀Jogar Fora💀,💀丢弃💀,💀丟棄💀
+WeaponsRack,,,Weapons Rack,,,,,,,,
+WeaponsRackDescription,,,Monsters players can get enchanted weapons from it (one per monster.),,,,,,,,
+,,,Click to use,,,,,,,,
+,,,Put away tool to use,,,,,,,,
+,,,Come cloer to use,,,,,,,,
+,,,Choose Team,,,,,,,,
+,,,Utility,,,,,,,,

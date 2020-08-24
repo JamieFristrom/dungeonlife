@@ -4,25 +4,27 @@
 import { ActiveSkinSetI, SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes";
 import { InventoryI } from "ReplicatedStorage/TS/InventoryI"
 
-import { InventoryStub } from "ServerStorage/TS/InventoryStub"
+import { InventoryMock } from "ServerStorage/TS/InventoryMock"
 import { InventoryManagerI } from "ServerStorage/TS/InventoryManagerI"
 
 
 export class InventoryDataStoreStub {
     Get() {
-        return new InventoryStub()
+        return new InventoryMock()
     }
 
     Set() {}
 }
 
-export class InventoryManagerStub implements InventoryManagerI {
+export class InventoryManagerMock implements InventoryManagerI {
+    inventoryMock = new InventoryMock();  // returns this no matter which player is passed in, so you can adjust it
+
     GetInventoryStoreWait(player: Player): DataStore2<InventoryI> {
         return new InventoryDataStoreStub()
     }
 
     GetWait(player: Player): InventoryI {
-        return new InventoryStub()
+        return this.inventoryMock;
     }
 
     GetActiveSkinsWait(player: Player): { monster: ActiveSkinSetI, hero: ActiveSkinSetI } {
@@ -34,7 +36,7 @@ export class InventoryManagerStub implements InventoryManagerI {
     }
 
     GetCount(player: Player, itemKey: string): number {
-        return 0
+        return this.inventoryMock.itemsT[itemKey] || 0
     }
 
     AdjustCount(player: Player, itemKey: string, increment: number, analyticItemTypeS?: string, analyticItemIdS?: string): void {        

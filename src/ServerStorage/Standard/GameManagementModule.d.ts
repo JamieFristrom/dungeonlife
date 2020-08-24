@@ -15,6 +15,7 @@ declare class GameManagementClass {
     MarkPlayersCharacterForRespawn(player: Player, optionalRespawnPart?: BasePart): void
     PlayerCharactersExist(dungeonPlayerMap: DungeonPlayerMap): boolean
     SetLevelReady(ready: boolean): void
+    LevelReady(): boolean
 
     // also returns a CharacterKey but does it Lua style so we'd have to refactor if we want that
     MonsterAddedWait(character: Character, player: Player, playerTracker: PlayerTracker, inTutorial: boolean): CharacterRecord

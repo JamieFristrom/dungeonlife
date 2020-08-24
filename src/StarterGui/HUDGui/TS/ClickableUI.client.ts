@@ -1,32 +1,28 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { Teams, Players, CollectionService, Workspace } from '@rbxts/services'
+import { Teams, Players, Workspace } from "@rbxts/services"
 
-import * as InputXL from 'ReplicatedStorage/Standard/InputXL'
+import * as InputXL from "ReplicatedStorage/Standard/InputXL"
 
-import { ChestClientManager } from 'ReplicatedStorage/TS/ChestClient'
-import { ModelUtility } from 'ReplicatedStorage/TS/ModelUtility';
+import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility"
+import { BlueprintUtility } from "ReplicatedStorage/TS/BlueprintUtility"
 
-ChestClientManager.run()
-
-let heroesTeam = Teams.WaitForChild('Heroes')
 let localPlayer = Players.LocalPlayer!
-let chestGuiTemplate = script.Parent!.Parent!.WaitForChild('ChestGui')
+let chestGuiTemplate = script.Parent!.Parent!.WaitForChild("ChestGui")
 
 let buildingFolder = Workspace.WaitForChild<Folder>("Building")
 
-function handleChestTooltip(chest: Model) {
+function handleClickableTooltip(chest: Model) {
     let origin = chest.FindFirstChild<Part>("Origin")
     DebugXL.Assert(origin !== undefined)
     if (origin) {
         let chestGui = origin.FindFirstChild<BillboardGui>("ChestGui")
         let lidOpen = chest.FindFirstChild("LidOpen") as BoolValue
-        DebugXL.Assert(lidOpen !== undefined)
-        if (!lidOpen || lidOpen.Value === true) {
+        if (lidOpen && lidOpen.Value === true) {
             if (chestGui) {
                 chestGui.Parent = undefined
             }
@@ -36,11 +32,11 @@ function handleChestTooltip(chest: Model) {
                 chestGui = chestGuiTemplate.Clone() as BillboardGui
                 chestGui.Parent = origin
             }
-            chestGui.FindFirstChild<GuiObject>('ButtonIcon')!.Visible = false
+            chestGui.FindFirstChild<GuiObject>("ButtonIcon")!.Visible = false
             let holdingTool = localPlayer.Character!.FindFirstChildWhichIsA("Tool")
             let distance = (ModelUtility.getPrimaryPartCFrameSafe(localPlayer.Character!).p.sub(origin.Position)).Magnitude
             if (distance < 20) {
-                let instructions = chestGui.FindFirstChild<TextLabel>('Instructions')
+                let instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
                 DebugXL.Assert(instructions !== undefined)
                 if (instructions) {
                     chestGui.Enabled = true
@@ -54,7 +50,7 @@ function handleChestTooltip(chest: Model) {
                         else {
                             if (InputXL.UsingGamepad()) {
                                 instructions.Text = ""
-                                chestGui.FindFirstChild<GuiObject>('ButtonIcon')!.Visible = true
+                                chestGui.FindFirstChild<GuiObject>("ButtonIcon")!.Visible = true
                             }
                             else {
                                 instructions.Text = "Click to open"
@@ -70,15 +66,23 @@ function handleChestTooltip(chest: Model) {
     }
 }
 
+let booya = 0
+
 while (true) {
     wait(0.25)
-    if (localPlayer.Team === heroesTeam) {
+    if (localPlayer.Team ) {
         if (localPlayer.Character && localPlayer.Character.PrimaryPart) {
             for (let furnishing of buildingFolder.GetChildren()) {
+                if(furnishing.Name==="WeaponsRack") {
+                    booya++
+                }
                 if (furnishing.FindFirstChild<BasePart>("ClickBox")) {
-                    DebugXL.Assert(furnishing.IsA('Model'))
-                    if (furnishing.IsA('Model')) {
-                        handleChestTooltip(furnishing as Model)
+                    DebugXL.Assert(furnishing.IsA("Model"))
+                    if (furnishing.IsA("Model")) {
+                        const whatTeams = BlueprintUtility.getBlueprintDatum(furnishing as Model).clickableByTeam
+                        if( whatTeams!.has( localPlayer.Team!.Name ) ) {
+                            handleClickableTooltip(furnishing as Model)
+                        }
                     }
                 }
             }

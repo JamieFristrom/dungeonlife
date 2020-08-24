@@ -130,6 +130,9 @@ local Crates = --[[Table of tables]]
 			{
 				idS           = "LightPhoenixgardeLegs"
 			},			
+			{
+				idS           = "WeaponsRack"
+			}
 		}
     },	
     { --[[Table for crate 2 data]]  -- blueprints must be slot 2
@@ -214,6 +217,9 @@ local Crates = --[[Table of tables]]
 			},
 			{
 				idS           = "PitTrap",
+			},
+			{
+				idS           = "WeaponsRack"
 			}
 		}
 	},
@@ -434,6 +440,9 @@ local Crates = --[[Table of tables]]
 			},				
 			{ -- 19
 				idS           = "BowDarkage"
+			},
+			{
+				idS           = "WeaponsRack"
 			}
 		},
 	},

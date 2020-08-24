@@ -4,7 +4,6 @@ import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 
 declare class FlexibleToolsClass
 {
-    AddRandomEnhancements( flexTool: FlexTool, boostB: boolean ): void
     GetFlexToolFromInstance( toolObj: Tool ): FlexTool
     CreateTool( params: CreateToolParamsI ): Tool
     GetAdjFlexToolStat( flexTool: FlexTool, statName: string ): number

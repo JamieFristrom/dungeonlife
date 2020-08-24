@@ -423,6 +423,8 @@ export class PlayerTracker {
     }
 }
 
+// this global namespace is a necessary evil as we gradually push references to contexts throught our functions and classes
+// to make them testable. The goal is to reduce its use to almost nothing over time.
 export namespace PlayerServer {
     let playerTracker = new PlayerTracker()
 

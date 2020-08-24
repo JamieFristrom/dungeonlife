@@ -31,7 +31,7 @@ class LootTraveller
         title.TextStrokeTransparency = 1
 
         let boostedIcon = this.myTravellingFrame.FindFirstChild('BoostedIcon') as ImageLabel
-        boostedIcon.Visible = flexToolInst.boostedB ? true : false
+        boostedIcon.Visible = flexToolInst.getBoosted()
         travellingFrame.Size = new UDim2( 0, 0, 0, 0 )
         travellingFrame.Parent = script.Parent!.Parent
         travellingFrame.Visible = true

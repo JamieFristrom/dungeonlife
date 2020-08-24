@@ -226,7 +226,7 @@ function FurnishUtility:CountFurnishings( furnishingName, player )
 			end
 		end
 	end
-	return total, personal
+	return { total, personal }
 end
 
 

@@ -6,7 +6,7 @@ import { QuestTrackerI } from "ReplicatedStorage/TS/QuestUtility"
 import { ActiveSkins, SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 
-export class InventoryStub implements InventoryI {
+export class InventoryMock implements InventoryI {
     itemsT: { [k:string]: number }
     questsT: Map< string, QuestTrackerI >
     redeemedCodesT: { [k:string]: number }
