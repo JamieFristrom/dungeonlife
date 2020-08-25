@@ -107,7 +107,8 @@ function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 					end
 				end
 				local position = FurnishUtility:SnapV3( Vector3.new( positionX, 1.2, positionZ ), spawnChoice.gridSubdivisionsN, spawnChoice.placementType )
-				if( FurnishServer:Furnish( MainContext.get(), Dungeon:GetMap(), nil, spawnChoice.idS, position, rotY ) )then
+				local result = FurnishServer:Furnish( MainContext.get(), Dungeon:GetMap(), nil, spawnChoice.idS, position, rotY )
+				if( result[0] )then
 					numPlaced = numPlaced + 1
 				end
 			end
@@ -211,10 +212,6 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 	local ghostRegion = Region3.new( position - instance:GetExtentsSize() / 2,
 		position + instance:GetExtentsSize() / 2 )	
 
---	if FurnishUtility:GridPointOccupied( position, instance:GetExtentsSize(), furnishingDatum.gridSubdivisionsN, furnishingDatum.placementType ) then
---		return nil
---	end
-
 	if FurnishUtility:IsWithinBoundaries(baseplate.Position, baseplate.Size, position, instance.PrimaryPart.Size, rotation)
 		and FurnishUtility:IsInMap( map, position )	
 		and not FurnishUtility:CharacterWithinRegion( ghostRegion ) 
@@ -227,15 +224,15 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 			if creator and InventoryUtility:IsInTutorial( inventory ) then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
 				--print( "In tutorial though" )
 			else
-				return nil
+				return {nil,nil}
 			end		
 		end
 		if personalN >= furnishingDatum.buildCapN then
-			return nil
+			return {nil,nil}
 		end	
 		local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
 		if not availableB and personalN >= inventory.itemsT[furnishingDatum.idS] then -- furnishingDatum.buildCapN then
-			return nil
+			return {nil,nil}
 		else
 			instance:SetPrimaryPartCFrame(CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0))
 			-- health gets set in destructible script
@@ -252,7 +249,7 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 		return { instance, StructureFactory.createStructure(context, instance) }
 	else
 		instance:Destroy()
-		return nil
+		return {nil, nil}
 	end
 end
 

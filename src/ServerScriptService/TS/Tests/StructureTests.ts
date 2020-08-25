@@ -21,3 +21,14 @@ import InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
     TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
     testSetup.clean()
 }
+
+// unable to place furnishing doesn't crash
+{
+    let testSetup = new TestContext()
+    testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
+    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000})
+    let map = MapUtility.makeEmptyMap(1)
+    Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0,0,0), 0 )
+    TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
+    testSetup.clean()
+}
