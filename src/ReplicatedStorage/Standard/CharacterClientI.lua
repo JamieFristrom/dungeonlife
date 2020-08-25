@@ -17,6 +17,8 @@ local CharacterClientI = {}
 CharacterClientI.maxSlots = 4
 
 -- do we want to check force field here?
+-- this script has to be able to run on the client, so we can't just pull up the character record and see if it's legit
+-- on the same or different team
 function CharacterClientI:ValidTarget( attackingTeam, targetCharacter )
 	DebugXL:Assert( attackingTeam:IsA('Team') )
 	DebugXL:Assert( self == CharacterClientI )

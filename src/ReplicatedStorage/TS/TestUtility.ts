@@ -30,7 +30,7 @@ export namespace TestUtility {
 
     export function createTestCharacter() {
         let testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
-        testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
+        testCharacter.Parent = Workspace.FindFirstChild<Folder>("Mobs")
         CollectionService.AddTag(testCharacter, "CharacterTag")  // wishlist fix; duplication of data problem
         return testCharacter
     }
@@ -40,13 +40,9 @@ export namespace TestUtility {
         let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
         DebugXL.Assert(costumeStub === undefined)
 
-        const costume = createTestCharacter()
-        DebugXL.Assert(costume !== undefined)
-        if (costume) {
-            let costumeCopy = costume.Clone()
-            costumeCopy.Name = Costumes.CostumeKey(player)
-            costumeCopy.Parent = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")
-        }
+        let costumeCopy = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
+        costumeCopy.Name = Costumes.CostumeKey(player)
+        costumeCopy.Parent = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")
     }
 
     export function cleanCostumeStub(player: Player) {
@@ -76,7 +72,7 @@ export namespace TestUtility {
 
     export function cleanTestCharacters() {
         for (; ;) {
-            let testCharacter = Workspace.FindFirstChild<Model>("TestDummy")
+            let testCharacter = Workspace.FindFirstChild<Model>("TestDummy", true)
             if (testCharacter) {
                 testCharacter.Parent = undefined
             }

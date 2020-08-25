@@ -6,7 +6,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { BalanceData } from "./BalanceDataTS"
 DebugXL.logD(LogArea.Requires, "FlexTool: BalanceData required")
-import { Enhancements } from "./EnhancementsTS"
+import { Enhancements, EnhancementFlavor } from "./EnhancementsTS"
 DebugXL.logD(LogArea.Requires, "FlexTool: Enhancements required")
 import { ToolData } from "./ToolDataTS"
 DebugXL.logD(LogArea.Requires, "FlexTool: ToolData required")
@@ -430,7 +430,7 @@ export class FlexTool {
         return undefined
     }
 
-    addEnhancement(enhancementKeyS: string) {
+    addEnhancement(enhancementKeyS: EnhancementFlavor) {
         DebugXL.Assert(typeIs(enhancementKeyS, "string"))
 
         // being locked down by a melee weapon is no fun, might as well be instant kill. actually same goes for a ranged
@@ -492,7 +492,7 @@ export class FlexTool {
         if (finalEnhancements > numEnhancements) {
             this.boostedB = true
         }
-        const enhancementKeys = Object.keys(Enhancements.enhancementFlavorInfos) as string[]
+        const enhancementKeys = Object.keys(Enhancements.enhancementFlavorInfos) as EnhancementFlavor[]
         const validEnhancementKeys = enhancementKeys.filter((enhanceKey) =>
             Enhancements.enhancementFlavorInfos[enhanceKey].allowedTypesT[equipData.equipType]).filter((enhanceKey) =>
                 invalidChoices.indexOf(enhanceKey) === -1)  // -1 means not in invalidChoices array 
