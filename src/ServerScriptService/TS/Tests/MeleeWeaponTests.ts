@@ -13,32 +13,61 @@ import { PlayerServer } from "ServerStorage/TS/PlayerServer";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
 import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { Monster } from "ReplicatedStorage/TS/Monster"
+import { Character } from "ReplicatedStorage/TS/ModelUtility";
+import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 
+class CombatTestHelper {
+    testSetup: TestContext
+    attacker: Character
+    defender: Character
+    tool: Tool
+    meleeWeapon: MeleeWeaponServerXL
+    oldHealth: number
+
+    constructor(attackerClass: CharacterClass, attackerTeam: string, weapon: string, defender: Model) {
+        this.testSetup = new TestContext()
+        this.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>(attackerTeam)
+        this.attacker = this.testSetup.makeTestPlayerCharacter(attackerClass)
+        let testRecord = attackerTeam === "Heroes" ? 
+            new Hero(attackerClass, CharacterClasses.heroStartingStats[attackerClass], []) :
+            new Monster(attackerClass, [], 1)
+        PlayerServer.setCharacterRecordForPlayer(this.testSetup.getPlayer(), testRecord)
+        this.defender = defender
+        this.oldHealth = this.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+        this.defender.Parent = Workspace
+        this.defender.SetPrimaryPartCFrame(this.attacker.GetPrimaryPartCFrame())
+        this.tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
+        let flexTool = new FlexTool(weapon, 1, [])
+        FlexibleToolsServer.setFlexToolInst(this.tool, { flexToolInst: flexTool, character: this.attacker, possessionsKey: "item1" })
+        this.meleeWeapon = new MeleeWeaponServerXL(this.tool)
+        this.tool.Parent = this.attacker
+        this.meleeWeapon.OnEquipped()
+        TestUtility.assertTrue(this.tool.Parent === this.attacker)        
+    }
+
+    clean()
+    {
+        FlexibleToolsServer.removeToolWait(this.tool, this.attacker)
+        this.testSetup.clean()
+    }
+}
 
 // test hit with a weapon
 {
-    let testSetup = new TestContext()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.makeTestPlayerCharacter("Warrior")
-    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
-    PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
-    let targetCharacter = TestUtility.createTestCharacter()
-    let oldHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    targetCharacter.Parent = Workspace
-    targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-    let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
-    let flexTool = new FlexTool("Axe", 1, [])
-    FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
-    let meleeWeaponServer = new MeleeWeaponServerXL(tool)
-    tool.Parent = character
-    meleeWeaponServer.OnEquipped()
-    TestUtility.assertTrue(tool.Parent === character)
-    meleeWeaponServer.OnActivated()
-    let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    TestUtility.assertTrue(newHealth < oldHealth)
-    FlexibleToolsServer.removeToolWait(tool, character)
-    testSetup.clean()
+    // arrange
+    let combatHelper = new CombatTestHelper("Warrior","Heroes","Axe",TestUtility.createTestCharacter())
+
+    // act
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
+
+    // clean
+    combatHelper.clean()
 }
+
 
 // test killing blow, earn xp
 // never got this working because Inventory getBoost call blocks. we can either get that PlayerProxy we want going,
@@ -75,75 +104,53 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 
 // test change teams monster->hero before the activation registers
 {
-    let testSetup = new TestContext()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    let character = testSetup.makeTestPlayerCharacter("Orc")
-    let testRecord = new Monster("Orc", [], 1)
-    PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
+    // arrange
+    let combatHelper = new CombatTestHelper("Orc","Monsters","Axe",TestUtility.createTestCharacter())
 
-    let targetCharacter = TestUtility.createTestCharacter()
-    let oldHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    targetCharacter.Parent = Workspace
-    targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-    let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
-    let flexTool = new FlexTool("Axe", 1, [])
-    FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
-    let meleeWeaponServer = new MeleeWeaponServerXL(tool)
-    tool.Parent = character
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    meleeWeaponServer.OnActivated()
-    let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    TestUtility.assertTrue(newHealth === oldHealth)
-    FlexibleToolsServer.removeToolWait(tool, character)
-    testSetup.clean()
+    // act
+    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth === combatHelper.oldHealth)
+
+    // clean
+    combatHelper.clean()
 }
 
 // test change teams hero->monster before the activation registers
 {
-    let testSetup = new TestContext()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.makeTestPlayerCharacter("Warrior")
-    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
-    PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
+    // arrange
+    let combatHelper = new CombatTestHelper("Warrior","Heroes","Axe",TestUtility.createTestCharacter())
 
-    let targetCharacter = TestUtility.createTestCharacter()
-    let oldHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    targetCharacter.Parent = Workspace
-    targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-    let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
-    let flexTool = new FlexTool("Axe", 1, [])
-    FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
-    let meleeWeaponServer = new MeleeWeaponServerXL(tool)
-    tool.Parent = character
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    meleeWeaponServer.OnActivated()
-    let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    TestUtility.assertTrue(newHealth < oldHealth)
-    FlexibleToolsServer.removeToolWait(tool, character)
-    testSetup.clean()
+    // act
+    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
+
+    // clean
+    combatHelper.clean()
 }
 
 // test smack destructible structure
 {
-    let testSetup = new TestContext()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.makeTestPlayerCharacter("Warrior")
-    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
-    PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
-    let targetCharacter = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Barrel")!.Clone()
-    targetCharacter.Parent = Workspace
-    let oldHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-    let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
-    let flexTool = new FlexTool("Axe", 1, [])
-    FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
-    let meleeWeaponServer = new MeleeWeaponServerXL(tool)
-    tool.Parent = character
-    meleeWeaponServer.OnActivated()
-    let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
-    TestUtility.assertTrue(newHealth < oldHealth)
-    FlexibleToolsServer.removeToolWait(tool, character)
-    testSetup.clean()
+    // arrange
+    let combatHelper = new CombatTestHelper("Warrior","Heroes","Axe",
+        ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Barrel")!.Clone())
+
+    // act
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
+
+    // clean
+    combatHelper.clean()
 }
 
 // this awards XP and thus requires us to either thread context through all the hero damaging stuff or come up with something else
@@ -173,4 +180,5 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 //     testSetup.clean()
 // }
 
+// monsters hitting heroes with enchanted weapons have effects
 
