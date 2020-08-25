@@ -39,7 +39,7 @@ export namespace TestUtility {
         // we didn't forget to clean did we?
         let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
         DebugXL.Assert(costumeStub === undefined)
-        
+
         const costume = createTestCharacter()
         DebugXL.Assert(costume !== undefined)
         if (costume) {
@@ -75,9 +75,9 @@ export namespace TestUtility {
     }
 
     export function cleanTestCharacters() {
-        for(;;) {
+        for (; ;) {
             let testCharacter = Workspace.FindFirstChild<Model>("TestDummy")
-            if( testCharacter ) {
+            if (testCharacter) {
                 testCharacter.Parent = undefined
             }
             else {
@@ -107,7 +107,7 @@ export class TestContext extends ServerContext {
     private player = TestUtility.createTestPlayer()
 
     constructor() {
-        super( new GameManagerMock(), new InventoryManagerMock(), new PlayerTracker )
+        super(new GameManagerMock(), new InventoryManagerMock(), new PlayerTracker)
         GameServer.levelSession++
         TestUtility.saveCostumeStub(this.player)
     }
@@ -118,7 +118,7 @@ export class TestContext extends ServerContext {
         TestUtility.cleanTestCharacters()
     }
 
-    getTestPlayerCharacter(className: string): Character {
+    makeTestPlayerCharacter(className: string): Character {
         let testCharacter = Costumes.LoadCharacter(
             this.player,
             [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>(className)!],
@@ -133,7 +133,7 @@ export class TestContext extends ServerContext {
 
     getPlayer() { return this.player }
 
-    getInventoryMock() { 
+    getInventoryMock() {
         return (this.getInventoryMgr() as InventoryManagerMock).inventoryMock
     }
 }

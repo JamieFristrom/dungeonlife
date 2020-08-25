@@ -19,7 +19,7 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 {
     let testSetup = new TestContext()
     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.getTestPlayerCharacter("Warrior")
+    let character = testSetup.makeTestPlayerCharacter("Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
     let targetCharacter = TestUtility.createTestCharacter()
@@ -77,7 +77,7 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 {
     let testSetup = new TestContext()
     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    let character = testSetup.getTestPlayerCharacter("Orc")
+    let character = testSetup.makeTestPlayerCharacter("Orc")
     let testRecord = new Monster("Orc", [], 1)
     PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
 
@@ -102,7 +102,7 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 {
     let testSetup = new TestContext()
     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.getTestPlayerCharacter("Warrior")
+    let character = testSetup.makeTestPlayerCharacter("Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
 
@@ -127,10 +127,10 @@ import { Monster } from "ReplicatedStorage/TS/Monster"
 {
     let testSetup = new TestContext()
     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    let character = testSetup.getTestPlayerCharacter("Warrior")
+    let character = testSetup.makeTestPlayerCharacter("Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
-    let targetCharacter = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Barrel")!.Clone()   
+    let targetCharacter = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Barrel")!.Clone()
     targetCharacter.Parent = Workspace
     let oldHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
     targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())

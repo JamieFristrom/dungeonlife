@@ -8,10 +8,10 @@ import { CollectionService, Workspace } from "@rbxts/services"
 
 import { CharacterKey } from "ReplicatedStorage/TS/CharacterRecord"
 import { MonsterServer } from "./MonsterServer"
-import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 import { ServerContextI } from "./ServerContext"
 import { Structure } from "ServerStorage/TS/Structure"
 import { Monster } from "ReplicatedStorage/TS/Monster"
+import { ToolCaches } from "./ToolCaches"
 
 // wishlist - only works on players so can"t work on mobs if we one decide to be able to allow the players to place chests
 const lootDropRE = Workspace.FindFirstChild<Folder>("Signals")!.FindFirstChild<RemoteEvent>("LootDropRE")!
@@ -27,20 +27,21 @@ export class WeaponsRack extends Structure {
 
     use(player: Player) {
         const characterKey = this.serverContext.getPlayerTracker().getCharacterKeyFromPlayer(player)
-        const characterRecord = this.serverContext.getPlayerTracker().getCharacterRecord(characterKey) 
-        if( characterRecord instanceof Monster && characterRecord.idS!=="DungeonLord" ) {
+        const characterRecord = this.serverContext.getPlayerTracker().getCharacterRecord(characterKey)
+        if (characterRecord instanceof Monster && characterRecord.idS !== "DungeonLord") {
             if (!this.charactersWhoUsed.has(characterKey)) {
                 this.charactersWhoUsed.add(characterKey)
 
                 // weapon could be any physical weapon
-                const suitableTools = ToolData.dataA.filter((tool) => tool.equipType === ToolData.EquipTypeEnum.Melee || tool.equipType === ToolData.EquipTypeEnum.Ranged)
-                let weaponList = suitableTools.map((tool) => tool.idS)
+                let weaponList = ["DaggersDual", "Crossbow", "Longbow", "Bomb", "Shortsword", "Broadsword", "Greatsword", "Staff", "Hatchet", "Axe", "Club", "Mace"]
 
                 let newTool = MonsterServer.giveUniqueWeapon(this.serverContext.getPlayerTracker(), characterKey, weaponList)
                 newTool.levelN = math.max(newTool.levelN, 2) // needs to be at least level 2 to have 1 enchantment
                 const activeSkins = this.serverContext.getInventoryMgr().GetActiveSkinsWait(player)
 
-                newTool.addRandomEnhancements(this.serverContext.getInventoryMgr().BoostActive(player), 1)   // fun fact, having boost on gives you better weapons rack drops. that"s real pay to win right there
+                const badjuju = ["str", "dex", "con", "will", "radiant"]
+                newTool.addRandomEnhancements(this.serverContext.getInventoryMgr().BoostActive(player), 1, badjuju)   // fun fact, having boost on gives you better weapons rack drops. that"s real pay to win right there
+                ToolCaches.updateToolCache(this.serverContext.getPlayerTracker(), characterKey, characterRecord, activeSkins.monster)
                 lootDropRE.FireClient(player, "item", newTool, activeSkins)  // shows travelling widget
                 hotbarRE.FireClient(player, "Refresh", characterRecord)
             }

@@ -291,7 +291,7 @@ class PlayerFake extends InstanceFake {
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
     // starting as a werewolf
-    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
+    let testCharacter = testSetup.makeTestPlayerCharacter("Werewolf")
     TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
     testSetup.clean()
 }
@@ -304,7 +304,7 @@ class PlayerFake extends InstanceFake {
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
-    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
+    let testCharacter = testSetup.makeTestPlayerCharacter("Werewolf")
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0

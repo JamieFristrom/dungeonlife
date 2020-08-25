@@ -67,7 +67,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
     let superbossMgr = new SuperbossManager()
     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "CyclopsSuper")
-    let testCharacter =testSetup.getTestPlayerCharacter("CyclopsSuper")
+    let testCharacter = testSetup.makeTestPlayerCharacter("CyclopsSuper")
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
         Monsters.PlayerCharacterAddedWait(testSetup.getInventoryMgr(), testCharacter, testSetup.getPlayer(), testSetup.getPlayerTracker(), superbossMgr, 1)
@@ -76,7 +76,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
         TestUtility.assertTrue(superbossMgr.superbossDefeated(1), "Superboss defeated")
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated")
         // let's make a new superboss
-        let testCharacter2 = testSetup.getTestPlayerCharacter("CyclopsSuper")
+        let testCharacter2 = testSetup.makeTestPlayerCharacter("CyclopsSuper")
 
         DebugXL.Assert(testCharacter2 !== undefined)  // this would be a malfunction in the test system, not a test assert
         if (testCharacter2) {

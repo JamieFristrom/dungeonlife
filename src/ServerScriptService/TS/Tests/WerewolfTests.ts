@@ -22,7 +22,7 @@ import { ServerStorage, Teams } from "@rbxts/services"
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Werewolf")
 
     // starting as a werewolf
-    let testCharacter = testSetup.getTestPlayerCharacter("Werewolf")
+    let testCharacter = testSetup.makeTestPlayerCharacter("Werewolf")
 
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {

@@ -3,7 +3,7 @@
 
 import { Workspace, RunService } from "@rbxts/services"
 warn("DUNGEON LIFE 8/24/2020")
-warn("RC: enchanted weapons rack")
+warn("RC2: enchanted weapons rack makes equippable weapons")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
