@@ -249,17 +249,6 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 	end
 end
 
-function Monsters:AdjustBuildPoints( player, amountN )
---  boost is only a hero thing now
---	if amountN > 0 then
---		if Inventory:GetCount( player, "Boost" )>0 then
---			amountN = amountN * 1.5
---		end
---	end
-	player.BuildPoints.Value = player.BuildPoints.Value + amountN
-end
-
-
 function Monsters:DoDirectDamage( context, optionalDamagingPlayer, damage, targetHumanoid, damageTagsT, critB )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:logD(LogArea.Combat, 'Monsters:DoDirectDamage('..( optionalDamagingPlayer and optionalDamagingPlayer.Name or 'null damaging player' )..
@@ -289,10 +278,10 @@ function Monsters:DoDirectDamage( context, optionalDamagingPlayer, damage, targe
 		if optionalDamagingPlayer then  -- it was somehow getting here from doing fire damage even though that checked; maybe there's a wait or yield between here and there
 			MonsterServer.recordMonsterDamageDone( optionalDamagingPlayer, damage )
 			if targetHumanoid.Health <= 0 then
-				Monsters:AdjustBuildPoints( optionalDamagingPlayer, 30 )
-				context:getInvetoryMgr():AdjustCount( optionalDamagingPlayer, "Stars", 5, "Kill", "Hero" )
-				context:getInvetoryMgr():EarnRubies( optionalDamagingPlayer, 5, "Kill", "Hero" )
-				context:getInvetoryMgr():AdjustCount( optionalDamagingPlayer, "HeroKills", 1 )
+				MonsterServer.adjustBuildPoints( optionalDamagingPlayer, 30 )
+				context:getInventoryMgr():AdjustCount( optionalDamagingPlayer, "Stars", 5, "Kill", "Hero" )
+				context:getInventoryMgr():EarnRubies( optionalDamagingPlayer, 5, "Kill", "Hero" )
+				context:getInventoryMgr():AdjustCount( optionalDamagingPlayer, "HeroKills", 1 )
 			end
 		end
 	end

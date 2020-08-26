@@ -6,6 +6,9 @@ import { CharacterKey, CharacterRecord, CharacterRecordI } from "ReplicatedStora
 import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
 import { InventoryManagerI } from "ServerStorage/TS/InventoryManagerI"
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
+import { ServerContextI } from "ServerStorage/TS/ServerContext"
+
+import { DamageTags } from "ReplicatedStorage/TS/DamageTags"
 
 type Character = Model
 
@@ -31,6 +34,8 @@ declare class MonstersClass {
         currentLevelSession: number): void
         
     Died(character: Character, cr: CharacterRecordI): void
+
+    DoDirectDamage( context: ServerContextI, optionalDamagingPlayer: Player, damage: number, targetHumanoid: Humanoid, damageTagsT: DamageTags, critB: boolean ): void
 }
 
 declare let Monsters: MonstersClass

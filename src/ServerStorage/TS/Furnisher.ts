@@ -8,18 +8,18 @@ import * as FloorData from "ReplicatedStorage/Standard/FloorData"
 import PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
 import * as FurnishServer from "ServerStorage/Standard/FurnishServerModule"
-import { Workspace, ReplicatedStorage, Teams } from '@rbxts/services'
-import Dungeon from 'ServerStorage/Standard/DungeonModule'
-import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
-import MathXL from 'ReplicatedStorage/Standard/MathXL'
-import Monsters from 'ServerStorage/Standard/MonstersModule'
+import { Workspace, ReplicatedStorage, Teams } from "@rbxts/services"
+import Dungeon from "ServerStorage/Standard/DungeonModule"
+import FurnishUtility from "ReplicatedStorage/Standard/FurnishUtility"
+import MathXL from "ReplicatedStorage/Standard/MathXL"
+import { MonsterServer } from "ServerStorage/TS/MonsterServer"
 
-import { ServerContextI } from 'ServerStorage/TS/ServerContext'
-import { DungeonMap } from 'ReplicatedStorage/TS/DungeonMap'
-import { MainContext } from './MainContext'
-import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
-import { PlayerServer } from './PlayerServer'
-import CharacterI from 'ServerStorage/Standard/CharacterI'
+import { ServerContextI } from "ServerStorage/TS/ServerContext"
+import { DungeonMap } from "ReplicatedStorage/TS/DungeonMap"
+import { MainContext } from "./MainContext"
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+import { PlayerServer } from "./PlayerServer"
+import CharacterI from "ServerStorage/Standard/CharacterI"
 
 const buildingFolder = Workspace.WaitForChild<Folder>("Building")
 
@@ -76,7 +76,7 @@ export namespace Furnisher {
             if (furnishingDatum.buildCostN! <= player.FindFirstChild<NumberValue>("BuildPoints")!.Value) {
                 const [ instance, _ ] = FurnishServer.Furnish(context, map, player, name, position, rotation)
                 if (instance) {  // many reasons it can fail
-                    Monsters.AdjustBuildPoints(player, -furnishingDatum.buildCostN!)
+                    MonsterServer.adjustBuildPoints(player, -furnishingDatum.buildCostN!)
 
                     if (furnishingDatum.buildCostN! < 0) {
                         // how many of those have you already built? The first time you build, you get 1 ruby. Second time, 50% chance. Third time, 33% chance. Etc

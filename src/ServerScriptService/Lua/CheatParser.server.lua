@@ -12,7 +12,7 @@ local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
 local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )
 
 local GameManagement  = require( game.ServerStorage.GameManagementModule )
-local Monsters        = require( game.ServerStorage.MonstersModule )
+local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local LootServer = require( game.ServerStorage.TS.LootServer ).LootServer
 
 local AdminCommands = require( game.ServerStorage.TS.AdminCommands ).AdminCommands
@@ -56,7 +56,7 @@ function CheatParser:DownALevel( player )
 end
 
 function CheatParser:BuildPoints( player )
-	Monsters:AdjustBuildPoints( player, 600 )
+	MonsterServer.adjustBuildPoints( player, 600 )
 end
 
 function CheatParser:TestServerError( player )

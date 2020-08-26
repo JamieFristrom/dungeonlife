@@ -22,6 +22,7 @@ import Inventory from "ServerStorage/Standard/InventoryModule"
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
 import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
+import InstanceXL from "ReplicatedStorage/Standard/InstanceXL";
 
 
 DebugXL.logD(LogArea.Requires, "MonsterServer finished imports")
@@ -415,5 +416,19 @@ export namespace MonsterServer {
             }
         }
         return false
+    }
+
+    export function adjustBuildPoints( player: Player, amount: number ) {
+        // for testing purposes, and who knows there may be a race somewhere.
+        let buildPointsObject = player.FindFirstChild<NumberValue>("BuildPoints")
+        if( !buildPointsObject ) {
+            buildPointsObject = new Instance("NumberValue")
+            buildPointsObject.Name = "BuildPoints"
+            buildPointsObject.Value = amount
+            buildPointsObject.Parent = player
+        }
+        else {
+            buildPointsObject.Value = buildPointsObject.Value + amount
+        }
     }
 }

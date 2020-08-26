@@ -463,7 +463,7 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 			end
 			-- consolation prize for victim:
 			if victimPlayer then
-				require( game.ServerStorage.MonstersModule ):AdjustBuildPoints( victimPlayer, 50 )
+				MonsterServer.adjustBuildPoints( victimPlayer, 50 )
 				MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
 				
 				Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )

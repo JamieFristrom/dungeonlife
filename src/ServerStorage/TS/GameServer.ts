@@ -1,7 +1,7 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CollectionService, Players, Teams, Workspace } from "@rbxts/services"
@@ -17,16 +17,13 @@ import Heroes from "ServerStorage/Standard/HeroesModule"
 
 import { MessageServer } from "./MessageServer"
 import { PlayerServer, TeamStyleChoice, PlayerTracker } from "./PlayerServer"
-import { DungeonPlayer, DungeonPlayerMap } from './DungeonPlayer'
-import { SuperbossManager } from './SuperbossManager'
+import { DungeonPlayer, DungeonPlayerMap } from "./DungeonPlayer"
+import { SuperbossManager } from "./SuperbossManager"
 
-import { SpawnerUtility } from 'ReplicatedStorage/TS/SpawnerUtility'
-import { DungeonDeck } from './DungeonDeck'
-import { HeroServer } from './HeroServer'
-
-import FloorData from "ReplicatedStorage/Standard/FloorData"
-
-import Monsters from 'ServerStorage/Standard/MonstersModule'
+import { SpawnerUtility } from "ReplicatedStorage/TS/SpawnerUtility"
+import { DungeonDeck } from "./DungeonDeck"
+import { HeroServer } from "./HeroServer"
+import { MonsterServer } from "./MonsterServer"
 
 
 export enum LevelResultEnum {
@@ -36,7 +33,6 @@ export enum LevelResultEnum {
     LoungeModeOver = "LoungeModeOver",
     BeatSuperboss = "BeatSuperboss"
 }
-
 
 // // it was this way up until 9/30 - in general, monster swarms too rough on fuller servers. Thought about changing radar but they'd still
 // -- swarm on exit and entrance
@@ -301,7 +297,7 @@ export namespace GameServer {
                 Heroes.SaveHeroesWait(player)
             }
             for (let player of MonsterTeam.GetPlayers()) {
-                Monsters.AdjustBuildPoints(player, 50)
+                MonsterServer.adjustBuildPoints(player, 50)
             }
             levelResult = LevelResultEnum.ExitReached
         }

@@ -11,11 +11,19 @@ import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/Character
 import Monsters, { PlayerCharacterAddedWait } from "ServerStorage/Standard/MonstersModule";
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager";
 
+// test that DoDirectDamage killing blow doesn't crash
+{
+    let testSetup = new TestContext()
+    let testCharacter = TestUtility.createTestCharacter()
+    Monsters.DoDirectDamage(testSetup, testSetup.getPlayer(), 1000, testCharacter.FindFirstChild<Humanoid>("Humanoid")!, {}, true)
+    TestUtility.assertTrue( testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health <= 0, "They dead")
+    testSetup.clean()
+}
+
 // test monster spawn gets no duplicate weapons
 // so this was an interesting challenge from a TDD standpoint - you don't want a flaky test, I.E. a test that only fails some of the time
 // but it occurs to me that while a test that has a false negative 1% of the time is horrible, a test that has a false positive 1% of the time
 // is actually ok. So we'll just run the test over and over so the statistical likelihood of it passing is 1$
-
 // to truly make it a predictable result and be confident it wouldn't have a false negative we'd have to seed the RNG; but that's even worse
 // then testing a wide variety of randoms some of which may not fail when they should. seeding makes more sense to avoid false positives
 {
