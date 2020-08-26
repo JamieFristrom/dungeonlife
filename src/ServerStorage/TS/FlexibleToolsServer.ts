@@ -11,7 +11,10 @@ import { ToolData } from 'ReplicatedStorage/TS/ToolDataTS';
 DebugXL.logD(LogArea.Requires, 'FlexibleToolServer: ReplicatedStorage/TS imports succesful')
 
 import { CreateToolParamsI } from 'ServerStorage/TS/CreateToolParamsI'
-import { PlayerServer } from './PlayerServer';
+import { PlayerServer, PlayerTracker } from './PlayerServer';
+import FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule';
+import { Monster } from 'ReplicatedStorage/TS/Monster';
+import { Hero } from 'ReplicatedStorage/TS/HeroTS';
 
 DebugXL.logD(LogArea.Requires, 'FlexibleToolServer: imports succesful')
 
@@ -101,12 +104,39 @@ export namespace FlexibleToolsServer {
         }
         else {
             const characterRecord = PlayerServer.getCharacterRecordFromCharacter(fta.character)
-            DebugXL.Assert( characterRecord !== undefined )
-            if( characterRecord ) {
+            DebugXL.Assert(characterRecord !== undefined)
+            if (characterRecord) {
                 characterRecord.removeTool(fta.possessionsKey)
             }
         }
         tool.Destroy()
+    }
+
+    // check tool usability and put away if illegal. overkills - puts away any tools whether it's the one we're checking or not
+    export function recheckRequirements(playerTracker: PlayerTracker, flexTool: FlexTool, player?: Player) {
+        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+        DebugXL.Assert(flexTool instanceof FlexTool)
+        DebugXL.Assert(!player || player.IsA("Player"))
+        if (!player) {
+            return true
+        }
+
+        const pcData = playerTracker.getCharacterRecordFromPlayer(player)
+        if (pcData instanceof Monster) {
+            return true
+        }
+        else if (pcData instanceof Hero) {
+            if (pcData.canUseGear(flexTool)) {
+                return true
+            }
+        }
+
+        // can't use gear
+        const humanoid = player.Character!.FindFirstChild<Humanoid>("Humanoid")
+
+        // not sure we need this now that we have custom inventory, but seems like it might stop hax0rs
+        delay(0.1, () => { if (humanoid) { humanoid.UnequipTools() } })
+        return false
     }
 }
 

@@ -19,40 +19,44 @@ local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 
 local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 
 -- *** deliberately does not require heroes or monsters in the header to avoid circular requires ***
 
--- the interface between encapsulated game components and this particular game's specific characters;
+-- the interface between encapsulated game components and this particular game"s specific characters;
 -- it needs to be modified for every game
 local CharacterI = {}
 
 
-function CharacterI:TakeFlexToolDamage( hitCharacter, attackingCharacter, flexTool )
+-- it's kind of sad we pass the flexTool _and_ the tool all the way to the effects resolution
+function CharacterI:TakeFlexToolDamage( context, hitCharacter, attackingCharacter, flexTool, tool )
 	DebugXL:Assert( self == CharacterI )
-	DebugXL:Assert( attackingCharacter:IsA('Model') )
+	DebugXL:Assert( hitCharacter:IsA("Model"))
+	DebugXL:Assert( attackingCharacter:IsA("Model") )
 	DebugXL:Assert( TableXL:InstanceOf( flexTool, FlexTool ) )
+	DebugXL:Assert( not tool or tool:IsA("Tool"))
 
-	DebugXL:logD( LogArea.Combat, 'TakeFlexToolDamage attackingPlayer: '..attackingCharacter.Name..' hitCharacter: '..hitCharacter.Name )
+	DebugXL:logD( LogArea.Combat, "TakeFlexToolDamage attackingPlayer: "..attackingCharacter.Name.." hitCharacter: "..hitCharacter.Name )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	if hitHumanoid then
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
-		local attackingCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( attackingCharacter )
+		local attackingCharacterRecord = context:getPlayerTracker():getCharacterRecordFromCharacter( attackingCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingCharacterRecord:getTeam() then
 			CharacterServer.setLastAttacker( hitCharacter, attackingCharacter )
 			local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
 		
-			-- ...it's almost polymorphic...  wishlist fix
+			-- ...it"s almost polymorphic...  wishlist fix
 			if TableXL:InstanceOf( attackingCharacterRecord, Hero ) then	
-				DebugXL:logV( LogArea.Combat, 'Hero damaging monster' )	
+				DebugXL:logV( LogArea.Combat, "Hero damaging monster" )	
 				DebugXL:Assert( attackingPlayer )
 				if attackingPlayer then
-					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingPlayer, attackingCharacter, flexTool, hitHumanoid )
+					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingCharacterRecord, attackingCharacter, flexTool, hitHumanoid, tool )
 				end
 			elseif TableXL:InstanceOf( attackingCharacterRecord, Monster ) then
-				-- can't just use tool's parent to determine attacking character because it might be lingering
+				-- can"t just use tool"s parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
-				DebugXL:logV( LogArea.Combat, 'Monster damaging hero' )	
-				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( attackingCharacter, flexTool, hitHumanoid ) 
+				DebugXL:logV( LogArea.Combat, "Monster damaging hero" )	
+				require( game.ServerStorage.MonstersModule ):DoFlexToolDamage( context, attackingCharacter, flexTool, hitHumanoid, tool ) 
 			else
 				DebugXL:Error( "Null character record doing damage")
 			end
@@ -66,16 +70,16 @@ function CharacterI:TakeDirectDamage( hitCharacter, damage, attackingPlayer, dam
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	DebugXL:Assert( hitHumanoid )
 	if hitHumanoid then
-		DebugXL:logV( LogArea.Combat, 'CharacterI:TakeDirectDamage - hitHumanoid '..hitHumanoid:GetFullName()..','..damage..','..attackingPlayer.Name )
+		DebugXL:logV( LogArea.Combat, "CharacterI:TakeDirectDamage - hitHumanoid "..hitHumanoid:GetFullName()..","..damage..","..attackingPlayer.Name )
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
 		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
 --			--print( attackingPlayer.Name.." hits "..hitCharacter.Name.." for "..damage )
 			if attackingPlayer.Team == game.Teams.Heroes then		
 				require( game.ServerStorage.Standard.HeroesModule ):DoDirectDamage( attackingPlayer, damage, hitHumanoid, false )
 			else
-				-- can't just use tool's parent to determine attacking character because it might be lingering
+				-- can"t just use tool"s parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
-				require( game.ServerStorage.MonstersModule ):DoDirectDamage( attackingPlayer, damage, hitHumanoid, damageTagsT, false ) 
+				require( game.ServerStorage.MonstersModule ):DoDirectDamage( MainContext:get(), attackingPlayer, damage, hitHumanoid, damageTagsT, false ) 
 			end
 		end
 	end
@@ -83,11 +87,18 @@ end
 
 
 -- NOTE: returns packed pair { damage: number, crit: bool }
+-- used by bombs, doesn't work with mobs yet
 function CharacterI:DetermineFlexToolDamage( player, flexTool )
-	if player.Team == game.Teams.Heroes then
+	-- still uses MainContext. If we want bombs under test we'll need to fix
+	local characterRecord = PlayerServer.getCharacterRecordFromPlayer(player)
+	if TableXL.InstanceOf( characterRecord, Hero ) then
 		return require( game.ServerStorage.Standard.HeroesModule ):DetermineFlexToolDamageN( player, flexTool, false )
 	else 
-		return require( game.ServerStorage.MonstersModule ):DetermineFlexToolDamageN( player.Character, flexTool )
+--		return require( game.ServerStorage.MonstersModule ):DetermineFlexToolDamageN( player.Character, flexTool )
+		return require( game.ServerStorage.MonstersModule ):CalculateDamageN( 
+			characterRecord:getClass(), 
+			characterRecord:getLocalLevel(),
+			flexTool )
 	end		
 end
 

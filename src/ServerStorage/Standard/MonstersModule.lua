@@ -12,7 +12,6 @@ local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
 local Ghost = require( game.ServerStorage.GhostModule )
-local Inventory = require( game.ServerStorage.InventoryModule )
 
 local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 
@@ -22,8 +21,6 @@ local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsSe
 
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
-local CharacterRecord = require( game.ReplicatedStorage.TS.CharacterRecord ).CharacterRecord
-local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 
@@ -31,6 +28,7 @@ local LootServer = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
+local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
 -- for balance tuning:
 
 
@@ -183,22 +181,6 @@ function Monsters:CalculateDamageN( monsterClass, monsterLevelN, flexToolInst, p
 end
 
 
--- unlike heroes, monsters have a generic damage bonus they apply to everything
--- function Monsters:DetermineDamageN( monsterCharacter, toolO )
--- 	DebugXL:Assert( self == Monsters )
--- 	local flexToolInst = FlexibleTools:GetFlexToolFromInstance( toolO )
--- 	return Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
--- end
-
--- returns { damageN, critB } pair
-function Monsters:DetermineFlexToolDamageN( monsterCharacter, flexToolInst )
-	DebugXL:Assert( self == Monsters )
-	DebugXL:Assert( TableXL:InstanceOf(flexToolInst, FlexTool))
-	local characterKey = PlayerServer.getCharacterKeyFromCharacterModel( monsterCharacter )
-	return Monsters:CalculateDamageN( Monsters:GetClass( monsterCharacter ), PlayerServer.getLocalLevel( characterKey ), flexToolInst )
-end
-
-
 function Monsters:Died( monster, characterRecord )
 	MonsterServer.died( monster, characterRecord )
 	LootServer.checkMonsterDrop( monster )
@@ -283,7 +265,7 @@ function Monsters:AdjustBuildPoints( player, amountN )
 end
 
 
-function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid, damageTagsT, critB )
+function Monsters:DoDirectDamage( context, optionalDamagingPlayer, damage, targetHumanoid, damageTagsT, critB )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:logD(LogArea.Combat, 'Monsters:DoDirectDamage('..( optionalDamagingPlayer and optionalDamagingPlayer.Name or 'null damaging player' )..
 		','..damage..','..targetHumanoid:GetFullName()..')' )
@@ -296,7 +278,7 @@ function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid
 		-- while theoretically monsters only damage players this can throw an error because monsters can currently damage barriers
 		if targetPlayer and targetPlayer.Parent then
 			DebugXL:logV( LogArea.Combat, 'targetPlayer = '..targetPlayer.Name )
-			local characterRecord = PlayerServer.getCharacterRecordFromPlayer( targetPlayer )
+			local characterRecord = context:getPlayerTracker():getCharacterRecordFromPlayer( targetPlayer )
 			DebugXL:Assert( characterRecord )  -- seriously, if the target player and their character is still around then there should be no way this can happen
 			if characterRecord then
 				damage = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, characterRecord, damage, damageTagsT )
@@ -313,23 +295,33 @@ function Monsters:DoDirectDamage( optionalDamagingPlayer, damage, targetHumanoid
 			MonsterServer.recordMonsterDamageDone( optionalDamagingPlayer, damage )
 			if targetHumanoid.Health <= 0 then
 				Monsters:AdjustBuildPoints( optionalDamagingPlayer, 30 )
-				Inventory:AdjustCount( optionalDamagingPlayer, "Stars", 5, "Kill", "Hero" )
-				Inventory:EarnRubies( optionalDamagingPlayer, 5, "Kill", "Hero" )
-				Inventory:AdjustCount( optionalDamagingPlayer, "HeroKills", 1 )
+				context:getInvetoryMgr():AdjustCount( optionalDamagingPlayer, "Stars", 5, "Kill", "Hero" )
+				context:getInvetoryMgr():EarnRubies( optionalDamagingPlayer, 5, "Kill", "Hero" )
+				context:getInvetoryMgr():AdjustCount( optionalDamagingPlayer, "HeroKills", 1 )
 			end
 		end
 	end
 end
 
 -- yes, this became a fucking mess
-function Monsters:DoFlexToolDamage( character, flexTool, targetHumanoid )
+function Monsters:DoFlexToolDamage( context, character, flexTool, targetHumanoid, tool )
 	DebugXL:Assert( self == Monsters )
 	DebugXL:logI(LogArea.Combat, 'Monsters:DoFlexToolDamage')
+	DebugXL:Assert( character:IsA("Model"))
+	DebugXL:Assert( targetHumanoid:IsA("Humanoid"))
+	DebugXL:Assert( not tool or tool:IsA("Tool"))
 	if targetHumanoid.Health > 0 then
-		local damageN, critB = unpack( Monsters:DetermineFlexToolDamageN( character, flexTool ) )
+		local characterRecord = context:getPlayerTracker():getCharacterRecordFromCharacter(character)
+		FlexibleTools:ResolveFlexToolEffects( characterRecord, flexTool, targetHumanoid, tool )
+
+		--local damageN, critB = unpack( Monsters:DetermineFlexToolDamageN( character, flexTool ) )
+		local damageN, critB = unpack( Monsters:CalculateDamageN( 
+			characterRecord:getClass(),
+			characterRecord:getLocalLevel(),
+			flexTool ))
 		local weaponTypeS = flexTool:getBaseData().equipType
 		local optionalMonsterPlayer = game.Players:GetPlayerFromCharacter( character )
-		Monsters:DoDirectDamage( optionalMonsterPlayer, damageN, targetHumanoid, { [weaponTypeS]=true }, critB )
+		Monsters:DoDirectDamage( context, optionalMonsterPlayer, damageN, targetHumanoid, { [weaponTypeS]=true }, critB )
 	end
 end
 

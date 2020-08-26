@@ -29,22 +29,21 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 	
 --]]
 local FlexEquipUtility  = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
-local MathXL		    = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 local ToolXL            = require( game.ReplicatedStorage.Standard.ToolXL )
 print( 'FlexibleToolsModule: ReplicatedStorage.Standard imports succesful')
 
 local CharacterI        = require( game.ServerStorage.CharacterI )
-local Inventory         = require( game.ServerStorage.InventoryModule )
 local MechanicalEffects = require( game.ServerStorage.Standard.MechanicalEffects )
 print( 'FlexibleToolsModule: ServerStorage imports succesful')
 
+local CharacterRecord = require( game.ReplicatedStorage.TS.CharacterRecord ).CharacterRecord
 local Enhancements = require( game.ReplicatedStorage.TS.EnhancementsTS ).Enhancements
-local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 print( 'FlexibleToolsModule: ReplicatedStorage imports succesful')
 
 local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
 print( 'FlexibleToolsModule: ServerStorage.TS imports succesful')
+
 
 local FlexibleTools = {}
 
@@ -299,10 +298,12 @@ function FlexibleTools:GetEnhancementDamage( toolInst, enhancementIdx, actualLev
 end
 
 
-function FlexibleTools:ResolveFlexToolEffects( toolInstanceDatum, targetHumanoid, owningPlayer )
-	local pcData = CharacterI:GetPCDataWait( owningPlayer )
-	local actualLevel = pcData:getActualLevel()
-	local localLevel = pcData:getLocalLevel()
+function FlexibleTools:ResolveFlexToolEffects( attackingCharacterRecord, toolInstanceDatum, targetHumanoid, tool )
+	DebugXL:Assert( targetHumanoid:IsA("Humanoid"))
+	DebugXL:Assert( not tool or tool:IsA("Tool"))
+	
+	local actualLevel = attackingCharacterRecord:getActualLevel()
+	local localLevel = attackingCharacterRecord:getLocalLevel()
 	
 	for i, enhancement in ipairs( toolInstanceDatum.enhancementsA ) do
 		if Enhancements.enhancementFlavorInfos[ enhancement.flavorS ].typeS == "damage" then 
@@ -324,7 +325,7 @@ function FlexibleTools:ResolveFlexToolEffects( toolInstanceDatum, targetHumanoid
 					targetHumanoid, 
 					durationN, 
 					effect, 
-					owningPlayer )
+					tool )
 				local cosmeticEffect = FlexibleTools.enhancementFlavorsT[ enhancement.flavorS ].cosmeticEffect
 				local targetChar = targetHumanoid.Parent
 				if targetChar.PrimaryPart then
@@ -334,16 +335,6 @@ function FlexibleTools:ResolveFlexToolEffects( toolInstanceDatum, targetHumanoid
 		end	
 	end
 end
-
-function FlexibleTools:ResolveEffects( tool, targetHumanoid, owningPlayer )
-	--print( "Determining damage enhancements. tool is ", tool:GetFullName() )	
-	-- just damage enhancements; skip explosive, stat buffs 
-	local toolInstanceDatum = FlexibleTools:GetFlexToolFromInstance( tool )
-	--DebugX.Dump( enhancements )
-	return FlexibleTools:ResolveFlexToolEffects( toolInstanceDatum, targetHumanoid, owningPlayer )	
-end
-
--- recreate tool;  used when reskinned
-			
+		
 
 return FlexibleTools

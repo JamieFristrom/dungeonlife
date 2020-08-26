@@ -48,7 +48,7 @@ export enum LogArea {
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private inlineErrors = false
+    private inlineErrors = false  //noship
 
     private defaultLogLevel = LogLevel.Info
 
@@ -70,7 +70,7 @@ class DebugXLC {
         if (this.testErrorCatcher) {
             this.testErrorCatcher(message)
         } else {
-            if( this.inlineErrors ) {
+            if (this.inlineErrors) {
                 this.log(LogLevel.Error, LogArea.Error, script.Name + ": " + message + " " + callstackS)
             }
             else {

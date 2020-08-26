@@ -428,6 +428,8 @@ export class PlayerTracker {
 export namespace PlayerServer {
     let playerTracker = new PlayerTracker()
 
+    // like MainContext.get(), this is a stopgap function as we spread context and playertracker references throughout
+    // our functions and classes
     export function getPlayerTracker() {
         return playerTracker
     }

@@ -11,10 +11,12 @@ local BoltWeaponUtilityXL = require( game.ReplicatedStorage.Standard.BoltWeaponU
 local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
-local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
+local PlayerServer        = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
 local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 local Mana                = require( game.ServerStorage.ManaModule )
+
+local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
 
 --print( "Made it here")
 
@@ -66,7 +68,13 @@ function BoltWeaponServerXL.new( Tool )
 			DebugXL:logV( LogArea.Combat, Character.Name.." unequipped, can't fire" )  -- not only that, variables might not be set up
 			return			
 		end
-		if not WeaponServer:CheckRequirements( Tool, Player ) then return end
+		
+		if not FlexibleToolsServer.recheckRequirements( 
+				PlayerServer.getPlayerTracker(), 
+				FlexibleTools:GetFlexToolFromInstance( Tool ),
+				Player ) then 
+			return 
+		end
 		if not CheckIfAlive() then
 			DebugXL:logI( LogArea.Combat, Character.Name.." not alive, can't fire" )
 			return

@@ -1,13 +1,14 @@
 
 // Copyright (c) Happion Laboratories - see license at https.//github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { LogArea, DebugXL } from 'ReplicatedStorage/TS/DebugXLTS'
+import { LogArea, DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import * as  CharacterI from "ServerStorage/Standard/CharacterI"
 
-import { ServerStorage, Debris, Players, Teams } from '@rbxts/services'
-import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
+import { ServerStorage, Debris, Players, Teams } from "@rbxts/services"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { MainContext } from "./MainContext"
 
 type Character = Model
 
@@ -22,8 +23,8 @@ export namespace BarrierServer {
         if (partParent) {
             if (partParent.FindFirstChild("Humanoid")) {
                 if (!burntStuff.has(partParent)) {
-                    const attackingPlayer = Players.GetPlayerFromCharacter( attackingCharacter )
-                    CharacterI.TakeFlexToolDamage(partParent, attackingCharacter, flexTool)
+                    const attackingPlayer = Players.GetPlayerFromCharacter(attackingCharacter)
+                    CharacterI.TakeFlexToolDamage(MainContext.get(), partParent, attackingCharacter, flexTool)
                     burntStuff.set(partParent, true)
                 }
             }

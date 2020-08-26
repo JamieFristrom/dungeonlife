@@ -12,26 +12,33 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 local CharacterI    = require( game.ServerStorage.CharacterI )
 local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
-local WeaponServer  = require( game.ServerStorage.Standard.WeaponServerModule )
+local FlexibleToolsServer  = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer
 
 local FlexEquipUtility = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 local WeaponUtility    = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
 
-local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 
 local MeleeWeaponServerXL = {}
 MeleeWeaponServerXL.__index = MeleeWeaponServerXL
 
-function MeleeWeaponServerXL.new( Tool )
-	local meleeWeaponServerXL = {}
-	setmetatable( meleeWeaponServerXL, MeleeWeaponServerXL )
+-- context can be undefined in which case we use MainContext. That way I didn't have to rewrite all the weapon scripts
+-- but I'm forbidding it on the typescript side
+function MeleeWeaponServerXL.new( Tool, context )  
+	local meleeWeapon = {}
+	setmetatable( meleeWeapon, MeleeWeaponServerXL )
 
 	DebugXL:Assert( Tool )
 	DebugXL:Assert( Tool:IsA("Tool") )
-	
-	meleeWeaponServerXL.Tool = Tool
+
+	if not context then
+		context = MainContext:get()
+	end
+	meleeWeapon.context = context
+
+	meleeWeapon.Tool = Tool
 	DebugXL:logI( LogArea.Items, 'MeleeWeaponServerXL.new('..Tool:GetFullName()..')' )
 	local Handle = Tool:FindFirstChild("Handle")
 	DebugXL:Assert( Handle )
@@ -42,19 +49,22 @@ function MeleeWeaponServerXL.new( Tool )
 		DebugXL:Error( Tool:GetFullName().." missing Hit sound" )
 	end
 	
-	meleeWeaponServerXL.unsheathSound = Handle:WaitForChild("Unsheath")
-	meleeWeaponServerXL.unsheathSound.Volume = 1
+	meleeWeapon.unsheathSound = Handle:WaitForChild("Unsheath")
+	meleeWeapon.unsheathSound.Volume = 1
 	
-	Tool.Activated:Connect(function() meleeWeaponServerXL:OnActivated() end)
-	Tool.Equipped:Connect(function() meleeWeaponServerXL:OnEquipped() end)
+	Tool.Activated:Connect(function() meleeWeapon:OnActivated() end)
+	Tool.Equipped:Connect(function() meleeWeapon:OnEquipped() end)
 	DebugXL:logD( LogArea.Items, Tool:GetFullName()..' events connected' )
 
-	return meleeWeaponServerXL
+	return meleeWeapon
 end
 
 function MeleeWeaponServerXL:OnActivated()		
 	DebugXL:logD( LogArea.Combat, 'MeleeWeaponServerXL::OnActivated')
-	if not WeaponServer:CheckRequirements( self.Tool, self.Player ) then
+	if not FlexibleToolsServer.recheckRequirements( 
+			self.context:getPlayerTracker(), 
+			FlexibleTools:GetFlexToolFromInstance( self.Tool ),
+			self.Player ) then 
 		DebugXL:logD( LogArea.Combat, self.Character.Name.." does not meet requirements for "..self.Tool.Name ) 
 		return 
 	end
@@ -70,18 +80,18 @@ function MeleeWeaponServerXL:OnActivated()
 	end
 --		
 	if self.Player then
-		PlayerServer.markAttack( self.Player, "Melee" )
+		self.context:getPlayerTracker():markAttack( self.Player, "Melee" )
 	end
 
 	local range = self.flexToolInst:getBaseData().rangeN
-	local cr = PlayerServer.getCharacterRecordFromCharacter( self.Character )
+	local cr = self.context:getPlayerTracker():getCharacterRecordFromCharacter( self.Character )
 	local bestTarget, bestFitN = unpack( GeneralWeaponUtility.findClosestVisibleTarget( self.Character, cr:getTeam(), range ) )
 	if bestTarget then
 --			--print( self.Character.Name.." found target "..bestTarget.Name )
 		DebugXL:logI( LogArea.Combat, self.Character.Name.." in range. Applying damage to "..bestTarget.Name )
-		CharacterI:TakeFlexToolDamage( bestTarget, self.Character, self.flexToolInst )
+		CharacterI:TakeFlexToolDamage( self.context, bestTarget, self.Character, self.flexToolInst, self.Tool )
 		if self.Player then
-			PlayerServer.markHit( self.Player, "Melee" )
+			self.context:getPlayerTracker():markHit( self.Player, "Melee" )
 		end			
 
 		FlexibleTools:CreateExplosionIfNecessary( self.Tool, WeaponUtility:GetTargetPoint( bestTarget ) )
@@ -96,8 +106,12 @@ function MeleeWeaponServerXL:OnEquipped()
 	self.flexToolInst = FlexibleTools:GetFlexToolFromInstance( self.Tool )
 	self.Humanoid = self.Character:FindFirstChildOfClass('Humanoid')
 	self.Player = game.Players:GetPlayerFromCharacter(self.Character)
-	if WeaponServer:CheckRequirements( self.Tool, self.Player ) then
-		self.unsheathSound:Play()
+	if not FlexibleToolsServer.recheckRequirements( 
+			self.context:getPlayerTracker(), 
+			FlexibleTools:GetFlexToolFromInstance( self.Tool ),
+			self.Player ) then 
+		DebugXL:logD( LogArea.Combat, self.Character.Name.." does not meet requirements for "..self.Tool.Name ) 
+		return 
 	end
 end
 

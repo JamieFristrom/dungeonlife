@@ -42,6 +42,7 @@ export class Hero extends CharacterRecord implements HeroI {
         super(heroId,
             startingItems,
             Teams.FindFirstChild<Team>("Heroes")!)
+        DebugXL.Assert(stats !== undefined)
         this.statsT = ObjectXL.clone(stats)
     }
 
@@ -124,7 +125,7 @@ export class Hero extends CharacterRecord implements HeroI {
     }
 
     canUseGear(flexTool: FlexTool) {
-        DebugXL.Assert( flexTool instanceof FlexTool )
+        DebugXL.Assert(flexTool instanceof FlexTool)
 
         let gearGood = false
         const [statReqN, statName] = flexTool.getStatRequirement()

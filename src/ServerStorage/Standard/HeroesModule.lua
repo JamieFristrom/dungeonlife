@@ -406,25 +406,15 @@ function Heroes:RecordTool( player, flexToolInst )
 end
 
 
-function Heroes:GetDamageBonus( character, typeS, weaponInst )
-	DebugXL:Assert( character:IsA("Model") )
-	DebugXL:Assert( type(typeS)=="string" )
-	DebugXL:Assert( TableXL:InstanceOf( weaponInst, FlexTool) )
-	local heroRecord = PlayerServer.getCharacterRecordFromCharacter( character )
-	return HeroUtility:GetDamageBonus( heroRecord, typeS, weaponInst )
-end
-
-
 -- NOTE: returns packed pair damage, critB
-function Heroes:DetermineFlexToolDamageN( character, flexToolInst, critResistantB )
+function Heroes:DetermineFlexToolDamageN( myPCData, flexToolInst, critResistantB )
 	DebugXL:Assert( self == Heroes )
-	DebugXL:Assert( character:IsA("Model") )
-	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ))
+	DebugXL:Assert( TableXL:InstanceOf( myPCData, Hero ) )
+	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ) )
 
-	local myPCData = PlayerServer.getCharacterRecordFromCharacter( character )
 	local damage1, damage2 = unpack( FlexEquipUtility:GetDamageNs( flexToolInst, myPCData:getActualLevel(), Hero:getCurrentMaxHeroLevel() ) )
 	local typeS = flexToolInst:getBaseData().equipType
-	local damageBonusN = Heroes:GetDamageBonus( character, typeS, flexToolInst )
+	local damageBonusN = HeroUtility:GetDamageBonus( myPCData, typeS, flexToolInst )
 	local damageN = MathXL:RandomInteger( damage1, damage2 )
 	local critB = ( not critResistantB ) and ( MathXL:RandomNumber() < BalanceData.baseCritChance )
 	if( critB )then
@@ -487,18 +477,18 @@ end
 -- if this game ever starts to pay for the time invested please fix this fucking mess
 -- you might think, "But can't we get the character from the player?"
 -- The player's character might theoretically change before this gets processed; we need the one that matches the flexToolInst
-function Heroes:DoFlexToolDamage( player, character, flexToolInst, targetHumanoid )
+function Heroes:DoFlexToolDamage( attackerRecord, character, flexToolInst, targetHumanoid, tool )
 	DebugXL:Assert( self == Heroes )
-	DebugXL:Assert( player:IsA("Player") )
 	DebugXL:Assert( character:IsA("Model") )
 	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ) )
 	DebugXL:Assert( targetHumanoid:IsA("Humanoid"))
+	DebugXL:Assert( not tool or tool:IsA("Tool"))
 	
 	if targetHumanoid.Health > 0 then
 
-		FlexibleTools:ResolveFlexToolEffects( flexToolInst, targetHumanoid, player )  -- fixme: should use character, not player
+		FlexibleTools:ResolveFlexToolEffects( attackerRecord, flexToolInst, targetHumanoid, tool )  -- fixme: should use character, not player
 		local critResistantB = targetHumanoid.Parent:FindFirstChild('DestructibleScript') -- structures don't get critted. it's weird
-		local damageN, critB = unpack( Heroes:DetermineFlexToolDamageN( character, flexToolInst, critResistantB ) )
+		local damageN, critB = unpack( Heroes:DetermineFlexToolDamageN( attackerRecord, flexToolInst, critResistantB ) )
 
 		local targetCharacter = targetHumanoid.Parent
 		local targetPlayer = game.Players:GetPlayerFromCharacter( targetCharacter )
@@ -508,7 +498,10 @@ function Heroes:DoFlexToolDamage( player, character, flexToolInst, targetHumanoi
 			damageN = CharacterClientI:DetermineDamageReduction( targetHumanoid.Parent, defenderPCData, damageN, { [weaponTypeS]=true } )
 		end
 --	--print( "Base damage: "..damage )
-		Heroes:DoDirectDamage( player, damageN, targetHumanoid, critB )
+		local player = game.Players:GetPlayerFromCharacter(character)
+		if player then
+			Heroes:DoDirectDamage( player, damageN, targetHumanoid, critB )
+		end
 	end
 end
 

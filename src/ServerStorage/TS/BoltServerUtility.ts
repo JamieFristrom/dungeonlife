@@ -3,6 +3,8 @@ import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
 import * as ToolXL from "ReplicatedStorage/Standard/ToolXL"
 
 import { PlayerServer } from "ServerStorage/TS/PlayerServer"
+import { MainContext } from "ServerStorage/TS/MainContext"
+
 export namespace BoltServerUtility
 {
     export function init( tool: Tool )
@@ -18,7 +20,7 @@ export namespace BoltServerUtility
     {
         let flexToolInst = FlexibleTools.GetFlexToolFromInstance( tool )
         let attackingPlayer = ToolXL.GetOwningPlayer( tool )        // fixme: needs to be get owning character
-        CharacterI.TakeFlexToolDamage( character, attackingPlayer.Character!, flexToolInst )
+        CharacterI.TakeFlexToolDamage( MainContext.get(), character, attackingPlayer.Character!, flexToolInst, tool )
         if( attackingPlayer !== undefined )
         {
             PlayerServer.markHit( attackingPlayer, "Ranged" )

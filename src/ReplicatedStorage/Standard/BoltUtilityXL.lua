@@ -11,7 +11,7 @@ local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
-
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 --
 local BoltUtilityXL = {}
 
@@ -105,7 +105,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 				if humanoid and humanoid.Health > 0 then			
 					--print( "Has a humanoid. Executing hit func" )
 					local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
-					CharacterI:TakeFlexToolDamage( hitCharacter, creatorCharacter, flexToolInst )
+					CharacterI:TakeFlexToolDamage( MainContext:get(), hitCharacter, creatorCharacter, flexToolInst, tool )
 					hitSquishy = true
 				end
 			end

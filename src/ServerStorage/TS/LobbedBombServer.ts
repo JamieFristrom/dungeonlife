@@ -9,6 +9,7 @@ import * as FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule'
 import * as MechanicalEffects from 'ServerStorage/Standard/MechanicalEffects'
 
 import { FlexibleToolsServer } from 'ServerStorage/TS/FlexibleToolsServer'
+import { PlayerServer } from './PlayerServer'
 
 
 
@@ -23,7 +24,8 @@ export namespace LobbedBombServer {
                 let parentToolValueObj = thrownObjPart.FindFirstChild<ObjectValue>('Tool')
                 DebugXL.Assert(parentToolValueObj !== undefined)
                 if (parentToolValueObj) {
-                    let flexTool = FlexibleToolsServer.getFlexTool(parentToolValueObj.Value as Tool)
+                    let tool = parentToolValueObj.Value as Tool
+                    let flexTool = FlexibleToolsServer.getFlexTool(tool)
                     let toolDamage = CharacterI.DetermineFlexToolDamage(attackingPlayer, flexTool)
                     let hitCharacters = MechanicalEffects.Explosion(thrownObjPart.Position,
                         toolDamage[0],
@@ -33,7 +35,11 @@ export namespace LobbedBombServer {
                     hitCharacters.forEach((hitCharacter) => {
                         let humanoid = hitCharacter.FindFirstChild<Humanoid>('Humanoid')
                         if (humanoid) {
-                            FlexibleTools.ResolveFlexToolEffects(flexTool, humanoid, attackingPlayer)
+                            const attackerRecord = PlayerServer.getCharacterRecordFromPlayer(attackingPlayer)
+                            DebugXL.Assert(attackerRecord!==undefined)
+                            if( attackerRecord ) {
+                                FlexibleTools.ResolveFlexToolEffects(attackerRecord, flexTool, humanoid, tool)
+                            }
                         }
                     })
                 }

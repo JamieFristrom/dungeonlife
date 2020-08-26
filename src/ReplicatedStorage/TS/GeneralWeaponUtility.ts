@@ -39,9 +39,10 @@ export namespace GeneralWeaponUtility {
         }
     }
 
+    // needs to work on client so not using character records
     export function findValidTargetsAndRanges(attackingCharacter: Character, attackingTeam: Team, maxRange: number): [Character, number][] {
-        DebugXL.Assert( attackingCharacter.IsA("Model"))
-        DebugXL.Assert( attackingTeam.IsA("Team"))
+        DebugXL.Assert(attackingCharacter.IsA("Model"))
+        DebugXL.Assert(attackingTeam.IsA("Team"))
         if (!attackingCharacter.Name) {
             DebugXL.logD(LogArea.Combat, "WTF")
         }
@@ -65,8 +66,8 @@ export namespace GeneralWeaponUtility {
     }
 
     export function findClosestVisibleTarget(attackingCharacter: Character, attackingTeam: Team, maxRange: number): [Character | undefined, number] {
-        DebugXL.Assert( attackingCharacter.IsA("Model") )
-        DebugXL.Assert( attackingTeam.IsA("Team") )
+        DebugXL.Assert(attackingCharacter.IsA("Model"))
+        DebugXL.Assert(attackingTeam.IsA("Team"))
         const targetsAndRanges = findValidTargetsAndRanges(attackingCharacter, attackingTeam, maxRange)
         if (!targetsAndRanges.isEmpty()) {
             // stupid optimization? It does nothing for the worst case ; all heroes are in range but behind walls

@@ -3,6 +3,8 @@
 
 import { CharacterRecordI } from "ReplicatedStorage/TS/CharacterRecord"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
+import { ServerContextI } from "ServerStorage/TS/ServerContext";
+
 
 declare interface DamageTags {
     spell?: boolean
@@ -13,10 +15,10 @@ declare interface DamageTags {
 type Character = Model
 
 declare class CharacterIClass {
-    SetCharacterClass(player: Player, characterClass: string ): void
+    SetCharacterClass(player: Player, characterClass: string): void
     DetermineFlexToolDamage(player: Player, flexTool: FlexTool): [number, boolean]
     TakeDirectDamage(hitCharacter: Model, damage: number, attackingPlayer: Player, damageTagsT: DamageTags): void
-    TakeFlexToolDamage(hitCharacter: Model, attackingCharacter: Character, flexTool: FlexTool): void
+    TakeFlexToolDamage(context: ServerContextI, hitCharacter: Model, attackingCharacter: Character, flexTool: FlexTool, tool?: Tool): void
     //    TakeToolDamage( hitCharacter: Model, tool: Tool ): void
     GetPCDataWait(player: Player): CharacterRecordI
 }

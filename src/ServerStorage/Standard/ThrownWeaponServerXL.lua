@@ -97,7 +97,12 @@ function ThrownWeaponServer.new( tool )
 		Weld(tool)
 		local player = game.Players:GetPlayerFromCharacter( tool.Parent )
 		if player then
-			WeaponServer:CheckRequirements( tool, player )
+			if not FlexibleToolsServer.recheckRequirements( 
+					PlayerServer.getPlayerTracker(), 
+					flexToolInst,
+					player ) then 
+				return 
+			end
 		end 		
 	end
 	
@@ -109,7 +114,12 @@ function ThrownWeaponServer.new( tool )
 	local Bomb = {}
 	
 	function Bomb.Activate( player, mouseHitV3 )
-		if not WeaponServer:CheckRequirements( tool, player ) then return end
+		if not FlexibleToolsServer.recheckRequirements( 
+				PlayerServer.getPlayerTracker(), 
+				FlexibleTools:GetFlexToolFromInstance( tool ),
+				player ) then 
+			return 
+		end
 		onThrow( player, mouseHitV3 )
 	end
 	
@@ -124,7 +134,5 @@ function ThrownWeaponServer.new( tool )
 	--tool.Activated:connect(onThrow)
 	Weld(tool)
 end
-
-
 
 return ThrownWeaponServer

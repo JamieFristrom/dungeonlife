@@ -25,8 +25,8 @@ function CharacterClientI:ValidTarget( attackingTeam, targetCharacter )
 	if Places.getCurrentPlace() == Places.places.Underhaven then return false end	
 --	--print( "Checking "..targetCharacter.Name.." target validity" )
 	local targetPlayer    = game.Players:GetPlayerFromCharacter( targetCharacter )
-	if not targetPlayer then  -- must be some dungeon furnishing, heroes can attack but monsters can't
-		return attackingTeam == game.Teams.Heroes
+	if not targetPlayer then  -- must be some dungeon furnishing or mob, heroes can attack but monsters can't
+		return attackingTeam ~= game.Teams.Monsters
 	else
 --		--print( "ValidTarget? Attacker "..attackingCharacter.Name.." team "..tostring( attackingPlayer.Team ).." defender "..targetCharacter.Name.." team "..tostring( targetPlayer.Team ) )
 		return attackingTeam ~= targetPlayer.Team

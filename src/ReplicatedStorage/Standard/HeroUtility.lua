@@ -10,8 +10,8 @@ local FlexEquipUtility       = require( game.ReplicatedStorage.Standard.FlexEqui
 
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
-
---local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
+local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
+local FlexTool = require( game.ReplicatedStorage.TS.FlexToolTS ).FlexTool
 
 local HeroUtility = {}
 
@@ -80,6 +80,9 @@ end
 
 function HeroUtility:GetDamageBonus( pcData, typeS, weaponInst )
 	DebugXL:Assert( self == HeroUtility )
+	DebugXL:Assert( TableXL:InstanceOf( pcData, Hero ) )
+	DebugXL:Assert( type(typeS)=="string")
+	DebugXL:Assert( not weaponInst or TableXL:InstanceOf(weaponInst, FlexTool) )
 	local keyStat 
 	if typeS == "ranged" then
 		keyStat = "dexN"
