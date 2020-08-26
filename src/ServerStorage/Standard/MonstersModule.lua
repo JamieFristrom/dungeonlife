@@ -48,11 +48,6 @@ local Monsters = {}
 --local playerCharactersT = {}
 
 
-
-function Monsters:GetPCDataWait( characterKey )
-	return PlayerServer.getCharacterRecordWait( characterKey )
-end
-
 local monstersForHeroT = {}
 
 
@@ -222,7 +217,7 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
-			MonsterServer.giveWeapon( playerTracker, characterKey, weapon )
+			MonsterServer.giveSpecificWeapon( playerTracker, characterKey, weapon )
 		end
 	end
 

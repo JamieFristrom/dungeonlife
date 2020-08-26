@@ -1,5 +1,6 @@
 # Fixing
 * Werewolf mobs don't chase and their transform hotbar option is gone
+* Hide rack tooltip if dungeon lord
 * Hero is respawning during preparation phase in 2 player game
 * Zombie is not always getting a blue dot
 * Sometimes there are spurious blue dots 
@@ -8,6 +9,7 @@
 * PlayerTracker should be called CharacterTracker
 * Refactor: rename LevelSession -> FloorSession
 * getCharacterRecordFromPlayer should return nullrecord instead of null
+* Change timeout depending on monster hero ratio
 
 # Not fixing
 * Using collection service Tag for characters is duplication of data. Instead do Mobs + workspace characters + destructibles?

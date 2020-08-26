@@ -337,12 +337,17 @@ export namespace MonsterServer {
         }
     }
 
-    export function giveWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, flexToolPrototype: GearDefinition) {
+    export function giveSpecificWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, flexToolPrototype: GearDefinition) {
         DebugXL.Assert(playerTracker instanceof PlayerTracker)
 
         const flexTool = new FlexTool( flexToolPrototype.baseDataS,
             math.ceil(playerTracker.getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN),
-            flexToolPrototype.enhancementsA )
+            flexToolPrototype.enhancementsA,
+            flexToolPrototype.slotN,
+            flexToolPrototype.equippedB,
+            flexToolPrototype.boostedB,
+            flexToolPrototype.hideItemB,
+            flexToolPrototype.hideAccessoriesB )
 
         playerTracker.getCharacterRecord(characterKey).giveFlexTool(flexTool)
         return flexTool

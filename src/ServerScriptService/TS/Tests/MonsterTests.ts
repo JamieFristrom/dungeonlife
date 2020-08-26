@@ -7,6 +7,9 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { Monster } from "ReplicatedStorage/TS/Monster"
 import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility";
 import { MonsterServer } from "ServerStorage/TS/MonsterServer";
+import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses";
+import Monsters, { PlayerCharacterAddedWait } from "ServerStorage/Standard/MonstersModule";
+import { SuperbossManager } from "ServerStorage/TS/SuperbossManager";
 
 // test monster spawn gets no duplicate weapons
 // so this was an interesting challenge from a TDD standpoint - you don't want a flaky test, I.E. a test that only fails some of the time
@@ -15,7 +18,7 @@ import { MonsterServer } from "ServerStorage/TS/MonsterServer";
 
 // to truly make it a predictable result and be confident it wouldn't have a false negative we'd have to seed the RNG; but that's even worse
 // then testing a wide variety of randoms some of which may not fail when they should. seeding makes more sense to avoid false positives
-function testNoDuplciateWeapons() {
+{
     let testSetup = new TestContext()
     let weaponList = ["Broadsword", "Greatsword", "Hatchet", "Axe", "Club"]
     let weaponListStartSize = weaponList.size()
@@ -31,4 +34,29 @@ function testNoDuplciateWeapons() {
     testSetup.clean()
 }
 
-testNoDuplciateWeapons()
+// test that monsters start with items in slots
+{
+    let testSetup = new TestContext()
+    //const monsterKey = "Werewolf"
+    for( const key of Object.keys(CharacterClasses.monsterStats)) {
+        const monsterKey = key as CharacterClass
+        if( monsterKey !== "NullClass" && monsterKey !== "DungeonLord") {
+            let testCharacter = TestUtility.createTestCharacter()
+            let characterRecord = new Monster(monsterKey,
+                [],
+                1)
+            const characterKey = testSetup.getPlayerTracker().setCharacterRecordForMob(testCharacter, characterRecord)
+            Monsters.Initialize( 
+                testSetup.getPlayerTracker(), 
+                testCharacter,
+                characterKey,
+                characterRecord.getWalkSpeed(),
+                monsterKey,
+                new SuperbossManager(),
+                0 )
+            const item1Key = characterRecord.getPossessionKeyFromSlot(1)
+            TestUtility.assertTrue(item1Key!==undefined, `${monsterKey} has weapon 1`)
+        }
+    }
+    testSetup.clean()
+}
