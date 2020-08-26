@@ -1,20 +1,21 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import MeleeWeaponServerXL from "ServerStorage/Standard/MeleeWeaponServerXL"
 
-import { TestUtility, TestContext } from "ReplicatedStorage/TS/TestUtility";
-import { Workspace, ServerStorage, ReplicatedStorage, Teams } from "@rbxts/services";
-import { FlexibleToolsServer } from "ServerStorage/TS/FlexibleToolsServer";
-import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
-import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
-import { Hero } from "ReplicatedStorage/TS/HeroTS";
+import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
+import { Workspace, ServerStorage, ReplicatedStorage, Teams } from "@rbxts/services"
+import { FlexibleToolsServer } from "ServerStorage/TS/FlexibleToolsServer"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { Character } from "ReplicatedStorage/TS/ModelUtility";
+import { Character } from "ReplicatedStorage/TS/ModelUtility"
 import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
-import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility";
+import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
+import CharacterXL from "ServerStorage/Standard/CharacterXL"
 
 class CombatTestHelper {
     testSetup: TestContext
@@ -81,7 +82,34 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     }
 }
 
-// test monster enchantments work
+// test monster fire enchantments work
+{
+    // arrange
+    let testAttacker = TestUtility.createTestCharacter()
+    let combatHelper = new CombatTestHelperPlayerDefender("Sasquatch", "Monsters", testAttacker, "Staff", "Warrior", "Heroes")
+    let monster = new Monster("Sasquatch", [], 1)
+    monster.giveFlexTool(combatHelper.flexTool)
+    combatHelper.flexTool.addEnhancement("fire")
+    combatHelper.testSetup.getPlayerTracker().setCharacterRecordForMob(testAttacker, monster)
+
+    // act
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let lastHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(lastHealth < combatHelper.oldHealth, "Enchanted monster weapon: defender is hurt")
+    TestUtility.assertTrue(combatHelper.defender.PrimaryPart!.FindFirstChild("Fire") !== undefined, "Enchanted monster weapon: defender is burning")
+
+    // assert it goes down over time
+    CharacterXL.ProcessCharacter(combatHelper.testSetup, combatHelper.defender, 0.1)
+    let nextHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(nextHealth < lastHealth, "monster fire weapon: defender is continually hurt")
+
+    // clean
+    combatHelper.clean()
+}
+
+// test monster ice enchantments work
 {
     // arrange
     let testAttacker = TestUtility.createTestCharacter()

@@ -5,6 +5,7 @@ import * as PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 
 import { Players, Teams } from '@rbxts/services';
 import { PlayerServer } from './PlayerServer';
+import { MainContext } from './MainContext';
 
 export class PitTrapSpiked extends PitTrap
 {
@@ -32,10 +33,12 @@ export class PitTrapSpiked extends PitTrap
 						if( ! whoAmIHurting.has( player ) ) {
 							let creator = this.trap.FindFirstChild<ObjectValue>('creator')! 
 							let damagePerLevel = 1.5 // GameplayTestService.getServerTestGroup('ChestTrapDamage') * 0.5 + 1  // 0-4 => 1-3
+							const lastAttackingPlayer = creator.Value as Player
+							const lastAttackingCharacter = lastAttackingPlayer.Character
 
-							CharacterI.TakeDirectDamage( character, 
+							CharacterI.TakeDirectDamage( MainContext.get(), character, 
 								trapDatum.baseDamageN! + damagePerLevel * PlayerServer.getLocalLevel( PlayerServer.getCharacterKeyFromCharacterModel( character ) )!,
-								creator.Value as Player, { spell: true } )  // wishlist fix;  if( rogues get detect traps there'd be something to be said for 				
+								lastAttackingCharacter, { spell: true } )  // wishlist fix;  if( rogues get detect traps there'd be something to be said for 				
 							whoAmIHurting.add( player )
 						}
 					}

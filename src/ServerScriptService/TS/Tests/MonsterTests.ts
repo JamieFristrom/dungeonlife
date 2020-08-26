@@ -5,7 +5,7 @@ import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { TestUtility, TestContext } from "ReplicatedStorage/TS/TestUtility";
+import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility";
 import { MonsterServer } from "ServerStorage/TS/MonsterServer";
 
 // test monster spawn gets no duplicate weapons
@@ -23,12 +23,12 @@ function testNoDuplciateWeapons() {
     let testCharacter = TestUtility.createTestCharacter()
     const characterKey = testSetup.getPlayerTracker().setCharacterRecordForMob(testCharacter, targetRecord)
 
-    for( let i=0;i<weaponListStartSize;i++ ) {
-        MonsterServer.giveUniqueWeapon( testSetup.getPlayerTracker(), characterKey, weaponList )
-        TestUtility.assertTrue( targetRecord.countTools()===i+1, "Got a weapon" )
+    for (let i = 0; i < weaponListStartSize; i++) {
+        MonsterServer.giveUniqueWeapon(testSetup.getPlayerTracker(), characterKey, weaponList)
+        TestUtility.assertTrue(targetRecord.countTools() === i + 1, "Got a weapon")
     }
-    TestUtility.assertTrue( weaponList.size()===0, "Gave every weapon to monster" )
+    TestUtility.assertTrue(weaponList.size() === 0, "Gave every weapon to monster")
     testSetup.clean()
 }
-    
+
 testNoDuplciateWeapons()

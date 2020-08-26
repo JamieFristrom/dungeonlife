@@ -5,7 +5,7 @@ import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 
 import { ReplicatedStorage, Workspace, Players, Teams } from "@rbxts/services"
 import { WeaponsRack } from 'ServerStorage/TS/WeaponsRack'
-import { TestUtility, TestContext } from 'ReplicatedStorage/TS/TestUtility'
+import { TestUtility, TestContext } from 'ServerStorage/TS/TestUtility'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'

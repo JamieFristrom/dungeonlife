@@ -17,7 +17,7 @@ type Character = Model
 declare class CharacterIClass {
     SetCharacterClass(player: Player, characterClass: string): void
     DetermineFlexToolDamage(player: Player, flexTool: FlexTool): [number, boolean]
-    TakeDirectDamage(hitCharacter: Model, damage: number, attackingPlayer: Player, damageTagsT: DamageTags): void
+    TakeDirectDamage(context: ServerContextI, hitCharacter: Model, damage: number, attackingCharacter: Character | undefined, damageTagsT: DamageTags): void
     TakeFlexToolDamage(context: ServerContextI, hitCharacter: Model, attackingCharacter: Character, flexTool: FlexTool, tool?: Tool): void
     //    TakeToolDamage( hitCharacter: Model, tool: Tool ): void
     GetPCDataWait(player: Player): CharacterRecordI

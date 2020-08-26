@@ -1,6 +1,6 @@
 // because we have tests operating on various global game entities (such as player 0) run them in order
 
-import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+import { TestUtility } from "ServerStorage/TS/TestUtility"
 import { Workspace } from "@rbxts/services"
 
 const runTests = true

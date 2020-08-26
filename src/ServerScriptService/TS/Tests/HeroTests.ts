@@ -9,7 +9,7 @@ import { Teams, Players, Workspace } from "@rbxts/services"
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
+import { TestUtility } from "ServerStorage/TS/TestUtility";
 
 {
     let errorMessage = ""

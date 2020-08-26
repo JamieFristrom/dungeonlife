@@ -5,11 +5,13 @@ local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
 local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
 DebugXL:logI(LogArea.Executed, script:GetFullName())
 
-local CharacterClientI        = require( game.ReplicatedStorage.CharacterClientI )
+local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 
-local CharacterI              = require( game.ServerStorage.CharacterI )
+local CharacterI = require( game.ServerStorage.CharacterI )
 
-local CharacterXL             = require( game.ServerStorage.Standard.CharacterXL )
+local CharacterXL = require( game.ServerStorage.Standard.CharacterXL )
+
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 
 local MechanicalEffects = {}
 
@@ -77,7 +79,7 @@ function MechanicalEffects.Explosion( positionV3, damage, radius, attackingPlaye
 					end
 					
 --					--print("Damaging "..character.Name..": "..attenuatedDamage )
-					CharacterI:TakeDirectDamage( character, damage, attackingPlayer, { ranged=true, spell=true } )
+					CharacterI:TakeDirectDamage( MainContext:get(), character, damage, attackingCharacter, { ranged=true, spell=true } )
 				else
 --					--print( character.Name.." out of range" )
 				end

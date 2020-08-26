@@ -11,7 +11,7 @@ local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
-local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
+
 --
 local BoltUtilityXL = {}
 
@@ -95,9 +95,10 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 		end
 		
 		local hitSquishy = false
-		if( RunService:IsServer() )then  -- ugh. too lazy to refactor this right now
+		if( RunService:IsServer() )then  -- ugh. too lazy to refactor this right now.  
 			local CharacterI = require( game.ServerStorage.CharacterI )
 			local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
+			local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext -- 8/25/20, still too lazy
 
 			FlexibleTools:CreateExplosionIfNecessary( tool, projectileObj.Position )
 			if hitCharacter then

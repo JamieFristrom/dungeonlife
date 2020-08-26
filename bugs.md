@@ -1,7 +1,5 @@
-Still need to test fire and explosions for monsters
-
 # Fixing
-* Fire and ice are not working on heroes. What about explosions?
+* Werewolf mobs don't chase and their transform hotbar option is gone
 * Hero is respawning during preparation phase in 2 player game
 * Zombie is not always getting a blue dot
 * Sometimes there are spurious blue dots 

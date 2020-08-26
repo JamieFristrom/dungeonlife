@@ -7,7 +7,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { Workspace, ReplicatedStorage } from "@rbxts/services"
 
 import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility";
-import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
+import { TestUtility } from "ServerStorage/TS/TestUtility";
 
 {   // make sure nothing unanchored
     for (let descendant of Workspace.GetDescendants()) {

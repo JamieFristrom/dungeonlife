@@ -5,7 +5,7 @@ import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
-import { TestUtility, TestContext } from "ReplicatedStorage/TS/TestUtility";
+import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility";
 
 import { ServerStorage, Teams } from "@rbxts/services";
 import Monsters from "ServerStorage/Standard/MonstersModule";

@@ -3,7 +3,7 @@
 
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 
-import { TestContext, TestUtility } from 'ReplicatedStorage/TS/TestUtility'
+import { TestContext, TestUtility } from 'ServerStorage/TS/TestUtility'
 
 import { Furnisher } from 'ServerStorage/TS/Furnisher'
 

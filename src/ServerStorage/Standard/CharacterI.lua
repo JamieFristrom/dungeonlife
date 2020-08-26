@@ -66,20 +66,25 @@ end
 
 -- does not *set* the attacking player - only uses attacking player for informational purposes
 -- this never crits, which means splash damage never crits, which means bombs never crit
-function CharacterI:TakeDirectDamage( hitCharacter, damage, attackingPlayer, damageTagsT )
+function CharacterI:TakeDirectDamage( context, hitCharacter, damage, attackingCharacter, damageTagsT )
+	DebugXL:Assert( hitCharacter:IsA("Model") )
+	DebugXL:Assert( type(damage)=="number" )
 	local hitHumanoid = hitCharacter:FindFirstChild("Humanoid")
 	DebugXL:Assert( hitHumanoid )
 	if hitHumanoid then
-		DebugXL:logV( LogArea.Combat, "CharacterI:TakeDirectDamage - hitHumanoid "..hitHumanoid:GetFullName()..","..damage..","..attackingPlayer.Name )
+		DebugXL:logV( LogArea.Combat, "CharacterI:TakeDirectDamage - hitHumanoid "..hitHumanoid:GetFullName()..","..damage..","
+			..(attackingCharacter and attackingCharacter.Name or "unknown player") )
 		local hitPlayer = game.Players:GetPlayerFromCharacter( hitCharacter )
-		if not hitPlayer or hitPlayer.Team ~= attackingPlayer.Team then
+		local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )
+		local attackingTeam = attackingPlayer and attackingPlayer.Team or game.Teams.Monsters
+		if not hitPlayer or hitPlayer.Team ~= attackingTeam then         -- if we don't know the attacking player's team damage happens. can monsters set structures on fire this way?
 --			--print( attackingPlayer.Name.." hits "..hitCharacter.Name.." for "..damage )
-			if attackingPlayer.Team == game.Teams.Heroes then		
+			if attackingTeam == game.Teams.Heroes then		
 				require( game.ServerStorage.Standard.HeroesModule ):DoDirectDamage( attackingPlayer, damage, hitHumanoid, false )
 			else
 				-- can"t just use tool"s parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away
-				require( game.ServerStorage.MonstersModule ):DoDirectDamage( MainContext:get(), attackingPlayer, damage, hitHumanoid, damageTagsT, false ) 
+				require( game.ServerStorage.MonstersModule ):DoDirectDamage( context, attackingPlayer, damage, hitHumanoid, damageTagsT, false ) 
 			end
 		end
 	end

@@ -7,8 +7,6 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 
 local FlexEquipUtility    = require( game.ReplicatedStorage.Standard.FlexEquipUtility )
 
-local WeaponServer        = require( game.ServerStorage.Standard.WeaponServerModule )
-
 local FlexibleTools       = require( game.ServerStorage.Standard.FlexibleToolsModule )
 
 local FlexibleToolsServer = require( game.ServerStorage.TS.FlexibleToolsServer ).FlexibleToolsServer

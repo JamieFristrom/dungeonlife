@@ -8,7 +8,7 @@ import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 
 import { ServerStorage } from "@rbxts/services"
-import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+import { TestUtility } from "ServerStorage/TS/TestUtility"
 
 let testWorkspace = InstanceUtility.findOrCreateChild<Folder>(ServerStorage, "TestWorkspace", "Folder")
 PlayerUtility.publishClientValues( testWorkspace as unknown as Player, 666, 665, "Godly", true  )

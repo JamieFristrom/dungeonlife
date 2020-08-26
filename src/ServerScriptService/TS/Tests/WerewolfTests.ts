@@ -6,7 +6,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import * as Monsters from "ServerStorage/Standard/MonstersModule"
 
-import { TestUtility, TestContext } from "ReplicatedStorage/TS/TestUtility"
+import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
 
 import * as Costumes from "ServerStorage/Standard/CostumesServer"

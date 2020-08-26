@@ -15,11 +15,15 @@ local CharacterI         = require( game.ServerStorage.CharacterI )
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 
 local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
+local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 
 local CharacterXL = {}
 
 local manaRegenRate = BalanceData.manaRestorePctN -- Regenerate this fraction of MaxHealth per second.
 
+local mobsFolder = workspace:WaitForChild("Mobs")
 
 -- don't use a wait inside a 'debounce' so they stack appropriately
 function CharacterXL:FreezeFor( character, duration )	
@@ -59,8 +63,8 @@ end
 
 
 
-
-function ProcessPC( character, deltaT )
+-- made public for test
+function CharacterXL:ProcessCharacter( context, character, deltaT )
 	local humanoid = character:FindFirstChild("Humanoid")
 	if humanoid then  -- already dead?
 	
@@ -77,8 +81,6 @@ function ProcessPC( character, deltaT )
 			end
 		end
 
-		local player = game.Players:GetPlayerFromCharacter( character )
-
 		for _, instance in pairs( character:GetChildren() ) do
 			if instance.Name == "WalkSpeedMulUntil" or instance.Name == "CooldownMulUntil" then
 				if time() > instance.Value.Y then  -- y contains time to destroy on
@@ -86,10 +88,9 @@ function ProcessPC( character, deltaT )
 				end 
 			elseif instance.Name == "DamageUntil" then
 				local lastAttackingPlayer = CharacterUtility:GetLastAttackingPlayer( character )
-				if lastAttackingPlayer then  -- mostly doing this to simplify coding, has the side effect that people who leave the game stop doing fire damage
-					CharacterI:TakeDirectDamage( character, instance.Value.X * deltaT, lastAttackingPlayer, { spell=true } )
-				end
-				if time() > instance.Value.Y or not lastAttackingPlayer then
+				local lastAttackingCharacter = lastAttackingPlayer and lastAttackingPlayer.Character or nil
+				CharacterI:TakeDirectDamage( context, character, instance.Value.X * deltaT, lastAttackingCharacter, { spell=true } )
+				if time() > instance.Value.Y then
 					instance:Destroy()
 				end
 			end
@@ -97,7 +98,7 @@ function ProcessPC( character, deltaT )
 		
 		-- redundant, also on client, this probably does next-to-nothing beacuse if a hacker hacks the client the character
 		-- will just move as far as they want no matter their walkspeed
-		local pcData = CharacterI:GetPCData( player )
+		local pcData = PlayerServer.getCharacterRecordFromCharacter( character )
 		local calculatedWalkspeed = CharacterPhysics:CalculateWalkSpeed( character, pcData )
 		humanoid.WalkSpeed = CharacterUtility:IsFrozen( character ) and 0 or calculatedWalkspeed
 		humanoid.JumpPower = CharacterUtility:IsFrozen( character ) and 0 or CharacterPhysics:CalculateJumpPower( character, pcData )				
@@ -114,16 +115,23 @@ end
 
 
 
-
-game["Run Service"].Heartbeat:Connect( function( deltaT )
-	-- monitor freezing
-	for _, player in pairs( game.Players:GetPlayers() ) do
-		if player.Character then
-			if player.Character.Parent == workspace then
-				ProcessPC( player.Character, deltaT )
+spawn( function()
+	while game.Workspace.GameManagement.TestsFinished.Value == false do
+		wait(0.1)
+	end
+	game["Run Service"].Heartbeat:Connect( function( deltaT )
+		-- monitor freezing
+		for _, player in pairs( game.Players:GetPlayers() ) do
+			if player.Character then
+				if player.Character.Parent == workspace then
+					CharacterXL:ProcessCharacter( MainContext:get(), player.Character, deltaT )
+				end
 			end
 		end
-	end
+		for _, mob in pairs( mobsFolder:GetChildren() ) do 
+			CharacterXL:ProcessCharacter( MainContext:get(), mob, deltaT )
+		end
+	end)
 end)
 
 

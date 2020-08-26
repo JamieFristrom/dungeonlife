@@ -1,7 +1,7 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from "./DebugXLTS"
+import { DebugXL, LogArea } from "../../ReplicatedStorage/TS/DebugXLTS"
 
 import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
 
@@ -30,7 +30,8 @@ export namespace TestUtility {
 
     export function createTestCharacter() {
         let testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
-        testCharacter.Parent = Workspace.FindFirstChild<Folder>("Mobs")
+        // deliberately not putting them in Mobs so they won't get processed by non-test systems
+        testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
         CollectionService.AddTag(testCharacter, "CharacterTag")  // wishlist fix; duplication of data problem
         return testCharacter
     }

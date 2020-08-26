@@ -4,7 +4,7 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 DebugXL.logI(LogArea.Executed, script.Name)
 
-import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
+import { TestUtility } from "ServerStorage/TS/TestUtility";
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 
 // test flex tool random enhancements don't give you a stat buff if you don't want one
