@@ -38,24 +38,24 @@ import { SuperbossManager } from "ServerStorage/TS/SuperbossManager";
 {
     let testSetup = new TestContext()
     //const monsterKey = "Werewolf"
-    for( const key of Object.keys(CharacterClasses.monsterStats)) {
+    for (const key of Object.keys(CharacterClasses.monsterStats)) {
         const monsterKey = key as CharacterClass
-        if( monsterKey !== "NullClass" && monsterKey !== "DungeonLord") {
+        if (monsterKey !== "NullClass" && monsterKey !== "DungeonLord") {
             let testCharacter = TestUtility.createTestCharacter()
             let characterRecord = new Monster(monsterKey,
                 [],
                 1)
             const characterKey = testSetup.getPlayerTracker().setCharacterRecordForMob(testCharacter, characterRecord)
-            Monsters.Initialize( 
-                testSetup.getPlayerTracker(), 
+            Monsters.Initialize(
+                testSetup.getPlayerTracker(),
                 testCharacter,
                 characterKey,
                 characterRecord.getWalkSpeed(),
                 monsterKey,
                 new SuperbossManager(),
-                0 )
+                0)
             const item1Key = characterRecord.getPossessionKeyFromSlot(1)
-            TestUtility.assertTrue(item1Key!==undefined, `${monsterKey} has weapon 1`)
+            TestUtility.assertTrue(item1Key !== undefined, `${monsterKey} has weapon 1`)
         }
     }
     testSetup.clean()
