@@ -74,7 +74,7 @@ let CommandList: { [k: string]: unknown } =
   // !equip {"baseDataS":"MagicHealing","levelN":2}
   // !equip {"baseDataS":"Bomb","levelN":2}
   // !equip {"baseDataS":"MagicBarrier","levelN":2}
-  // !equip {"baseDataS":"Longbow","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}}
+  // !equip {"baseDataS":"Longbow","levelN":1,"enhancementsA":[{"flavorS":"explosive","levelN":2}]}
   // !equip {"baseDataS":"Mana","levelN":1}
   equip: function (sender: Player, args: string[]) {
     if (CheatUtility.PlayerWhitelisted(sender)) {
@@ -93,8 +93,8 @@ let CommandList: { [k: string]: unknown } =
             gearDef.levelN ? gearDef.levelN : 1,
             gearDef.enhancementsA ? gearDef.enhancementsA : [])
           myPC.giveFlexTool(flexTool)
-          if( myPC.gearPool.size()<4 ) {
-            flexTool.slotN = myPC.gearPool.size()+1
+          if (myPC.gearPool.size() < 4) {
+            flexTool.slotN = myPC.gearPool.size() + 1
           }
           const characterKey = PlayerServer.getCharacterKeyFromPlayer(sender)
           const characterRecord = PlayerServer.getCharacterRecord(characterKey)

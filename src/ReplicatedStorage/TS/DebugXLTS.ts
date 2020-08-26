@@ -48,7 +48,7 @@ export enum LogArea {
 class DebugXLC {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
-    private inlineErrors = false  //noship
+    private inlineErrors = false  // should not be true in ship, because will halt execution of scripts, but it's useful for finding exactly where assertions fire when debugging
 
     private defaultLogLevel = LogLevel.Info
 
