@@ -1,20 +1,20 @@
-print( script:GetFullName().." executed" )
 
-local InputXL = require( game.ReplicatedStorage.Standard.InputXL )
-print("IntroMessageScript: InputXL required")
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
-print("IntroMessageScript: Places required")
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
-print("IntroMessageScript: Localize required")
-
+DebugXL:logD(LogArea.Requires, "IntroMessageScript: Localize required")
 
 if not workspace.GameManagement.FastStart.Value then 
 	wait(6)  -- give dungeon life logo opportunity to spin, in local tests this was enough to let us see it for 2-3 secs
 end
-print("IntroMessageScript: Logo wait done")
+DebugXL:logD(LogArea.Requires, "IntroMessageScript: Logo wait done")
 
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
+DebugXL:logD(LogArea.Requires, "IntroMessageScript required PlacesManifest")
 
 if Places:getCurrentPlace() ~= Places.places.LowLevelServer and not workspace.GameManagement.FastStart.Value then
 	game.ReplicatedFirst.TS.Loading.Disabled = true
@@ -23,6 +23,8 @@ if Places:getCurrentPlace() ~= Places.places.LowLevelServer and not workspace.Ga
 end
 
 local introMessageFrame = script.Parent.Parent:WaitForChild("IntroMessage")
+DebugXL:logD(LogArea.UI, "IntroMessageScript found IntroMessage frame")
+
 local mainFrame = introMessageFrame:WaitForChild("Main")
 
 function FinishIntro()

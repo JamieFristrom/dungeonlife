@@ -50,7 +50,7 @@ function CharacterI:TakeFlexToolDamage( context, hitCharacter, attackingCharacte
 				DebugXL:logV( LogArea.Combat, "Hero damaging monster" )	
 				DebugXL:Assert( attackingPlayer )
 				if attackingPlayer then
-					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( attackingCharacterRecord, attackingCharacter, flexTool, hitHumanoid, tool )
+					require( game.ServerStorage.Standard.HeroesModule ):DoFlexToolDamage( context, attackingCharacterRecord, attackingCharacter, flexTool, hitHumanoid, tool )
 				end
 			elseif TableXL:InstanceOf( attackingCharacterRecord, Monster ) then
 				-- can"t just use tool"s parent to determine attacking character because it might be lingering

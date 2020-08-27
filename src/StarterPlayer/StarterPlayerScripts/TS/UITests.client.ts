@@ -14,7 +14,7 @@ import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
 
 import { ReplicatedStorage, Workspace, Players, Teams } from '@rbxts/services'
 
-const runClientTests: boolean = false
+const runClientTests: boolean = true
 if(runClientTests) {
 
     let testKeys = [

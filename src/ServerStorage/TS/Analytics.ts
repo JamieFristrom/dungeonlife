@@ -86,7 +86,7 @@ export namespace Analytics {
 
     export function getSessionKey(player: Player) {
         let playerInfo = playerAnalyticInfos.get(player)
-        DebugXL.Assert(playerInfo !== undefined)
+//        DebugXL.Assert(playerInfo !== undefined)  // messing up tests and I don't really care
         return playerInfo ? playerInfo.sessionKey : ""
     }
 

@@ -1,13 +1,16 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
 //
 // For my own development, the easiest thing when I have an update to publish is to publish one project to several places.
 // The way I do that is to then have the places, which are identical at the rbxl level, get their differences from this
 // file and configure themselves accordingly.
 //
 // It could use some reorganization but it's
-import { DebugXL, LogArea } from "./DebugXLTS";
 import { Workspace } from "@rbxts/services";
 
-import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
 export namespace PlacesManifest
 {        
@@ -43,8 +46,8 @@ export namespace PlacesManifest
 
     export let places: { [k: string]: Place } = 
     {
-        LowLevelServer: new Place( "Standard Server", 2184151436, 2585229865, 100, math.huge, Hero.globalHeroLevelCap, 1, "HighLevelServer", "rbxassetid://2838350454", 60 ), 
-        HighLevelServer: new Place( "High Level Server", 2289580605, 2585286238, 100, math.huge, Hero.globalHeroLevelCap, Hero.globalHeroLevelCap/3, "LowLevelServer", "rbxassetid://2838350800", 60 ),  
+        LowLevelServer: new Place( "Standard Server", 2184151436, 2585229865, 100, math.huge, 70, 1, "HighLevelServer", "rbxassetid://2838350454", 60 ), 
+        HighLevelServer: new Place( "High Level Server", 2289580605, 2585286238, 100, math.huge, 70, 70/3, "LowLevelServer", "rbxassetid://2838350800", 60 ),  
         //BeginnerServer: new Place( "Beginner Server", 2627669639, 2625072009, 100, 4, 4, 1, "LowLevelServer",  "rbxassetid://2838350800", 40 ),
         //Underhaven: new Place( "Underhaven", 2843742449, 2800350457, 2000, math.huge, math.huge, 1, "", "rbxassetid://2838350072", 0 ),
 

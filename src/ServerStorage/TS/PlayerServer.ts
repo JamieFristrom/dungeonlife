@@ -91,7 +91,7 @@ export class PlayerTracker {
                 return record
             wait()
         }
-        DebugXL.logE(LogArea.Players, 'getCharacterRecrodFromPlayerWait timed out on ' + player.Name)
+        DebugXL.logE(LogArea.Players, 'getCharacterRecordFromPlayerWait timed out on ' + player.Name)
     }
 
     // used for AI mobs and when we don't know if there's a player
@@ -113,7 +113,7 @@ export class PlayerTracker {
             return this.getCharacterRecord(characterKey)
         }
         else {
-            return new CharacterRecordNull() 
+            return new CharacterRecordNull()
         }
     }
 
@@ -355,8 +355,8 @@ export class PlayerTracker {
 
     publishLevel(player: Player, localLevel: number, actualLevel: number) {
         DebugXL.Assert(player.IsA("Player"))
-        DebugXL.Assert(typeOf(localLevel)==="number")
-        DebugXL.Assert(typeOf(actualLevel)==="number")
+        DebugXL.Assert(typeOf(localLevel) === "number")
+        DebugXL.Assert(typeOf(actualLevel) === "number")
         let leaderstats = InstanceUtility.findOrCreateChild<Model>(player, "leaderstats", "Model")
         let levelLabel = InstanceUtility.findOrCreateChild<StringValue>(leaderstats, "Level", "StringValue")
         levelLabel.Value = localLevel === actualLevel ? tostring(localLevel) : `${localLevel} (${actualLevel})`
@@ -372,7 +372,7 @@ export class PlayerTracker {
     }
 
     getPlayer(characterKey: CharacterKey) {
-        DebugXL.Assert( typeOf(characterKey)==="number" )
+        DebugXL.Assert(typeOf(characterKey) === "number")
         for (let [k, v] of Object.entries(this.currentPCKeys)) {
             if (v === characterKey) {
                 return k
@@ -382,7 +382,7 @@ export class PlayerTracker {
     }
 
     getCharacterModel(characterKey: CharacterKey) {
-        DebugXL.Assert( typeOf(characterKey)==="number" )
+        DebugXL.Assert(typeOf(characterKey) === "number")
         for (let [k, v] of Object.entries(this.currentMobKeys)) {
             if (v === characterKey) {
                 return k
@@ -396,7 +396,7 @@ export class PlayerTracker {
     }
 
     getName(characterKey: CharacterKey) {
-        DebugXL.Assert( typeOf(characterKey)==="number" )
+        DebugXL.Assert(typeOf(characterKey) === "number")
         const player = this.getPlayer(characterKey)
         if (player) { return player.Name }
         const character = this.getCharacterModel(characterKey)

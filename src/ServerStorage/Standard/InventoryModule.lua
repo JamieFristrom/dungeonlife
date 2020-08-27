@@ -503,7 +503,10 @@ local InventoryRemote = {}
 
 
 function InventoryRemote.GetWait( player )
-	return Inventory:GetWait( player )
+	DebugXL:logV(LogArea.Inventory, "Inventory accessed remotely")
+	local result = Inventory:GetWait( player )
+	DebugXL:logV(LogArea.Inventory, "Inventory available")
+	return result
 end
 
 

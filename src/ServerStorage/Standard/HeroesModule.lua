@@ -42,13 +42,17 @@ local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 
 local Analytics = require( game.ServerStorage.TS.Analytics ).Analytics
 local CharacterServer = require( game.ServerStorage.TS.CharacterServer ).CharacterServer
+local DestructibleServer = require( game.ServerStorage.TS.DestructibleServer ).DestructibleServer
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlacesServer = require( game.ServerStorage.TS.PlacesServerTS ).PlacesServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local ServerContext = require( game.ServerStorage.TS.ServerContext ).ServerContext
 local SkinUtility = require( game.ServerStorage.TS.SkinUtility ).SkinUtility
 local ToolCaches = require( game.ServerStorage.TS.ToolCaches ).ToolCaches
+
 
 DebugXL:logD(LogArea.Requires, "HeroesModule requires succesful")
 
@@ -210,7 +214,7 @@ function Heroes:CharacterAdded( character, player )
 
 	local potionCount = myPCData.gearPool:countIf( function( possession ) return possession.baseDataS=="Healing" end )
 	if potionCount==0 then
-		GivePossession( player, myPCData, FlexTool.new( "Healing", math.max( 1, level ), {} ) ) 
+		GivePossession( MainContext.get(), player, myPCData, FlexTool.new( "Healing", math.max( 1, level ), {} ) ) 
 	end
 	
 	-- if hero doesn't have a usable melee weapon, give them one
@@ -218,7 +222,7 @@ function Heroes:CharacterAdded( character, player )
 		return ToolData.dataT[ possession.baseDataS ].equipType=="melee" and myPCData:canUseGear( possession ) end )
 	if meleeWeaponCount==0 then
 		-- a weak melee weapon. a 1st level wizard could chuck their staff and rejoin and do all right... 
-		GivePossession( player, myPCData, FlexTool.new( "Shortsword", math.max( 1, level-1 ), {} ) ) 
+		GivePossession( MainContext.get(), player, myPCData, FlexTool.new( "Shortsword", math.max( 1, level-1 ), {} ) ) 
 	end
 		
 	-- if new player who has never had boost, give them free boost
@@ -269,24 +273,29 @@ function Heroes:CharacterAdded( character, player )
 end
 
 
-function GivePossession( player, myPCData, flexToolInst )
-	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+function GivePossession( context, player, myPCData, flexToolInst )
+	DebugXL:Assert( TableXL:InstanceOf(context,ServerContext))
+	DebugXL:Assert( player:IsA("Player"))
+	DebugXL:Assert( TableXL:InstanceOf(myPCData,Hero))
+	DebugXL:Assert( TableXL:InstanceOf(flexToolInst,FlexTool))
+
+	local characterKey = context:getPlayerTracker():getCharacterKeyFromPlayer( player )
 	if ToolData.dataT[ flexToolInst.baseDataS ].equipType == "potion" then
 		myPCData:giveFlexTool( flexToolInst )
-		ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(Inventory, player, myPCData) )
+		ToolCaches.updateToolCache( context:getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(context:getInventoryMgr(), player, myPCData) )
 	else		
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		local givenB = false
-		if gearCount < Inventory:GetCount( player, "GearSlots" ) then	
+		if gearCount < context:getInventoryMgr():GetCount( player, "GearSlots" ) then	
 			myPCData:giveFlexTool( flexToolInst )
 			local totalPossessions = HeroUtility:CountNonPotionGear( myPCData )
 			Analytics.ReportEvent( player, 'GiveTool', flexToolInst.baseDataS, flexToolInst.levelN, totalPossessions )
-			ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(Inventory, player, myPCData) )
+			ToolCaches.updateToolCache( context:getPlayerTracker(), characterKey, myPCData, SkinUtility.getCurrentSkinset(context:getInventoryMgr(), player, myPCData) )
 			givenB = true
 		end  
 		local gearCount = HeroUtility:CountNonPotionGear( myPCData )
 		-- we make the count right away again so if they *just* filled up they still get a warning ( note we could just add one in theory but we've got the cycles so why not be careful, who knows what might happen)
-		if gearCount >= Inventory:GetCount( player, "GearSlots" ) then
+		if gearCount >= context:getInventoryMgr():GetCount( player, "GearSlots" ) then
 			MessageServer.PostMessageByKey( player, "OutOfGearSlots", false )
 			if not givenB then
 				-- looking specifically to see if we can correlate not getting the gear with player loss
@@ -398,10 +407,12 @@ end
 
 
 -- to be called every time the game gives a hero a new tool (eg, loot drop or picking up tool in environment)
-function Heroes:RecordTool( player, flexToolInst )
-	local myPCData = Heroes:GetPCDataWait( player )
-
-	GivePossession( player, myPCData, flexToolInst )
+function Heroes:RecordTool( context, player, myPCData, flexToolInst )
+	DebugXL:Assert( TableXL:InstanceOf(context, ServerContext) )
+	DebugXL:Assert( player:IsA("Player") )
+	DebugXL:Assert( TableXL:InstanceOf(myPCData, Hero) )
+	DebugXL:Assert( TableXL:InstanceOf(flexToolInst,FlexTool) )
+	GivePossession( context, player, myPCData, flexToolInst )
 	Heroes:SaveHeroesWait( player )		 	
 end
 
@@ -440,8 +451,11 @@ function Heroes:DetermineCooldownN( player, toolO )
 end
 
 
-function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
+function Heroes:DoDirectDamage( context, player, damage, targetHumanoid, critB, forceLootForTest )
 	DebugXL:Assert( self == Heroes )
+	DebugXL:Assert( player:IsA("Player") )
+	DebugXL:Assert( type(damage)=="number")
+	DebugXL:Assert( targetHumanoid:IsA("Humanoid"))
 	if targetHumanoid.Health > 0 then
 		--print( "Heroes:DoDirectDamage targetHumanoid health > 0" )
 		
@@ -455,19 +469,21 @@ function Heroes:DoDirectDamage( player, damage, targetHumanoid, critB )
 			local victimCharacter = targetHumanoid.Parent
 			local victimPlayer = game.Players:GetPlayerFromCharacter( victimCharacter )
 			local victimCharacterRecord = PlayerServer.getCharacterRecordFromCharacter( victimCharacter )
-			if( victimCharacterRecord ) then  -- structures don't award xp
+			if( victimCharacterRecord.idS ~= "NullClass" ) then  -- structures don't award xp
 				local xpValue = MonsterServer.calculateXPReward( victimCharacterRecord, not victimPlayer )
 				DebugXL:logD( LogArea.Gameplay, targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
 				HeroServer.awardKillExperienceWait( player, xpValue, targetHumanoid.Parent )
-				Heroes:SaveHeroesWait( player )				
+				Heroes:SaveHeroesWait( player )			
+			else
+				DestructibleServer.doDeathBookkeepingIfDestructible( context, self, victimCharacter, player, forceLootForTest )
 			end
 			-- consolation prize for victim:
 			if victimPlayer then
 				MonsterServer.adjustBuildPoints( victimPlayer, 50 )
 				MonsterServer.awardTeamXPForMonsterKill( victimPlayer )
 				
-				Inventory:AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
-				Inventory:EarnRubies( victimPlayer, 2, "Death", "Monster" )
+				context:getInventoryMgr():AdjustCount( victimPlayer, "Stars", 2, "Death", "Monster" )
+				context:getInventoryMgr():EarnRubies( victimPlayer, 2, "Death", "Monster" )
 			end
 		end	
 	end
@@ -477,7 +493,7 @@ end
 -- if this game ever starts to pay for the time invested please fix this fucking mess
 -- you might think, "But can't we get the character from the player?"
 -- The player's character might theoretically change before this gets processed; we need the one that matches the flexToolInst
-function Heroes:DoFlexToolDamage( attackerRecord, character, flexToolInst, targetHumanoid, tool )
+function Heroes:DoFlexToolDamage( context, attackerRecord, character, flexToolInst, targetHumanoid, tool )
 	DebugXL:Assert( self == Heroes )
 	DebugXL:Assert( character:IsA("Model") )
 	DebugXL:Assert( TableXL:InstanceOf( flexToolInst, FlexTool ) )
@@ -500,7 +516,7 @@ function Heroes:DoFlexToolDamage( attackerRecord, character, flexToolInst, targe
 --	--print( "Base damage: "..damage )
 		local player = game.Players:GetPlayerFromCharacter(character)
 		if player then
-			Heroes:DoDirectDamage( player, damageN, targetHumanoid, critB )
+			Heroes:DoDirectDamage( context, player, damageN, targetHumanoid, critB )
 		end
 	end
 end

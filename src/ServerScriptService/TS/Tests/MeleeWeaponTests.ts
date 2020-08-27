@@ -3,19 +3,30 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
+import { Workspace, ServerStorage, Teams } from "@rbxts/services"
+
 import MeleeWeaponServerXL from "ServerStorage/Standard/MeleeWeaponServerXL"
 
 import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
-import { Workspace, ServerStorage, ReplicatedStorage, Teams } from "@rbxts/services"
 import { FlexibleToolsServer } from "ServerStorage/TS/FlexibleToolsServer"
-import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
-import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
-import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { Monster } from "ReplicatedStorage/TS/Monster"
+
 import { Character } from "ReplicatedStorage/TS/ModelUtility"
 import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
+import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
+import { Monster } from "ReplicatedStorage/TS/Monster"
+import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
+
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
+import InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
+
 import CharacterXL from "ServerStorage/Standard/CharacterXL"
+import FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
+import FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+
 
 class CombatTestHelper {
     testSetup: TestContext
@@ -35,25 +46,34 @@ class CombatTestHelper {
         this.defender.SetPrimaryPartCFrame(this.attacker.GetPrimaryPartCFrame())
         this.tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>(weapon)!.Clone()
         this.flexTool = new FlexTool(weapon, 1, [])
+        this.tool = FlexibleTools.CreateTool({
+            toolInstanceDatumT: this.flexTool,
+            destinationCharacter: attacker,
+            activeSkinsT: new Map<SkinTypeEnum, string>(),
+            possessionsKey: "item1"
+        })
         FlexibleToolsServer.setFlexToolInst(this.tool, { flexToolInst: this.flexTool, character: this.attacker, possessionsKey: "item1" })
         this.meleeWeapon = new MeleeWeaponServerXL(this.tool, testSetup)
         this.tool.Parent = this.attacker
         this.meleeWeapon.OnEquipped()
-        TestUtility.assertTrue(this.tool.Parent === this.attacker)
+        TestUtility.assertTrue(this.tool.Parent === this.attacker, "CombatTestHelper construction succesful")
     }
 }
 
 class CombatTestHelperPlayerAttacker extends CombatTestHelper {
+    attackerRecord: CharacterRecord
+
     constructor(attackerClass: CharacterClass, attackerTeam: string, weapon: string, defender: Model) {
         let testSetup = new TestContext()
         testSetup.getPlayer().Team = Teams.FindFirstChild<Team>(attackerTeam)
         let attacker = testSetup.makeTestPlayerCharacter(attackerClass)
-        let testRecord = attackerTeam === "Heroes" ?
+        let attackerRecord = attackerTeam === "Heroes" ?
             new Hero(attackerClass, CharacterClasses.heroStartingStats[attackerClass], []) :
             new Monster(attackerClass, [], 1)
-        testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
+        testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
         let oldHealth = defender.FindFirstChild<Humanoid>("Humanoid")!.Health
         super(testSetup, attacker, weapon, defender, oldHealth)
+        this.attackerRecord = attackerRecord
     }
 
     clean() {
@@ -80,6 +100,35 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
         FlexibleToolsServer.removeToolWait(this.tool, this.attacker)
         this.testSetup.clean()
     }
+}
+
+// test smack destructible structure drops loot
+{
+    // arrange; need to build structure via FurnishServer so it'll have Destructible
+    let testSetup = new TestContext()
+    testSetup.getInventoryMock().itemsT["TestDestructibleLoot"] = 1
+    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    let map = MapUtility.makeEmptyMap(5)
+    let [structureModel, structure] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
+    let oldHealth = structureModel.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Rogue"), "Shortsword", structureModel, oldHealth)
+    let attackerRecord = new Hero("Rogue", CharacterClasses.heroStartingStats["Rogue"], [])      // can't just put tool in constructor because it gets cloned 
+    attackerRecord.giveFlexTool(combatHelper.flexTool)                                           // whereas this just attaches the existing one
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
+    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+    const oldLoot = attackerRecord.gearPool.size()  // testing this in StructureTests
+
+    // act
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth <= 0, "Structure smashed")
+    TestUtility.assertTrue(attackerRecord.gearPool.size() > oldLoot, "Structure dropped loot")  // testing this in StructureTests
+
+    // clean
+    testSetup.clean()
 }
 
 // test monster fire enchantments work
@@ -209,23 +258,6 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 
     // act
     combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    combatHelper.meleeWeapon.OnActivated()
-
-    // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
-    TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
-
-    // clean
-    combatHelper.clean()
-}
-
-// test smack destructible structure
-{
-    // arrange
-    let combatHelper = new CombatTestHelperPlayerAttacker("Warrior", "Heroes", "Axe",
-        ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("Barrel")!.Clone())
-
-    // act
     combatHelper.meleeWeapon.OnActivated()
 
     // assert

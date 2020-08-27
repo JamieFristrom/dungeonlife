@@ -2,12 +2,15 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
-DebugXL.logI( LogArea.Executed, script.GetFullName())
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { AssetManifest } from "ReplicatedFirst/TS/AssetManifest"
 
 export type ActiveSkinSetI = Map<SkinTypeEnum, string>
+
+// I forget why I put an index signature here
 export type ActiveSkins = { [skinSetType: string]: ActiveSkinSetI, monster: ActiveSkinSetI, hero: ActiveSkinSetI }
+
 
 export declare interface SkinInfoI {
 	idS: string
@@ -49,7 +52,7 @@ export enum SkinTypeEnum {
 
 export let SkinTypes: { [k: string]: SkinInfoI } =
 {
-	Sword1H: 
+	Sword1H:
 	{
 		idS: "Sword1H",
 		readableNameS: "One Handed Sword",
@@ -116,7 +119,7 @@ export let SkinTypes: { [k: string]: SkinInfoI } =
 		tagsT: { monster: true, hero: true, held: true },
 		upperBodyAttackAnimNames: [],
 		fullBodyAttackAnimNames: [],
-		windUpAttackAnimName: "ToolDefaultPose"	
+		windUpAttackAnimName: "ToolDefaultPose"
 	},
 	Bomb:
 	{
@@ -126,7 +129,7 @@ export let SkinTypes: { [k: string]: SkinInfoI } =
 		tagsT: { monster: true, hero: true, held: true },
 		upperBodyAttackAnimNames: [],
 		fullBodyAttackAnimNames: [],
-		windUpAttackAnimName: "ToolDefaultPose"	
+		windUpAttackAnimName: "ToolDefaultPose"
 	},
 	Maul:
 	{
@@ -156,7 +159,7 @@ export let SkinTypes: { [k: string]: SkinInfoI } =
 		tagsT: { monster: true, hero: true, held: true },
 		upperBodyAttackAnimNames: [],
 		fullBodyAttackAnimNames: [],
-		windUpAttackAnimName: "ToolDefaultPose"	
+		windUpAttackAnimName: "ToolDefaultPose"
 	},
 	MagicBarrier:
 	{

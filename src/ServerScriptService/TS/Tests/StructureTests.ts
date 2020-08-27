@@ -4,23 +4,18 @@
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 
 import { TestContext, TestUtility } from 'ServerStorage/TS/TestUtility'
-
 import { Furnisher } from 'ServerStorage/TS/Furnisher'
 
-import * as FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
+
+import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
 import InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
 
-// weapons rack clicked by monster gives monster enchanted weapon
-{
-    let testSetup = new TestContext()
-    testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
-    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000})
-    let map = MapUtility.makeEmptyMap(5)
-    Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0,0,0), 0 )
-    TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
-    testSetup.clean()
-}
+import { Workspace } from '@rbxts/services'
+
+import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
+import Heroes from 'ServerStorage/Standard/HeroesModule'
+
 
 // unable to place furnishing doesn't crash
 {
@@ -29,6 +24,37 @@ import InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
     InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000})
     let map = MapUtility.makeEmptyMap(1)
     Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0,0,0), 0 )
-    TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
+    TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===0, "Client failed to build orc spawn out of bounds" )
     testSetup.clean()
 }
+// placing a furnishing works
+{
+    let testSetup = new TestContext()
+    testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
+    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000})
+    let map = MapUtility.makeEmptyMap(5)
+    Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0,0,0), 0 )
+    TestUtility.assertTrue( FurnishUtility.CountFurnishings( "SpawnOrc", testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
+    Workspace.FindFirstChild<Folder>("Building")!.ClearAllChildren()
+    testSetup.clean()
+}
+
+function TestDestructibility(structureName: string) {
+    let testSetup = new TestContext()
+    testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
+    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000})
+    let map = MapUtility.makeEmptyMap(5)
+    let [model, structure] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), structureName, new Vector3(0,0,0), 0) 
+    TestUtility.assertTrue( FurnishUtility.CountFurnishings( structureName, testSetup.getPlayer() )[1]===1, "Client built 1 orc spawn" )
+    TestUtility.assertTrue( model !== undefined )
+    let humanoid = model.FindFirstChild<Humanoid>("Humanoid")
+    TestUtility.assertTrue( humanoid !== undefined, "Destructible structure has humanoid")
+    if( humanoid ) {        
+        Heroes.DoDirectDamage( testSetup, testSetup.getPlayer(), 10000, humanoid, false )
+        TestUtility.assertTrue( humanoid.Health <= 0 ) 
+    }
+    Workspace.FindFirstChild<Folder>("Building")!.ClearAllChildren()
+    testSetup.clean()
+}
+// are destructible thing destructible
+

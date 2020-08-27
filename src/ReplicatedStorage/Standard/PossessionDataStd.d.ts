@@ -26,6 +26,7 @@ declare namespace PossessionData   // namespace for info about possessions
         baseDamageN?: number
         furnishingType?: PossessionData.FurnishingEnum
         damagePerLevelN?: number
+        lootOnDestroyPct?: number
         healthPerLevelN?: number
         balanceAgainstNumHeroesB?: boolean
         textureSwapId?: string

@@ -1,15 +1,18 @@
-import { Workspace, Teams } from "@rbxts/services";
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
+
+import { Workspace, Teams } from "@rbxts/services"
 
 import { HeroStatBlockI, CharacterClasses, CharacterClass } from "./CharacterClasses"
 import { HeroI, RawHeroDataI } from "./HeroClassesTS"
-import { FlexTool } from "./FlexToolTS";
+import { FlexTool } from "./FlexToolTS"
 import { ToolData } from "./ToolDataTS"
 import { ObjectXL } from "./ObjectXLTS"
 import { CharacterRecord, GearPool } from "./CharacterRecord"
-import { Enhancements } from "./EnhancementsTS";
-import { DebugXL, LogArea } from "./DebugXLTS";
-import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility";
-
+import { Enhancements } from "./EnhancementsTS"
 
 let nerfTest = 100000  // test nerfing to this level
 
@@ -123,6 +126,12 @@ export class Hero extends CharacterRecord implements HeroI {
     static experienceFromLastLevelToNext(experienceN: number) {
         return Hero.experienceDeltaForNextLevel(Hero.levelForExperience(experienceN))
     }
+
+    adjustGold(goldDelta: number, playerOfRecord: Player, analyticsItemId: string, analyticsItemType: string) {
+        DebugXL.Assert(goldDelta + this.statsT.goldN >= 0)
+        this.statsT.goldN = this.statsT.goldN + goldDelta
+    }
+
 
     canUseGear(flexTool: FlexTool) {
         DebugXL.Assert(flexTool instanceof FlexTool)

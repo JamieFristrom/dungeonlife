@@ -1,13 +1,11 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
-
-import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS";
-import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
+import { HeroStable } from "ReplicatedStorage/TS/HeroStableTS"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
-import { HeroesManagerI } from "./HeroesManagerI";
-import { ServerContextI } from "ServerStorage/TS/ServerContext";
+import { ServerContextI } from "ServerStorage/TS/ServerContext"
 
-declare class HeroesManager implements HeroesManagerI {
+export interface HeroesManagerI {
     GetSavedPlayerCharactersWait(player: Player): HeroStable
     AdjustGold(player: Player, amount: number, analyticsItemIdS: string, analyticsItemTypeS: string): void
     DoDirectDamage(context: ServerContextI, attackingPlayer: Player, damage: number, targetHumanoid: Humanoid, crit: boolean): void
@@ -17,6 +15,3 @@ declare class HeroesManager implements HeroesManagerI {
     NewDungeonLevel(player: Player, newDungeonLevel: number): void
 }
 
-declare let Heroes: HeroesManager
-
-export = Heroes

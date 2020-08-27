@@ -921,6 +921,7 @@ PossessionData.dataA =
 			placementType = PossessionData.PlacementTypeEnum.Floor,
 			gridSubdivisionsN = 1,
 			healthPerLevelN = 10,
+			lootOnDestroyPct = 0,  						
 			balanceAgainstNumHeroesB = true,  						
 			buildCapN = 1,
 			levelCapN = 1,
@@ -1030,7 +1031,8 @@ PossessionData.dataA =
 			purchaseCapN = 2,
 			startingCountN  = 0,
 			rarityN = 3,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  	
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,			
 		},
@@ -1049,7 +1051,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 1,
 			rarityN = 1,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  		
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},				
@@ -1068,7 +1071,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 1,
 			rarityN = 1,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  		
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
@@ -1087,7 +1091,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 3,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  	
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},		
@@ -1106,7 +1111,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 1,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  		
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
@@ -1125,7 +1131,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 2,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  	
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
@@ -1144,7 +1151,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 4,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  		
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
@@ -1163,7 +1171,8 @@ PossessionData.dataA =
 			purchaseCapN = 3,
 			startingCountN  = 0,
 			rarityN = 2,
-			healthPerLevelN = 5,  			
+			healthPerLevelN = 5,  	
+			lootOnDestroyPct = 0.3,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			flavor = PossessionData.FlavorEnum.Furnishing,
 		},
@@ -1178,7 +1187,8 @@ PossessionData.dataA =
 			furnishingType = PossessionData.FurnishingEnum.Barrier,
 			placementType     = PossessionData.PlacementTypeEnum.Edge,
 			gridSubdivisionsN = 1,
-			healthPerLevelN = 6,  			
+			healthPerLevelN = 6,  	
+			lootOnDestroyPct = 0,		
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			buildCapN = 2,  -- chose that number so they could theoretically build a fence all the way across
 			levelCapN = 4,  -- 12/2
@@ -1214,7 +1224,8 @@ PossessionData.dataA =
 			placementType     = PossessionData.PlacementTypeEnum.Edge,
 			gridSubdivisionsN = 1,
 			-- it's obvious to me that in a single player game the gate should have less HP than the trapdoor
-			healthPerLevelN = 8,  			
+			healthPerLevelN = 8,  		
+			lootOnDestroyPct = 0,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			buildCapN = 2, 
 			levelCapN = 4,
@@ -1279,6 +1290,7 @@ PossessionData.dataA =
 			placementType     = PossessionData.PlacementTypeEnum.Open,
 			gridSubdivisionsN = 3,
 			healthPerLevelN = 3,
+			lootOnDestroyPct = 0.5,  						
 			clickableByTeam = {Monsters=true},
 			buildCapN = 2,		
 			levelCapN = 4,
@@ -1346,7 +1358,8 @@ PossessionData.dataA =
 			furnishingType = PossessionData.FurnishingEnum.Cosmetic,
 			placementType     = PossessionData.PlacementTypeEnum.Open,
 			gridSubdivisionsN = 6,
-			healthPerLevelN   = 2,  						
+			healthPerLevelN   = 2,
+			lootOnDestroyPct = 0.1,  						
 			buildCapN = 6,		
 			levelCapN = 8,
 			purchaseCapN = 6,
@@ -1415,7 +1428,8 @@ PossessionData.dataA =
 			furnishingType = PossessionData.FurnishingEnum.WaterFeature,
 			placementType     = PossessionData.PlacementTypeEnum.Open,
 			gridSubdivisionsN = 4,
-			healthPerLevelN   = 4,  						
+			healthPerLevelN   = 4,  				
+			lootOnDestroyPct = 0.1,  						
 			balanceAgainstNumHeroesB = false,  -- not balancing against individuals because more heroes usually means more monsters
 			buildCapN = 3,		
 			levelCapN = 6,
@@ -1513,6 +1527,42 @@ PossessionData.dataA =
 			damagePerLevelN = 2,  -- so always more than half if you put nothing into con. this should be very effective now that chests are the only way to get potions
 
 		},		
+		{
+			idS           = "TestDestructibleLoot",
+			readableNameS = "Test Destructible",
+			buildCostN    = -10,
+			descriptionS  = "Destructible with 100% loot chance",
+			imageId       = "http://www.roblox.com/Game/Tools/ThumbnailAsset.ashx?aid=2685915597&fmt=png&wd=420&ht=420",
+			furnishingType = PossessionData.FurnishingEnum.Cosmetic,
+			placementType     = PossessionData.PlacementTypeEnum.Open,
+			gridSubdivisionsN = 6,
+			healthPerLevelN   = 2,
+			lootOnDestroyPct = 1,  						
+			buildCapN = 6,		
+			levelCapN = 8,
+			purchaseCapN = 6,
+			startingCountN  = 0,
+			rarityN = 1,
+			flavor = PossessionData.FlavorEnum.Furnishing
+		},	
+		{
+			idS           = "TestDestructibleNoLoot",
+			readableNameS = "Test Destructible",
+			buildCostN    = -10,
+			descriptionS  = "Destructible with 0% loot chance",
+			imageId       = "http://www.roblox.com/Game/Tools/ThumbnailAsset.ashx?aid=2685915597&fmt=png&wd=420&ht=420",
+			furnishingType = PossessionData.FurnishingEnum.Cosmetic,
+			placementType     = PossessionData.PlacementTypeEnum.Open,
+			gridSubdivisionsN = 6,
+			healthPerLevelN   = 2,
+			lootOnDestroyPct = 0,  						
+			buildCapN = 6,		
+			levelCapN = 8,
+			purchaseCapN = 6,
+			startingCountN  = 0,
+			rarityN = 1,
+			flavor = PossessionData.FlavorEnum.Furnishing
+		},	
 	}
 
 

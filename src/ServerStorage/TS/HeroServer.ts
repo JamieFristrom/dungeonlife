@@ -79,10 +79,9 @@ export namespace HeroServer {
         }
     }
 
+
     export function adjustGold(player: Player, hero: Hero, amount: number, analyticItemType: string, analyticItemId: string) {
-        DebugXL.Assert(amount + hero.statsT.goldN >= 0)
-        hero.statsT.goldN = hero.statsT.goldN + amount
-        GameAnalyticsServer.RecordResource(player, amount, amount > 0 ? "Source" : "Sink", "Gold", analyticItemType, analyticItemId)
+        hero.adjustGold(amount, player, analyticItemType, analyticItemId)
     }
 
     export function buyItem(player: Player, hero: Hero, shopItemKey: string) {
@@ -118,12 +117,12 @@ export namespace HeroServer {
         experienceBonus: number,
         analyticsItemType: string,
         analyticsItemId: string,
-        boostActive: boolean ) {
+        boostActive: boolean) {
 
         // being careful because somehow a player ended up with nan experience
         DebugXL.Assert(type(experienceBonus) === "number")
         DebugXL.Assert((experienceBonus === experienceBonus))
-        DebugXL.Assert(type(boostActive)==="boolean")        
+        DebugXL.Assert(type(boostActive) === "boolean")
 
         if (MathXL.IsFinite(experienceBonus)) {
             if (boostActive) {
@@ -131,7 +130,7 @@ export namespace HeroServer {
             }
             const xpRate = 0.5
             experienceBonus *= xpRate
-            DebugXL.logD( LogArea.Gameplay, "Awarding (adjusted) "+experienceBonus+" xp to "+player.Name )	
+            DebugXL.logD(LogArea.Gameplay, "Awarding (adjusted) " + experienceBonus + " xp to " + player.Name)
             const pcData = PlayerServer.getCharacterRecordFromPlayer(player)
             // only if hero has chosen class yet
             if (pcData instanceof Hero) {  // // your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
@@ -143,7 +142,7 @@ export namespace HeroServer {
                 const newExperience = pcDataStatsT.experienceN + math.ceil(experienceBonus)
                 DebugXL.Assert(MathXL.IsFinite(newExperience))
                 if (!MathXL.IsFinite(newExperience)) { return }
-                DebugXL.logI( LogArea.Gameplay, player.Name+" xp goes from "+pcDataStatsT.experienceN+" to "+newExperience)
+                DebugXL.logI(LogArea.Gameplay, player.Name + " xp goes from " + pcDataStatsT.experienceN + " to " + newExperience)
                 pcDataStatsT.experienceN = newExperience
 
                 let newLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
@@ -197,13 +196,13 @@ export namespace HeroServer {
             if (hero === killer) {
                 // give 50% to hero 
                 const adjustedXP = xp / (numHeroes > 1 ? 2 : 1)
-                DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
+                DebugXL.logV(LogArea.Gameplay, hero.Name + " gets " + adjustedXP)
                 HeroServer.awardExperience(hero, adjustedXP, "Kill", "Monster", boostActive)
             }
             else {
                 // split the rest amongst the others
                 const adjustedXP = xp / 2 / math.max(1, numHeroes - 1) // math.max() prevents a div 0 if killer has left game
-                DebugXL.logV(LogArea.Gameplay, hero.Name+" gets "+adjustedXP)
+                DebugXL.logV(LogArea.Gameplay, hero.Name + " gets " + adjustedXP)
                 HeroServer.awardExperience(hero, adjustedXP, "Kill:Shared", "Monster", boostActive)
             }
         }
@@ -292,7 +291,7 @@ export namespace HeroServer {
         for (let i = 0; i < players.size(); i++) {
             // not going to be careful with this diagnostic function
             let myLeaderstats = players[i].FindFirstChild<Folder>('leaderstats')
-            if( myLeaderstats ) {   
+            if (myLeaderstats) {
                 let classObj = myLeaderstats.FindFirstChild<StringValue>('Class')
                 if (classObj !== undefined)  // might not have loaded in yet
                 {

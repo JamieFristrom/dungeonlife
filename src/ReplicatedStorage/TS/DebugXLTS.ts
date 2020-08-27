@@ -33,6 +33,7 @@ export enum LogArea {
     GameManagement,   // game flow, overall game state
     Error,            // for untagged errors
     Executed,         // has this script begun execution?
+    Inventory,
     Items,
     Mobs,             // mob behavior but not spawning
     MobSpawn,         // mob spawning
@@ -50,18 +51,10 @@ class DebugXLC {
 
     private inlineErrors = false  // should not be true in ship, because will halt execution of scripts, but it's useful for finding exactly where assertions fire when debugging
 
-    private defaultLogLevel = LogLevel.Info
-
-    private logLevelForTag = new Map<LogArea, LogLevel>([
-        //[LogArea.Combat,LogLevel.Warning],
-        //[LogArea.Gameplay, LogLevel.Verbose],
-        //[LogArea.Executed,LogLevel.Info],
-        //[LogArea.Requires,LogLevel.Verbose],
-        //[LogArea.UI, LogLevel.Info],
-        //[LogArea.Characters, LogLevel.Verbose],
-        //[LogArea.GameManagement, LogLevel.Verbose],
-        //[LogArea.MobSpawn, LogLevel.Verbose]
-    ])
+    // Change these settings in ReplicatedStorage/TS/DebugSettings, not here.
+    // You'll avoid a long rebuild and your changes will actually take.
+    private defaultLogLevel = LogLevel.Error
+    private logLevelForTag = new Map<LogArea, LogLevel>([])
 
     private testErrorCatcher?: (message: string) => void
 

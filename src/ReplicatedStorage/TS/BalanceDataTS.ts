@@ -23,7 +23,6 @@ export const BalanceData = {
 	//       if you run looking for a chest
 
 	chestDropRateModifierN: 0.45,
-	destructibleDropRateModifier: 0.2,
 	itemDropRateModifierN: 1,
 	// 0.75 might be a tad high
 	// 11/18: felt like the drop rate of 0.7 was really low - you have to kill 10 monsters to get 1 thing, and that thing is usually trash,

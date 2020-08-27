@@ -24,6 +24,8 @@ local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).C
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 
+local Heroes = require( game.ServerStorage.Standard.HeroesModule )
+
 local LootServer = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
@@ -178,7 +180,7 @@ end
 
 function Monsters:Died( monster, characterRecord )
 	MonsterServer.died( monster, characterRecord )
-	LootServer.checkMonsterDrop( monster )
+	LootServer.checkMonsterDrop( Heroes, monster )
 end
 
 

@@ -12,13 +12,15 @@ import { ServerContextI } from "./ServerContext"
 import { Structure } from "ServerStorage/TS/Structure"
 import { Monster } from "ReplicatedStorage/TS/Monster"
 import { ToolCaches } from "./ToolCaches"
+import { DestructibleStructure } from "./DestructibleStructure"
 
 // wishlist - only works on players so can"t work on mobs if we one decide to be able to allow the players to place chests
 const lootDropRE = Workspace.FindFirstChild<Folder>("Signals")!.FindFirstChild<RemoteEvent>("LootDropRE")!
 
 let hotbarRE = Workspace.WaitForChild("Signals")!.WaitForChild("HotbarRE") as RemoteEvent
 
-export class WeaponsRack extends Structure {
+// ugh, inheritance. we'll want to make that components later
+export class WeaponsRack extends DestructibleStructure {
     // each monster can only open once
     private readonly serverContext: ServerContextI
 
@@ -50,7 +52,7 @@ export class WeaponsRack extends Structure {
 
     hasClientAcknowledged() { return this.clientAcknowledged }
 
-    constructor(serverContext: ServerContextI, public rackInstance: Model) {
+    constructor(serverContext: ServerContextI, rackInstance: Model) {
         super(serverContext, rackInstance)
         this.serverContext = serverContext
         CollectionService.AddTag(rackInstance, "WeaponsRack")  // notifies client to spin up client-side object

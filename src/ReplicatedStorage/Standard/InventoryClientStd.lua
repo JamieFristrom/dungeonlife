@@ -1,9 +1,17 @@
-local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
 
+-- Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
+DebugXL:logI(LogArea.Executed, script:GetFullName())
+
+local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
 
 local InventoryClient = {}
 
+DebugXL:logD(LogArea.Inventory, "Querying server inventory")
 InventoryClient.inventory = workspace.Signals.InventoryRF:InvokeServer( "GetWait" )
+DebugXL:logD(LogArea.Inventory, "Inventory ready")
 
 local defaultConnection = workspace.Signals.InventoryRE.OnClientEvent:Connect( function( funcName, inventoryUpdate )
 	if funcName == "Update" then

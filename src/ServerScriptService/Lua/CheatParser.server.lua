@@ -10,11 +10,11 @@ local CheatUtilityXL  = require( game.ReplicatedStorage.TS.CheatUtility )
 local InstanceXL      = require( game.ReplicatedStorage.Standard.InstanceXL )
 
 local CharacterXL     = require( game.ServerStorage.Standard.CharacterXL )
+local Heroes = require( game.ServerStorage.Standard.HeroesModule )
 
 local GameManagement  = require( game.ServerStorage.GameManagementModule )
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local LootServer = require( game.ServerStorage.TS.LootServer ).LootServer
-
 local AdminCommands = require( game.ServerStorage.TS.AdminCommands ).AdminCommands
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
 
@@ -23,7 +23,7 @@ local CheatParser = {}
 function CheatParser:DropLoot( player )
 	local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 	if characterKey then
-		LootServer.monsterDrop( PlayerServer.getActualLevel( characterKey ) * 2, "Orc", true, player )
+		LootServer.monsterDrop( Heroes, PlayerServer.getActualLevel( characterKey ) * 2, "Orc", true, player )
 	end
 end
 

@@ -231,7 +231,7 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 			return {nil,nil}
 		end	
 		local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
-		if not availableB and personalN >= inventory.itemsT[furnishingDatum.idS] then -- furnishingDatum.buildCapN then
+		if not availableB and personalN >= InventoryUtility:GetCount( inventory, furnishingDatum.idS ) then -- furnishingDatum.buildCapN then
 			return {nil,nil}
 		else
 			instance:SetPrimaryPartCFrame(CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0))

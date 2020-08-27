@@ -1,3 +1,9 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.Name)
+
 // because we have tests operating on various global game entities (such as player 0) run them in order
 
 import { TestUtility } from "ServerStorage/TS/TestUtility"
@@ -5,7 +11,7 @@ import { Workspace } from "@rbxts/services"
 
 const runTests = true
 
-const currentTest = undefined //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
+const currentTest = undefined //"WerewolfTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {

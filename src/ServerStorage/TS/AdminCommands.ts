@@ -15,9 +15,10 @@ import * as Inventory from "ServerStorage/Standard/InventoryModule"
 
 import * as CharacterI from "ServerStorage/Standard/CharacterI"
 
-
+import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS"
 import { GameplayTestUtility } from "ReplicatedStorage/TS/GameplayTestUtility"
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
 import { Analytics } from "./Analytics"
@@ -26,9 +27,8 @@ import { MessageServer } from "./MessageServer"
 import { MobServer } from "./MobServer"
 import { PlayerServer } from "./PlayerServer"
 import { SkinUtility } from "./SkinUtility"
-import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
-import GameManagement from 'ServerStorage/Standard/GameManagementModule';
-import { GameServer } from './GameServer';
+import { GameServer } from "./GameServer"
+import { MainContext } from "./MainContext"
 
 class AdminCommandsC {
   banListStore = DataStoreService.GetOrderedDataStore("BanList")
@@ -169,17 +169,20 @@ let CommandList: { [k: string]: unknown } =
     if (CheatUtility.PlayerWhitelisted(sender)) {
       let humanoid = sender.Character!.FindFirstChild('Humanoid') as Humanoid
       if (humanoid) {
-        let healths = tonumber(args[1])
-        healths = healths ? healths : 1
-        for (let i = 0; i < healths; i++) {
-          let potionInstance = new FlexTool("Healing", 0, [])
-          Heroes.RecordTool(sender, potionInstance)
-        }
-        let manas = tonumber(args[2])
-        manas = manas ? manas : 0
-        for (let i = 0; i < manas; i++) {
-          let potionInstance = new FlexTool("Mana", 0, [])
-          Heroes.RecordTool(sender, potionInstance)
+        const heroRecord = PlayerServer.getCharacterRecordFromPlayer(sender)
+        if (heroRecord instanceof Hero) {
+          let healths = tonumber(args[1])
+          healths = healths ? healths : 1
+          for (let i = 0; i < healths; i++) {
+            let potionInstance = new FlexTool("Healing", 0, [])
+            Heroes.RecordTool(MainContext.get(), sender, heroRecord, potionInstance)
+          }
+          let manas = tonumber(args[2])
+          manas = manas ? manas : 0
+          for (let i = 0; i < manas; i++) {
+            let potionInstance = new FlexTool("Mana", 0, [])
+            Heroes.RecordTool(MainContext.get(), sender, heroRecord, potionInstance)
+          }
         }
       }
     }

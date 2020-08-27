@@ -1,5 +1,5 @@
 # Fixing
-* Add code for Weapons Rack
+* Add player code to get free Weapons Rack & Door
 * Hero is respawning during preparation phase in 2 player game: mash ready button after changing level
 * Spawning inside structures, particularly orc tent
 * Hide rack tooltip if dungeon lord

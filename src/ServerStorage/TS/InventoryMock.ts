@@ -7,24 +7,25 @@ import { ActiveSkins, SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 
 export class InventoryMock implements InventoryI {
-    itemsT: { [k:string]: number }
-    questsT: Map< string, QuestTrackerI >
-    redeemedCodesT: { [k:string]: number }
+    itemsT: { [k: string]: number }
+    questsT: Map<string, QuestTrackerI>
+    redeemedCodesT: { [k: string]: number }
     activeSkinsT: ActiveSkins
-    settingsT: { monstersT: { [k:string]: MonsterSettingsI } }
+    settingsT: { monstersT: { [k: string]: MonsterSettingsI } }
     review: ReviewEnum
-    testGroups: Map<string,number>
+    testGroups: Map<string, number>
 
     constructor() {
         this.itemsT = {}
-        this.questsT = new Map<string,QuestTrackerI>()
+        this.questsT = new Map<string, QuestTrackerI>()
         this.redeemedCodesT = {}
-        this.activeSkinsT = { monster: new Map<SkinTypeEnum,string>(), hero: new Map<SkinTypeEnum,string>()}
-        this.settingsT = { monstersT: {}}
-        for( const monsterKey of Object.keys( CharacterClasses.monsterStats )) {
-            this.settingsT.monstersT[ monsterKey ] = { hideAccessoriesB: undefined }
+        this.activeSkinsT = { monster: new Map<SkinTypeEnum, string>(), hero: new Map<SkinTypeEnum, string>() }
+        this.settingsT = { monstersT: {} }
+        for (const monsterKey of Object.keys(CharacterClasses.monsterStats)) {
+            this.settingsT.monstersT[monsterKey] = { hideAccessoriesB: undefined }
         }
         this.review = ReviewEnum.NoOpinion
-        this.testGroups = new Map<string,number>()
+        this.testGroups = new Map<string, number>()
+        this.itemsT["GearSlots"] = 15
     }
 }
