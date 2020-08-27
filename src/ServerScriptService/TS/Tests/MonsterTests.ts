@@ -4,12 +4,14 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
+import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 import { Monster } from "ReplicatedStorage/TS/Monster"
-import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility";
-import { MonsterServer } from "ServerStorage/TS/MonsterServer";
-import { CharacterClasses, CharacterClass } from "ReplicatedStorage/TS/CharacterClasses";
-import Monsters, { PlayerCharacterAddedWait } from "ServerStorage/Standard/MonstersModule";
-import { SuperbossManager } from "ServerStorage/TS/SuperbossManager";
+
+import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
+import { MonsterServer } from "ServerStorage/TS/MonsterServer"
+import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
+
+import Monsters from "ServerStorage/Standard/MonstersModule"
 
 // test that DoDirectDamage killing blow doesn't crash
 {

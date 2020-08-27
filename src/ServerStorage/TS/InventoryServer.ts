@@ -115,6 +115,7 @@ let codeInfos: { [k:string]: CodeInfoI } =
     brasilgood123: { name: "brasilgood123", unlimited: false, numAvailable: 1, rewards: [{ item: "Boost", count: 360000 }]},
     kakaki33: { name: "kakaki33", unlimited: false, numAvailable: 1, rewards: [{ item: "Boost", count: 360000 }]},
 
+    blooprintz: { name: "blooprintz", unlimited: true, numAvailable: 0, rewards: [{ item: "WeaponsRack", count: 1 }, { item: "Door", count: 1}]}
     // old codes
     // happion: launchCode,
     // launch: launchCode,

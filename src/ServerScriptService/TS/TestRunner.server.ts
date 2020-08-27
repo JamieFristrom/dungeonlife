@@ -11,14 +11,14 @@ import { Workspace } from "@rbxts/services"
 
 const runTests = true
 
-const currentTest = undefined //"WerewolfTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
+const currentTest: string | undefined = undefined //"CodezTests" //"WerewolfTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {
     warn("Running Tests")
     for (let moduleScript of script.Parent!.Parent!.FindFirstChild<Folder>("TS")!.FindFirstChild<Folder>("Tests")!.GetChildren()) {
         if (moduleScript.IsA("ModuleScript")) {
-            if (!currentTest || currentTest === moduleScript.Name) {
+            if (!currentTest || (currentTest as string).upper() === moduleScript.Name.upper()) {
                 warn("Running " + moduleScript.Name)
                 TestUtility.setCurrentModuleName(moduleScript.Name)
                 require(moduleScript)

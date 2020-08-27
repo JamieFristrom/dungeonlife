@@ -15,7 +15,8 @@ import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
 import { ReplicatedStorage, Workspace, Players, Teams } from '@rbxts/services'
 
 const runClientTests: boolean = true
-if(runClientTests) {
+if(runClientTests && game.GetService("RunService").IsStudio()) {
+    DebugXL.logW(LogArea.Test, "UI Tests started")
 
     let testKeys = [
         { k: "IntroMessage" },
@@ -140,4 +141,6 @@ if(runClientTests) {
 
     testThatTeamCanClick("Chest", Teams.FindFirstChild<Team>("Heroes")!)
     testThatTeamCanClick("WeaponsRack", Teams.FindFirstChild<Team>("Monsters")!)
+
+    DebugXL.logW(LogArea.Test, "UI Tests finished")
 }

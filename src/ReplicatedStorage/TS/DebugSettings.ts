@@ -5,7 +5,7 @@ import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI(LogArea.Executed, script.Name)
 
 export namespace DebugSettings {
-    export const defaultLogLevel = LogLevel.Info
+    export const defaultLogLevel = LogLevel.Warning
     export const logLevelsForTag: [LogArea, LogLevel][] = [
         //[LogArea.Combat,LogLevel.Warning],
         //[LogArea.Gameplay, LogLevel.Verbose],
@@ -14,6 +14,6 @@ export namespace DebugSettings {
         //[LogArea.UI, LogLevel.Info],
         //[LogArea.Characters, LogLevel.Verbose],
         //[LogArea.GameManagement, LogLevel.Verbose],
-        [LogArea.Inventory, LogLevel.Verbose]
+        //[LogArea.Inventory, LogLevel.Verbose]
     ]
 }

@@ -1,10 +1,12 @@
 # Fixing
 * Add player code to get free Weapons Rack & Door
+* Port to Minecraft
 * Hero is respawning during preparation phase in 2 player game: mash ready button after changing level
+* Upgrade typescript
+* Sometimes there are spurious blue dots 
 * Spawning inside structures, particularly orc tent
 * Hide rack tooltip if dungeon lord
 * Zombie is not always getting a blue dot
-* Sometimes there are spurious blue dots 
 * Change timeout depending on monster hero ratio
 * Boss kill is still not quite right, it's thrashing between levels (there's a tiny instant TPK session that happens)
 * Go back to old way of costume changes when sometimes it wasn't quite flush with floor and there was occasional decapitation risk - it felt better overall: werewolf transform was instantaneous, for one thing, and it didn't pop those loadanimation errors so frequently
