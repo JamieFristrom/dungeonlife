@@ -17,15 +17,14 @@ declare class MonstersClass {
 
     // also returns CharacterKey but does it lua style and would have to be refactored if we want it
     PlayerCharacterAddedWait(
-        inventoryManager: InventoryManagerI,
+        context: ServerContextI,
         character: Character,
         player: Player,
-        playerTracker: PlayerTracker,
         superbossManager: SuperbossManager,
         currentLevelSession: number): CharacterRecord
 
     Initialize(
-        playerTracker: PlayerTracker,
+        context: ServerContextI,
         character: Character,
         characterKey: CharacterKey,
         walkSpeed: number,
@@ -33,7 +32,7 @@ declare class MonstersClass {
         superbossManager: SuperbossManager,
         currentLevelSession: number): void
         
-    Died(character: Character, cr: CharacterRecordI): void
+    Died(context: ServerContextI, character: Character, cr: CharacterRecordI): void
 
     DoDirectDamage( context: ServerContextI, optionalDamagingPlayer: Player, damage: number, targetHumanoid: Humanoid, damageTagsT: DamageTags, critB: boolean ): void
 }

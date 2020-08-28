@@ -30,6 +30,8 @@ import { HeroServer } from './HeroServer'
 import { ModelUtility } from 'ReplicatedStorage/TS/ModelUtility'
 import { SuperbossManager } from './SuperbossManager'
 import { GameServer } from './GameServer'
+import { MainContext } from './MainContext'
+import { ServerContextI } from './ServerContext'
 
 type Character = Model
 
@@ -136,13 +138,13 @@ export namespace MobServer {
     }
 
     export function spawnMob(
-        playerTracker: PlayerTracker,
-        characterClass: CharacterClass, 
-        superbossManager: SuperbossManager, 
+        context: ServerContextI,
+        characterClass: CharacterClass,
+        superbossManager: SuperbossManager,
         currentLevelSession: number,
-        position?: Vector3, 
-        spawnPart?: SpawnPart, 
-        curTick?: number ) {
+        position?: Vector3,
+        spawnPart?: SpawnPart,
+        curTick?: number) {
 
         if (spawnPart && curTick) {
             let mySpawner = spawnersMap.get(spawnPart)
@@ -166,7 +168,7 @@ export namespace MobServer {
             const humanoid = mobModel.FindFirstChild<Humanoid>('Humanoid')
             DebugXL.Assert(humanoid !== undefined)
             if (humanoid) {
-                mobs.add(new Mob(playerTracker, mobModel, humanoid, characterClass, superbossManager, currentLevelSession, position, spawnPart))
+                mobs.add(new Mob(context, mobModel, humanoid, characterClass, superbossManager, currentLevelSession, position, spawnPart))
                 return mobModel
             }
         }
@@ -188,7 +190,7 @@ export namespace MobServer {
             if (mob.humanoid.Health <= 0 || mob.model.Parent === undefined) {
                 mob.updateLastAttacker()  // because it passes through to the team
                 mobs.delete(mob)
-                Monsters.Died(mob.model, mob.getCharacterRecord())
+                Monsters.Died(MainContext.get(), mob.model, mob.getCharacterRecord())
                 delay(2, () => {
                     mob.model.Parent = undefined
                 })
@@ -213,7 +215,7 @@ export namespace MobServer {
                     DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
                     const charClassStr = spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass
                     spawnMob(
-                        PlayerServer.getPlayerTracker(),
+                        MainContext.get(),
                         charClassStr,
                         GameServer.getSuperbossManager(),
                         GameServer.levelSession,
@@ -230,9 +232,9 @@ export namespace MobServer {
                 // have we already spawned enough for now?
                 const myMobs = mobs.values().filter((mob) => mob.spawnPart === spawnPart)
                 if (myMobs.size() < mobSpawnerCap) {
-                    DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from "+spawnPart.GetFullName())
+                    DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from " + spawnPart.GetFullName())
                     spawnMob(
-                        PlayerServer.getPlayerTracker(),
+                        MainContext.get(),
                         spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass,
                         GameServer.getSuperbossManager(),
                         GameServer.levelSession,
@@ -278,13 +280,13 @@ export namespace MobServer {
         spawnPart?: SpawnPart
         lastSpottedEnemyPosition?: Vector3
         lastAttacker?: Character
-        playerTracker: PlayerTracker
+        context: ServerContextI
 
         getCharacterRecord() {
             // having the playerTracker seems weird even though it doesn't 'duplicate data', maybe this is an appropriate time to just store the character record
             // (still not a duplication since it would index same class)
-            let characterRecord = this.playerTracker.getCharacterRecordFromCharacter(this.model)
-            if( !characterRecord ) {
+            let characterRecord = this.context.getPlayerTracker().getCharacterRecordFromCharacter(this.model)
+            if (!characterRecord) {
                 characterRecord = new CharacterRecordNull()
             }
             return characterRecord
@@ -311,17 +313,17 @@ export namespace MobServer {
         }
 
         constructor(
-            playerTracker: PlayerTracker,
-            model: Model, 
+            context: ServerContextI,
+            model: Model,
             humanoid: Humanoid,
-            characterClass: CharacterClass, 
+            characterClass: CharacterClass,
             superbossManager: SuperbossManager,
             currentLevelSession: number,
-            position?: Vector3, 
+            position?: Vector3,
             spawnPart?: SpawnPart) {
-                
+
             super(model, humanoid)
-            this.playerTracker = playerTracker
+            this.context = context
             this.spawnPart = spawnPart
 
             // position mob
@@ -354,15 +356,15 @@ export namespace MobServer {
             let characterRecord = new Monster(characterClass,
                 [],
                 mobLevel)
-            const characterKey = this.playerTracker.setCharacterRecordForMob(this.model, characterRecord)
-            Monsters.Initialize( 
-                playerTracker, 
-                this.model, 
-                characterKey, 
-                characterRecord.getWalkSpeed(), 
+            const characterKey = this.context.getPlayerTracker().setCharacterRecordForMob(this.model, characterRecord)
+            Monsters.Initialize(
+                context,
+                this.model,
+                characterKey,
+                characterRecord.getWalkSpeed(),
                 characterClass,
                 superbossManager,
-                currentLevelSession )
+                currentLevelSession)
 
             // apparently this is necessary to stop client-side TP hacks; null
             delay(1,
@@ -388,7 +390,7 @@ export namespace MobServer {
                 })
             }
 
-            ToolCaches.updateToolCache(this.playerTracker, characterKey, characterRecord)
+            ToolCaches.updateToolCache(this.context.getPlayerTracker(), characterKey, characterRecord)
 
             // prepare a weapon
             for (let i = 0; i < HotbarSlot.Max; i++) {

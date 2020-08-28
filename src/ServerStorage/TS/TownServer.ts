@@ -4,21 +4,20 @@ import * as GameManagement from "ServerStorage/Standard/GameManagementModule"
 
 import { DungeonDeck } from "ServerStorage/TS/DungeonDeck"
 
-import { Workspace} from "@rbxts/services"
+import { Workspace } from "@rbxts/services"
+import { MainContext } from "./MainContext"
 
-export namespace TownServer
-{
-    export function Play()
-    {
+export namespace TownServer {
+    export function Play() {
         DungeonDeck.shuffle("Underhaven")
-        Dungeon.BuildWait( ( player ) => {} )
-        
+        Dungeon.BuildWait(MainContext.get(), (player) => { })
+
         // so players have somewhere to appear, kind of a stopgap
         FurnishServer.FurnishWithRandomSpawns()
 
         let gameStateValueObj = Workspace.FindFirstChild('GameManagement')!.FindFirstChild('GameState') as StringValue
         gameStateValueObj.Value = "LevelPlaying"
 
-        GameManagement.SetLevelReady( true )
+        GameManagement.SetLevelReady(true)
     }
 }

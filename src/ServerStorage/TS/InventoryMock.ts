@@ -27,5 +27,6 @@ export class InventoryMock implements InventoryI {
         this.review = ReviewEnum.NoOpinion
         this.testGroups = new Map<string, number>()
         this.itemsT["GearSlots"] = 15
+        this.itemsT["Tutorial"] = 3
     }
 }

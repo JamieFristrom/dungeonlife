@@ -26,12 +26,12 @@ import { ServerStorage, Teams } from "@rbxts/services"
 
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
-        Monsters.PlayerCharacterAddedWait(testSetup.getInventoryMgr(), testCharacter, testSetup.getPlayer(), testSetup.getPlayerTracker(), new SuperbossManager(), 1)
+        Monsters.PlayerCharacterAddedWait(testSetup, testCharacter, testSetup.getPlayer(), new SuperbossManager(), 1)
         const characterRecord = testSetup.getPlayerTracker().getCharacterRecordFromCharacter(testCharacter)
         let itemKey = characterRecord.getPossessionKeyFromSlot(1)
-        TestUtility.assertTrue(itemKey!==undefined, "Starting werewolf has weapon 1")
+        TestUtility.assertTrue(itemKey !== undefined, "Starting werewolf has weapon 1")
         itemKey = characterRecord.getPossessionKeyFromSlot(2)
-        TestUtility.assertTrue(itemKey!==undefined, "Starting werewolf has weapon 2")
+        TestUtility.assertTrue(itemKey !== undefined, "Starting werewolf has weapon 2")
 
         // act
         Werewolf.ToggleForm(testSetup.getPlayerTracker(), testSetup.getInventoryMgr(), testSetup.getPlayer())
@@ -40,9 +40,9 @@ import { ServerStorage, Teams } from "@rbxts/services"
         TestUtility.assertTrue(testSetup.getPlayer().Character!.FindFirstChild("Werewolf Head") === undefined, "Toggled werewolf has no wolf head")
         // assert has weapons in slots
         itemKey = characterRecord.getPossessionKeyFromSlot(1)
-        TestUtility.assertTrue(itemKey!==undefined, "Undercover werewolf has weapon 1")
+        TestUtility.assertTrue(itemKey !== undefined, "Undercover werewolf has weapon 1")
         itemKey = characterRecord.getPossessionKeyFromSlot(2)
-        TestUtility.assertTrue(itemKey!==undefined, "Undercover werewolf has weapon 2")
+        TestUtility.assertTrue(itemKey !== undefined, "Undercover werewolf has weapon 2")
 
         // act again (not being a control freak about one assert per test)
         Werewolf.ToggleForm(testSetup.getPlayerTracker(), testSetup.getInventoryMgr(), testSetup.getPlayer())
@@ -50,9 +50,9 @@ import { ServerStorage, Teams } from "@rbxts/services"
         // assert
         TestUtility.assertTrue(testSetup.getPlayer().Character!.FindFirstChild("Werewolf Head") !== undefined, "Reverted werewolf has wolf head")
         itemKey = characterRecord.getPossessionKeyFromSlot(1)
-        TestUtility.assertTrue(itemKey!==undefined, "Reverted werewolf has weapon 1")
+        TestUtility.assertTrue(itemKey !== undefined, "Reverted werewolf has weapon 1")
         itemKey = characterRecord.getPossessionKeyFromSlot(2)
-        TestUtility.assertTrue(itemKey!==undefined, "Reverted werewolf has weapon 2")
+        TestUtility.assertTrue(itemKey !== undefined, "Reverted werewolf has weapon 2")
     }
 
     // clean

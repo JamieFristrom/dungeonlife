@@ -79,7 +79,7 @@ function MechanicalEffects.Explosion( positionV3, damage, radius, attackingPlaye
 					end
 					
 --					--print("Damaging "..character.Name..": "..attenuatedDamage )
-					CharacterI:TakeDirectDamage( MainContext:get(), character, damage, attackingCharacter, { ranged=true, spell=true } )
+					CharacterI:TakeDirectDamage( MainContext.get(), character, damage, attackingCharacter, { ranged=true, spell=true } )
 				else
 --					--print( character.Name.." out of range" )
 				end

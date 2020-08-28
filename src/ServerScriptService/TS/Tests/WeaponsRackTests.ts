@@ -10,6 +10,31 @@ import { Monster } from 'ReplicatedStorage/TS/Monster'
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
+import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
+
+// weapons rack weapon goes in tool cache
+function TestWeaponsRackGivesMonsterWeapon(seed: number) {
+    let testSetup = new TestContext(seed)
+    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
+    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+    let rack = new WeaponsRack(testSetup, clickable)
+    testSetup.makeTestPlayerCharacter("Orc")
+    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    let testRecord = new Monster("Orc", [], 1);
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
+    DebugXL.Assert(testRecord.gearPool.size() === 0)
+    rack.use(testSetup.getPlayer())
+    TestUtility.assertTrue(testRecord.gearPool.size() === 1, `Monster clicked rack and got tool (seed ${seed}`)
+    TestUtility.assertTrue(testRecord.gearPool.countIf((flexTool) => flexTool.getTotalEnhanceLevels() > 0) > 0, `Monster clicked rack and got enchanted tools (seed ${seed})`)
+    TestUtility.assertTrue(ToolCaches.getToolCache(testSetup.getPlayer())!.FindFirstChild(testRecord.gearPool.getFromSlot(1)[0]!.baseDataS) !== undefined,
+        "Weapon rack weapon in cache")
+    testSetup.clean()
+}
+
+// test it a bunch because it can be flaky; 19 was a known bad seed
+for (let seed = 0; seed < 20; seed++) {
+    TestWeaponsRackGivesMonsterWeapon(seed)
+}
 
 // weapons racks don't give weapons to Dungeon Lords
 {
@@ -26,39 +51,43 @@ import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
     testSetup.clean()
 }
 
-// weapons rack clicked by monster gives monster enchanted weapon
+// test same seed makes same weapon
 {
-    let testSetup = new TestContext()
-    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
-    let rack = new WeaponsRack(testSetup, clickable)
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    let testRecord = new Monster("Orc", [], 1);
-    testSetup.makeTestPlayerCharacter("Orc")
-    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
-    DebugXL.Assert(testRecord.gearPool.size() === 0)
-    rack.use(testSetup.getPlayer())
-    TestUtility.assertTrue(testRecord.gearPool.countIf((flexTool) => flexTool.getTotalEnhanceLevels() > 0) > 0, "Monster clicked rack and got enchanted tools")
-    testSetup.clean()
+    let flexTool1: FlexTool | undefined
+    {
+        let testSetup = new TestContext(1)
+        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
+        clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+        let rack = new WeaponsRack(testSetup, clickable)
+        testSetup.makeTestPlayerCharacter("Orc")
+        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+        let testRecord = new Monster("Orc", [], 1);
+        testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
+        DebugXL.Assert(testRecord.gearPool.size() === 0)
+        rack.use(testSetup.getPlayer())
+        TestUtility.assertTrue(testRecord.gearPool.size() === 1, `Monster clicked rack and got tool`)
+        let result = testRecord.gearPool.findIf(() => true)!
+        flexTool1 = result[0]
+        testSetup.clean()
+    }
+    {
+        let testSetup = new TestContext(1)
+        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
+        clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+        let rack = new WeaponsRack(testSetup, clickable)
+        testSetup.makeTestPlayerCharacter("Orc")
+        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+        let testRecord = new Monster("Orc", [], 1);
+        testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
+        DebugXL.Assert(testRecord.gearPool.size() === 0)
+        rack.use(testSetup.getPlayer())
+        TestUtility.assertTrue(testRecord.gearPool.size() === 1, `Monster clicked rack and got tool`)
+        let [flexTool2] = testRecord.gearPool.findIf(() => true)
+        TestUtility.assertMatching(flexTool1, flexTool2, "Same seed makes same tool")
+        testSetup.clean()
+    }
 }
 
-// weapons rack weapon goes in tool cache
-{
-    let testSetup = new TestContext()
-    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
-    let rack = new WeaponsRack(testSetup, clickable)
-    testSetup.makeTestPlayerCharacter("Orc")
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
-    let testRecord = new Monster("Orc", [], 1);
-    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
-    DebugXL.Assert(testRecord.gearPool.size() === 0)
-    rack.use(testSetup.getPlayer())
-    TestUtility.assertTrue(testRecord.gearPool.countIf((flexTool) => flexTool.getTotalEnhanceLevels() > 0) > 0, "Monster clicked rack and got enchanted tools")
-    TestUtility.assertTrue(ToolCaches.getToolCache(testSetup.getPlayer())!.FindFirstChild(testRecord.gearPool.getFromSlot(1)[0]!.baseDataS) !== undefined,
-        "Weapon rack weapon in cache")
-    testSetup.clean()
-}
 
 // test that creating is acknowledged by the client; this is an icky one, it can take a long time for the client to 
 // spin up. If your PC is slower than mine this might fail on you intermittently?
@@ -66,6 +95,7 @@ import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
     let testContext = new TestContext()
     testContext.getInventoryMock().itemsT["WeaponsRack"] = 1
     let [_, structure] = FurnishServer.Furnish(testContext, MapUtility.makeEmptyMap(5), testContext.getPlayer(), "WeaponsRack", new Vector3(0, 0, 0), 0)
+    DebugXL.Assert(structure !== undefined)
     DebugXL.Assert(structure instanceof WeaponsRack)
     let weaponsRack = structure as WeaponsRack
     let startTime = tick()

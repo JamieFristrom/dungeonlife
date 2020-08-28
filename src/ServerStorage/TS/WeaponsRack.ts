@@ -37,12 +37,13 @@ export class WeaponsRack extends DestructibleStructure {
                 // weapon could be any physical weapon
                 let weaponList = ["DaggersDual", "Crossbow", "Longbow", "Bomb", "Shortsword", "Broadsword", "Greatsword", "Staff", "Hatchet", "Axe", "Club", "Mace"]
 
-                let newTool = MonsterServer.giveUniqueWeapon(this.serverContext.getPlayerTracker(), characterKey, weaponList)
+                let newTool = MonsterServer.giveUniqueWeapon(this.serverContext, characterKey, weaponList)
                 newTool.levelN = math.max(newTool.levelN, 2) // needs to be at least level 2 to have 1 enchantment
                 const activeSkins = this.serverContext.getInventoryMgr().GetActiveSkinsWait(player)
 
                 const badjuju = ["str", "dex", "con", "will", "radiant"]
-                newTool.addRandomEnhancements(this.serverContext.getInventoryMgr().BoostActive(player), 1, badjuju)   // fun fact, having boost on gives you better weapons rack drops. that"s real pay to win right there
+                newTool.addRandomEnhancements(this.serverContext.getRNG(), this.serverContext.getInventoryMgr().BoostActive(player), 1, badjuju)   // fun fact, having boost on gives you better weapons rack drops. that"s real pay to win right there
+
                 ToolCaches.updateToolCache(this.serverContext.getPlayerTracker(), characterKey, characterRecord, activeSkins.monster)
                 lootDropRE.FireClient(player, "item", newTool, activeSkins)  // shows travelling widget
                 hotbarRE.FireClient(player, "Refresh", characterRecord)

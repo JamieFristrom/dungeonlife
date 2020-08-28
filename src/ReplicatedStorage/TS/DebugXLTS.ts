@@ -39,8 +39,9 @@ export enum LogArea {
     MobSpawn,         // mob spawning
     Network,          // replication
     Players,
-    Parts,
+    Parts,    
     Spawner,          // spawner furnishing behavior, both mob and non-mob
+    Structures,
     Test,
     Requires,         // tracking which files have been succesfully required/imported
     UI,               // 
@@ -175,6 +176,9 @@ class DebugXLC {
         this.testErrorCatcher = undefined
     }
 
+    catchErrorsInline(inlineErrors: boolean) {
+        this.inlineErrors = inlineErrors
+    }
 }
 
 export let DebugXL = new DebugXLC()

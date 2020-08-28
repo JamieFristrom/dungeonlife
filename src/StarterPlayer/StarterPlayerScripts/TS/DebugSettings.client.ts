@@ -8,7 +8,8 @@ import { DebugSettings } from "ReplicatedStorage/TS/DebugSettings"
 
 // Deliberately putting this in a place where it won't be imported everywhere and cause a 90 second rebuild whenever we want 
 // to change our logging settings
+DebugXL.catchErrorsInline(DebugSettings.inlineErrors)
 DebugXL.setDefaultLogLevel(DebugSettings.defaultLogLevel)
-for( let thing of DebugSettings.logLevelsForTag ) {
+for (let thing of DebugSettings.logLevelsForTag) {
     DebugXL.setLogLevel(thing[1], thing[0])
 }

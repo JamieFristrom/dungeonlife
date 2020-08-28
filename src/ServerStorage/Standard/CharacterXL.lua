@@ -124,12 +124,12 @@ spawn( function()
 		for _, player in pairs( game.Players:GetPlayers() ) do
 			if player.Character then
 				if player.Character.Parent == workspace then
-					CharacterXL:ProcessCharacter( MainContext:get(), player.Character, deltaT )
+					CharacterXL:ProcessCharacter( MainContext.get(), player.Character, deltaT )
 				end
 			end
 		end
 		for _, mob in pairs( mobsFolder:GetChildren() ) do 
-			CharacterXL:ProcessCharacter( MainContext:get(), mob, deltaT )
+			CharacterXL:ProcessCharacter( MainContext.get(), mob, deltaT )
 		end
 	end)
 end)

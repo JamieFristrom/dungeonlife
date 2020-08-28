@@ -23,6 +23,7 @@ import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
 import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
 import InstanceXL from "ReplicatedStorage/Standard/InstanceXL";
+import { ServerContextI, ServerContext } from "./ServerContext";
 
 
 DebugXL.logD(LogArea.Requires, "MonsterServer finished imports")
@@ -286,14 +287,14 @@ export namespace MonsterServer {
         return xp
     }
 
-    export function died(monster: Character, characterRecord: CharacterRecord) {
+    export function died(context: ServerContextI, monster: Character, characterRecord: CharacterRecord) {
         DebugXL.Assert(monster.IsA('Model'))
         DebugXL.logI(LogArea.Combat, "Monster " + monster.Name + " died")
 
         const monsterPlayer = Players.GetPlayerFromCharacter(monster)
         if (monsterPlayer) {
-            Inventory.AdjustCount(monsterPlayer, "MonsterDeaths", 1)
-            PlayerServer.recordCharacterDeath(monsterPlayer, monster)
+            context.getInventoryMgr().AdjustCount(monsterPlayer, "MonsterDeaths", 1)
+            context.getPlayerTracker().recordCharacterDeath(monsterPlayer, monster)
         }
 
         DebugXL.Assert(characterRecord !== undefined)
@@ -317,11 +318,11 @@ export namespace MonsterServer {
             if (monsterDatum.tagsT.Superboss) {
                 // everybody gets credit & loot for the superboss but xp shared as usual
                 for (let hero of HeroTeam.GetPlayers()) {
-                    Inventory.AdjustCount(hero, "Kills" + monsterClass, 1)
+                    context.getInventoryMgr().AdjustCount(hero, "Kills" + monsterClass, 1)
                 }
                 if (monsterPlayer) {
-                    Inventory.AdjustCount(monsterPlayer, "Stars", 20, "Kill", "Superboss")
-                    Inventory.EarnRubies(monsterPlayer, 20, "Kill", "Superboss")
+                    context.getInventoryMgr().AdjustCount(monsterPlayer, "Stars", 20, "Kill", "Superboss")
+                    context.getInventoryMgr().EarnRubies(monsterPlayer, 20, "Kill", "Superboss")
                 }
                 // GameAnalyticsServer.ServerEvent( {
                 // 	["category"] = "design",
@@ -332,7 +333,7 @@ export namespace MonsterServer {
             else {
                 // otherwise just the one who got the kill
                 if (lastAttackingPlayer) {
-                    Inventory.AdjustCount(lastAttackingPlayer, "MonsterKills", 1)
+                    context.getInventoryMgr().AdjustCount(lastAttackingPlayer, "MonsterKills", 1)
                 }
             }
         }
@@ -341,52 +342,52 @@ export namespace MonsterServer {
     export function giveSpecificWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, flexToolPrototype: GearDefinition) {
         DebugXL.Assert(playerTracker instanceof PlayerTracker)
 
-        const flexTool = new FlexTool( flexToolPrototype.baseDataS,
+        const flexTool = new FlexTool(flexToolPrototype.baseDataS,
             math.ceil(playerTracker.getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN),
             flexToolPrototype.enhancementsA,
             flexToolPrototype.slotN,
             flexToolPrototype.equippedB,
             flexToolPrototype.boostedB,
             flexToolPrototype.hideItemB,
-            flexToolPrototype.hideAccessoriesB )
+            flexToolPrototype.hideAccessoriesB)
 
         playerTracker.getCharacterRecord(characterKey).giveFlexTool(flexTool)
         return flexTool
     }
 
-    export function giveUniqueWeapon(playerTracker: PlayerTracker, characterKey: CharacterKey, shrinkingWepaonList: string[]) {
-        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+    export function giveUniqueWeapon(context: ServerContextI, characterKey: CharacterKey, shrinkingWepaonList: string[]) {
+        DebugXL.Assert(context instanceof ServerContext)
 
         if (shrinkingWepaonList.size() === 0) {
-            DebugXL.logE(LogArea.Items, playerTracker.getName(characterKey) + " | " + playerTracker.getCharacterRecord(characterKey).idS + " has no potential weapons")
+            DebugXL.logE(LogArea.Items, context.getPlayerTracker().getName(characterKey) + " | " + context.getPlayerTracker().getCharacterRecord(characterKey).idS + " has no potential weapons")
         }
         const toolData = shrinkingWepaonList.map((weaponNameS) => ToolData.dataT[weaponNameS])
         const dropLikelihoods = toolData.map((x) => x.monsterStartGearBiasN || 0)
 
         if (dropLikelihoods.size() === 0) {
-            DebugXL.logE(LogArea.Items, playerTracker.getName(characterKey) + " has no drop likelihoods")
+            DebugXL.logE(LogArea.Items, context.getPlayerTracker().getName(characterKey) + " has no drop likelihoods")
         }
-        const toolN = MathXL.RandomBiasedInteger1toN(dropLikelihoods)-1
+        const toolN = context.getRNG().randomBiasedInteger1toNInclusive(dropLikelihoods) - 1
         const weaponTemplate = toolData[toolN]
         if (!weaponTemplate) {
             DebugXL.Dump(shrinkingWepaonList, LogArea.Items)
             DebugXL.Dump(toolData, LogArea.Items)
             DebugXL.Dump(dropLikelihoods, LogArea.Items)
-            DebugXL.Error(playerTracker.getName(characterKey) + " weapon template nil.")
+            DebugXL.Error(context.getPlayerTracker().getName(characterKey) + " weapon template nil.")
         }
 
         // slot here is hotbar slot
         let _slotN = undefined
 
-        const characterRecord = playerTracker.getCharacterRecord(characterKey)
+        const characterRecord = context.getPlayerTracker().getCharacterRecord(characterKey)
         // hack to keep werewolf alternate weapons out of hotbar slot
         if (characterRecord.idS !== "Werewolf") {
-            _slotN = playerTracker.getCharacterRecord(characterKey).countTools() + 1
+            _slotN = context.getPlayerTracker().getCharacterRecord(characterKey).countTools() + 1
         }
 
         const flexTool = new FlexTool(
             weaponTemplate.idS,
-            math.max(1, math.floor(playerTracker.getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN)),
+            math.max(1, math.floor(context.getPlayerTracker().getLocalLevel(characterKey) * BalanceData.monsterWeaponLevelMultiplierN)),
             [],
             _slotN)
         characterRecord.giveFlexTool(flexTool)
@@ -418,10 +419,10 @@ export namespace MonsterServer {
         return false
     }
 
-    export function adjustBuildPoints( player: Player, amount: number ) {
+    export function adjustBuildPoints(player: Player, amount: number) {
         // for testing purposes, and who knows there may be a race somewhere.
         let buildPointsObject = player.FindFirstChild<NumberValue>("BuildPoints")
-        if( !buildPointsObject ) {
+        if (!buildPointsObject) {
             buildPointsObject = new Instance("NumberValue")
             buildPointsObject.Name = "BuildPoints"
             buildPointsObject.Value = amount

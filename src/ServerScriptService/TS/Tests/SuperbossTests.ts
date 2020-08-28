@@ -70,7 +70,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
     let testCharacter = testSetup.makeTestPlayerCharacter("CyclopsSuper")
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
-        Monsters.PlayerCharacterAddedWait(testSetup.getInventoryMgr(), testCharacter, testSetup.getPlayer(), testSetup.getPlayerTracker(), superbossMgr, 1)
+        Monsters.PlayerCharacterAddedWait(testSetup, testCharacter, testSetup.getPlayer(), superbossMgr, 1)
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(1), "Superboss not defeated yet")
         testCharacter.Destroy()
         TestUtility.assertTrue(superbossMgr.superbossDefeated(1), "Superboss defeated")
@@ -80,7 +80,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
 
         DebugXL.Assert(testCharacter2 !== undefined)  // this would be a malfunction in the test system, not a test assert
         if (testCharacter2) {
-            Monsters.PlayerCharacterAddedWait(testSetup.getInventoryMgr(), testCharacter2, testSetup.getPlayer(), testSetup.getPlayerTracker(), superbossMgr, 2)
+            Monsters.PlayerCharacterAddedWait(testSetup, testCharacter2, testSetup.getPlayer(), superbossMgr, 2)
             TestUtility.assertTrue(!superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated after spawn")
             testCharacter2.Destroy()
             TestUtility.assertTrue(superbossMgr.superbossDefeated(2), "Superboss next level not yet defeated after spawn")
@@ -101,7 +101,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
 
-    let testCharacter = MobServer.spawnMob(playerTracker, "CyclopsSuper", superbossMgr, GameServer.levelSession)
+    let testCharacter = MobServer.spawnMob(testSetup, "CyclopsSuper", superbossMgr, GameServer.levelSession)
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
     DebugXL.Assert(testCharacter.Parent !== undefined)  // this would be a malfunction in the test system, not a test assert
     if (testCharacter) {
@@ -121,7 +121,7 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
         TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated")
         // let's make a new superboss
 
-        let testCharacter2 = MobServer.spawnMob(playerTracker, "CyclopsSuper", superbossMgr, GameServer.levelSession)
+        let testCharacter2 = MobServer.spawnMob(testSetup, "CyclopsSuper", superbossMgr, GameServer.levelSession)
         DebugXL.Assert(testCharacter2 !== undefined)  // this would be a malfunction in the test system, not a test assert
         if (testCharacter2) {
             TestUtility.assertTrue(!superbossMgr.superbossDefeated(GameServer.levelSession), "Superboss next level not yet defeated after spawn")

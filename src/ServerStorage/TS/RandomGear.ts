@@ -7,6 +7,7 @@ import * as MathXL from 'ReplicatedStorage/Standard/MathXL'
 
 import * as FlexibleTools from 'ServerStorage/Standard/FlexibleToolsModule'
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { MainContext } from './MainContext'
 
 export namespace RandomGear {
     // these things do random-ish-ing for different players
@@ -86,7 +87,7 @@ export namespace RandomGear {
         const gearDrop = winningGearPile[winningGearIndex - 1]
 
         const gearInstance = new FlexTool(gearDrop.idS, toolLevelN, [], undefined, undefined, alreadyBoosted)
-        gearInstance.addRandomEnhancements(useBoost)
+        gearInstance.addRandomEnhancements(MainContext.get().getRNG(), useBoost)
         return gearInstance
     }
 }

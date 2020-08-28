@@ -26,6 +26,7 @@ import InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 import CharacterXL from "ServerStorage/Standard/CharacterXL"
 import FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
 import FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+import Dungeon from "ServerStorage/Standard/DungeonModule"
 
 
 class CombatTestHelper {
@@ -102,6 +103,31 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     }
 }
 
+
+{
+    let testSetup = new TestContext()
+    Dungeon.BuildWait(testSetup, (player) => { })
+    let trapDoors = Workspace.FindFirstChild<Folder>("Environment")!.FindFirstChild<Model>("TrapDoors", true)!
+    let oldHealth = trapDoors.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Mage"), "Staff", trapDoors, oldHealth)
+    let attackerRecord = new Hero("Mage", CharacterClasses.heroStartingStats["Mage"], [])      // can't just put tool in constructor because it gets cloned 
+    attackerRecord.giveFlexTool(combatHelper.flexTool)                                           // whereas this just attaches the existing one
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
+    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+    const oldLoot = attackerRecord.gearPool.size()  // testing this in StructureTests
+
+    // act
+    combatHelper.meleeWeapon.OnActivated()
+
+    // assert
+    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    TestUtility.assertTrue(newHealth <= 0, "Trap doors smashed")
+
+    // clean
+    testSetup.clean()
+}
+
 // test smack destructible structure drops loot
 {
     // arrange; need to build structure via FurnishServer so it'll have Destructible
@@ -109,7 +135,8 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     testSetup.getInventoryMock().itemsT["TestDestructibleLoot"] = 1
     InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
     let map = MapUtility.makeEmptyMap(5)
-    let [structureModel, structure] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
+    let [structureModel] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
+    DebugXL.Assert(structureModel !== undefined)
     let oldHealth = structureModel.FindFirstChild<Humanoid>("Humanoid")!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Rogue"), "Shortsword", structureModel, oldHealth)
     let attackerRecord = new Hero("Rogue", CharacterClasses.heroStartingStats["Rogue"], [])      // can't just put tool in constructor because it gets cloned 

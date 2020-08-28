@@ -18,17 +18,17 @@ local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 local AnalyticsXL = require( game.ServerStorage.Standard.AnalyticsXL )
 local CostumesServer = require( game.ServerStorage.Standard.CostumesServer )
 local GameAnalyticsServer = require( game.ServerStorage.Standard.GameAnalyticsServer )
+local Heroes = require( game.ServerStorage.Standard.HeroesModule )
 
 local BalanceData = require( game.ReplicatedStorage.TS.BalanceDataTS ).BalanceData
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local ToolData = require( game.ReplicatedStorage.TS.ToolDataTS ).ToolData
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 
-local Heroes = require( game.ServerStorage.Standard.HeroesModule )
-
 local LootServer = require( game.ServerStorage.TS.LootServer).LootServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
 local PlayerServer = require( game.ServerStorage.TS.PlayerServer ).PlayerServer
+local ServerContext = require( game.ServerStorage.TS.ServerContext ).ServerContext
 
 local FlexibleTools = require( game.ServerStorage.Standard.FlexibleToolsModule )
 -- for balance tuning:
@@ -53,7 +53,7 @@ local Monsters = {}
 local monstersForHeroT = {}
 
 
-function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player, playerTracker, superbossManager, currentLevelSession )
+function Monsters:PlayerCharacterAddedWait( context, character, player, superbossManager, currentLevelSession )
 	DebugXL:Assert( self == Monsters )
 	print("Waiting to load character "..character.Name.." appearance" )
 
@@ -61,7 +61,7 @@ function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player,
 	player.Backpack:ClearAllChildren()
 --	warn( "Clearing "..player.Name.."'s backpack" )
 
-	local monsterClass = playerTracker:getClassChoice( player )
+	local monsterClass = context:getPlayerTracker():getClassChoice( player )
 
 	local humanoid = character.Humanoid
 	DebugXL:Assert( monsterClass ~= "NullClass" )
@@ -94,13 +94,13 @@ function Monsters:PlayerCharacterAddedWait( inventoryManager, character, player,
 		{},
 		monsterLevel )
 
-	playerTracker:publishLevel( player, monsterLevel, monsterLevel )
-	local characterKey = playerTracker:setCharacterRecordForPlayer( player, characterRecord )
-	Monsters:Initialize( playerTracker, character, characterKey, characterRecord:getWalkSpeed(), monsterClass, superbossManager, currentLevelSession )
+	context:getPlayerTracker():publishLevel( player, monsterLevel, monsterLevel )
+	local characterKey = context:getPlayerTracker():setCharacterRecordForPlayer( player, characterRecord )
+	Monsters:Initialize( context, character, characterKey, characterRecord:getWalkSpeed(), monsterClass, superbossManager, currentLevelSession )
 
 	-- todo: add werewolf mobs that can switch looks?
 	if monsterClass == "Werewolf" then
-		local inventory = inventoryManager:GetWait( player )
+		local inventory = context:getInventoryMgr():GetWait( player )
 		local hideAccessoriesB = inventory and inventory.settingsT.monstersT[ monsterClass ].hideAccessoriesB
 		characterRecord:giveRandomArmor( hideAccessoriesB )
 	end
@@ -178,13 +178,16 @@ function Monsters:CalculateDamageN( monsterClass, monsterLevelN, flexToolInst, p
 end
 
 
-function Monsters:Died( monster, characterRecord )
-	MonsterServer.died( monster, characterRecord )
-	LootServer.checkMonsterDrop( Heroes, monster )
+function Monsters:Died( context, monsterCharacter, characterRecord )
+	DebugXL:Assert( TableXL:InstanceOf( context, ServerContext ) )
+	DebugXL:Assert( monsterCharacter:IsA("Model") )
+	DebugXL:Assert( TableXL:InstanceOf( characterRecord, Monster ) )
+	MonsterServer.died( context, monsterCharacter, characterRecord )
+	LootServer.checkMonsterDrop( Heroes, monsterCharacter )
 end
 
 
-function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey, walkSpeedN, monsterClass, superbossManager, currentLevelSession )
+function Monsters:Initialize( context, monsterCharacterModel, characterKey, walkSpeedN, monsterClass, superbossManager, currentLevelSession )
 	DebugXL:Assert( self == Monsters )
 
 	local monsterDatum = CharacterClasses.monsterStats[ monsterClass ]
@@ -193,7 +196,7 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 --	InstanceXL.new( "Folder", { Parent = monster, Name = "Configurations" }, true )
 --	InstanceXL.new( "NumberValue", { Parent = monster.Configurations, Name = "Level", Value = level }, true )
 
-	local characterRecord = playerTracker:getCharacterRecord( characterKey )
+	local characterRecord = context:getPlayerTracker():getCharacterRecord( characterKey )
 	local level = characterRecord:getActualLevel()
 	--local standardHealth = enemyData.baseHealthN + enemyData.baseHealthN * monsterHealthPerLevelN * level   -- monster hit points accrete faster than weapon damage accretes
 	local standardHealth = MonsterServer.calculateMaxHealth( monsterDatum, level, MonsterServer.isHighLevelServer()  )   -- monster hit points accrete faster than weapon damage accretes
@@ -219,19 +222,19 @@ function Monsters:Initialize( playerTracker, monsterCharacterModel, characterKey
 	local startingItems = CharacterClasses.startingItems[ monsterClass ]
 	if startingItems then
 		for _, weapon in pairs( startingItems ) do
-			MonsterServer.giveSpecificWeapon( playerTracker, characterKey, weapon )
+			MonsterServer.giveSpecificWeapon( context:getPlayerTracker(), characterKey, weapon )
 		end
 	end
 
 	local potentialWeaponsA = TableXL:OneLevelCopy( monsterDatum.potentialWeaponsA )
 	for i = 1, monsterDatum.numWeaponsN do
-		MonsterServer.giveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
+		MonsterServer.giveUniqueWeapon( context, characterKey, potentialWeaponsA )
 	end
 
 	-- make sure you don't just have a one-shot weapon
 	if characterRecord:countTools() == 1 then  -- one for armor, one for the possible one shot
 		if characterRecord.gearPool:get("item1").baseDataS == "Bomb" then
-			MonsterServer.giveUniqueWeapon( playerTracker, characterKey, potentialWeaponsA )
+			MonsterServer.giveUniqueWeapon( context, characterKey, potentialWeaponsA )
 		end
 	end
 	

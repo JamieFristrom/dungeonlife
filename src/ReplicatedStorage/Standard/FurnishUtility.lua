@@ -57,11 +57,13 @@ end
 function FurnishUtility:CharacterWithinRegion( region3 )
 	local partwhitelistA = {}
 	for _, player in pairs( game.Players:GetPlayers() ) do
-		local character = player.Character
+		local character = player.Character		
 		if character then
-			for _, part in pairs( character:GetChildren() ) do
-				if part:IsA("BasePart") then
-					table.insert( partwhitelistA, part ) 
+			if character.Parent then
+				for _, part in pairs( character:GetChildren() ) do
+					if part:IsA("BasePart") then
+						table.insert( partwhitelistA, part ) 
+					end
 				end
 			end
 		end

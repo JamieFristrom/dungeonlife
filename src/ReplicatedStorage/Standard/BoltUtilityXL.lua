@@ -106,7 +106,7 @@ function BoltUtilityXL.new( projectileObj, hitPointFunc )
 				if humanoid and humanoid.Health > 0 then			
 					--print( "Has a humanoid. Executing hit func" )
 					local flexToolInst = FlexibleTools:GetFlexToolFromInstance( tool )
-					CharacterI:TakeFlexToolDamage( MainContext:get(), hitCharacter, creatorCharacter, flexToolInst, tool )
+					CharacterI:TakeFlexToolDamage( MainContext.get(), hitCharacter, creatorCharacter, flexToolInst, tool )
 					hitSquishy = true
 				end
 			end

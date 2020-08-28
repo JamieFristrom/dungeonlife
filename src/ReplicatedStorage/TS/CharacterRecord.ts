@@ -150,7 +150,7 @@ export class GearPool {
         return this.gear.values().filter(func).size()
     }
 
-    findIf(func: (v: FlexTool) => boolean) {
+    findIf(func: (v: FlexTool) => boolean): [ FlexTool|undefined, string|undefined ] {
         for (let [k, v] of Object.entries(this.gear)) {
             if (func(v))
                 return [v, k]

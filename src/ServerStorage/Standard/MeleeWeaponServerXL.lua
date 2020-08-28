@@ -34,7 +34,7 @@ function MeleeWeaponServerXL.new( Tool, context )
 	DebugXL:Assert( Tool:IsA("Tool") )
 
 	if not context then
-		context = MainContext:get()
+		context = MainContext.get()
 	end
 	meleeWeapon.context = context
 

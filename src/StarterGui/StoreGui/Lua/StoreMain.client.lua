@@ -11,7 +11,7 @@ local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
 
 local DeveloperProducts = require( game.ReplicatedStorage.DeveloperProducts )
 local InventoryClient   = require( game.ReplicatedStorage.InventoryClient )
-DebugXL:logD(LogArea.Required, "StoreMain succesfully required InventoryClient")
+DebugXL:logD(LogArea.Requires, "StoreMain succesfully required InventoryClient")
 
 local InventoryUtility  = require( game.ReplicatedStorage.InventoryUtility )
 local PossessionData    = require( game.ReplicatedStorage.PossessionData )

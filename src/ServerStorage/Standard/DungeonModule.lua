@@ -27,9 +27,9 @@ local TableXL        = require( game.ReplicatedStorage.Standard.TableXL )
 local FloorData      = require( game.ReplicatedStorage.FloorData )
 local MapTileData    = require( game.ReplicatedStorage.MapTileDataModule )
 
+local StructureFactory = require( game.ServerStorage.TS.StructureFactory ).StructureFactory
 local TileServer = require( game.ServerStorage.TS.TileServer ).TileServer
-
-local fixedFloorDecorations = require( game.ServerStorage.TS.FixedFloorDecorations ).FixedFloorDecorations
+local FixedFloorDecorations = require( game.ServerStorage.TS.FixedFloorDecorations ).FixedFloorDecorations
 
 -- this ought to belong in the DungeonUtility module:
 local function GridWidth()
@@ -44,10 +44,12 @@ local downStaircaseV2
 
 local nextLevelFunc
 
-function DownStaircaseConstructor( tileModel )
+function DownStaircaseConstructor( context, tileModel )
+	local trapDoors = tileModel.FloorStaircase:FindFirstChild("TrapDoors")
+	StructureFactory.createStructure( context, trapDoors ) -- makes it destructible
+	-- could go in a TrapDoor component or even a 'destruction activates touch box' component
 	local rainbowConnection
 	rainbowConnection = tileModel.FloorStaircase.TeleportPlane.Touched:Connect( function( toucher )
-		local trapDoors = tileModel.FloorStaircase:FindFirstChild("TrapDoors")
 		local trapDoorHumanoid = trapDoors and trapDoors:FindFirstChild("Humanoid") 
 		if not trapDoors or not trapDoorHumanoid or trapDoorHumanoid.Health <= 0 then
 			local humanoid = toucher.Parent:FindFirstChild("Humanoid")
@@ -322,7 +324,7 @@ function LocateStaircase()
 end
 
 
-function PlaceStaircase( staircaseV3 )
+function PlaceStaircase( context, staircaseV3 )
 	local tileModel = workspace.Environment[ "Tile_"..staircaseV3.X.."_"..staircaseV3.Z ]
 	local downStaircase = workspace.FloorTemplates.FloorStaircase:Clone()
 	local saveCFrame = tileModel:GetPrimaryPartCFrame()
@@ -331,12 +333,21 @@ function PlaceStaircase( staircaseV3 )
 	downStaircase.Parent = tileModel
 	tileModel.PrimaryPart = downStaircase.PrimaryPart
 	tileModel.Name = "DownStaircase"
-	DownStaircaseConstructor( tileModel )
+	DownStaircaseConstructor( context, tileModel )
 	return true
 end
 
+function Dungeon:Clean()
+	FixedFloorDecorations.Clean()
+	InstanceXL:UnparentAllChildren( workspace.Bits )
+	InstanceXL:UnparentAllChildren( workspace.Drops )
+	InstanceXL:UnparentAllChildren( workspace.MonsterSpawns )
+	InstanceXL:UnparentAllChildren( workspace.Environment )
+	InstanceXL:UnparentAllChildren( workspace.Building )
+	ClearGrid()
+end
 
-function Dungeon:BuildWait( _nextLevelFunc )
+function Dungeon:BuildWait( context, _nextLevelFunc )
 	DebugXL:Assert( self == Dungeon )
 	DebugXL:logW(LogArea.GameManagement, "Building dungeon")
 	nextLevelFunc = _nextLevelFunc
@@ -347,12 +358,7 @@ function Dungeon:BuildWait( _nextLevelFunc )
 	local tilesetFolder = workspace[ currentFloor.tilesetS ]
 	while not staircaseV3 do
 		local floorCreationStartTime = tick()
-		InstanceXL:UnparentAllChildren( workspace.Bits )
-		InstanceXL:UnparentAllChildren( workspace.Drops )
-		InstanceXL:UnparentAllChildren( workspace.MonsterSpawns )
-		InstanceXL:UnparentAllChildren( workspace.Environment )
-		InstanceXL:UnparentAllChildren( workspace.Building )
-		ClearGrid()
+		Dungeon:Clean()
 		PlaceStartTile( math.ceil( GridWidth() / 2) + currentFloor.startX, 
 			math.ceil( GridWidth() / 2) + currentFloor.startY, 
 			currentFloor.startTileModelName )
@@ -371,7 +377,7 @@ function Dungeon:BuildWait( _nextLevelFunc )
 	PlaceTiles( tilesetFolder )
 	SurroundWithWalls( tilesetFolder )
 	if FloorData:CurrentFloor().exitStaircaseB then
-		PlaceStaircase( staircaseV3 )
+		PlaceStaircase( context, staircaseV3 )
 	end
 	mapCompleteB = true
 	
@@ -387,7 +393,7 @@ function Dungeon:BuildWait( _nextLevelFunc )
 		game.Lighting[ k ] = thing
 	end
 
-	fixedFloorDecorations.Setup()
+	FixedFloorDecorations.Setup()
 end
 
 

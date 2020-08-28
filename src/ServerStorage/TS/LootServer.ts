@@ -134,7 +134,7 @@ export namespace LootServer {
 
     export function destructibleDrop(context: ServerContextI, heroMgr: HeroesManagerI, lootPct: number, attackingPlayer: Player) {
         const hero = context.getPlayerTracker().getCharacterRecordFromPlayer(attackingPlayer)
-        DebugXL.Assert(hero instanceof Hero)
+        //        DebugXL.Assert(hero instanceof Hero)    // making it easy for testing code. and maybe one day we'll want monsters to be able to smash things anyway
         if (hero && hero instanceof Hero) {
             const targetLevel = math.floor(hero.getActualLevel() * 1.5)
             structureDrop(

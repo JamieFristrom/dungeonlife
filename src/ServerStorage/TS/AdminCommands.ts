@@ -265,7 +265,7 @@ let CommandList: { [k: string]: unknown } =
       const z = tonumber(args[3])
       const position = x && z ? new Vector3(x, 0, z) : undefined
       MobServer.spawnMob(
-        PlayerServer.getPlayerTracker(),
+        MainContext.get(),
         characterClass as CharacterClass,
         GameServer.getSuperbossManager(),
         1,

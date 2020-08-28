@@ -18,7 +18,7 @@ import Monsters from "ServerStorage/Standard/MonstersModule"
     let testSetup = new TestContext()
     let testCharacter = TestUtility.createTestCharacter()
     Monsters.DoDirectDamage(testSetup, testSetup.getPlayer(), 1000, testCharacter.FindFirstChild<Humanoid>("Humanoid")!, {}, true)
-    TestUtility.assertTrue( testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health <= 0, "They dead")
+    TestUtility.assertTrue(testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health <= 0, "They dead")
     testSetup.clean()
 }
 
@@ -37,7 +37,7 @@ import Monsters from "ServerStorage/Standard/MonstersModule"
     const characterKey = testSetup.getPlayerTracker().setCharacterRecordForMob(testCharacter, targetRecord)
 
     for (let i = 0; i < weaponListStartSize; i++) {
-        MonsterServer.giveUniqueWeapon(testSetup.getPlayerTracker(), characterKey, weaponList)
+        MonsterServer.giveUniqueWeapon(testSetup, characterKey, weaponList)
         TestUtility.assertTrue(targetRecord.countTools() === i + 1, "Got a weapon")
     }
     TestUtility.assertTrue(weaponList.size() === 0, "Gave every weapon to monster")
@@ -57,7 +57,7 @@ import Monsters from "ServerStorage/Standard/MonstersModule"
                 1)
             const characterKey = testSetup.getPlayerTracker().setCharacterRecordForMob(testCharacter, characterRecord)
             Monsters.Initialize(
-                testSetup.getPlayerTracker(),
+                testSetup,
                 testCharacter,
                 characterKey,
                 characterRecord.getWalkSpeed(),

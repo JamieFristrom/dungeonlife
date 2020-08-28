@@ -15,7 +15,7 @@ import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
 import { ReplicatedStorage, Workspace, Players, Teams } from '@rbxts/services'
 
 const runClientTests: boolean = true
-if(runClientTests && game.GetService("RunService").IsStudio()) {
+if (runClientTests && game.GetService("RunService").IsStudio()) {
     DebugXL.logW(LogArea.Test, "UI Tests started")
 
     let testKeys = [
@@ -111,29 +111,27 @@ if(runClientTests && game.GetService("RunService").IsStudio()) {
     }
 
     // test whether chest shows hint
-    function testThatTeamCanClick(clickableName: string, team: Team)
-    {    
-        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>(clickableName)!.Clone()   
+    function testThatTeamCanClick(clickableName: string, team: Team) {
+        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>(clickableName)!.Clone()
         clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
         const chestOrigin = clickable.FindFirstChild<BasePart>("Origin")
-        wait()
-        DebugXL.Assert(chestOrigin!.FindFirstChild<BillboardGui>("ChestGui")===undefined)
-        for(;Players.LocalPlayer.Character===undefined;) {
+        chestOrigin!.WaitForChild<BillboardGui>("ChestGui")
+        for (; Players.LocalPlayer.Character === undefined;) {
             wait()
         }
-        for(;Players.LocalPlayer.Character.PrimaryPart===undefined;) {
+        for (; Players.LocalPlayer.Character.PrimaryPart === undefined;) {
             wait()
         }
-        clickable.SetPrimaryPartCFrame( Players.LocalPlayer.Character!.GetPrimaryPartCFrame() )    
+        clickable.SetPrimaryPartCFrame(Players.LocalPlayer.Character!.GetPrimaryPartCFrame())
         const oldTeam = Players.LocalPlayer.Team  // ugh; here's where we want that player proxy
         Players.LocalPlayer.Team = team
         wait(0.5)
         const chestGui = chestOrigin!.FindFirstChild<BillboardGui>("ChestGui")
-        DebugXL.Assert(chestGui!==undefined)
-        if( chestGui ) {
+        DebugXL.Assert(chestGui !== undefined)
+        if (chestGui) {
             DebugXL.Assert(chestGui.Enabled)
             const instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
-            DebugXL.Assert(instructions!==undefined)
+            DebugXL.Assert(instructions !== undefined)
             // won't actually check text since it should be magically localized
         }
         Players.LocalPlayer.Team = oldTeam

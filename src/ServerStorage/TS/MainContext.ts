@@ -8,6 +8,7 @@ import { PlayerServer } from './PlayerServer'
 import { ServerContext } from './ServerContext'
 
 import { ServerStorage } from '@rbxts/services'
+import { RandomNumberGenerator } from 'ReplicatedStorage/TS/RandomNumberGenerator'
 
 DebugXL.logI(LogArea.Executed, script.Name)
 
@@ -19,10 +20,11 @@ let mainContext: ServerContext | undefined = undefined
 export namespace MainContext {
     export function get() {
         // doing something weird here to bypass circular dependencies (if I used import above they would circle)
-        if( !mainContext ) {
-            let gameMgr = require( ServerStorage.FindFirstChild<Folder>("Standard")!.FindFirstChild<ModuleScript>("GameManagementModule")! ) as GameManagerI
-            let inventoryMgr = require( ServerStorage.FindFirstChild<Folder>("Standard")!.FindFirstChild<ModuleScript>("InventoryModule")! ) as InventoryManagerI
-            mainContext = new ServerContext( gameMgr, inventoryMgr, PlayerServer.getPlayerTracker() )            
+        if (!mainContext) {
+            let gameMgr = require(ServerStorage.FindFirstChild<Folder>("Standard")!.FindFirstChild<ModuleScript>("GameManagementModule")!) as GameManagerI
+            let inventoryMgr = require(ServerStorage.FindFirstChild<Folder>("Standard")!.FindFirstChild<ModuleScript>("InventoryModule")!) as InventoryManagerI
+
+            mainContext = new ServerContext(gameMgr, inventoryMgr, PlayerServer.getPlayerTracker(), new RandomNumberGenerator())
         }
         return mainContext!
     }

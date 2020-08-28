@@ -15,8 +15,9 @@ local GameManagement = {
 -- Dungeon Life main game manager
 game.Players.CharacterAutoLoads = false
 
-local InstanceXL        = require( game.ReplicatedStorage.Standard.InstanceXL )
-local MathXL            = require( game.ReplicatedStorage.Standard.MathXL )
+local InstanceXL = require( game.ReplicatedStorage.Standard.InstanceXL )
+local MathXL = require( game.ReplicatedStorage.Standard.MathXL )
+local TableXL = require( game.ReplicatedStorage.Standard.TableXL )
 
 DebugXL:logD(LogArea.GameManagement,  'GameManagementModule: utilities requires succesful' )
 
@@ -51,6 +52,8 @@ DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ServerStorage requir
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
 local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
+local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
+local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ReplicatedStorage.TS requires succesful' )
@@ -62,6 +65,7 @@ local Furnisher = require( game.ServerStorage.TS.Furnisher ).Furnisher
 local GameServer = require( game.ServerStorage.TS.GameServer ).GameServer
 local LevelResultEnum = require( game.ServerStorage.TS.GameServer ).LevelResultEnum  -- wishlist FloorResultEnum better name
 local HeroServer = require( game.ServerStorage.TS.HeroServer ).HeroServer
+local MainContext = require( game.ServerStorage.TS.MainContext ).MainContext
 local MessageServer = require( game.ServerStorage.TS.MessageServer ).MessageServer
 local MobServer = require( game.ServerStorage.TS.MobServer ).MobServer
 local MonsterServer = require( game.ServerStorage.TS.MonsterServer ).MonsterServer
@@ -205,9 +209,9 @@ function GameManagement:GetLevelSession()
 	return GameServer.levelSession
 end
 
-function GameManagement:MonsterAddedWait( character, player, playerTracker, inTutorial )
+function GameManagement:MonsterAddedWait( context, character, player, inTutorial )
 --	DebugXL:logV(LogArea.GameManagement, "Monster added "..player.Name )
-	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( Inventory, character, player, playerTracker, GameServer.getSuperbossManager(), GameServer.levelSession )
+	local pcData, characterKey = Monsters:PlayerCharacterAddedWait( context, character, player, GameServer.getSuperbossManager(), GameServer.levelSession )
 	DebugXL:Assert( pcData )
 	if not character:FindFirstChild("Humanoid") then return pcData end
 	if not inTutorial then
@@ -250,7 +254,7 @@ local function SetupPCWait( startingCharacterModel, player )
 		pcData, characterKey = HeroAdded( startingCharacterModel, player )
 	else
 		DebugXL:logD(LogArea.Characters,'Adding monster character')
-		pcData, characterKey = GameManagement:MonsterAddedWait( startingCharacterModel, player, PlayerServer.getPlayerTracker(), Inventory:PlayerInTutorial( player ) )
+		pcData, characterKey = GameManagement:MonsterAddedWait( MainContext.get(), startingCharacterModel, player, Inventory:PlayerInTutorial( player ) )
 	end
 	if not pcData then
 		DebugXL:Error( player.Name.." failed to add character: "..tostring( player.Team))
@@ -375,6 +379,70 @@ end
 -- for debug purposes:
 local crashPlayer
 
+function GameManagement:MonitorHandleDeath( context, player, myDungeonPlayerT, playerCharacter, humanoid)
+	if not humanoid or not humanoid.Parent or humanoid.Health <= 0 then
+		-- clean up dead thing
+		local pcRecord = context:getPlayerTracker():getCharacterRecordFromPlayer( player )
+		if TableXL:InstanceOf( pcRecord, Hero ) then
+			DebugXL:logD(LogArea.GameManagement,player.Name.." death detected")
+			context:getInventoryMgr():AdjustCount( player, "HeroDeaths", 1 )
+			local localTick = time()
+	--								GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Fail:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
+			Heroes:Died( player )  
+			-- if the rest of the characters die while we're lying in pieces
+			while GameManagement:LevelReady() and time() < localTick + GameServer.heroDeathSavoringSecondsK do
+				wait()
+			end
+			playerCharacter.Parent = nil
+			--ChangeHeroToMonster( player )
+		elseif TableXL:InstanceOf( pcRecord, Monster ) then
+			local localTick = time()
+			Monsters:Died( context, playerCharacter, pcRecord )  
+
+			-- if I was superboss then there's a kludge here; I don't know if this code is triggered
+			-- first or the end-of-level code. So wait until the end-of-level code triggers. If they happen
+			-- in the wrong order there's some touchiness.
+			if CharacterClasses.monsterStats[pcRecord.idS].tagsT.Superboss then
+				while GameServer.levelSession == GameServer:getSuperbossManager():getMyLevelSession() do
+					wait()
+				end
+			end
+
+			-- if the rest of the characters die while we're lying in pieces
+			DebugXL:logD( LogArea.Players, player.Name.." died" )
+
+			-- this no longer looks right to me, I'd think it would wait until the level WAS ready instead of until it wasn't, but 
+			-- trying the other way messed things up, unsurprisingly
+			while GameManagement:LevelReady() and time() < localTick + 2 do
+				wait()
+			end
+			DebugXL:logD( LogArea.Players, player.Name.." death 2+ second delay done" )
+			-- character might be gone by now
+			playerCharacter.Parent = nil
+		else
+			DebugXL:logE(LogArea.Players, player.Name.." monitoring non-hero non-monster")
+		end
+		DebugXL:logD( LogArea.GameManagement, player.Name.." lifetime ended in death" ) 
+
+		-- kick off new alive thing
+		if( context:getPlayerTracker():getTeamStyleChoice( player ) == TeamStyleChoice.Hero )then
+			-- now we stay the same team; when we day or respawn we get to re-choose
+			DebugXL:logD(LogArea.GameManagement,player.Name.." death grace period over. Choosing hero.")
+			workspace.Signals.ChooseHeroRE:FireClient( player, "ChooseHero" )
+			-- putting you in limbo now otherwise it will trigger error in end-of-level watcher
+			myDungeonPlayerT:markDead()
+
+			KickoffChooseHero( player )
+		else
+			-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
+			if GameManagement:LevelReady() then
+				GameManagement:MarkPlayersCharacterForRespawn( player )
+			end
+		end
+		return true
+	end
+	return false
+end
 
 -- what happens if there's a TPK while player is choosing their hero, you ask?
 -- answer: there can't be.
@@ -483,60 +551,11 @@ local function MonitorPlayer( player )
 							myDungeonPlayerT.playerMonitoredB = false 
 							return 
 						end
-						if not humanoid or not humanoid.Parent or humanoid.Health <= 0 then
-							if player.Team == game.Teams.Heroes then
-								DebugXL:logD(LogArea.GameManagement,player.Name.." death detected")
-								Inventory:AdjustCount( player, "HeroDeaths", 1 )
-								local localTick = time()
---								GameAnalyticsServer.ServerEvent( { ["category"] = "progression", ["event_id"] = "Fail:SubdwellerColony:"..tostring(workspace.GameManagement.DungeonFloor.Value) }, player )
-								Heroes:Died( player )  
-								-- if the rest of the characters die while we're lying in pieces
-								while GameManagement:LevelReady() and time() < localTick + GameServer.heroDeathSavoringSecondsK do
-									wait()
-								end
-								playerCharacter.Parent = nil
-								-- now we stay the same team; when we day or respawn we get to re-choose
-								DebugXL:logD(LogArea.GameManagement,player.Name.." death grace period over. Choosing hero.")
-								workspace.Signals.ChooseHeroRE:FireClient( player, "ChooseHero" )
-								-- putting you in limbo now otherwise it will trigger error in end-of-level watcher
-								myDungeonPlayerT:markDead()
 
-								KickoffChooseHero( player )
-
-								--ChangeHeroToMonster( player )
-							else
-								local localTick = time()
-								local pcr = PlayerServer.getCharacterRecordFromPlayer( player )
-								Monsters:Died( playerCharacter, pcr )  
-
-								-- if I was superboss then there's a kludge here; I don't know if this code is triggered
-								-- first or the end-of-level code. So wait until the end-of-level code triggers. If they happen
-								-- in the wrong order there's some touchiness.
-								if CharacterClasses.monsterStats[pcr.idS].tagsT.Superboss then
-									while GameServer.levelSession == GameServer:getSuperbossManager():getMyLevelSession() do
-										wait()
-									end
-								end
-
-								-- if the rest of the characters die while we're lying in pieces
-								DebugXL:logD( LogArea.Players, player.Name.." died" )
-
-								-- this no longer looks right to me, I'd think it would wait until the level WAS ready instead of until it wasn't, but 
-								-- trying the other way messed things up, unsurprisingly
-								while GameManagement:LevelReady() and time() < localTick + 2 do
-									wait()
-								end
-								DebugXL:logD( LogArea.Players, player.Name.." death 2+ second delay done" )
-								-- character might be gone by now
-								playerCharacter.Parent = nil
-								-- we don't want to do this if it was a tpk, but tpk cleanup should change it back
-								if GameManagement:LevelReady() then
-									GameManagement:MarkPlayersCharacterForRespawn( player )
-								end
-							end
-							DebugXL:logD( LogArea.GameManagement, player.Name.." lifetime ended in death" ) 
+						if GameManagement:MonitorHandleDeath(MainContext.get(), player, myDungeonPlayerT, playerCharacter, humanoid) then
 							break
 						end
+
 						if myDungeonPlayerT:needsDestruction() then
 							player.Character:Destroy()
 							DebugXL:logD( LogArea.GameManagement, player.Name.." lifetime aborted: needs destruction" ) 
@@ -788,7 +807,7 @@ end
 local function LoadLevelWait()
 	GameServer.checkForPCs()
 	MobServer.clearMobs()
-	Dungeon:BuildWait( function( player ) 
+	Dungeon:BuildWait( MainContext.get(), function( player ) 
 		return GameManagement:ReachedExit( player ) 
 	end )
 	local numHeroes = #game.Teams.Heroes:GetPlayers()
@@ -878,7 +897,8 @@ end
 
 
 
-local protectionDisabled = false
+local protectionDisabled = game:GetService("RunService"):IsStudio()
+
 function DisableablePcall( func )
 	if protectionDisabled then
 		func()

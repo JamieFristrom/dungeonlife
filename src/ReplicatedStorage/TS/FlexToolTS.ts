@@ -18,7 +18,7 @@ import { ValueHelper } from 'ReplicatedStorage/TS/ValueHelper'
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { ActiveSkinSetI } from "./SkinTypes"
 
-import MathXL from "ReplicatedStorage/Standard/MathXL"
+import { RandomNumberGeneratorI } from "ReplicatedStorage/TS/RandomNumberGeneratorI"
 
 type PossessionKey = string
 
@@ -456,10 +456,17 @@ export class FlexTool {
         this.enhancementsA.push(newEnhancement)
     }
 
-    addRandomEnhancements(boostB: boolean, minNumber = 0, invalidChoices: string[] = []) {
+
+
+    addRandomEnhancements(rng: RandomNumberGeneratorI, boostB: boolean, minNumber = 0, invalidChoices: Readonly<string[]> = []) {
         DebugXL.Assert(typeIs(boostB, "boolean"))
+        DebugXL.Assert(typeIs(minNumber, "number"))
+
         const equipData = ToolData.dataT[this.baseDataS]
-        if (equipData.equipType === "potion" || equipData.equipType === "power") { return }
+        if (equipData.equipType === "potion" || equipData.equipType === "power") {
+            DebugXL.logI(LogArea.Items, `Not enchanting ${this.baseDataS} because potion or power`)
+            return
+        }
 
         // realized later if( we don't adjust the diecap you can get some higher powered loot than you should at low
         // levels... a level 3 sword is more likely to have 2 enchantments than just 1
@@ -470,7 +477,7 @@ export class FlexTool {
                     (toolLevelN > 2) ? 12 :
                         (toolLevelN > 1) ? 9 : 5
 
-        const enhancementDieRoll = MathXL.RandomInteger(1, dieCap)
+        const enhancementDieRoll = rng.randomInteger(1, dieCap)
         const additionalEnhances = (enhancementDieRoll >= 15) ? 4 :
             (enhancementDieRoll >= 13) ? 3 :     // rolled a 13 || 14
                 (enhancementDieRoll >= 10) ? 2 :     // rolled a 10, || 11, 12
@@ -481,7 +488,7 @@ export class FlexTool {
 
         let boostedEnhancementsN = numEnhancements
         if (boostB) {
-            if (MathXL.RandomNumber() < 0.5) {
+            if (rng.randomNumber() < 0.5) {
                 if (numEnhancements < 4) {
                     boostedEnhancementsN = numEnhancements + 1
                 }
@@ -493,18 +500,24 @@ export class FlexTool {
             this.boostedB = true
         }
         const enhancementKeys = Object.keys(Enhancements.enhancementFlavorInfos) as EnhancementFlavor[]
-        const validEnhancementKeys = enhancementKeys.filter((enhanceKey) =>
+        let validEnhancementKeys = enhancementKeys.filter((enhanceKey) =>
             Enhancements.enhancementFlavorInfos[enhanceKey].allowedTypesT[equipData.equipType]).filter((enhanceKey) =>
                 invalidChoices.indexOf(enhanceKey) === -1)  // -1 means not in invalidChoices array 
 
+        // bombs already explode, give them something else
+        if (this.baseDataS === 'Bomb') {
+            validEnhancementKeys = validEnhancementKeys.filter((enhanceKey) => enhanceKey !== 'explosive')
+        }
+
+        DebugXL.logD(LogArea.Items, `Enchanting ${this.baseDataS} with ${finalEnhancements} enhancements`)
         for (let i = 0; i < finalEnhancements; i++) {
-            if (this.enhancementsA.size() === 0 || MathXL.RandomNumber() < 0.5) {
-                const newEnhancementIdx = MathXL.RandomInteger(0, validEnhancementKeys.size() - 1)
+            if (this.enhancementsA.size() === 0 || rng.randomNumber() < 0.5) {
+                const newEnhancementIdx = rng.randomInteger(0, validEnhancementKeys.size() - 1)
                 this.addEnhancement(validEnhancementKeys[newEnhancementIdx])
             }
             else {
                 // 50% chance of secondary enhancements bolstering original ones. 
-                const newEnhancementIdx = MathXL.RandomInteger(0, this.enhancementsA.size() - 1)
+                const newEnhancementIdx = rng.randomInteger(0, this.enhancementsA.size() - 1)
                 const newEnhancement = this.enhancementsA[newEnhancementIdx].flavorS
                 this.addEnhancement(newEnhancement)
             }

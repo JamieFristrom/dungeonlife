@@ -212,45 +212,58 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 	local ghostRegion = Region3.new( position - instance:GetExtentsSize() / 2,
 		position + instance:GetExtentsSize() / 2 )	
 
-	if FurnishUtility:IsWithinBoundaries(baseplate.Position, baseplate.Size, position, instance.PrimaryPart.Size, rotation)
-		and FurnishUtility:IsInMap( map, position )	
-		and not FurnishUtility:CharacterWithinRegion( ghostRegion ) 
-		and not FurnishUtility:GridPointOccupied( position, instance:GetExtentsSize(), furnishingDatum.gridSubdivisionsN, furnishingDatum.placementType ) then
+	if FurnishUtility:IsWithinBoundaries(baseplate.Position, baseplate.Size, position, instance.PrimaryPart.Size, rotation) then
+		if FurnishUtility:IsInMap( map, position ) then
+			if not FurnishUtility:CharacterWithinRegion( ghostRegion ) then
+				if not FurnishUtility:GridPointOccupied( position, instance:GetExtentsSize(), furnishingDatum.gridSubdivisionsN, furnishingDatum.placementType ) then
 
-		local totalN, personalN = unpack( FurnishUtility:CountFurnishings( name, creator ))
-		local inventory = creator and context:getInventoryMgr():GetWait(creator) or InventoryMock.new()
-		if totalN >= furnishingDatum.levelCapN then
---			--print( "Higher than cap" )
-			if creator and InventoryUtility:IsInTutorial( inventory ) then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
-				--print( "In tutorial though" )
+					local totalN, personalN = unpack( FurnishUtility:CountFurnishings( name, creator ))
+					local inventory = creator and context:getInventoryMgr():GetWait(creator) or InventoryMock.new()
+					if totalN >= furnishingDatum.levelCapN then
+			--			--print( "Higher than cap" )
+						if creator and InventoryUtility:IsInTutorial( inventory ) then  -- bypassing level limits when you're in tutorial so you can build what you need; people could use it to cheat the very first time they play, not the end of the world
+							--print( "In tutorial though" )
+						else
+							DebugXL:logD(LogArea.Structures, "Can't build "..name.." because past level cap")
+							return {nil,nil}
+						end		
+					end
+					if personalN >= furnishingDatum.buildCapN then
+						DebugXL:logD(LogArea.Structures, "Can't build "..name.." because past build cap")
+						return {nil,nil}
+					end	
+					local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
+					if not availableB and personalN >= InventoryUtility:GetCount( inventory, furnishingDatum.idS ) then -- furnishingDatum.buildCapN then
+						DebugXL:logD(LogArea.Structures, "Can't build "..name.." because not enough in inventory")
+						return {nil,nil}
+					else
+						instance:SetPrimaryPartCFrame(CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0))
+						-- health gets set in destructible script
+					end
+					if furnishingDatum.placementType == PossessionData.PlacementTypeEnum.Floor then
+						-- tell new floor model about previous floor; the model will use its discretion what to do with it
+						local x, z = MapTileData:GetGridCellFromWorldPoint( position.X, position.Z )
+						local tileModel = workspace.Environment[ "Tile_"..x.."_"..z ]
+						instance.DisposableFloor.Value = tileModel.Floor
+					end
+					BlueprintUtility.hideDebugInfo( instance )
+					instance.Parent = workspace.Building
+
+					return { instance, StructureFactory.createStructure(context, instance) }
+				else
+					DebugXL:logD(LogArea.Structures, "Can't build "..name.." because grid point occupied")
+				end
 			else
-				return {nil,nil}
-			end		
-		end
-		if personalN >= furnishingDatum.buildCapN then
-			return {nil,nil}
-		end	
-		local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
-		if not availableB and personalN >= InventoryUtility:GetCount( inventory, furnishingDatum.idS ) then -- furnishingDatum.buildCapN then
-			return {nil,nil}
+				DebugXL:logD(LogArea.Structures, "Can't build "..name.." because character in region")
+			end
 		else
-			instance:SetPrimaryPartCFrame(CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0))
-			-- health gets set in destructible script
+			DebugXL:logD(LogArea.Structures, "Can't build "..name.." because not in map")
 		end
-		if furnishingDatum.placementType == PossessionData.PlacementTypeEnum.Floor then
-			-- tell new floor model about previous floor; the model will use its discretion what to do with it
-			local x, z = MapTileData:GetGridCellFromWorldPoint( position.X, position.Z )
-			local tileModel = workspace.Environment[ "Tile_"..x.."_"..z ]
-			instance.DisposableFloor.Value = tileModel.Floor
-		end
-		BlueprintUtility.hideDebugInfo( instance )
-		instance.Parent = workspace.Building
-
-		return { instance, StructureFactory.createStructure(context, instance) }
 	else
-		instance:Destroy()
-		return {nil, nil}
+		DebugXL:logD(LogArea.Structures, "Can't build "..name.." because not in boundaries")
 	end
+	instance:Destroy()
+	return {nil, nil}
 end
 
 return FurnishServer

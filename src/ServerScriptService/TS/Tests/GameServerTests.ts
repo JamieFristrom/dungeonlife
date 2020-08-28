@@ -12,9 +12,10 @@ import { ReplicatedStorage, Teams } from '@rbxts/services'
 import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
 import { TestUtility, TestContext } from 'ServerStorage/TS/TestUtility'
 import { GameServer, LevelResultEnum } from 'ServerStorage/TS/GameServer'
-import { DungeonPlayerMap } from 'ServerStorage/TS/DungeonPlayer'
+import { DungeonPlayerMap, DungeonPlayer } from 'ServerStorage/TS/DungeonPlayer'
 import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
+import { Monster } from 'ReplicatedStorage/TS/Monster'
 
 
 class InstanceFake implements Instance {
@@ -256,6 +257,72 @@ class PlayerFake extends InstanceFake {
 //     }
 // }
 
+// test death reboots hero without crashing
+{
+    // arrange
+    let testContext = new TestContext()
+    let playerCharacter = testContext.makeTestPlayerCharacter("Warrior")
+    let humanoid = playerCharacter.FindFirstChild<Humanoid>("Humanoid")!
+    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    let attackerRecord = new Hero("Warrior", CharacterClasses.heroStartingStats["Warrior"], [])      // can't just put tool in constructor because it gets cloned 
+    testContext.getPlayerTracker().setCharacterRecordForPlayer(testContext.getPlayer(), attackerRecord)
+    humanoid.Health = 0
+    let dungeonPlayer = new DungeonPlayer("TestId")
+
+    // act
+    let dead = GameManagement.MonitorHandleDeath(testContext, testContext.getPlayer(), dungeonPlayer, playerCharacter, humanoid)
+
+    // assert
+    TestUtility.assertTrue(dead, "Hero death handler recognized 0 health")
+
+    // clean
+    testContext.clean()
+}
+
+// test death reboots monster without crashing
+{
+    // arrange
+    let testContext = new TestContext()
+    let playerCharacter = testContext.makeTestPlayerCharacter("Orc")
+    let humanoid = playerCharacter.FindFirstChild<Humanoid>("Humanoid")!
+    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    let attackerRecord = new Monster("Orc", [], 1)      // can't just put tool in constructor because it gets cloned 
+    testContext.getPlayerTracker().setCharacterRecordForPlayer(testContext.getPlayer(), attackerRecord)
+    humanoid.Health = 0
+    let dungeonPlayer = new DungeonPlayer("TestId")
+
+    // act
+    let dead = GameManagement.MonitorHandleDeath(testContext, testContext.getPlayer(), dungeonPlayer, playerCharacter, humanoid)
+
+    // assert
+    TestUtility.assertTrue(dead, "Monster death handler recognized 0 health")
+
+    // clean
+    testContext.clean()
+}
+
+// test character - player team mismatch (can happen due to race when changing teams)
+{
+    // arrange
+    let testContext = new TestContext()
+    let playerCharacter = testContext.makeTestPlayerCharacter("Warrior")
+    let humanoid = playerCharacter.FindFirstChild<Humanoid>("Humanoid")!
+    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    let attackerRecord = new Hero("Warrior", CharacterClasses.heroStartingStats["Warrior"], [])      // can't just put tool in constructor because it gets cloned 
+    testContext.getPlayerTracker().setCharacterRecordForPlayer(testContext.getPlayer(), attackerRecord)
+    humanoid.Health = 0
+    let dungeonPlayer = new DungeonPlayer("TestId")
+
+    // act
+    let dead = GameManagement.MonitorHandleDeath(testContext, testContext.getPlayer(), dungeonPlayer, playerCharacter, humanoid)
+
+    // assert
+    TestUtility.assertTrue(dead, "Hero death handler recognized 0 health")
+
+    // clean
+    testContext.clean()
+}
+
 // Test New Fakes
 {
     let testNewProxy = new InstanceFake()
@@ -264,21 +331,23 @@ class PlayerFake extends InstanceFake {
 
 // test that MonsterAddedWait returns before too long
 {
+    let testContext = new TestContext()
     const testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("AnimationDummy")!.Clone()
     let playerDummy = TestUtility.createTestPlayer()
     PlayerUtility.publishClientValues(playerDummy, 0, 0, "", false)
     playerDummy.Team = Teams.FindFirstChild<Team>("Monsters")
     //const playerDummy = new Instance("Player") as Player // ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Folder>("PlayerDummy")!.Clone() as unknown as Player
-    let testPlayerTracker = new PlayerTracker
+    let testPlayerTracker = testContext.getPlayerTracker()
     testPlayerTracker.playerAdded(playerDummy)
     testPlayerTracker.setClassChoice(playerDummy, "Orc")
     let result = undefined
     spawn(() => {
-        result = GameManagement.MonsterAddedWait(testCharacter, playerDummy, testPlayerTracker, false)
+        result = GameManagement.MonsterAddedWait(testContext, testCharacter, playerDummy, false)
     })
     wait(1)
     TestUtility.assertTrue(result !== undefined)
     TestUtility.cleanTestPlayer(playerDummy)
+    testContext.clean()
 }
 
 // test regular play
@@ -321,3 +390,4 @@ class PlayerFake extends InstanceFake {
     TestUtility.assertTrue(GameManagement.PlayerCharactersExist(dungeonPlayerMap), "PCs exist when player and character exist")
     testSetup.clean()
 }
+
