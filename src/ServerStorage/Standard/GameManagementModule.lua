@@ -299,13 +299,14 @@ function GameManagement:MarkPlayersCharacterForRespawn( player, optionalRespawnP
 	if optionalRespawnPart then
 		DebugXL:Assert( optionalRespawnPart:IsA("BasePart") )
 	end
-	DebugXL:Assert( GameManagement:LevelReady() )
+--	DebugXL:Assert( GameManagement:LevelReady() )  
 	if not GameManagement:LevelReady() then
 		DebugXL:logW(LogArea.GameManagement, debug.traceback() )
-	end
-	if player.Parent then
-		GameManagement:GetDungeonPlayer( player ):requestRespawn()
-		GameManagement:GetDungeonPlayer( player ).respawnPart = optionalRespawnPart
+	else
+		if player.Parent then
+			GameManagement:GetDungeonPlayer( player ):requestRespawn()
+			GameManagement:GetDungeonPlayer( player ).respawnPart = optionalRespawnPart
+		end
 	end
 end 
 

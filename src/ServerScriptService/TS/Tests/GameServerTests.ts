@@ -257,6 +257,16 @@ class PlayerFake extends InstanceFake {
 //     }
 // }
 
+
+// don't allow respawn when level's not ready
+{
+    let testContext = new TestContext()
+    DebugXL.Assert( !GameManagement.LevelReady())
+    GameManagement.MarkPlayersCharacterForRespawn(testContext.getPlayer())
+    TestUtility.assertTrue(!GameManagement.GetDungeonPlayer(testContext.getPlayer()).needsRespawn(), "Don't request respawn when level not ready")
+    testContext.clean()
+}
+
 // test death reboots hero without crashing
 {
     // arrange
@@ -390,4 +400,3 @@ class PlayerFake extends InstanceFake {
     TestUtility.assertTrue(GameManagement.PlayerCharactersExist(dungeonPlayerMap), "PCs exist when player and character exist")
     testSetup.clean()
 }
-

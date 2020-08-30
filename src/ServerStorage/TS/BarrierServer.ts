@@ -9,6 +9,7 @@ import * as  CharacterI from "ServerStorage/Standard/CharacterI"
 import { ServerStorage, Debris, Players, Teams } from "@rbxts/services"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { MainContext } from "./MainContext"
+import { ServerContextI } from "./ServerContext"
 
 type Character = Model
 
@@ -18,13 +19,13 @@ export namespace BarrierServer {
 
     const fire = barrierFolder.WaitForChild<BasePart>("BarrierSegment").Clone()
 
-    export function onTouched(part: BasePart, attackingCharacter: Character, flexTool: FlexTool, burntStuff: Map<Instance, boolean>) {
+    export function onTouched(context: ServerContextI, part: BasePart, attackingCharacter: Character, flexTool: FlexTool, burntStuff: Map<Instance, boolean>) {
         const partParent = part.Parent as Character
         if (partParent) {
             if (partParent.FindFirstChild("Humanoid")) {
                 if (!burntStuff.has(partParent)) {
                     const attackingPlayer = Players.GetPlayerFromCharacter(attackingCharacter)
-                    CharacterI.TakeFlexToolDamage(MainContext.get(), partParent, attackingCharacter, flexTool)
+                    CharacterI.TakeFlexToolDamage(context, partParent, attackingCharacter, flexTool)
                     burntStuff.set(partParent, true)
                 }
             }
@@ -52,7 +53,7 @@ export namespace BarrierServer {
                 // play just one of the sounds
                 fiery.WaitForChild<Sound>("FireSound").Play()
             }
-            fiery.Touched.Connect((part) => { onTouched(part, attackingCharacter, flexTool, burntStuff) })
+            fiery.Touched.Connect((part) => { onTouched(MainContext.get(), part, attackingCharacter, flexTool, burntStuff) })
 
             Debris.AddItem(fiery, duration)
 

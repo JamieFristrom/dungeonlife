@@ -324,8 +324,7 @@ function FlexibleTools:ResolveFlexToolEffects( attackingCharacterRecord, toolIns
 				FlexibleTools.enhancementFlavorsT[ enhancement.flavorS ].mechanicalEffect( 
 					targetHumanoid, 
 					durationN, 
-					effect, 
-					tool )
+					effect )  -- could pass attacking player if we want them to get xp, but that might confuse mobs
 				local cosmeticEffect = FlexibleTools.enhancementFlavorsT[ enhancement.flavorS ].cosmeticEffect
 				local targetChar = targetHumanoid.Parent
 				if targetChar.PrimaryPart then

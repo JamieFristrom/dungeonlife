@@ -1,4 +1,6 @@
 # Fixing
+* problem with saving inventory? check FBI_Survelliance's inventory see if errors pop
+* roll out fire fix
 * ghosts are immune to being directly targeted with longbow (recorded movie)
 * Bring back print money command
 * Hero is respawning during preparation phase in 2 player game: mash ready button after changing level

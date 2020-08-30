@@ -67,7 +67,7 @@ function PlayerAddedWait( player )
 		wait(0.1)
 	end
 
-	local inventoryStore = DataStore2( "Inventory", player )
+	local inventoryStore = DataStore2( "Inventory", player ) -- override user id can be third parameter
 	local myInventory = inventoryStore:Get( Inventory.new() )
 	
 	-- AnalyticsXL:ReportHistogram( player, "Duration: Inventory datastore get", time() - startTime, 1, "second", "", true)

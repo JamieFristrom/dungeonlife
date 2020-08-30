@@ -59,7 +59,7 @@ DebugXL:logD(LogArea.Requires, "HeroesModule requires succesful")
 local PhysicsService = game.PhysicsService
 
 
-local playerOverrideId = nil
+local playerOverrideId
 
 
 local Heroes = {}

@@ -17,14 +17,12 @@ local MechanicalEffects = {}
 
 -- these are . rather than : format because we typically pass the functions on
 
-function MechanicalEffects.DamageOverTime( targetHumanoid, seconds, dps, tool )
+function MechanicalEffects.DamageOverTime( targetHumanoid, seconds, dps, attackingPlayer )
 	DebugXL:Assert( targetHumanoid:IsA("Humanoid") )
 	DebugXL:Assert( type(seconds)=="number" )
 	DebugXL:Assert( type(dps)=="number" )
-	DebugXL:Assert( tool:IsA("Tool"))
+	DebugXL:Assert( not attackingPlayer or attackingPlayer:IsA("Player"))
 	
-	local attackingCharacter = tool.Parent
-	local attackingPlayer = game.Players:GetPlayerFromCharacter( attackingCharacter )  -- fails silently which is what I want
 	CharacterXL:DamageOverTimeFor( targetHumanoid.Parent, dps, seconds, attackingPlayer )
 end
 
