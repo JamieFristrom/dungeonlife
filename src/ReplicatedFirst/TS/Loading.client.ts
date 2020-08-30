@@ -2,8 +2,8 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 8/28/2020")
-warn("Code blooprintz, trapdoor fix, error fix")
+warn("DUNGEON LIFE 8/30/2020")
+warn("Fixed fire damage and a couple assertions")
 
 let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
 let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
