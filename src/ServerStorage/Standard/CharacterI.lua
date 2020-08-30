@@ -80,7 +80,7 @@ function CharacterI:TakeDirectDamage( context, hitCharacter, damage, attackingCh
 		if not hitPlayer or hitPlayer.Team ~= attackingTeam then         -- if we don't know the attacking player's team damage happens. can monsters set structures on fire this way?
 --			--print( attackingPlayer.Name.." hits "..hitCharacter.Name.." for "..damage )
 			if attackingTeam == game.Teams.Heroes then		
-				require( game.ServerStorage.Standard.HeroesModule ):DoDirectDamage( attackingPlayer, damage, hitHumanoid, false )
+				require( game.ServerStorage.Standard.HeroesModule ):DoDirectDamage( context, attackingPlayer, damage, hitHumanoid, false )
 			else
 				-- can"t just use tool"s parent to determine attacking character because it might be lingering
 				-- damage from a tool that has been put away

@@ -3,10 +3,11 @@
 
 import { ServerContextI } from "ServerStorage/TS/ServerContext"
 import { Character } from "ReplicatedStorage/TS/ModelUtility"
-declare class CharacterXLClass
-{
-    ProcessCharacter( context: ServerContextI, character: Character, deltaT: number ): void
-    SpeedMulFor( character: Model, walkPct: number, cooldownPct: number, duration: number ): void
+
+declare class CharacterXLClass {
+    DamageOverTimeFor(character: Character, dps: number, seconds: number, attackingPlayer: Player): void
+    ProcessCharacter(context: ServerContextI, character: Character, deltaT: number): void
+    SpeedMulFor(character: Character, walkPct: number, cooldownPct: number, duration: number): void
 }
 
 declare let CharacterXL: CharacterXLClass
