@@ -11,6 +11,7 @@ import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
+import { FloorInfo } from 'ReplicatedStorage/TS/FloorInfo'
 
 // weapons rack weapon goes in tool cache
 function TestWeaponsRackGivesMonsterWeapon(seed: number) {
@@ -94,7 +95,7 @@ for (let seed = 0; seed < 20; seed++) {
 {
     let testContext = new TestContext()
     testContext.getInventoryMock().itemsT["WeaponsRack"] = 1
-    let [_, structure] = FurnishServer.Furnish(testContext, MapUtility.makeEmptyMap(5), testContext.getPlayer(), "WeaponsRack", new Vector3(0, 0, 0), 0)
+    let [_, structure] = FurnishServer.Furnish(testContext, new FloorInfo(), MapUtility.makeEmptyMap(5), testContext.getPlayer(), "WeaponsRack", new Vector3(0, 0, 0), 0)
     DebugXL.Assert(structure !== undefined)
     DebugXL.Assert(structure instanceof WeaponsRack)
     let weaponsRack = structure as WeaponsRack

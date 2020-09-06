@@ -20,6 +20,7 @@ import Heroes from 'ServerStorage/Standard/HeroesModule'
 import { DestructibleServer } from "ServerStorage/TS/DestructibleServer"
 import { TestContext, TestUtility } from "ServerStorage/TS/TestUtility"
 import Dungeon from "ServerStorage/Standard/DungeonModule"
+import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
 
 
 function TestDestructibleCorrectHealth(destructibleName: string, heroAvgLevel: number, numHeroes: number, dungeonDepth: number) {
@@ -56,7 +57,7 @@ function TestDestructibility(structureName: string) {
     testSetup.getInventoryMock().itemsT[structureName] = 1
     InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
     let map = MapUtility.makeEmptyMap(5)
-    let [model, structure] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), structureName, new Vector3(0, 0, 0), 0)
+    let [model, structure] = FurnishServer.Furnish(testSetup, new FloorInfo(), map, testSetup.getPlayer(), structureName, new Vector3(0, 0, 0), 0)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings(structureName, testSetup.getPlayer())[1] === 1, "Client built 1 orc spawn")
     TestUtility.assertTrue(model !== undefined)
     let humanoid = model.FindFirstChild<Humanoid>("Humanoid")

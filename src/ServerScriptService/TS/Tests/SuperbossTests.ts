@@ -7,7 +7,7 @@ DebugXL.logI(LogArea.Executed, script.Name)
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
 import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility";
 
-import { ServerStorage, Teams } from "@rbxts/services";
+import { ServerStorage, Teams, TestService } from "@rbxts/services";
 import Monsters from "ServerStorage/Standard/MonstersModule";
 import { MobServer } from "ServerStorage/TS/MobServer";
 import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
@@ -15,6 +15,8 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses";
 import { GameServer, LevelResultEnum } from "ServerStorage/TS/GameServer";
 import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
+import GameManagement from "ServerStorage/Standard/GameManagementModule";
+import { HeroServer } from "ServerStorage/TS/HeroServer";
 
 // unit tests on manager
 {
@@ -130,4 +132,12 @@ import { DungeonPlayerMap } from "ServerStorage/TS/DungeonPlayer";
         }
     }
     testSetup.clean()
+}
+// make sure bookkeeping doesn't crash
+{
+    let testContext = new TestContext()
+    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    GameManagement.DoBeatSuperbossStuff(testContext)
+    TestUtility.assertTrue(true, "DoBeatSuperbossStuff doesn't crash")
+    testContext.clean()
 }

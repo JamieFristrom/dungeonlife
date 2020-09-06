@@ -845,13 +845,13 @@ function HeroRemote.ChooseHero( ... )
 end 
 
 
-function HeroRemote.AwardExperienceWait( player )
-	if CheatUtilityXL:PlayerWhitelisted( player ) then
-		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
-		HeroServer.awardExperienceWait( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
-		Heroes:SaveHeroesWait( player )
-	end
-end
+-- function HeroRemote.AwardExperienceWait( player )  -- doesn't actually wait anymore but don't feel like renaming right now
+-- 	if CheatUtilityXL:PlayerWhitelisted( player ) then
+-- 		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
+-- 		HeroServer.awardExperience( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
+-- 		Heroes:SaveHeroesWait( player )
+-- 	end
+-- end
 
 
 -- function HeroRemote.SaveHeroes( player )

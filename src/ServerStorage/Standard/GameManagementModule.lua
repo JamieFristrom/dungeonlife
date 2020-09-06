@@ -791,24 +791,17 @@ function GameManagement:ReachedExit( player )
 	return false
 end
 
-
+-- it used to award additional XP here but why
 function GameManagement:DoBeatSuperbossStuff()
 	DebugXL:logI(LogArea.GameManagement,"DoBeatSuperbossStuff()")
-
 	firstLevelB = true
-
-	for _, player in pairs( game.Teams.Heroes:GetPlayers() ) do
-		HeroServer.awardExperienceWait( player, HeroServer.getDifficultyLevel() * 100, "Progress", "Superboss" )
-		Heroes:SaveHeroesWait( player )
-	end
-	
 end
 
 
 local function LoadLevelWait()
 	GameServer.checkForPCs()
 	MobServer.clearMobs()
-	Dungeon:BuildWait( MainContext.get(), function( player ) 
+	Dungeon:BuildWait( MainContext.get(), FloorData:CurrentFloor(), function( player ) 
 		return GameManagement:ReachedExit( player ) 
 	end )
 	local numHeroes = #game.Teams.Heroes:GetPlayers()

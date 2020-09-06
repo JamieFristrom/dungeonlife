@@ -22,6 +22,7 @@ import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 
 import { MessageServer } from "./MessageServer"
 import { PlayerServer } from "./PlayerServer"
+import { ServerContextI } from "./ServerContext";
 DebugXL.logD(LogArea.Requires, 'HeroServer imports finished')
 let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
 DebugXL.Assert(heroTeam !== undefined)
@@ -113,7 +114,9 @@ export namespace HeroServer {
         }
     }
 
-    export function awardExperience(player: Player,
+    export function awardExperience(
+        player: Player,
+        hero: Hero,
         experienceBonus: number,
         analyticsItemType: string,
         analyticsItemId: string,
@@ -123,6 +126,7 @@ export namespace HeroServer {
         DebugXL.Assert(type(experienceBonus) === "number")
         DebugXL.Assert((experienceBonus === experienceBonus))
         DebugXL.Assert(type(boostActive) === "boolean")
+        DebugXL.Assert(hero instanceof Hero)
 
         if (MathXL.IsFinite(experienceBonus)) {
             if (boostActive) {
@@ -131,53 +135,49 @@ export namespace HeroServer {
             const xpRate = 0.5
             experienceBonus *= xpRate
             DebugXL.logD(LogArea.Gameplay, "Awarding (adjusted) " + experienceBonus + " xp to " + player.Name)
-            const pcData = PlayerServer.getCharacterRecordFromPlayer(player)
-            // only if hero has chosen class yet
-            if (pcData instanceof Hero) {  // // your hero could have gone out of scope while waiting to get inventory, or you might have just picked hero but not picked which one yet
-                const pcDataStatsT = pcData.statsT
-                const lastLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
+            const pcDataStatsT = hero.statsT
+            const lastLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
 
-                // still being careful because somehow a player ended up with nan experience
-                GameAnalyticsServer.RecordResource(player, math.ceil(experienceBonus), "Source", "XP", analyticsItemType, analyticsItemId)
-                const newExperience = pcDataStatsT.experienceN + math.ceil(experienceBonus)
-                DebugXL.Assert(MathXL.IsFinite(newExperience))
-                if (!MathXL.IsFinite(newExperience)) { return }
-                DebugXL.logI(LogArea.Gameplay, player.Name + " xp goes from " + pcDataStatsT.experienceN + " to " + newExperience)
-                pcDataStatsT.experienceN = newExperience
+            // still being careful because somehow a player ended up with nan experience
+            GameAnalyticsServer.RecordResource(player, math.ceil(experienceBonus), "Source", "XP", analyticsItemType, analyticsItemId)
+            const newExperience = pcDataStatsT.experienceN + math.ceil(experienceBonus)
+            DebugXL.Assert(MathXL.IsFinite(newExperience))
+            if (!MathXL.IsFinite(newExperience)) { return }
+            DebugXL.logI(LogArea.Gameplay, player.Name + " xp goes from " + pcDataStatsT.experienceN + " to " + newExperience)
+            pcDataStatsT.experienceN = newExperience
 
-                let newLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
-                if (newLevel > lastLevel) {
-                    // prevent it from going up more than one level at a time
-                    // there was no significant effect to do this extra work according to the analytics but I watched one guy
-                    //- get to level 10 in one session which seems crazy
-                    //- that was partly because I wasn't nerfed for some reason
-                    newLevel = lastLevel + 1
-                    // once you level discard extra experience; slows things down and won't accidentally jump multiple levels this way
-                    pcDataStatsT.experienceN = Hero.totalExperienceForLevel(newLevel)
+            let newLevel = Hero.levelForExperience(pcDataStatsT.experienceN)
+            if (newLevel > lastLevel) {
+                // prevent it from going up more than one level at a time
+                // there was no significant effect to do this extra work according to the analytics but I watched one guy
+                //- get to level 10 in one session which seems crazy
+                //- that was partly because I wasn't nerfed for some reason
+                newLevel = lastLevel + 1
+                // once you level discard extra experience; slows things down and won't accidentally jump multiple levels this way
+                pcDataStatsT.experienceN = Hero.totalExperienceForLevel(newLevel)
 
-                    if (newLevel >= Hero.globalHeroLevelCap) {
-                        MessageServer.PostMessageByKey(player, "MaximumLevel", false, 0, false)
-                    }
-
-                    MessageServer.PostMessageByKey(player, "LevelUpHero", false, 0, false)
-                    const humanoid = player.Character!.FindFirstChild<Humanoid>("Humanoid")
-                    if (humanoid) {
-                        humanoid.Health = humanoid.MaxHealth
-                        const manaValue = player.Character!.FindFirstChild<NumberValue>("ManaValue")
-                        if (manaValue) {
-                            manaValue.Value = player.Character!.FindFirstChild<NumberValue>("MaxManaValue")!.Value
-                        }
-                    }
-                    const leaderstats = player.FindFirstChild<Folder>("leaderstats")
-                    if (leaderstats) {
-                        const levelValue = leaderstats.FindFirstChild<NumberValue>("Level")
-                        if (levelValue) {
-                            levelValue.Value = newLevel
-                        }
-                    }
-                    HeroServer.repopulateShopIfNecessary(player, pcData)
-                    HeroServer.awardBadgesForHero(player, pcData, experienceBonus)
+                if (newLevel >= Hero.globalHeroLevelCap) {
+                    MessageServer.PostMessageByKey(player, "MaximumLevel", false, 0, false)
                 }
+
+                MessageServer.PostMessageByKey(player, "LevelUpHero", false, 0, false)
+                const humanoid = player.Character!.FindFirstChild<Humanoid>("Humanoid")
+                if (humanoid) {
+                    humanoid.Health = humanoid.MaxHealth
+                    const manaValue = player.Character!.FindFirstChild<NumberValue>("ManaValue")
+                    if (manaValue) {
+                        manaValue.Value = player.Character!.FindFirstChild<NumberValue>("MaxManaValue")!.Value
+                    }
+                }
+                const leaderstats = player.FindFirstChild<Folder>("leaderstats")
+                if (leaderstats) {
+                    const levelValue = leaderstats.FindFirstChild<NumberValue>("Level")
+                    if (levelValue) {
+                        levelValue.Value = newLevel
+                    }
+                }
+                HeroServer.repopulateShopIfNecessary(player, hero)
+                HeroServer.awardBadgesForHero(player, hero, experienceBonus)
             }
         }
     }
@@ -192,18 +192,21 @@ export namespace HeroServer {
         // so kill stealing is a thing; really we should keep track of how much damage each player does to a monster
         const boostActive = Inventory.BoostActive(killer)
         const numHeroes = heroTeam.GetPlayers().size()
-        for (let hero of heroTeam.GetPlayers()) {
-            if (hero === killer) {
-                // give 50% to hero 
-                const adjustedXP = xp / (numHeroes > 1 ? 2 : 1)
-                DebugXL.logV(LogArea.Gameplay, hero.Name + " gets " + adjustedXP)
-                HeroServer.awardExperience(hero, adjustedXP, "Kill", "Monster", boostActive)
-            }
-            else {
-                // split the rest amongst the others
-                const adjustedXP = xp / 2 / math.max(1, numHeroes - 1) // math.max() prevents a div 0 if killer has left game
-                DebugXL.logV(LogArea.Gameplay, hero.Name + " gets " + adjustedXP)
-                HeroServer.awardExperience(hero, adjustedXP, "Kill:Shared", "Monster", boostActive)
+        for (let heroPlayer of heroTeam.GetPlayers()) {
+            let hero = PlayerServer.getCharacterRecordFromPlayer(heroPlayer)
+            if (hero instanceof Hero) {
+                if (heroPlayer === killer) {
+                    // give 50% to hero 
+                    const adjustedXP = xp / (numHeroes > 1 ? 2 : 1)
+                    DebugXL.logV(LogArea.Gameplay, heroPlayer.Name + " gets " + adjustedXP)
+                    HeroServer.awardExperience(heroPlayer, hero, adjustedXP, "Kill", "Monster", boostActive)
+                }
+                else {
+                    // split the rest amongst the others
+                    const adjustedXP = xp / 2 / math.max(1, numHeroes - 1) // math.max() prevents a div 0 if killer has left game
+                    DebugXL.logV(LogArea.Gameplay, heroPlayer.Name + " gets " + adjustedXP)
+                    HeroServer.awardExperience(heroPlayer, hero, adjustedXP, "Kill:Shared", "Monster", boostActive)
+                }
             }
         }
     }

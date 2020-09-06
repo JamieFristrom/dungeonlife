@@ -2,17 +2,20 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { TestContext, TestUtility } from 'ServerStorage/TS/TestUtility'
 import { Furnisher } from 'ServerStorage/TS/Furnisher'
 
+import { FloorInfo } from 'ReplicatedStorage/TS/FloorInfo'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
 
 import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
 import InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
 
-import { Workspace } from '@rbxts/services'
-
+import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
+import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
+import Dungeon from 'ServerStorage/Standard/DungeonModule'
 
 // unable to place furnishing doesn't crash
 {
@@ -32,7 +35,17 @@ import { Workspace } from '@rbxts/services'
     let map = MapUtility.makeEmptyMap(5)
     Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0, 0, 0), 0)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnOrc", testSetup.getPlayer())[1] === 1, "Client built 1 orc spawn")
-    Workspace.FindFirstChild<Folder>("Building")!.ClearAllChildren()
+    testSetup.clean()
+}
+// placing a superboss spawn works; not client initiated
+{
+    let testSetup = new TestContext()
+    const bossFloorInfo = new FloorInfo(false, new Map<string, boolean>([["SpawnCyclopsSuper", true]]))
+    Dungeon.BuildWait(testSetup, bossFloorInfo, (player) => { })
+    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    let map = MapUtility.makeEmptyMap(5)
+    FurnishServer.PlaceSpawns(bossFloorInfo, [PossessionData.dataT["SpawnCyclopsSuper"]], 1)
+    TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnCyclopsSuper")[0] === 1, "Client built 1 superboss spawn")
     testSetup.clean()
 }
 

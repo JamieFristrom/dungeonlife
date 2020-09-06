@@ -1,7 +1,7 @@
 # Fixing
-* problem with saving inventory? check FBI_Survelliance's inventory see if errors pop
-* roll out fire fix
+
 * ghosts are immune to being directly targeted with longbow (recorded movie)
+* fix that max > min thing
 * Bring back print money command
 * Hero is respawning during preparation phase in 2 player game: mash ready button after changing level
 * Upgrade typescript
@@ -14,6 +14,7 @@
 * Boss kill is still not quite right, it's thrashing between levels (there's a tiny instant TPK session that happens)
 * single player: ready button & preparation flicker...but only in studio?
 * Go back to old way of costume changes when sometimes it wasn't quite flush with floor and there was occasional decapitation risk - it felt better overall: werewolf transform was instantaneous, for one thing, and it didn't pop those loadanimation errors so frequently
+* Make sure killing a superboss drops good loot
 * Port to Minecraft
 * PlayerTracker should be called CharacterTracker
 * Refactor: rename LevelSession -> FloorSession

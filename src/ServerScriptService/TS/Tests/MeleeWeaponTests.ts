@@ -1,3 +1,4 @@
+
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
@@ -15,6 +16,7 @@ import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
 import { CharacterRecord } from "ReplicatedStorage/TS/CharacterRecord"
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
 import { Monster } from "ReplicatedStorage/TS/Monster"
@@ -103,10 +105,9 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     }
 }
 
-
 {
     let testSetup = new TestContext()
-    Dungeon.BuildWait(testSetup, (player) => { })
+    Dungeon.BuildWait(testSetup, new FloorInfo(), (player) => { })
     let trapDoors = Workspace.FindFirstChild<Folder>("Environment")!.FindFirstChild<Model>("TrapDoors", true)!
     let oldHealth = trapDoors.FindFirstChild<Humanoid>("Humanoid")!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Mage"), "Staff", trapDoors, oldHealth)
@@ -135,7 +136,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     testSetup.getInventoryMock().itemsT["TestDestructibleLoot"] = 1
     InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
     let map = MapUtility.makeEmptyMap(5)
-    let [structureModel] = FurnishServer.Furnish(testSetup, map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
+    let [structureModel] = FurnishServer.Furnish(testSetup, new FloorInfo(), map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
     DebugXL.Assert(structureModel !== undefined)
     let oldHealth = structureModel.FindFirstChild<Humanoid>("Humanoid")!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Rogue"), "Shortsword", structureModel, oldHealth)

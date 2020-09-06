@@ -32,6 +32,7 @@ local TileServer = require( game.ServerStorage.TS.TileServer ).TileServer
 local FixedFloorDecorations = require( game.ServerStorage.TS.FixedFloorDecorations ).FixedFloorDecorations
 
 -- this ought to belong in the DungeonUtility module:
+-- this global looks a little scary but a test dungeon can't be built at the same time as a real dungeon anyway
 local function GridWidth()
 	return FloorData:CurrentFloorSize()
 end
@@ -347,21 +348,21 @@ function Dungeon:Clean()
 	ClearGrid()
 end
 
-function Dungeon:BuildWait( context, _nextLevelFunc )
+function Dungeon:BuildWait( context, floorInfo, _nextLevelFunc )
 	DebugXL:Assert( self == Dungeon )
 	DebugXL:logW(LogArea.GameManagement, "Building dungeon")
 	nextLevelFunc = _nextLevelFunc
 	local staircaseV3 
 	-- once in a blue moon a map makes it impossible to place a staircase; keep going until we get one
-	local currentFloor = FloorData:CurrentFloor()
-	FloorData:CalculateFloorSize( currentFloor )
-	local tilesetFolder = workspace[ currentFloor.tilesetS ]
+--	local floorInfo = FloorData:CurrentFloor()
+	FloorData:CalculateFloorSize( floorInfo )
+	local tilesetFolder = workspace[ floorInfo.tilesetS ]
 	while not staircaseV3 do
 		local floorCreationStartTime = tick()
 		Dungeon:Clean()
-		PlaceStartTile( math.ceil( GridWidth() / 2) + currentFloor.startX, 
-			math.ceil( GridWidth() / 2) + currentFloor.startY, 
-			currentFloor.startTileModelName )
+		PlaceStartTile( math.ceil( GridWidth() / 2) + floorInfo.startX, 
+			math.ceil( GridWidth() / 2) + floorInfo.startY, 
+			floorInfo.startTileModelName )
 --		GrowFromGridCell( math.ceil( GridWidth() / 2) + startPointV2.X, math.ceil( GridWidth() / 2) + startPointV2.Y, 1 )
 --		GrowFromGridCell( math.ceil( GridWidth() / 2), math.ceil( GridWidth() / 2)-1, 3 )
 		staircaseV3 = LocateStaircase()
@@ -376,7 +377,7 @@ function Dungeon:BuildWait( context, _nextLevelFunc )
 	MapUpgradePass()
 	PlaceTiles( tilesetFolder )
 	SurroundWithWalls( tilesetFolder )
-	if FloorData:CurrentFloor().exitStaircaseB then
+	if floorInfo.exitStaircaseB then
 		PlaceStaircase( context, staircaseV3 )
 	end
 	mapCompleteB = true

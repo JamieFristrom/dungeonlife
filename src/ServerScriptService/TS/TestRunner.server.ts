@@ -11,6 +11,7 @@ import { Workspace } from "@rbxts/services"
 
 const runTests = true
 
+// undefined means run all the tests
 const currentTest: string | undefined = undefined //"GameServerTests" // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads

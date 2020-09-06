@@ -57,7 +57,9 @@ end
 --------------------------------------------------------------------------------------------------------------------
 -- Dungeon Furnishing
 --------------------------------------------------------------------------------------------------------------------
-function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
+function FurnishServer:PlaceSpawns( floorInfo, spawnFromListA, spawnCountN )
+	DebugXL:Assert( #spawnFromListA >= 1 )
+	DebugXL:Assert( spawnCountN >= 1 )
 	local dungeonMap = Dungeon:GetMap()
 	local emergencyFailCount = 0
 	local numPlaced = 0
@@ -107,8 +109,8 @@ function FurnishServer:PlaceSpawns( spawnFromListA, spawnCountN )
 					end
 				end
 				local position = FurnishUtility:SnapV3( Vector3.new( positionX, 1.2, positionZ ), spawnChoice.gridSubdivisionsN, spawnChoice.placementType )
-				local result = FurnishServer:Furnish( MainContext.get(), Dungeon:GetMap(), nil, spawnChoice.idS, position, rotY )
-				if( result[0] )then
+				local result = FurnishServer:Furnish( MainContext.get(), floorInfo, Dungeon:GetMap(), nil, spawnChoice.idS, position, rotY )
+				if result[1] then  
 					numPlaced = numPlaced + 1
 				end
 			end
@@ -180,7 +182,7 @@ function FurnishServer:GetNumMonsterSpawns()
 end
 
 
-function FurnishServer:Furnish( context, map, creator, name, position, rotation )
+function FurnishServer:Furnish( context, currentFloorInfo, map, creator, name, position, rotation )
 	local furnishingDatum = PossessionData.dataT[ name ]
 
 	-- validating parameters
@@ -190,7 +192,7 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 	DebugXL:Assert( type(rotation) == "number" )
 	DebugXL:Assert( type(name) == "string" )
 	
-	local blueprintSuffix = FloorData:CurrentFloor().blueprintSuffix
+	local blueprintSuffix = currentFloorInfo.blueprintSuffix
 	local amendedName = name..blueprintSuffix
 	local template = placementStorage:FindFirstChild(amendedName)
 	if( not template )then
@@ -232,7 +234,7 @@ function FurnishServer:Furnish( context, map, creator, name, position, rotation 
 						DebugXL:logD(LogArea.Structures, "Can't build "..name.." because past build cap")
 						return {nil,nil}
 					end	
-					local availableB = FloorData:CurrentFloor().availableBlueprintsT[ name ]				
+					local availableB = currentFloorInfo.availableBlueprintsT[ name ]				
 					if not availableB and personalN >= InventoryUtility:GetCount( inventory, furnishingDatum.idS ) then -- furnishingDatum.buildCapN then
 						DebugXL:logD(LogArea.Structures, "Can't build "..name.." because not enough in inventory")
 						return {nil,nil}

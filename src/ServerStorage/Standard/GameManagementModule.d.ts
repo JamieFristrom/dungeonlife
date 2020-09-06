@@ -11,6 +11,7 @@ import { ServerContextI } from "ServerStorage/TS/ServerContext"
 type Character = Model
 
 declare class GameManagementClass {
+    DoBeatSuperbossStuff(context: ServerContextI): void
     GetDungeonPlayer(player: Player): DungeonPlayer
     GetLevelSession(): number
     MonitorPlayerbase(): void

@@ -47,7 +47,7 @@ export namespace Furnisher {
                 (blueprint) => PossessionData.dataT[blueprint].furnishingType === furnishingType);
             const spawnData = bossBlueprints.map((blueprint) => PossessionData.dataT[blueprint])
             if (spawnData.size() >= 1) {
-                FurnishServer.PlaceSpawns(spawnData, expectedTotal - existingCount)
+                FurnishServer.PlaceSpawns(FloorData.CurrentFloor(), spawnData, expectedTotal - existingCount)
                 return expectedTotal
             }
         }
@@ -74,7 +74,7 @@ export namespace Furnisher {
         if (context.getGameMgr().LevelReady()) {
             const furnishingDatum = PossessionData.dataT[name]
             if (furnishingDatum.buildCostN! <= player.FindFirstChild<NumberValue>("BuildPoints")!.Value) {
-                const [ instance, _ ] = FurnishServer.Furnish(context, map, player, name, position, rotation)
+                const [ instance, _ ] = FurnishServer.Furnish(context, FloorData.CurrentFloor(), map, player, name, position, rotation)
                 if (instance) {  // many reasons it can fail
                     MonsterServer.adjustBuildPoints(player, -furnishingDatum.buildCostN!)
 

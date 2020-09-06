@@ -24,6 +24,7 @@ import { SpawnerUtility } from "ReplicatedStorage/TS/SpawnerUtility"
 import { DungeonDeck } from "./DungeonDeck"
 import { HeroServer } from "./HeroServer"
 import { MonsterServer } from "./MonsterServer"
+import { ServerContextI } from "./ServerContext"
 
 
 export enum LevelResultEnum {
@@ -289,12 +290,15 @@ export namespace GameServer {
             const newDungeonDepth = DungeonDeck.goToNextFloor()
             DebugXL.logV(LogArea.GameManagement, "Awarding next level awards")
             for (let player of HeroTeam.GetPlayers()) {
-                //GameAnalyticsServer.ServerEvent({ ["category"] = "progression", ["event_id"] = "Complete.SubdwellerColony."+tostring(workspace.GameManagement.DungeonFloor.Value) }, player)
-                Heroes.NewDungeonLevel(player, newDungeonDepth)
-                HeroServer.awardExperience(player, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor", Inventory.BoostActive(player))
-                Inventory.AdjustCount(player, "Stars", 10, "Progress", "Floor")
-                Inventory.EarnRubies(player, 10, "Progress", "Floor")
-                Heroes.SaveHeroesWait(player)
+                let hero = playerTracker.getCharacterRecordFromPlayer(player)
+                if( hero instanceof Hero ) {
+                    //GameAnalyticsServer.ServerEvent({ ["category"] = "progression", ["event_id"] = "Complete.SubdwellerColony."+tostring(workspace.GameManagement.DungeonFloor.Value) }, player)
+                    Heroes.NewDungeonLevel(player, newDungeonDepth)
+                    HeroServer.awardExperience(player, hero, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor", Inventory.BoostActive(player))
+                    Inventory.AdjustCount(player, "Stars", 10, "Progress", "Floor")
+                    Inventory.EarnRubies(player, 10, "Progress", "Floor")
+                    Heroes.SaveHeroesWait(player)
+                }
             }
             for (let player of MonsterTeam.GetPlayers()) {
                 MonsterServer.adjustBuildPoints(player, 50)
@@ -319,5 +323,4 @@ export namespace GameServer {
             }
         }
     }
-
 }
