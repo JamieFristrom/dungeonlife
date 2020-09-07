@@ -68,4 +68,4 @@ testManaPotionButton.refresh(animationDummy, heroRecord)
 
 DebugXL.Assert(!manaPotionFrame.Visible || !manaPotionItemFrame.Visible)
 
-
+DebugXL.logW(LogArea.Test, "Potion Button Tests finished succesfully")

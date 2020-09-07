@@ -18,6 +18,7 @@ import { ServerContextI } from "ServerStorage/TS/ServerContext"
 import { DungeonMap } from "ReplicatedStorage/TS/DungeonMap"
 import { MainContext } from "./MainContext"
 import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 import { PlayerServer } from "./PlayerServer"
 import CharacterI from "ServerStorage/Standard/CharacterI"
 
@@ -73,7 +74,7 @@ export namespace Furnisher {
 
         if (context.getGameMgr().LevelReady()) {
             const furnishingDatum = PossessionData.dataT[name]
-            if (furnishingDatum.buildCostN! <= player.FindFirstChild<NumberValue>("BuildPoints")!.Value) {
+            if (furnishingDatum.buildCostN! <= PlayerUtility.getBuildPoints(player)) {
                 const [ instance, _ ] = FurnishServer.Furnish(context, FloorData.CurrentFloor(), map, player, name, position, rotation)
                 if (instance) {  // many reasons it can fail
                     MonsterServer.adjustBuildPoints(player, -furnishingDatum.buildCostN!)
@@ -115,7 +116,7 @@ export namespace Furnisher {
         .WaitForChild<Folder>("Remotes")
         .WaitForChild<RemoteFunction>("PlaceInstanceRF")
         .OnServerInvoke = (player: Player, ...args) => {
-            clientInitiatedFurnish(MainContext.get(), Dungeon.GetMap(), player, args[0] as string, args[1] as Vector3, args[2] as number)
+            return clientInitiatedFurnish(MainContext.get(), Dungeon.GetMap(), player, args[0] as string, args[1] as Vector3, args[2] as number)
         }
 
 }

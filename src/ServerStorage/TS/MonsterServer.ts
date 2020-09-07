@@ -14,16 +14,16 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { CharacterRecord, CharacterKey, GearPool } from "ReplicatedStorage/TS/CharacterRecord";
 import { CharacterClasses, MonsterStatBlockI } from "ReplicatedStorage/TS/CharacterClasses";
 import { FlexTool, GearDefinition } from "ReplicatedStorage/TS/FlexToolTS";
+import { Monster } from "ReplicatedStorage/TS/Monster"
 import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
-import Inventory from "ServerStorage/Standard/InventoryModule"
 
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
 import MathXL from "ReplicatedStorage/Standard/MathXL";
 import FlexEquipUtility from "ReplicatedStorage/Standard/FlexEquipUtility"
-import InstanceXL from "ReplicatedStorage/Standard/InstanceXL";
 import { ServerContextI, ServerContext } from "./ServerContext";
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility";
 
 
 DebugXL.logD(LogArea.Requires, "MonsterServer finished imports")
@@ -39,8 +39,6 @@ interface MonsterPlayerInfo {
 const HeroTeam = Teams.WaitForChild<Team>("Heroes")
 
 const messageRE = Workspace.WaitForChild<Folder>("Standard").WaitForChild<Folder>("MessageGuiXL").WaitForChild<RemoteEvent>("MessageRE")
-
-const mobsFolder = Workspace.WaitForChild<Folder>("Mobs")
 
 export namespace MonsterServer {
     const monsterInfos = new Map<Player, MonsterPlayerInfo>()
@@ -264,7 +262,11 @@ export namespace MonsterServer {
     }
 
     export function calculateXPReward(characterRecord: CharacterRecord, isMob: boolean) {
+        if( !(characterRecord instanceof Monster ) ) {
+            DebugXL.Error("Calculating XP reward for a "+characterRecord.idS)
+            return 0
         //print( "Estimating damage for "..character.Name.." of class "..monsterClass.." "..(toolForXPPurposes and toolForXPPurposes.Name or "no tool" ) )
+        }
         let totalDamageEstimate = 0
         characterRecord.gearPool.forEach((possession) => {
             if (ToolData.dataT[possession.baseDataS].damageNs) {
@@ -421,15 +423,6 @@ export namespace MonsterServer {
 
     export function adjustBuildPoints(player: Player, amount: number) {
         // for testing purposes, and who knows there may be a race somewhere.
-        let buildPointsObject = player.FindFirstChild<NumberValue>("BuildPoints")
-        if (!buildPointsObject) {
-            buildPointsObject = new Instance("NumberValue")
-            buildPointsObject.Name = "BuildPoints"
-            buildPointsObject.Value = amount
-            buildPointsObject.Parent = player
-        }
-        else {
-            buildPointsObject.Value = buildPointsObject.Value + amount
-        }
+        PlayerUtility.setBuildPoints(player, PlayerUtility.getBuildPoints(player) + amount)
     }
 }

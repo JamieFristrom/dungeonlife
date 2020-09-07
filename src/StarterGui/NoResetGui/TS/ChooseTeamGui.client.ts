@@ -5,7 +5,10 @@ import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { Players, Workspace } from "@rbxts/services"
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
+import { PCClient } from "ReplicatedStorage/TS/PCClient"
 
+import { getRuntimeCurtain } from "ReplicatedStorage/TS/CurtainGui"
 
 let localPlayer = Players.LocalPlayer!
 let playerGui = localPlayer.WaitForChild("PlayerGui") as PlayerGui
@@ -38,7 +41,7 @@ for (let i = 0; i < choiceKeys.size(); i++) {
     choiceTextButtons[i].MouseButton1Click.Connect(() => { makeTeamChoice(choiceKey) })
 }
 
-closeButton.MouseButton1Click.Connect( ()=>chooseTeamFrame.Visible=false )
+closeButton.MouseButton1Click.Connect(() => chooseTeamFrame.Visible = false)
 
 let mainRE = Workspace.WaitForChild("Signals")!.WaitForChild("MainRE") as RemoteEvent
 
@@ -46,3 +49,16 @@ chooseTeamButton.MouseButton1Click.Connect(function () {
     DebugXL.logI(LogArea.UI, "Choose team button clicked")
     chooseTeamFrame.Visible = !chooseTeamFrame.Visible
 })
+
+// manage visibility
+for (; ;) {
+    wait(0.1)
+    let curtain = getRuntimeCurtain()
+    if ( curtain.getTransparency() > 0.99 && PlayerUtility.characterMatchesTeam(PCClient.pc, localPlayer.Team)) {
+        chooseTeamButton.Visible = true
+    }
+    else {
+        chooseTeamButton.Visible = false
+        chooseTeamFrame.Visible = false
+    }
+}

@@ -9,10 +9,10 @@ DebugXL.logI(LogArea.Executed, script.Name)
 import { TestUtility } from "ServerStorage/TS/TestUtility"
 import { Workspace } from "@rbxts/services"
 
-const runTests = true
+const runTests = false
 
 // undefined means run all the tests
-const currentTest: string | undefined = undefined //"GameServerTests" // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
+const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {

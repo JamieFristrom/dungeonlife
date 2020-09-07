@@ -20,6 +20,7 @@ import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
 import { Hero } from "ReplicatedStorage/TS/HeroTS"
 import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
 import { Monster } from "ReplicatedStorage/TS/Monster"
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
 
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
@@ -134,7 +135,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     // arrange; need to build structure via FurnishServer so it'll have Destructible
     let testSetup = new TestContext()
     testSetup.getInventoryMock().itemsT["TestDestructibleLoot"] = 1
-    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    PlayerUtility.setBuildPoints(testSetup.getPlayer(), 1000)
     let map = MapUtility.makeEmptyMap(5)
     let [structureModel] = FurnishServer.Furnish(testSetup, new FloorInfo(), map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
     DebugXL.Assert(structureModel !== undefined)

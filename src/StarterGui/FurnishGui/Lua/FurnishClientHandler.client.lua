@@ -28,6 +28,9 @@ local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).B
 local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
+local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
+local StructureClient = require( game.ReplicatedStorage.TS.StructureClient ).StructureClient
+local RemoteFunctionSocket = require( game.ReplicatedStorage.TS.RemoteSocket ).RemoteFunctionSocket
 
 local furnishGui = script.Parent.Parent
 local playerGui  = furnishGui.Parent
@@ -37,9 +40,9 @@ local localPlayer = game.Players.LocalPlayer
 local furnishingInfoFrame = furnishGui:WaitForChild("FurnishingInfoFrame")
 
 local currencies = furnishGui:WaitForChild("Currencies")
-currencies:WaitForChild("BuildPoints")
+local currenciesBuildPointsFrame = currencies:WaitForChild("BuildPoints")
 
-currencies.BuildPoints.Visible = false
+currenciesBuildPointsFrame.Visible = false
 workspace.GridSurface.Texture.Transparency = 1
 
 
@@ -70,23 +73,26 @@ local mouse = player:GetMouse()
 local selectionBox = Instance.new("SelectionBox", character)
 
 -- shared instances
-local sharedInstances = replicatedStorage["Shared Instances"]
-local placementStorage = sharedInstances["Placement Storage"]
+local sharedInstances = replicatedStorage:WaitForChild("Shared Instances")
+local placementStorage = sharedInstances:WaitForChild("Placement Storage")
 
-local remotes = sharedInstances.Remotes
-local modules = sharedInstances.Modules
+local remotes = sharedInstances:WaitForChild("Remotes")
+
+local placeInstanceRF = remotes:WaitForChild("PlaceInstanceRF")
+
+local placeInstanceSocket = RemoteFunctionSocket.new( placeInstanceRF )
 
 -- modules
 --local helperFunctionsDictionary = require(modules["Helper Functions"])
 
 -- data
-local rotation = 0
+local cardinalRotation = 0
 local ghostInstance = nil
 
 local placeableIdx = 1
 local placeable = placementStorage:GetChildren()
 
-local categoryFrameTargetPosition   = furnishGui:WaitForChild("ActiveCategoryListFrame").Position
+local categoryFrameTargetPosition = furnishGui:WaitForChild("ActiveCategoryListFrame").Position
 local furnishingFrameTargetPosition = furnishGui:WaitForChild("ActiveFurnishingListFrame").Position
 
 local map = workspace.Signals:WaitForChild("DungeonRF"):InvokeServer( "GetMap" )
@@ -102,7 +108,7 @@ local currentBuildMenu = nil
 
 local currentConfirmFrame = game:GetService("UserInputService").TouchEnabled and furnishGui:WaitForChild("ConfirmFrameTouch") or furnishGui:WaitForChild("ConfirmFrame")
 
-local cachedBuildPointsN = localPlayer:WaitForChild("BuildPoints").Value
+local cachedBuildPointsN = PlayerUtility.getBuildPoints( localPlayer )
 
 -- definitions
 local keyCodeEnum = Enum.KeyCode
@@ -120,13 +126,13 @@ local function moveGhost( targetV3 )
 		--local position = FurnishUtility:ExpandToGrid( targetV3, furnishingDatum.gridSubdivisionsN, furnishingDatum.gridOffsetN )
 		if furnishingDatum.placementType == PossessionData.PlacementTypeEnum.Edge then
 			if position.X % MapTileData.cellWidthN == 0 then
-				rotation = 2
+				cardinalRotation = 2
 			else
-				rotation = 1
+				cardinalRotation = 1
 			end	
 		end
 		
-		local cframe = CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * rotation, 0)
+		local cframe = CFrame.new(position) * CFrame.Angles(0, (math.pi / 2) * cardinalRotation, 0)
 		
 		-- assumes model now
 		
@@ -143,7 +149,7 @@ local function moveGhost( targetV3 )
 		local ghostRegion = Region3.new( ghostInstance:GetPrimaryPartCFrame().p - ghostInstance:GetExtentsSize() / 2,
 			ghostInstance:GetPrimaryPartCFrame().p + ghostInstance:GetExtentsSize() / 2 )
 
-		if FurnishUtility:IsWithinBoundaries( baseplate.Position, baseplate.Size, ghostInstance:GetPrimaryPartCFrame().p, ghostInstance.PrimaryPart.Size, rotation)
+		if FurnishUtility:IsWithinBoundaries( baseplate.Position, baseplate.Size, ghostInstance:GetPrimaryPartCFrame().p, ghostInstance.PrimaryPart.Size, cardinalRotation)
 			and not FurnishUtility:GridPointOccupied( position, extentsV3, furnishingDatum.gridSubdivisionsN, 
 				furnishingDatum.placementType ) 
 			and not FurnishUtility:CharacterWithinRegion( ghostRegion ) 
@@ -308,24 +314,25 @@ local function UnregisterGhost()
 end
 
 -- cache for low latency snappy UI
-currencies.BuildPoints.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
+currenciesBuildPointsFrame.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
 furnishGui.ActiveFurnishingListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
 furnishGui.ActiveCategoryListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
 
-localPlayer.BuildPoints.Changed:Connect( function( valueN )
+local buildPointsObject = localPlayer:WaitForChild("BuildPointsTotal")
+buildPointsObject.Changed:Connect( function( valueN )
 --	--print("Server updated Dungeon Points: "..valueN)
 	local adjustmentN = valueN - cachedBuildPointsN
 	cachedBuildPointsN = valueN
 	if adjustmentN > 0 then
 		GuiTraveller:SendTravellerWait( UDim2.new( 0.5, 0, 0.47, 0 ), 
-			UDim2.new( 0, currencies.BuildPoints.AbsolutePosition.X,
-				0, currencies.BuildPoints.AbsolutePosition.Y ),
+			UDim2.new( 0, currenciesBuildPointsFrame.AbsolutePosition.X,
+				0, currenciesBuildPointsFrame.AbsolutePosition.Y ),
 				"", --furnishGui.Rubies.ImageLabel.Image,
 				"DP",
 				adjustmentN,
 			Color3.fromRGB( 255, 255, 255 ) )
 	end
-	currencies.BuildPoints.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
+	currenciesBuildPointsFrame.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
 	furnishGui.ActiveFurnishingListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
 	furnishGui.ActiveCategoryListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
 	
@@ -678,10 +685,10 @@ end
 
 function FurnishClientHandlerRemote.Rotate()
 	if ghostInstance then
-		rotation = rotation + 1
+		cardinalRotation = cardinalRotation + 1
 		
-		if rotation > 3 then
-			rotation = 0
+		if cardinalRotation > 3 then
+			cardinalRotation = 0
 		end
 		
 		moveGhost( InstanceXL:GetCFrame( ghostInstance ).p )  -- todo use current ghost position instead
@@ -747,7 +754,7 @@ local function PlaceFurnishing()
 			elseif personalN >= possessionDatum.buildCapN then
 				MessageGui:PostParameterizedMessage( "FurnishingPersonalMax", { possessionDatum.readableNameS }, false )
 				audio.Failure:Play()										
-			elseif not FurnishUtility:IsWithinBoundaries( workspace.BuildingBaseplate.Position, workspace.BuildingBaseplate.Size, ghostV3, ghostInstance.PrimaryPart.Size, rotation)
+			elseif not FurnishUtility:IsWithinBoundaries( workspace.BuildingBaseplate.Position, workspace.BuildingBaseplate.Size, ghostV3, ghostInstance.PrimaryPart.Size, cardinalRotation)
 			 		or FurnishUtility:GridPointOccupied( ghostV3, extentsV3, possessionDatum.gridSubdivisionsN, possessionDatum.placementType )
 					or ((possessionDatum.furnishingType == PossessionData.FurnishingEnum.Barrier) 
 					and WallOccupied( ghostV3 ) ) 
@@ -758,34 +765,14 @@ local function PlaceFurnishing()
 				MessageGui:PostMessageByKey( "PlayerThere", false )
 				audio.Failure:Play()				
 			else
-				-- make cost snappy ;  earning Dungeon Points will send a pretty traveller
-				if possessionDatum.buildCostN > 0 then
-					cachedBuildPointsN = cachedBuildPointsN - possessionDatum.buildCostN
-					currencies.BuildPoints.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
-					furnishGui.ActiveFurnishingListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
-					furnishGui.ActiveCategoryListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
-				end
-				audio.FurnishSuccess:Play()
-				local name = BlueprintUtility.getPossessionName(ghostInstance)
-				local cf   = ghostInstance:GetPrimaryPartCFrame().p
-				
-				
-				--UnregisterGhost()  -- so it will be snappy doing it first,
-				-- but then it's hard to place a bunch in a row. At least we have the audio!
-				local successB = remotes.PlaceInstanceRF:InvokeServer( name, cf, rotation )
-				if not successB then			
-				--remotes["Place Instance"]:FireServer(BlueprintUtility.getPossessionName(ghostInstance), ghostInstance:GetPrimaryPartCFrame().p, rotation)
-					-- whoops, something went wrong. Someone else built, character moved in the way, code bug, something.
-					-- Docking DP now might mean that we can't finish tutorial!
-					cachedBuildPointsN = localPlayer:WaitForChild("BuildPoints").Value
-					-- don't know why, though, when we get here theres often no BuildPoints; maybe it happens when the player builds
-					-- and immediately quits?
-					if currencies:FindFirstChild("BuildPoints") then
-						currencies.BuildPoints.CurrencyNameAndCount.Text = "Dungeon Points: "..cachedBuildPointsN
-						furnishGui.ActiveFurnishingListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN
-						furnishGui.ActiveCategoryListFrame.BuildPoints.Text = "Dungeon Points: "..cachedBuildPointsN					
-					end	
-				end
+				StructureClient.tellServerToBuildAndUpdateUI(
+					cachedBuildPointsN,
+					possessionDatum,
+					cardinalRotation,
+					furnishGui,
+					ghostInstance,
+					placeInstanceSocket )
+					
 			end
 		end
 	end
@@ -930,9 +917,9 @@ while true do
 	wait(0.1)
 	-- tutorial management
 	if localPlayer.Team == game.Teams.Heroes then
-		currencies.BuildPoints.Visible = false
+		currenciesBuildPointsFrame.Visible = false
 	else
-		currencies.BuildPoints.Visible = true
+		currenciesBuildPointsFrame.Visible = true
 		ManageTutorialArrows()
 	end
 end

@@ -48,7 +48,7 @@ export namespace TestUtility {
     export function saveCostumeStub(player: Player) {
         // we didn't forget to clean did we?
         let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
-        DebugXL.Assert(costumeStub === undefined)
+        DebugXL.Assert(costumeStub === undefined)  // if there's a lingering costume probably someone forgot to clean their test context
 
         let costumeCopy = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
         costumeCopy.Name = Costumes.CostumeKey(player)
@@ -107,7 +107,6 @@ export namespace TestUtility {
         }
         assertionCount++
     }
-
 
     export function assertMatching(expected: unknown, actual: unknown, message = "") {
         if (TableXL.DeepMatching(expected, actual)) {

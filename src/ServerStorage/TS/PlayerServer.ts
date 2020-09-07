@@ -158,12 +158,27 @@ export class PlayerTracker {
 
     setClassChoice(player: Player, charClass: CharacterClass) {
         DebugXL.Assert(player.IsA("Player"))
-        DebugXL.Assert(charClass === "NullClass"
-            || (player.Team === heroTeam && (CharacterClasses.heroStartingStats[charClass] !== undefined))
-            || (player.Team === monsterTeam && (CharacterClasses.monsterStats[charClass] !== undefined)))
+        if (charClass !== "NullClass") {
+            if (player.Team === heroTeam) {
+                if (!CharacterClasses.heroStartingStats[charClass]) {
+                    DebugXL.Error("On hero team choosing " + charClass)
+                    return
+                }
+            }
+            else if (player.Team === monsterTeam) {
+                if (!CharacterClasses.monsterStats[charClass]) {
+                    DebugXL.Error("On monster team choosing " + charClass)
+                    return
+                }
+            }
+            else {
+                DebugXL.Error("Trying to choose class when not on team")
+                return
+            }
+        }
         this.classChoices.set(player, charClass)
 
-        // publish'
+        // hmm. I don't remember why it only publishes if null
         if (charClass === "NullClass") {
             this.publishCharacterClass(player, charClass)
         }
@@ -544,6 +559,18 @@ export namespace PlayerServer {
 
     function playerAdded(player: Player) {
         playerTracker.playerAdded(player)
+    }
+
+    export function teamMatchesTeamStyleChoice(team: Team, teamStyleChoice: TeamStyleChoice) {
+        if( team === heroTeam) {
+            return teamStyleChoice === TeamStyleChoice.Hero
+        }
+        else if( team === monsterTeam ) {
+            return teamStyleChoice === TeamStyleChoice.DungeonLord || teamStyleChoice === TeamStyleChoice.Monster
+        }
+        else {
+            return false
+        }
     }
 
     export function getLocalLevel(characterKey: CharacterKey) {

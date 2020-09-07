@@ -51,7 +51,7 @@ DebugXL:logD(LogArea.GameManagement, 'GameManagementModule: ServerStorage requir
 
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local CharacterClasses = require( game.ReplicatedStorage.TS.CharacterClasses ).CharacterClasses
-local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
+local CheatUtilityXL = require( game.ReplicatedStorage.TS.CheatUtility )
 local Hero = require( game.ReplicatedStorage.TS.HeroTS ).Hero
 local Monster = require( game.ReplicatedStorage.TS.Monster ).Monster
 local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
@@ -167,11 +167,11 @@ workspace.Signals.GameManagementRE.OnServerEvent:Connect( function( player, func
 end)
 DebugXL:logW(LogArea.GameManagement, "Time until GameManagementRE connected: "..time() )
 
-workspace.Signals.ChooseHeroRE.OnServerEvent:Connect( function( player, code )
-	DebugXL:Assert( code == "ack")
-	DebugXL:logD(LogArea.GameManagement, player.Name.." ChooseHeroRE acknowledged" )
-	GameManagement:GetDungeonPlayer( player ).chooseHeroREAckedB = true
-end )
+-- workspace.Signals.ChooseHeroRE.OnServerEvent:Connect( function( player, code )
+-- 	DebugXL:Assert( code == "ack")
+-- 	DebugXL:logD(LogArea.GameManagement, player.Name.." ChooseHeroRE acknowledged" )
+-- 	GameManagement:GetDungeonPlayer( player ).chooseHeroREAckedB = true
+-- end )
 
 
 -- utility
@@ -325,16 +325,12 @@ local function ChangeHeroToMonster( player )
 	local myDungeonPlayerT = dungeonPlayers:get( player )	
 	myDungeonPlayerT:markHeroDead()
 	local localTick = time()
-	-- if the rest of the characters die while we're lying in pieces
-	while GameManagement:LevelReady() and time() < localTick + 5 do
-		wait()
-	end
-	CharacterI:ChangeTeam( player, game.Teams.Monsters )							
-	player.BuildPoints.Value = Places.getCurrentPlace().startingBuildPoints
+	CharacterI:ChangeTeam( player, game.Teams.Monsters )	
+	PlayerUtility.setBuildPoints( player, Places.getCurrentPlace().startingBuildPoints )						
 end
 
 
-local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
+local function BecomeHero( designatedMonsterPlayer, contextualChooseHeroRE )
 --	DebugXL:Assert( Inventory:GetCount( designatedMonsterPlayer, "Tutorial" ) >= 3 )
 	DebugXL:logD(LogArea.GameManagement, "Changing "..designatedMonsterPlayer.Name.." to hero" )
 	MarkPlayersCharacterForDestruction( designatedMonsterPlayer )	
@@ -342,12 +338,12 @@ local function ChangeMonsterToHero( designatedMonsterPlayer, loadCharacterB )
 	
 	DebugXL:logD(LogArea.GameManagement,"ChooseHeroRE:FireClient:ChooseHero:"..designatedMonsterPlayer.Name)
 	spawn( function()
-		while not dungeonPlayers:get( designatedMonsterPlayer ).chooseHeroREAckedB do wait(0.1) end
+		--while not dungeonPlayers:get( designatedMonsterPlayer ).chooseHeroREAckedB do wait(0.1) end
 		DebugXL:logD(LogArea.GameManagement,"ChooseHeroRE:FireClient:ChooseHero:"..designatedMonsterPlayer.Name.." fired")
-		workspace.Signals.ChooseHeroRE:FireClient( designatedMonsterPlayer, "ChooseHero" )
+		contextualChooseHeroRE:FireClient( designatedMonsterPlayer, "ChooseHero" )
 	end )
-	
-	designatedMonsterPlayer.BuildPoints.Value = Places.getCurrentPlace().startingBuildPoints
+
+	PlayerUtility.setBuildPoints( designatedMonsterPlayer, Places.getCurrentPlace().startingBuildPoints )
 	
 	-- destroy all the furnishings I've added so I a) don't know where they are and b) am not encouraged, as a monster, to not create them
 	-- this is probably automatic now that a TPK starts over
@@ -395,7 +391,6 @@ function GameManagement:MonitorHandleDeath( context, player, myDungeonPlayerT, p
 				wait()
 			end
 			playerCharacter.Parent = nil
-			--ChangeHeroToMonster( player )
 		elseif TableXL:InstanceOf( pcRecord, Monster ) then
 			local localTick = time()
 			Monsters:Died( context, playerCharacter, pcRecord )  
@@ -1019,9 +1014,9 @@ function GameManagement:Play()
 					-- hack for tutorial, make sure they keep enough points for that orc spawn
 					local inventory = Inventory:GetWait( player )
 					if inventory and InventoryUtility:IsInTutorial( inventory ) then
-						player.BuildPoints.Value = 200
+						PlayerUtility.setBuildPoints( player, 200 )
 					else
-						player.BuildPoints.Value = Places.getCurrentPlace().startingBuildPoints
+						PlayerUtility.setBuildPoints( player, Places.getCurrentPlace().startingBuildPoints )
 					end
 				end
 			end
@@ -1041,17 +1036,44 @@ function GameManagement:Play()
 	end
 end
 
-
-function GameManagement:BecomeHero( player )
-	-- always have at least a 15 second spawn delay
-	-- if workspace.GameManagement.PreparationCountdown.Value == 0 then
-	-- 	player.HeroRespawnCountdown.Value = 45
-	-- else	
-	-- 	player.HeroRespawnCountdown.Value = 0
-	-- end
-	ChangeMonsterToHero( player, true ) 				
+function GameManagement:HeroChoice( playerTracker, player, contextualChooseHeroRE )
+	if player.Character and player.Character.Parent then
+		if PlayerUtility.characterMatchesTeam( playerTracker:getCharacterRecordFromPlayer( player ), player.Team ) then
+			playerTracker:setTeamStyleChoice( player, TeamStyleChoice.Hero )
+			if player.Team ~= game.Teams.Heroes then
+				BecomeHero( player, contextualChooseHeroRE ) 	
+			end
+		end
+	end
 end
 
+function GameManagement:MonsterChoice( playerTracker, player )
+	if player.Character and player.Character.Parent then
+		if PlayerUtility.characterMatchesTeam( playerTracker:getCharacterRecordFromPlayer( player ), player.Team ) then
+			playerTracker:setTeamStyleChoice( player, TeamStyleChoice.Monster )
+			if player.Team ~= game.Teams.Monsters then	
+				ChangeHeroToMonster( player )
+			end
+			if playerTracker:getCharacterClass( player )=='DungeonLord' then
+				GameManagement:MarkPlayersCharacterForRespawn( player )
+			end
+		end
+	end
+end
+
+function GameManagement:DungeonLordChoice( playerTracker, player )
+	if player.Character and player.Character.Parent then
+		if PlayerUtility.characterMatchesTeam( playerTracker:getCharacterRecordFromPlayer( player ), player.Team ) then
+			playerTracker:setTeamStyleChoice( player, TeamStyleChoice.DungeonLord )
+			if player.Team ~= game.Teams.Monsters then
+				ChangeHeroToMonster( player )
+			end
+			if playerTracker:getCharacterClass( player )~='DungeonLord' then
+				GameManagement:MarkPlayersCharacterForRespawn( player )
+			end
+		end
+	end
+end
 -- this may seem odd but I'm going to try letting it leak and see what happens
 -- at some point the size of the dungeonPlayers dictionary might become unwieldy but it's probably a log search and not too bad?
 -- I doubt it will leak faster than the known Roblox sound memory leaks
@@ -1072,8 +1094,8 @@ end
 local MainRemote = {}
 
 function MainRemote.BuffBuildPointsForTutorial( player )
-	if Inventory:PlayerInTutorial( player ) and player.BuildPoints.Value < 200 then
-		player.BuildPoints.Value = 200
+	if Inventory:PlayerInTutorial( player ) and PlayerUtility.getBuildPoints( player ) < 200 then
+		PlayerUtility.setBuildPoints( player, 200 )
 	end
 end
 
@@ -1106,55 +1128,38 @@ function MainRemote.TestCoreLoopError( player )
 end
 
 
--- function MainRemote.AcceptHeroInvite( player )
--- 	if currentPlayerInvitedToHero == player then
--- 		GameManagement:BecomeHero( player )
--- 		--player.HeroInviteCountdown.Value = 0	
--- 	end	
--- end
-
-
 function MainRemote.DenyHeroInvite( player )
 	GameManagement:DenyHeroInvite( player )
 end
 
+
 function MainRemote.ForceHero( player )
     DebugXL:logD(LogArea.GameManagement,"ForceHeroServer")
 	if Places.getCurrentPlace() == Places.places.Underhaven then
-		ChangeMonsterToHero( player, true )
+		BecomeHero( player, workspace.Signals.ChooseHeroRE )
 	end
 end
+
 
 function MainRemote.HeroChoice( player )
-	PlayerServer.setTeamStyleChoice( player, TeamStyleChoice.Hero )
-	if player.Team ~= game.Teams.Heroes then
-		GameManagement:BecomeHero( player )
-	end
+	GameManagement:HeroChoice( PlayerServer.getPlayerTracker(), player, workspace.Signals.ChooseHeroRE )
 end
+
 
 function MainRemote.MonsterChoice( player )
-	PlayerServer.setTeamStyleChoice( player, TeamStyleChoice.Monster )
-	if player.Team ~= game.Teams.Monsters then	
-		ChangeHeroToMonster( player )
-	end
-	if PlayerServer.getCharacterClass( player )=='DungeonLord' then
-		GameManagement:MarkPlayersCharacterForRespawn( player )
-	end
+	GameManagement:MonsterChoice( PlayerServer.getPlayerTracker(), player )
 end
 
+
 function MainRemote.DungeonLordChoice( player )
-	PlayerServer.setTeamStyleChoice( player, TeamStyleChoice.DungeonLord )
-	if player.Team ~= game.Teams.Monsters then
-		ChangeHeroToMonster( player )
-	end
-	if PlayerServer.getCharacterClass( player )~='DungeonLord' then
-		GameManagement:MarkPlayersCharacterForRespawn( player )
-	end
+	GameManagement:DungeonLordChoice( PlayerServer.getPlayerTracker(), player )
 end
+
 
 function MainRemote.DungeonVote( player, dungeon )
 	dungeonVotes[ player ] = dungeon
 end
+
 
 workspace.Signals.MainRE.OnServerEvent:Connect( function( player, funcName, ... )
 	MainRemote[ funcName ]( player, ... )

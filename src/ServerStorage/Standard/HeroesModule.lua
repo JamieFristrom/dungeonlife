@@ -522,16 +522,11 @@ function Heroes:DoFlexToolDamage( context, attackerRecord, character, flexToolIn
 end
 
 
-
-
-function Heroes:NewDungeonLevel( player, newDungeonLevelN )
+function Heroes:NewDungeonLevel( player, hero, newDungeonLevelN )
 	DebugXL:Assert( self == Heroes )
-	local pcData = PlayerServer.getCharacterRecordFromPlayer( player )
---	DebugXL:Assert( pcData )
-	if pcData then
-		pcData.statsT.deepestDungeonLevelN = math.max( pcData.statsT.deepestDungeonLevelN, newDungeonLevelN )
-		Heroes:SaveHeroesWait( player )
-	end
+	DebugXL:Assert( TableXL:InstanceOf(hero, Hero))
+	hero.statsT.deepestDungeonLevelN = math.max( hero.statsT.deepestDungeonLevelN, newDungeonLevelN )
+	Heroes:SaveHeroesWait( player )
 end
 
 
@@ -553,16 +548,8 @@ end
 
 
 local function PlayerAdded( player )
-	local startTime = time()	
 	local heroStore = DataStore2( "Heroes", player, playerOverrideId )
 	local savedPlayerCharacters = heroStore:Get( HeroStable.new() )
---	AnalyticsXL:ReportHistogram( player, "Duration: Inventory datastore get", time() - startTime, 1, "second", player.Name, true)
---	local savedPlayerCharacter = heroStore:GetAsync( "user"..player.UserId )
---	if not savedPlayerCharacter or not savedPlayerCharacter.versionN or savedPlayerCharacter.versionN < saveVersionN then
---		savedPlayerCharactersT[ PCKey( player ) ] = SavedPlayerCharacters.new()
---	else
---		savedPlayerCharactersT[ PCKey( player ) ] = savedPlayerCharacter
---	end
 
 	-- this has to be fixed here before objectify objectifies your items
 	for _, hero in pairs( savedPlayerCharacters.heroesA ) do

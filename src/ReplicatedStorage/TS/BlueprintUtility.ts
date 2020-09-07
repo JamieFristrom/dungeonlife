@@ -2,8 +2,9 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
-import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 DebugXL.logI(LogArea.Executed, script.GetFullName())
+
+import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 
 export namespace BlueprintUtility {
     export function getPossessionName(furnishing: Model): string {

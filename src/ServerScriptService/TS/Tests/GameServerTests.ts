@@ -6,7 +6,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import * as GameManagement from "ServerStorage/Standard/GameManagementModule"
 
-import { PlayerTracker } from 'ServerStorage/TS/PlayerServer'
+import { PlayerTracker, PlayerServer, TeamStyleChoice } from 'ServerStorage/TS/PlayerServer'
 
 import { ReplicatedStorage, Teams } from '@rbxts/services'
 import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
@@ -16,7 +16,6 @@ import { DungeonPlayerMap, DungeonPlayer } from 'ServerStorage/TS/DungeonPlayer'
 import { Hero } from 'ReplicatedStorage/TS/HeroTS'
 import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
 import { Monster } from 'ReplicatedStorage/TS/Monster'
-
 
 class InstanceFake implements Instance {
     _dummyInstance: Instance
@@ -261,7 +260,7 @@ class PlayerFake extends InstanceFake {
 // don't allow respawn when level's not ready
 {
     let testContext = new TestContext()
-    DebugXL.Assert( !GameManagement.LevelReady())
+    DebugXL.Assert(!GameManagement.LevelReady())
     GameManagement.MarkPlayersCharacterForRespawn(testContext.getPlayer())
     TestUtility.assertTrue(!GameManagement.GetDungeonPlayer(testContext.getPlayer()).needsRespawn(), "Don't request respawn when level not ready")
     testContext.clean()
@@ -342,6 +341,7 @@ class PlayerFake extends InstanceFake {
 // test that MonsterAddedWait returns before too long
 {
     let testContext = new TestContext()
+    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
     const testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("AnimationDummy")!.Clone()
     let playerDummy = TestUtility.createTestPlayer()
     PlayerUtility.publishClientValues(playerDummy, 0, 0, "", false)
@@ -400,3 +400,55 @@ class PlayerFake extends InstanceFake {
     TestUtility.assertTrue(GameManagement.PlayerCharactersExist(dungeonPlayerMap), "PCs exist when player and character exist")
     testSetup.clean()
 }
+
+// only let you choose team if you are what you want to be - otherwise weird state stuff can happen if you change your mind in transition
+{
+    let testSetup = new TestContext()
+    testSetup.getPlayer().Team = PlayerUtility.getMonsterTeam()
+    testSetup.makeTestPlayerCharacter("Orc")
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), new Monster("Orc", [], 1))
+    GameManagement.HeroChoice(testSetup.getPlayerTracker(), testSetup.getPlayer(), new Instance("RemoteEvent"))
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice initiated")
+    GameManagement.MonsterChoice(testSetup.getPlayerTracker(), testSetup.getPlayer())
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice sticks despite sudden monster team change")
+    testSetup.clean()
+}
+
+{
+    let testSetup = new TestContext()
+    testSetup.getPlayer().Team = PlayerUtility.getMonsterTeam()
+    testSetup.makeTestPlayerCharacter("Orc")
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), new Monster("Orc", [], 1))
+    GameManagement.HeroChoice(testSetup.getPlayerTracker(), testSetup.getPlayer(), new Instance("RemoteEvent"))
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice initiated")
+    GameManagement.DungeonLordChoice(testSetup.getPlayerTracker(), testSetup.getPlayer())
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice sticks despite sudden dungeon lord team change")
+    testSetup.clean()
+}
+
+{
+    let testSetup = new TestContext()
+    testSetup.getPlayer().Team = PlayerUtility.getMonsterTeam()
+    testSetup.makeTestPlayerCharacter("Orc")
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), new Monster("Orc", [], 1))
+    GameManagement.HeroChoice(testSetup.getPlayerTracker(), testSetup.getPlayer(), new Instance("RemoteEvent"))
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice initiated")
+    testSetup.getPlayer().Character!.Parent = undefined
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), new Hero("Warrior", CharacterClasses.heroStartingStats["Warrior"], []))
+    GameManagement.DungeonLordChoice(testSetup.getPlayerTracker(), testSetup.getPlayer())
+    TestUtility.assertMatching(TeamStyleChoice.Hero, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Hero choice sticks despite sudden dungeon lord team change (Roblox character instance not ready)")
+    testSetup.clean()
+}
+
+{
+    let testSetup = new TestContext()
+    testSetup.getPlayer().Team = PlayerUtility.getHeroTeam()
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), new Hero("Warrior", CharacterClasses.heroStartingStats["Warrior"], []))
+    testSetup.makeTestPlayerCharacter("Warrior")
+    GameManagement.MonsterChoice(testSetup.getPlayerTracker(), testSetup.getPlayer())
+    TestUtility.assertMatching(TeamStyleChoice.Monster, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Monster choice initiated")
+    GameManagement.HeroChoice(testSetup.getPlayerTracker(), testSetup.getPlayer(), new Instance("RemoteEvent"))
+    TestUtility.assertMatching(TeamStyleChoice.Monster, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Monster choice sticks despite sudden team change")
+    testSetup.clean()
+}
+

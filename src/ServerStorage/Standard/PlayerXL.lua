@@ -8,7 +8,6 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 local MathXL           = require( game.ReplicatedStorage.Standard.MathXL )
 local TableXL          = require( game.ReplicatedStorage.Standard.TableXL )
 local CharacterPhysics = require( game.ReplicatedStorage.Standard.CharacterPhysics )
-local CharacterClientI = require( game.ReplicatedStorage.CharacterClientI )
 DebugXL:logD( LogArea.Requires, 'PlayerXL: ReplicatedStorage require succesful' )
 local CharacterI       = require( game.ServerStorage.CharacterI )
 DebugXL:logD( LogArea.Requires, 'PlayerXL: CharacterI require succesful' )
@@ -29,7 +28,7 @@ DebugXL:logD( LogArea.Requires, 'PlayerXL: ServerStorage.TS require succesful' )
 
 local PlayerXL = {}
 
-local antiteleportCheckPeriodN = 0.5
+local antiteleportCheckPeriodN = 0.25
 
 local PlayerT = {}
 
@@ -63,24 +62,82 @@ end
 
 -- from the not terribly useful article http://wiki.roblox.com/index.php?title=Stopping_speed_hackers
 -- keeping errors doubly wrapped for local testing purposes
-local function Punish(player)
+local function Punish( player )
 	AnalyticsXL:ReportEvent( player, "Speeding violation", player.UserId, player.Name, 1, false )
 --	spawn( function() DebugXL:Error( player.UserId.." speeding violation") end )--Print in Server Console and send to Google Analytics
-	if playerTs[ player ].violations then
-		table.insert( playerTs[ player ].violations, tick() )
-		local lastTick = playerTs[ player ].lastCaughtTick
-		local thisTick = tick()
---		if #playerTs[ player ].violations > 10 then
---			-- Should never fail, as we don't check RobloxLocked players
---			-- Even if it fails, punish() is called in a pcall() so it's safe anyway
---			player:Kick()
---			spawn( function() DebugXL:Error( player.UserId.." kicked for speed hacking") end ) --Print in Server Console and send to Google Analytics
---		end
-	else
-		playerTs[ player ].violations = { tick() }
-	end 
+	if playerTs[ player ] then  -- bypassing in test. wishlist: don't bypass
+		if playerTs[ player ].violations then
+			table.insert( playerTs[ player ].violations, tick() )
+			if #playerTs[ player ].violations > 10 then
+	--			-- Should never fail, as we don't check RobloxLocked players
+	--			-- Even if it fails, punish() is called in a pcall() so it's safe anyway
+	--			player:Kick()
+				spawn( function() DebugXL:Error( player.UserId.." possibly speed/tp hacking") end ) --Print in Server Console and send to Google Analytics
+			end
+		else
+			playerTs[ player ].violations = { tick() }
+		end 
+	end
 end
 
+-- exporting for test
+function PlayerXL:CharacterAdded(debugContext, player)
+	debugContext:Assert( self==PlayerXL )
+	debugContext:Assert( player:IsA("Player") )
+	
+	player.CharacterAppearanceLoaded:Connect( function()
+		if player.Parent then    -- this sometimes fails. Because I player left as his character was loading in?
+			playerTs[ player ].appearanceLoadedB = true         
+		end
+	end)
+
+	local character = player.Character
+	DebugXL:Assert( character )
+	if character then
+		-- antiteleport needs to be created for every costume change
+		spawn( function()  		
+			local primaryPart = character:WaitForChild("Head",0.25)
+			if not primaryPart then
+				debugContext:Error( "Where's My Head Baby? asks "..player.UserId )
+				local humanoid = character:FindFirstChild("Humanoid") 
+				if humanoid then
+					humanoid.Health = 0
+				end
+				return
+			end
+			local location = primaryPart.Position
+			while wait( antiteleportCheckPeriodN ) do
+				local h = character:FindFirstChild( 'Humanoid' )
+				if not character.Parent or not h or not (h.Health > 0) or not primaryPart.Parent then
+					break
+				end
+				local newLoc = primaryPart.Position
+
+				--local dis = math.sqrt((i.X - l.X)^2 + (i.Y - l.Y)^2 + (i.Z - l.Z)^2)
+				
+				-- keeping in two dimensions so falling won't violate
+				local dis = math.sqrt((newLoc.X - location.X)^2 + (newLoc.Z - location.Z)^2)
+				
+				-- we might not have a pc sheet right now, it might be before we've spawned or during intermission
+				local characterSpeed = 12
+				local characterRecord = PlayerServer.getCharacterRecordFromPlayer( player )
+				if characterRecord then
+					characterSpeed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) )
+				end
+				local antiteleportSpeed = characterSpeed * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
+				debugContext:Assert( antiteleportSpeed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
+
+				if dis > antiteleportSpeed  then
+					Punish( player )   -- punishing here because they can still get treasure with the teleportation hack
+					character:SetPrimaryPartCFrame( CFrame.new( location ) )
+					character.PrimaryPart.Velocity = Vector3.new(0,0,0)
+					newLoc = location
+				end
+				location = newLoc
+			end
+		end )		
+	end
+end
 
 function PlayerAdded( player )
 	while game.Workspace.GameManagement.TestsFinished.Value == false do
@@ -90,52 +147,9 @@ function PlayerAdded( player )
 	playerTs[ player ] = PlayerT.new()
 	
 	-- now that we have our own custom LoadCharacter this only works with the very first load, but that's currently all we use it for
-	player.CharacterAdded:Connect( function()
-		player.CharacterAppearanceLoaded:Connect( function()
-			if player.Parent then    -- this sometimes fails. Because I player left as his character was loading in?
-				playerTs[ player ].appearanceLoadedB = true         
-			end
-		end)
-
-		-- antiteleport needs to be created for every costume change
-		spawn( function()  
-			local character = player.Character
-			if character then
-				local primaryPart = character:FindFirstChild("Head")
-				wait( antiteleportCheckPeriodN )  -- let's have a race condition to see if our intial position gets set first or we start checking first :P
-				local location = primaryPart.Position
-				while wait( antiteleportCheckPeriodN ) do
-					local h = character:FindFirstChild( 'Humanoid' )
-					if not character.Parent or not h or not (h.Health > 0) or not primaryPart.Parent then
-						break
-					end
-					local newLoc = primaryPart.Position
-
-					--local dis = math.sqrt((i.X - l.X)^2 + (i.Y - l.Y)^2 + (i.Z - l.Z)^2)
-					
-					-- keeping in two dimensions so falling won't violate
-					local dis = math.sqrt((newLoc.X - location.X)^2 + (newLoc.Z - location.Z)^2)
-					
-					-- we might not have a pc sheet right now, it might be before we've spawned or during intermission
-					local characterSpeed = 12
-					local characterRecord = PlayerServer.getCharacterRecordFromPlayer( player )
-					if characterRecord then
-						characterSpeed = CharacterPhysics:CalculateWalkSpeed( character, CharacterI:GetPCDataWait( player ) )
-					end
-					local antiteleportSpeed = characterSpeed * antiteleportCheckPeriodN * 3.5 -- arbitrary fudge factor; 2.75 still getting complaints
-					DebugXL:Assert( antiteleportSpeed >= 0 )  -- if some day we have spells that change walk speed then we'll get false positives
-
-					if dis > antiteleportSpeed  then
-						Punish( player )   -- punishing here because they can still get treasure with the teleportation hack
-						character:SetPrimaryPartCFrame( CFrame.new( location ) )
-						character.PrimaryPart.Velocity = Vector3.new(0,0,0)
-						newLoc = location
-					end
-					location = newLoc
-				end
-			end
-		end )		
-	end)
+	player.CharacterAdded:Connect( function() 
+		PlayerXL:CharacterAdded( DebugXL, player ) 
+	end )
 		
 	player.CharacterRemoving:Connect( function()
 		-- player gets removed before character

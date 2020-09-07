@@ -97,7 +97,7 @@ export namespace LootServer {
         if (dieRoll <= odds) {
             const pcRecord = PlayerServer.getCharacterRecordFromPlayer(lastAttackingPlayer)
             if (pcRecord) {
-                DebugXL.Assert(pcRecord instanceof Hero)
+                // I bet you could change to a monster before you finish doing damage - wishlist fix. save character key in lastAttacking
                 if (pcRecord instanceof Hero) {
                     const actualLevel = pcRecord.getActualLevel()
                     if (actualLevel) {

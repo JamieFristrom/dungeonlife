@@ -1,7 +1,7 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { LogLevel, DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import { SkinTypes } from "ReplicatedStorage/TS/SkinTypes"
@@ -12,9 +12,12 @@ import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
 
-import { ReplicatedStorage, Workspace, Players, Teams } from '@rbxts/services'
+import { ReplicatedStorage, Workspace, Players, Teams } from "@rbxts/services"
+import { StructureClient } from "ReplicatedStorage/TS/StructureClient"
+import { ClickableUI } from "ReplicatedStorage/TS/ClickableUI"
+import { SocketI } from "ReplicatedStorage/TS/SocketI"
 
-const runClientTests: boolean = true
+const runClientTests: boolean = false
 if (runClientTests && game.GetService("RunService").IsStudio()) {
     DebugXL.logW(LogArea.Test, "UI Tests started")
 
@@ -114,8 +117,7 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
     function testThatTeamCanClick(clickableName: string, team: Team) {
         let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>(clickableName)!.Clone()
         clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
-        const chestOrigin = clickable.FindFirstChild<BasePart>("Origin")
-        chestOrigin!.WaitForChild<BillboardGui>("ChestGui")
+        const clickableOrigin = clickable.FindFirstChild<BasePart>("Origin")
         for (; Players.LocalPlayer.Character === undefined;) {
             wait()
         }
@@ -123,22 +125,87 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
             wait()
         }
         clickable.SetPrimaryPartCFrame(Players.LocalPlayer.Character!.GetPrimaryPartCFrame())
-        const oldTeam = Players.LocalPlayer.Team  // ugh; here's where we want that player proxy
-        Players.LocalPlayer.Team = team
-        wait(0.5)
-        const chestGui = chestOrigin!.FindFirstChild<BillboardGui>("ChestGui")
+        ClickableUI.updateClickableUIs(team, Players.LocalPlayer.Character)
+        const chestGui = clickableOrigin!.FindFirstChild<BillboardGui>("ChestGui")
         DebugXL.Assert(chestGui !== undefined)
         if (chestGui) {
             DebugXL.Assert(chestGui.Enabled)
             const instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
             DebugXL.Assert(instructions !== undefined)
-            // won't actually check text since it should be magically localized
+            // won"t actually check text since it should be magically localized
         }
-        Players.LocalPlayer.Team = oldTeam
     }
 
     testThatTeamCanClick("Chest", Teams.FindFirstChild<Team>("Heroes")!)
     testThatTeamCanClick("WeaponsRack", Teams.FindFirstChild<Team>("Monsters")!)
+
+    class FakeSocket implements SocketI {
+        sendMessage(player: Player, ...args: unknown[]): unknown {
+            return this.callback()
+        }
+
+        constructor(private callback: () => unknown) {
+        }
+    }
+
+    // only reupdate currency on build failure because those fields get destroyed by GUI reset when you build a spawn
+    {
+        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        const result = StructureClient.tellServerToBuildAndUpdateUI(
+            500,
+            PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
+            0,
+            furnishGui,
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            new FakeSocket(() => {
+                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+                return "SpawnWerewolf"
+            })
+        )
+        // success: reupdate shouldn't have happened, so build points should read calculated value
+        DebugXL.Assert(result === 150)
+        DebugXL.Assert(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 150")
+    }
+
+    {
+        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        furnishGui.Parent = Players.LocalPlayer.WaitForChild("PlayerGui")
+        const result = StructureClient.tellServerToBuildAndUpdateUI(
+            500,
+            PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
+            0,
+            furnishGui,
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            new FakeSocket(() => {
+                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+                return undefined
+            })
+        )
+        // failure: reupdate should have happened, so build points should read the value we set it to in the fake 
+        DebugXL.Assert(result === 500)  // this should be original build points - result build points
+        // this should be the possibly unrelated build points value the server tells us:
+        DebugXL.Assert(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 333")
+    }
+
+    // if respawn, furnishGui will be unparented - don't modify
+    {
+        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        const result = StructureClient.tellServerToBuildAndUpdateUI(
+            500,
+            PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
+            0,
+            furnishGui,
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            new FakeSocket(() => {
+                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+                return undefined
+            })
+        )
+        // failure: reupdate should have happened, so build points should read the value we set it to in the fake 
+        DebugXL.Assert(result === 500)  // this should be original build points - result build points
+        // because our interface is unparented we know better than to try updating it - what's now in our CurrencyNameAndCount does not matter.
+    }
+
 
     DebugXL.logW(LogArea.Test, "UI Tests finished")
 }

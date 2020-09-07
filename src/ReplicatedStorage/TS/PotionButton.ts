@@ -10,10 +10,6 @@ import { Workspace, Players, Teams } from "@rbxts/services"
 
 type Character = Model
 
-const playerGui = Players.LocalPlayer!.WaitForChild<PlayerGui>('PlayerGui')
-const uiAudio = playerGui.WaitForChild<ScreenGui>('Audio')
-const uiClick = uiAudio.WaitForChild<Sound>('UIClick')
-
 const signals = Workspace.WaitForChild<Folder>('Signals')
 const heroREvent = signals.WaitForChild<RemoteEvent>('HeroesRE')
 
@@ -32,6 +28,10 @@ export class PotionButton {
     uiArrow: ImageLabel
 
     constructor(public potionButtonConfiguration: PotionButtonConfigurationI) {
+        const playerGui = Players.LocalPlayer!.WaitForChild<PlayerGui>('PlayerGui')
+        const uiAudio = playerGui.WaitForChild<ScreenGui>('Audio')
+        const uiClick = uiAudio.WaitForChild<Sound>('UIClick')
+
         this.guiFrame = potionButtonConfiguration.potionFrame.WaitForChild<Frame>('Item')
         this.guiButton = this.guiFrame.WaitForChild<TextButton>('Button')
         this.imageLabel = this.guiFrame.WaitForChild<ImageLabel>('ImageLabel')

@@ -18,7 +18,7 @@ import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 // I blogged about
 import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS"
 
-import { Workspace, Players, Teams, RunService } from '@rbxts/services'
+import { Workspace, Players, Teams, RunService, Lighting } from '@rbxts/services'
 
 GuiXL.waitForLoadingGoo()
 
@@ -64,6 +64,8 @@ RunService.RenderStepped.Connect(() => {
     else {
         curtain.BackgroundTransparency = MathXL.Lerp(curtain.BackgroundTransparency, 0, 0.02)
     }
+
+    Lighting.FindFirstChild<BlurEffect>("Blur")!.Size = (1-curtain.BackgroundTransparency)*25
 
     if (curtain.BackgroundTransparency >= 0.99) {
         playerGui.SetTopbarTransparency(0.5)

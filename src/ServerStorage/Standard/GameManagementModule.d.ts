@@ -22,6 +22,9 @@ declare class GameManagementClass {
     MonitorHandleDeath(context: ServerContextI, player: Player, dungeonPlayer: DungeonPlayer, playerCharacter: Character, humanoid: Humanoid): boolean
     // also returns a CharacterKey but does it Lua style so we'd have to refactor if we want that
     MonsterAddedWait(context: ServerContextI, character: Character, player: Player, inTutorial: boolean): CharacterRecord
+    HeroChoice(playerTracker: PlayerTracker, player: Player, chooseHeroSocket: RemoteEvent): void
+    MonsterChoice(playerTracker: PlayerTracker, player: Player): void
+    DungeonLordChoice(playerTracker: PlayerTracker, player: Player): void
 }
 
 declare let GameManagement: GameManagementClass

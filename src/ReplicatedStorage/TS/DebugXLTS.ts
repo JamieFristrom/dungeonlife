@@ -14,6 +14,7 @@
 */
 
 import { RunService } from "@rbxts/services"
+import { DebugI } from "ReplicatedStorage/TS/DebugI"
 
 // borrowing from Android
 export enum LogLevel {
@@ -26,6 +27,7 @@ export enum LogLevel {
 
 export enum LogArea {
     Admin,
+    Analytics,
     Characters,
     Config,
     Combat,           // los, damage, weapons, armor
@@ -39,7 +41,7 @@ export enum LogArea {
     MobSpawn,         // mob spawning
     Network,          // replication
     Players,
-    Parts,    
+    Parts,
     Spawner,          // spawner furnishing behavior, both mob and non-mob
     Structures,
     Test,
@@ -47,7 +49,7 @@ export enum LogArea {
     UI,               // 
 }
 
-class DebugXLC {
+class DebugXLC implements DebugI {
     static readonly logLevelPrefixes: string[] = ['E', 'W', 'I', 'D', 'V']
 
     private inlineErrors = false  // should not be true in ship, because will halt execution of scripts, but it's useful for finding exactly where assertions fire when debugging

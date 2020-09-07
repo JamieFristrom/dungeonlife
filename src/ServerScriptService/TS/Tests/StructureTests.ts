@@ -11,17 +11,17 @@ import { FloorInfo } from 'ReplicatedStorage/TS/FloorInfo'
 import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
 
 import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
-import InstanceXL from 'ReplicatedStorage/Standard/InstanceXL'
 
 import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
 import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
 import Dungeon from 'ServerStorage/Standard/DungeonModule'
+import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
 
 // unable to place furnishing doesn't crash
 {
     let testSetup = new TestContext()
     testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
-    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    PlayerUtility.setBuildPoints(testSetup.getPlayer(), 1000)
     let map = MapUtility.makeEmptyMap(1)
     Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0, 0, 0), 0)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnOrc", testSetup.getPlayer())[1] === 0, "Client failed to build orc spawn out of bounds")
@@ -31,7 +31,7 @@ import Dungeon from 'ServerStorage/Standard/DungeonModule'
 {
     let testSetup = new TestContext()
     testSetup.getInventoryMock().itemsT["SpawnOrc"] = 1
-    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    PlayerUtility.setBuildPoints(testSetup.getPlayer(), 1000)
     let map = MapUtility.makeEmptyMap(5)
     Furnisher.clientInitiatedFurnish(testSetup, map, testSetup.getPlayer(), "SpawnOrc", new Vector3(0, 0, 0), 0)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnOrc", testSetup.getPlayer())[1] === 1, "Client built 1 orc spawn")
@@ -42,7 +42,7 @@ import Dungeon from 'ServerStorage/Standard/DungeonModule'
     let testSetup = new TestContext()
     const bossFloorInfo = new FloorInfo(false, new Map<string, boolean>([["SpawnCyclopsSuper", true]]))
     Dungeon.BuildWait(testSetup, bossFloorInfo, (player) => { })
-    InstanceXL.CreateSingleton("NumberValue", { Name: "BuildPoints", Parent: testSetup.getPlayer(), Value: 1000 })
+    PlayerUtility.setBuildPoints(testSetup.getPlayer(), 1000)
     let map = MapUtility.makeEmptyMap(5)
     FurnishServer.PlaceSpawns(bossFloorInfo, [PossessionData.dataT["SpawnCyclopsSuper"]], 1)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnCyclopsSuper")[0] === 1, "Client built 1 superboss spawn")

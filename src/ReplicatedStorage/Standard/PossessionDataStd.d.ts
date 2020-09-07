@@ -13,13 +13,12 @@ declare interface RarityInfoI  // information about a given rarity
 
 declare namespace PossessionData   // namespace for info about possessions
 {
-    interface PossessionDatumI
-    {
+    interface PossessionDatumI {
         idS: string
         readableNameS: string
         imageId: string
         publishValueB?: boolean
-        defaultHideAccessoriesB: boolean 
+        defaultHideAccessoriesB: boolean
         flavor: PossessionData.FlavorEnum
         baseToolS?: string
         heroesCanOpenB?: boolean
@@ -30,40 +29,41 @@ declare namespace PossessionData   // namespace for info about possessions
         healthPerLevelN?: number
         balanceAgainstNumHeroesB?: boolean
         textureSwapId?: string
-        getReadableName: ( self: PossessionDatumI )=>string
+        getReadableName: (self: PossessionDatumI) => string
         clickableByTeam?: Set<string>
         buildCostN?: number
     }
 
-    interface SkinDatumI extends PossessionDatumI
-    {
+    interface SkinDatumI extends PossessionDatumI {
         baseToolS: string
         textureSwapId: string
     }
 
-    enum FlavorEnum
-    {
-        Currency   = "Currency",
-		Furnishing = "Furnishing",
-		Hero       = "Hero",
-		Monster    = "Monster",
-		Stats      = "Stats",
-		Tool       = "Tool",
-		Skin       = "Skin",
-		Expansion  = "Expansion"    
+    interface BlueprintDatumI extends PossessionDatumI {
+        buildCostN: number
     }
 
-	enum FurnishingEnum  
-	{
-		BossSpawn    = "Boss Spawn",
-		Spawn        = "Spawn",
-		Treasure     = "Treasure",
-		Barrier      = "Barrier",
-		Cosmetic     = "Cosmetic",
-		Lighting     = "Lighting",
-		WaterFeature = "Water Feature",
-		Trap         = "Trap"
-	} 
+    enum FlavorEnum {
+        Currency = "Currency",
+        Furnishing = "Furnishing",
+        Hero = "Hero",
+        Monster = "Monster",
+        Stats = "Stats",
+        Tool = "Tool",
+        Skin = "Skin",
+        Expansion = "Expansion"
+    }
+
+    enum FurnishingEnum {
+        BossSpawn = "Boss Spawn",
+        Spawn = "Spawn",
+        Treasure = "Treasure",
+        Barrier = "Barrier",
+        Cosmetic = "Cosmetic",
+        Lighting = "Lighting",
+        WaterFeature = "Water Feature",
+        Trap = "Trap"
+    }
     /* =
     {
         Sword1H:
@@ -75,7 +75,7 @@ declare namespace PossessionData   // namespace for info about possessions
         },
     }*/
 
-    let dataT: { [k:string]: PossessionDatumI }
+    let dataT: { [k: string]: PossessionDatumI }
     let dataA: PossessionDatumI[]
     let raritiesT: RarityInfoI[]
 }

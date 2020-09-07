@@ -13,11 +13,11 @@ local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
 local playerGui = script.Parent.Parent.Parent
 playerGui:SetTopbarTransparency(0)
 
---playerGui:WaitForChild("CurtainGui").Enabled = false
---playerGui:WaitForChild("PlayerListGui").Enabled = false
---playerGui:WaitForChild("NoResetGui").Enabled = false
---playerGui:WaitForChild("HUDGui").Enabled = false
---playerGui:WaitForChild("TopGui").Enabled = false
+playerGui:WaitForChild("CurtainGui").Enabled = false
+playerGui:WaitForChild("PlayerListGui").Enabled = false
+playerGui:WaitForChild("NoResetGui").Enabled = false
+playerGui:WaitForChild("HUDGui").Enabled = false
+playerGui:WaitForChild("TopGui").Enabled = false
 playerGui:WaitForChild("FurnishGui").Enabled = false  -- need to do this here otherwise the reset on spawnness of it breaks
 playerGui:WaitForChild("MapGui").Enabled = false
 playerGui:WaitForChild("HUDGui").Enabled = false  -- need to do this here otherwise the reset on spawnness of it breaks

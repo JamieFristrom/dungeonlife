@@ -1,13 +1,13 @@
 print(script.Name + " executed")
 
-import { HttpService, ScriptContext, Players, Workspace, RunService } from '@rbxts/services';
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS';
-import { HttpXL } from 'ServerStorage/TS/HttpXL'
+import { HttpService, ScriptContext, Players, Workspace, RunService } from "@rbxts/services";
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
+import { HttpXL } from "ServerStorage/TS/HttpXL"
 
-import { PlayerAnalyticInfoI } from 'ReplicatedStorage/TS/AnalyticTypes'
+import { PlayerAnalyticInfoI } from "ReplicatedStorage/TS/AnalyticTypes"
 
-let analyticsRF = Workspace.FindFirstChild('Signals')!.FindFirstChild('AnalyticsRF') as RemoteFunction
-let analyticsRE = Workspace.FindFirstChild('Signals')!.FindFirstChild('AnalyticsRE') as RemoteEvent
+let analyticsRF = Workspace.FindFirstChild("Signals")!.FindFirstChild("AnalyticsRF") as RemoteFunction
+let analyticsRE = Workspace.FindFirstChild("Signals")!.FindFirstChild("AnalyticsRE") as RemoteEvent
 
 let myServerKey = HttpService.GenerateGUID()
 
@@ -29,11 +29,11 @@ export namespace Analytics {
             }
         }
         if (RunService.IsStudio()) {
-            let dumpstr = 'ReportServerEvent:\n' + DebugXL.DumpToStr(event)
+            let dumpstr = "ReportServerEvent:\n" + DebugXL.DumpToStr(event)
             print(dumpstr)
         }
         else {
-            HttpXL.spawnJSONRequest('analytics', 'POST', event)
+            HttpXL.spawnJSONRequest("analytics", "POST", event)
         }
     }
 
@@ -61,32 +61,17 @@ export namespace Analytics {
         }
 
         if (RunService.IsStudio() || player.UserId === 128450567) {
-            let dumpstr = 'ReportEvent:\n' + DebugXL.DumpToStr(event)
-            print(dumpstr)
+            let dumpstr = "ReportEvent:\n" + DebugXL.DumpToStr(event)
+            DebugXL.logD(LogArea.Analytics, dumpstr)
         }
         else {
-            HttpXL.spawnJSONRequest('analytics', 'POST', event)
+            HttpXL.spawnJSONRequest("analytics", "POST", event)
         }
-
-        // spawn( ()=> {
-        //     let [ success, err ] = pcall( ()=> {
-        //         HttpService.RequestAsync({
-        //             Url: serverUrl + '/analytics',
-        //             Method: 'POST',
-        //             Headers: {
-        //                 ['Content-Type']: 'application/json',
-        //             },
-        //             Body: body
-        //         })
-        //     })
-        //     if( !success )
-        //         DebugXL.Error( "RequestAsync failed: " + player.UserId + " " + category + ": " + err )
-        // })
     }
 
     export function getSessionKey(player: Player) {
         let playerInfo = playerAnalyticInfos.get(player)
-//        DebugXL.Assert(playerInfo !== undefined)  // messing up tests and I don't really care
+        //        DebugXL.Assert(playerInfo !== undefined)  // messing up tests and I don"t really care
         return playerInfo ? playerInfo.sessionKey : ""
     }
 
@@ -95,39 +80,6 @@ export namespace Analytics {
         return retstack
     }
 
-    // leave Google doing this
-    //     function setupScriptErrorTracking()
-    //     {
-    //         ScriptContext.Error.Connect( (message, stack)=>
-    //         {
-    //             let body = HttpService.JSONEncode(
-    //             {
-    //                 message: removePlayerNameFromStack(message) + " | " + 
-    //                     removePlayerNameFromStack(stack),
-    //                 placeId: game.PlaceId,
-    //                 time: os.time()
-    //             })
-
-    //             spawn( ()=> {
-    //                 HttpService.RequestAsync({
-    //                     Url: serverUrl + '/errorlog',
-    //                     Method: 'POST',
-    //                     Headers: {
-    //                         ['Content-Type']: 'application/json',
-    //                     },
-    //                     Body: body
-    //                 })
-    //             })
-    //         })
-    // // -- add tracking for clients
-    // // -- helper.Parent = game.StarterGui
-    // // -- -- add to any players that are already in game
-    // // -- for i, c in ipairs(game.Players:GetChildren()) do
-    // // -- 	helper:Clone().Parent = (c:WaitForChild("PlayerGui"))
-    // // -- end
-    // // end
-    //     }
-
     //     setupScriptErrorTracking()
     function playerAdded(player: Player) {
         print("Invoking gatherPlayerInfo on analyticsRF")
@@ -135,11 +87,11 @@ export namespace Analytics {
         playerAnalyticInfo.playerKey = player.UserId
         playerAnalyticInfo.sessionKey = HttpService.GenerateGUID()
         playerAnalyticInfo.time = os.time()
-        if (player.Parent)  // ignore if they leave before it's begun
+        if (player.Parent)  // ignore if they leave before it"s begun
         {
             playerAnalyticInfos.set(player, playerAnalyticInfo)
             print("playerAnalyticInfos set")
-            HttpXL.spawnJSONRequest('analytics', 'POST', playerAnalyticInfo)
+            HttpXL.spawnJSONRequest("analytics", "POST", playerAnalyticInfo)
         }
         else {
             ReportEvent(player, "PlayerBounce")
@@ -156,12 +108,12 @@ export namespace Analytics {
             if (team) {
                 Analytics.ReportEvent(player,
                     "SessionLength",
-                    Workspace.FindFirstChild('GameManagement')!.FindFirstChild<StringValue>("GameState")!.Value,
+                    Workspace.FindFirstChild("GameManagement")!.FindFirstChild<StringValue>("GameState")!.Value,
                     team.Name,
                     sessionLength,
                     {
-                        'numPlayers': Players.GetPlayers().size(),
-                        'stateLength': Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>("GameStateTime")!.Value
+                        "numPlayers": Players.GetPlayers().size(),
+                        "stateLength": Workspace.FindFirstChild("GameManagement")!.FindFirstChild<NumberValue>("GameStateTime")!.Value
                     })
             }
             playerAnalyticInfos.delete(player)
@@ -174,7 +126,7 @@ export namespace Analytics {
 
     analyticsRE.OnServerEvent.Connect((player: Player, ...args: unknown[]) => {
         let funcName = args[0] as string
-        if (funcName === 'ReportEvent') {
+        if (funcName === "ReportEvent") {
             let category = args[1] as string
             let action = args[2] as string
             let label = args[3] as string

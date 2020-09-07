@@ -97,7 +97,6 @@ function Costumes:LoadCharacter( player, srcCharactersA, noAttachmentsSet, alsoC
 				local addToAccessoryList = true
 				if handle then
 					local attach = handle:FindFirstChildWhichIsA("Attachment")
-					DebugXL:Assert( attach )
 					if attach then
 						if noAttachmentsSet[ attach.Name ] then
 							addToAccessoryList = false
