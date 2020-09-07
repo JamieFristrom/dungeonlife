@@ -5,6 +5,8 @@ local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
 local LogArea = require( game.ReplicatedStorage.TS.DebugXLTS ).LogArea
 DebugXL:logI(LogArea.Executed, script:GetFullName())
 
+local Math = require( game.ReplicatedStorage.TS.Math ).Math
+
 local MathXL = {}
 
 local coreRandom = Random.new()
@@ -86,14 +88,14 @@ end
 
 function MathXL:Lerp( x1, x2, k )
 	DebugXL:Assert( self == MathXL )
-	k = math.clamp( k, 0, 1 )
+	k = Math.clamp( k, 0, 1 )
 	return ( x2 - x1 ) * k + x1
 end
 
 -- untested
 function MathXL:Smoothstep( x1, x2, k )
 	DebugXL:Assert( self == MathXL )
-	k = math.clamp( k, 0, 1 )
+	k = Math.clamp( k, 0, 1 )
 	k = k * k * ( 3 - 2 * k )
 	return MathXL:Lerp( x1, x2, k )
 end

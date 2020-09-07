@@ -7,7 +7,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
 import { Monster } from "ReplicatedStorage/TS/Monster"
 
-import { TestUtility } from "ServerStorage/TS/TestUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // test setting / retrieving record
 {

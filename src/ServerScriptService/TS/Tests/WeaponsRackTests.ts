@@ -1,17 +1,22 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.Name)
 
 import { ReplicatedStorage, Workspace, Players, Teams } from "@rbxts/services"
-import { WeaponsRack } from 'ServerStorage/TS/WeaponsRack'
-import { TestUtility, TestContext } from 'ServerStorage/TS/TestUtility'
-import { Monster } from 'ReplicatedStorage/TS/Monster'
-import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
-import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
-import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
-import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
-import { FloorInfo } from 'ReplicatedStorage/TS/FloorInfo'
+
+import FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+
+import { ToolCaches } from "ServerStorage/TS/ToolCaches"
+import { TestContext } from "ServerStorage/TS/TestContext"
+import { WeaponsRack } from "ServerStorage/TS/WeaponsRack"
+
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
+import { Monster } from "ReplicatedStorage/TS/Monster"
+import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // weapons rack weapon goes in tool cache
 function TestWeaponsRackGivesMonsterWeapon(seed: number) {

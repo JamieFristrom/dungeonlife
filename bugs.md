@@ -1,6 +1,5 @@
 # Fixing
 * min max thing is a real bug with werewolf level display - to get under test we should make UpdateDisplayStats function
-* hide choose team button and dialog when unusable
 * Upgrade typescript
 * ghosts are immune to being directly targeted with longbow (recorded movie)
 * Bring back print money command

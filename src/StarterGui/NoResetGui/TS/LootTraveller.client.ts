@@ -3,6 +3,7 @@ import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
 import { FlexToolClient } from "ReplicatedStorage/TS/FlexToolClient"
 import { ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes";
 import { Debris, Workspace, Players, TweenService } from "@rbxts/services";
+import { Math } from "ReplicatedStorage/TS/Math";
 
 let playerGui = Players.LocalPlayer!.WaitForChild('PlayerGui') as PlayerGui
 
@@ -90,8 +91,8 @@ let LootTravellerRemote: { [k: string]: unknown } =
         {
             let currentCamera = Workspace.CurrentCamera!
             let [ screenPosition ] = currentCamera.WorldToScreenPoint( startPosV3 as Vector3 )
-            startPosUDim2 = new UDim2( 0, screenPosition.X, 0, screenPosition.Y )
-            let endX = math.clamp( startPosUDim2.X.Offset, currentCamera.ViewportSize.X * 0.1, currentCamera.ViewportSize.X * 0.9 )
+            startPosUDim2 = new UDim2( 0, screenPosition.X, 0, screenPosition.Y ) 
+            let endX = Math.clamp( startPosUDim2.X.Offset, currentCamera.ViewportSize.X * 0.1, currentCamera.ViewportSize.X * 0.9 )
             midPosUDim2 = new UDim2( 0, endX, 0.25, 0)        
         }
         else

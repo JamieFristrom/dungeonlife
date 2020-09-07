@@ -5,7 +5,7 @@ import { LogLevel, DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
 import { RandomNumberGenerator } from "ReplicatedStorage/TS/RandomNumberGenerator"
-import { TestUtility } from "ServerStorage/TS/TestUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // test same seed makes same list
 {

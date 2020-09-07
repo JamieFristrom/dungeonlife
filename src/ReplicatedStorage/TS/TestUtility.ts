@@ -4,19 +4,7 @@
 import { DebugXL, LogArea } from "../../ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { Players, ServerStorage, ReplicatedFirst, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
-
-import Costumes from "ServerStorage/Standard/CostumesServer"
-
-import { PlayerTracker } from "ServerStorage/TS/PlayerServer"
-import { InventoryManagerMock } from "ServerStorage/TS/InventoryManagerStub"
-import { GameServer } from "ServerStorage/TS/GameServer"
-import { ServerContext } from "ServerStorage/TS/ServerContext"
-import { GameManagerMock } from "ServerStorage/TS/GameManagerMock"
-
-import Dungeon from "ServerStorage/Standard/DungeonModule"
-
-import { RandomNumberGenerator } from "ReplicatedStorage/TS/RandomNumberGenerator"
+import { Players, ServerStorage, ReplicatedStorage, Workspace, CollectionService } from "@rbxts/services"
 
 import TableXL from "ReplicatedStorage/Standard/TableXL"
 
@@ -43,23 +31,6 @@ export namespace TestUtility {
         testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
         CollectionService.AddTag(testCharacter, "CharacterTag")  // wishlist fix; duplication of data problem
         return testCharacter
-    }
-
-    export function saveCostumeStub(player: Player) {
-        // we didn't forget to clean did we?
-        let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
-        DebugXL.Assert(costumeStub === undefined)  // if there's a lingering costume probably someone forgot to clean their test context
-
-        let costumeCopy = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
-        costumeCopy.Name = Costumes.CostumeKey(player)
-        costumeCopy.Parent = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")
-    }
-
-    export function cleanCostumeStub(player: Player) {
-        let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
-        if (costumeStub) {
-            costumeStub.Parent = undefined
-        }
     }
 
     export function cleanTestPlayer(player: Player) {
@@ -109,12 +80,12 @@ export namespace TestUtility {
     }
 
     export function assertMatching(expected: unknown, actual: unknown, message = "") {
-        if (TableXL.DeepMatching(expected, actual)) {
-            warn(`Test ${currentModuleName}(${assertionCount}) (${message}) passed`)
+        let dump1 = DebugXL.DumpToStr(expected)
+        let dump2 = DebugXL.DumpToStr(actual)
+    if (TableXL.DeepMatching(expected, actual)) {
+            warn(`Test ${currentModuleName}(${assertionCount}) (${message}) passed: ${dump1}===${dump2}`)
         }
         else {
-            let dump1 = DebugXL.DumpToStr(expected)
-            let dump2 = DebugXL.DumpToStr(actual)
             DebugXL.Error(`Test ${currentModuleName}(${assertionCount}) (${message}) failed.
                 Expected: 
                 ${dump1}  
@@ -123,40 +94,20 @@ export namespace TestUtility {
         }
         assertionCount++
     }
-}
 
-export class TestContext extends ServerContext {
-    private player = TestUtility.createTestPlayer()
-
-    constructor(seed?: number) {
-        super(new GameManagerMock(), new InventoryManagerMock(), new PlayerTracker, new RandomNumberGenerator(seed))
-        GameServer.levelSession++
-        TestUtility.saveCostumeStub(this.player)
-    }
-
-    clean() {
-        Dungeon.Clean()
-        TestUtility.cleanTestPlayer(this.player)
-        TestUtility.cleanCostumeStub(this.player)
-        TestUtility.cleanTestCharacters()
-    }
-
-    makeTestPlayerCharacter(className: string): Character {
-        let testCharacter = Costumes.LoadCharacter(
-            this.player,
-            [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>(className)!],
-            {},
-            true,
-            undefined,
-            new CFrame()
-        )!
-        testCharacter.Parent = Workspace
-        return testCharacter
-    }
-
-    getPlayer() { return this.player }
-
-    getInventoryMock() {
-        return (this.getInventoryMgr() as InventoryManagerMock).inventoryMock
+    export function assertNotMatching(expected: unknown, actual: unknown, message = "") {
+        let dump1 = DebugXL.DumpToStr(expected)
+        let dump2 = DebugXL.DumpToStr(actual)
+        if (!TableXL.DeepMatching(expected, actual)) {
+            warn(`Test ${currentModuleName}(${assertionCount}) (${message}) passed: ${dump1}!==${dump2}`)
+        }
+        else {
+            DebugXL.Error(`Test ${currentModuleName}(${assertionCount}) (${message}) failed.
+                Expected NOT: 
+                ${dump1}  
+                Actual:
+                ${dump2}`)
+        }
+        assertionCount++
     }
 }

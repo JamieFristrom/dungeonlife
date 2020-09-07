@@ -8,8 +8,8 @@ import { Workspace, ServerStorage, Teams } from "@rbxts/services"
 
 import MeleeWeaponServerXL from "ServerStorage/Standard/MeleeWeaponServerXL"
 
-import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
 import { FlexibleToolsServer } from "ServerStorage/TS/FlexibleToolsServer"
+import { TestContext } from "ServerStorage/TS/TestContext"
 
 import { Character } from "ReplicatedStorage/TS/ModelUtility"
 import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
@@ -22,9 +22,9 @@ import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
 import { Monster } from "ReplicatedStorage/TS/Monster"
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 import { SkinTypeEnum } from "ReplicatedStorage/TS/SkinTypes"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 import CharacterUtility from "ReplicatedStorage/Standard/CharacterUtility"
-import InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 
 import CharacterXL from "ServerStorage/Standard/CharacterXL"
 import FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"

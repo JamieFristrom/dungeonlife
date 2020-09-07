@@ -9,8 +9,9 @@ local FloorData       = require( game.ReplicatedStorage.FloorData )
 local MapTileData     = require( game.ReplicatedStorage.MapTileDataModule )
 local PossessionData  = require( game.ReplicatedStorage.PossessionData )
 
-local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
+local Math = require( game.ReplicatedStorage.TS.Math ).Math
+local Places = require( game.ReplicatedStorage.TS.PlacesManifest ).PlacesManifest
 
 local cellWidthN = MapTileData.cellWidthN
 
@@ -116,8 +117,8 @@ function FurnishUtility:SnapToGridInsideWalls( position, subdivisionsN )
 	local mapx, mapz = MapTileData:GetGridCellFromWorldPoint( position.X, position.Z )
 	-- clip to that interior area
 	local tileCenterV3 = MapTileData:GridCellCenterWorldV3( mapx, mapz )
-	local pxClipped = math.clamp( position.X, tileCenterV3.X - MapTileData.cellInteriorWidthN / 2, tileCenterV3.X + MapTileData.cellInteriorWidthN / 2 )
-	local pzClipped = math.clamp( position.Z, tileCenterV3.Z - MapTileData.cellInteriorWidthN / 2, tileCenterV3.Z + MapTileData.cellInteriorWidthN / 2 )
+	local pxClipped = Math.clamp( position.X, tileCenterV3.X - MapTileData.cellInteriorWidthN / 2, tileCenterV3.X + MapTileData.cellInteriorWidthN / 2 )
+	local pzClipped = Math.clamp( position.Z, tileCenterV3.Z - MapTileData.cellInteriorWidthN / 2, tileCenterV3.Z + MapTileData.cellInteriorWidthN / 2 )
 	-- snap to the interior n x n grid
 	
 	local snap = cellWidthN / subdivisionsN

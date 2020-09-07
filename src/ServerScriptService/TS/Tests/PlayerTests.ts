@@ -4,9 +4,10 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
+import { TestContext } from "ServerStorage/TS/TestContext"
 
-import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 {
     let testContext = new TestContext()

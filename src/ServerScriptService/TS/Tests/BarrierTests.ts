@@ -1,14 +1,19 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
-import { BarrierServer } from 'ServerStorage/TS/BarrierServer'
-import { TestUtility, TestContext } from 'ServerStorage/TS/TestUtility'
-import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
-import CharacterXL from 'ServerStorage/Standard/CharacterXL'
-import { Hero } from 'ReplicatedStorage/TS/HeroTS'
-import { CharacterClasses } from 'ReplicatedStorage/TS/CharacterClasses'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
+
+import CharacterXL from "ServerStorage/Standard/CharacterXL"
+
+import { BarrierServer } from "ServerStorage/TS/BarrierServer"
+import { TestContext } from "ServerStorage/TS/TestContext"
+
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS"
+import { Hero } from "ReplicatedStorage/TS/HeroTS"
+import { CharacterClasses } from "ReplicatedStorage/TS/CharacterClasses"
+
 
 // test barrier
 {

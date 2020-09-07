@@ -4,6 +4,7 @@ import * as MathXL from "ReplicatedStorage/Standard/MathXL"
 
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 import { Workspace } from "@rbxts/services";
+import { Math } from "ReplicatedStorage/TS/Math";
 
 let cellWidth = 45 
 
@@ -41,8 +42,8 @@ export namespace TileServer
         mosaicParts.forEach( ( part )=>
         {
             let distances = highDensitySpots.map( (spot)=> spot.sub(part.Position).Magnitude )
-            let shortestDistance = distances.reduce( (x,y)=>math.min(x,y), 0 )
-            let chanceOfDestroy = math.clamp( 1 - shortestDistance / info.spotSize, 0, 1 ) * info.survivalPct
+            let shortestDistance = distances.reduce( (x,y)=>math.min(x,y), 0 ) 
+            let chanceOfDestroy = Math.clamp( 1 - shortestDistance / info.spotSize, 0, 1 ) * info.survivalPct
             chanceOfDestroy = chanceOfDestroy ** 2
             if( info.keep ) chanceOfDestroy = 1 - chanceOfDestroy
             if( MathXL.RandomNumber() <= chanceOfDestroy )

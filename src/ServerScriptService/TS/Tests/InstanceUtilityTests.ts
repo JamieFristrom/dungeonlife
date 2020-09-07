@@ -7,7 +7,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 
 import { ServerStorage } from "@rbxts/services"
-import { TestUtility } from "ServerStorage/TS/TestUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 let createdChild = InstanceUtility.findOrCreateChild<NumberValue>( ServerStorage, "TestChild", "NumberValue")
 TestUtility.assertTrue( createdChild !== undefined )

@@ -4,23 +4,96 @@
 import { LogLevel, DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
-import { SkinTypes } from "ReplicatedStorage/TS/SkinTypes"
+import { ReplicatedStorage, Workspace, Players, Teams, StarterGui } from "@rbxts/services"
+
+import PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
+
+import { DisplayStats } from "ReplicatedStorage/Standard/DisplayStats"
+
+import { ClickableUI } from "ReplicatedStorage/TS/ClickableUI"
 import { Enhancements } from "ReplicatedStorage/TS/EnhancementsTS"
+import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS"
+import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 import { Localize } from "ReplicatedStorage/TS/Localize"
+import { SkinTypes } from "ReplicatedStorage/TS/SkinTypes"
+import { SocketI } from "ReplicatedStorage/TS/SocketI"
+import { StructureClient } from "ReplicatedStorage/TS/StructureClient"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 import { ToolData } from "ReplicatedStorage/TS/ToolDataTS"
 
-import * as PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
-import { GuiXL } from "ReplicatedStorage/TS/GuiXLTS";
-
-import { ReplicatedStorage, Workspace, Players, Teams } from "@rbxts/services"
-import { StructureClient } from "ReplicatedStorage/TS/StructureClient"
-import { ClickableUI } from "ReplicatedStorage/TS/ClickableUI"
-import { SocketI } from "ReplicatedStorage/TS/SocketI"
-
-const runClientTests: boolean = false
+const runClientTests: boolean = true
 if (runClientTests && game.GetService("RunService").IsStudio()) {
+    
     DebugXL.logW(LogArea.Test, "UI Tests started")
 
+    // make sure werewolf on leaderboard looks like werewolf
+    {
+        const customLeaderboard = StarterGui.WaitForChild("PlayerListGui").WaitForChild("CustomLeaderboard").Clone()
+        const contentRowTemplate = StarterGui.WaitForChild("PlayerListGui").WaitForChild("ContentRowTemplate").Clone()        
+        const playerFolder = new Instance("Folder")
+        playerFolder.Name = "Players"
+        const player1 = new Instance("Folder", playerFolder)
+        player1.Name = "Player1"
+        const leaderstats = new Instance("Folder", player1)
+        leaderstats.Name = "leaderstats"
+        const classObjVal = new Instance("StringValue", leaderstats)
+        classObjVal.Name = "Class"
+        classObjVal.Value = "Werewolf"
+        const level = new Instance("StringValue", leaderstats)
+        level.Name = "Level"
+        level.Value = "1"
+        // here I'm just guessing
+        const other = new Instance("StringValue", leaderstats)
+        other.Name = "VIP"
+        other.Value = "VIP"
+        // sadly this hack won't work if we want to switch UpdateStats to typescript
+        const pretendCharacter = new Instance("Model", player1)
+        pretendCharacter.Name = "Character"
+        const werewolfHead = new Instance("Part", pretendCharacter)
+        werewolfHead.Name = "Werewolf Head"  // what would happen if somebody has a roblox avatar accessory named werewolf head?
+
+        DisplayStats.UpdateStats( playerFolder, customLeaderboard, contentRowTemplate )
+        let contents = customLeaderboard.FindFirstChild<Frame>("Contents")!
+        let targetRow = contents.FindFirstChild<Frame>("UserPlayer1")!
+        TestUtility.assertMatching( "Werewolf", targetRow.FindFirstChild<TextLabel>("Class")!.Text )
+        TestUtility.assertNotMatching( "", targetRow.FindFirstChild<TextLabel>("Level")!.Text )
+    }
+
+    // make sure stealth werewolf on leaderboard doesn't
+    {
+        const customLeaderboard = StarterGui.WaitForChild("PlayerListGui").WaitForChild("CustomLeaderboard").Clone()
+        const contentRowTemplate = StarterGui.WaitForChild("PlayerListGui").WaitForChild("ContentRowTemplate").Clone()        
+        const playerFolder = new Instance("Folder")
+        playerFolder.Name = "Players"
+        const player1 = new Instance("Folder", playerFolder)
+        player1.Name = "Player1"
+        const leaderstats = new Instance("Folder", player1)
+        leaderstats.Name = "leaderstats"
+        const classObjVal = new Instance("StringValue", leaderstats)
+        classObjVal.Name = "Class"
+        classObjVal.Value = "Werewolf"
+        const level = new Instance("StringValue", leaderstats)
+        level.Name = "Level"
+        level.Value = "1"
+        // here I'm just guessing
+        const other = new Instance("StringValue", leaderstats)
+        other.Name = "VIP"
+        other.Value = "VIP"
+        // sadly this hack won't work if we want to switch UpdateStats to typescript
+        const pretendCharacter = new Instance("Model", player1)
+        pretendCharacter.Name = "Character"
+        // doesn't have a werewolf head; must not be a werewolf
+
+        DisplayStats.UpdateStats( playerFolder, customLeaderboard, contentRowTemplate )
+        let contents = customLeaderboard.FindFirstChild<Frame>("Contents")!
+        let targetRow = contents.FindFirstChild<Frame>("UserPlayer1")!
+        let resultClass = targetRow.FindFirstChild<TextLabel>("Class")!.Text
+        let resultLevel = targetRow.FindFirstChild<TextLabel>("Level")!.Text
+        let numericLevel = tonumber(resultLevel)
+        TestUtility.assertTrue( resultClass==="Mage"||resultClass==="Rogue"||resultClass==="Warrior"||resultClass==="Barbarian"||resultClass==="Priest", "Stealth werewolf valid class")
+        TestUtility.assertNotMatching( numericLevel && numericLevel>=1, "Stealth werewolf level at least 1" )
+    }
+    
     let testKeys = [
         { k: "IntroMessage" },
         { k: "strN" },
@@ -30,13 +103,13 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         { k: "DeepestFloor", args: [666] }
     ]
 
-    DebugXL.Assert(Localize.trim("  hoo") === "hoo")
-    DebugXL.Assert(Localize.trim("  hoo  ") === "hoo")
-    DebugXL.Assert(Localize.trim("hoo  ") === "hoo")
+    TestUtility.assertTrue(Localize.trim("  hoo") === "hoo")
+    TestUtility.assertTrue(Localize.trim("  hoo  ") === "hoo")
+    TestUtility.assertTrue(Localize.trim("hoo  ") === "hoo")
     DebugXL.logD(LogArea.Test, Localize.squish("  hoo  "))
     DebugXL.logD(LogArea.Test, Localize.squish("and   nae  nae"))
-    DebugXL.Assert(Localize.squish("  hoo  ") === " hoo ")
-    DebugXL.Assert(Localize.squish("and   nae  nae") === "and nae nae")
+    TestUtility.assertTrue(Localize.squish("  hoo  ") === " hoo ")
+    TestUtility.assertTrue(Localize.squish("and   nae  nae") === "and nae nae")
 
     DebugXL.logI(LogArea.Test, "Test translations")
     testKeys.forEach(function (key) {
@@ -99,18 +172,18 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
     {
         let labelToBeShadowed = new Instance("TextLabel")
         let shadowLabel = GuiXL.shadowText(labelToBeShadowed, 5)
-        DebugXL.Assert(shadowLabel !== undefined)
-        DebugXL.Assert(shadowLabel.IsA("TextLabel"))
-        DebugXL.Assert(shadowLabel.Parent !== undefined)
-        DebugXL.Assert(shadowLabel.Font === labelToBeShadowed.Font)
-        DebugXL.Assert(shadowLabel.TextSize === labelToBeShadowed.TextSize)
-        DebugXL.Assert(shadowLabel.AbsolutePosition.X === labelToBeShadowed.AbsolutePosition.X + 5)
-        DebugXL.Assert(shadowLabel.AbsolutePosition.Y === labelToBeShadowed.AbsolutePosition.Y + 5)
-        DebugXL.Assert(shadowLabel.Text === labelToBeShadowed.Text)
+        TestUtility.assertTrue(shadowLabel !== undefined)
+        TestUtility.assertTrue(shadowLabel.IsA("TextLabel"))
+        TestUtility.assertTrue(shadowLabel.Parent !== undefined)
+        TestUtility.assertTrue(shadowLabel.Font === labelToBeShadowed.Font)
+        TestUtility.assertTrue(shadowLabel.TextSize === labelToBeShadowed.TextSize)
+        TestUtility.assertTrue(shadowLabel.AbsolutePosition.X === labelToBeShadowed.AbsolutePosition.X + 5)
+        TestUtility.assertTrue(shadowLabel.AbsolutePosition.Y === labelToBeShadowed.AbsolutePosition.Y + 5)
+        TestUtility.assertTrue(shadowLabel.Text === labelToBeShadowed.Text)
         labelToBeShadowed.Text = "Hot monkey brains"
-        DebugXL.Assert(shadowLabel.Text === "Hot monkey brains")
+        TestUtility.assertTrue(shadowLabel.Text === "Hot monkey brains")
         labelToBeShadowed.TextTransparency = 0.5
-        DebugXL.Assert(shadowLabel.TextTransparency === 0.5)
+        TestUtility.assertTrue(shadowLabel.TextTransparency === 0.5)
     }
 
     // test whether chest shows hint
@@ -127,11 +200,11 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         clickable.SetPrimaryPartCFrame(Players.LocalPlayer.Character!.GetPrimaryPartCFrame())
         ClickableUI.updateClickableUIs(team, Players.LocalPlayer.Character)
         const chestGui = clickableOrigin!.FindFirstChild<BillboardGui>("ChestGui")
-        DebugXL.Assert(chestGui !== undefined)
+        TestUtility.assertTrue(chestGui !== undefined)
         if (chestGui) {
-            DebugXL.Assert(chestGui.Enabled)
+            TestUtility.assertTrue(chestGui.Enabled)
             const instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
-            DebugXL.Assert(instructions !== undefined)
+            TestUtility.assertTrue(instructions !== undefined)
             // won"t actually check text since it should be magically localized
         }
     }
@@ -157,14 +230,15 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
             0,
             furnishGui,
             ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
-            new FakeSocket(() => {
-                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+            new FakeSocket(() => { 
+                let buildPointsObject = InstanceUtility.findOrCreateChild<NumberValue>(Players.LocalPlayer, "BuildPointsTotal", "NumberValue")
+                buildPointsObject.Value = 333
                 return "SpawnWerewolf"
             })
         )
         // success: reupdate shouldn't have happened, so build points should read calculated value
-        DebugXL.Assert(result === 150)
-        DebugXL.Assert(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 150")
+        TestUtility.assertTrue(result === 150)
+        TestUtility.assertTrue(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 150")
     }
 
     {
@@ -182,9 +256,9 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
             })
         )
         // failure: reupdate should have happened, so build points should read the value we set it to in the fake 
-        DebugXL.Assert(result === 500)  // this should be original build points - result build points
+        TestUtility.assertTrue(result === 500)  // this should be original build points - result build points
         // this should be the possibly unrelated build points value the server tells us:
-        DebugXL.Assert(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 333")
+        TestUtility.assertTrue(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 333")
     }
 
     // if respawn, furnishGui will be unparented - don't modify
@@ -202,10 +276,9 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
             })
         )
         // failure: reupdate should have happened, so build points should read the value we set it to in the fake 
-        DebugXL.Assert(result === 500)  // this should be original build points - result build points
+        TestUtility.assertTrue(result === 500)  // this should be original build points - result build points
         // because our interface is unparented we know better than to try updating it - what's now in our CurrencyNameAndCount does not matter.
     }
-
 
     DebugXL.logW(LogArea.Test, "UI Tests finished")
 }

@@ -1,12 +1,16 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { LogLevel, DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.Name)
 
-import CharacterXL from "ServerStorage/Standard/CharacterXL";
-import { TestContext, TestUtility } from "ServerStorage/TS/TestUtility";
-import { Teams } from '@rbxts/services';
+import CharacterXL from "ServerStorage/Standard/CharacterXL"
+
+import { TestContext } from "ServerStorage/TS/TestContext"
+
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+
+import { Teams } from "@rbxts/services"
 
 // test damage/time on monster character
 {

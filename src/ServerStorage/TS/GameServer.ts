@@ -25,6 +25,7 @@ import { DungeonDeck } from "./DungeonDeck"
 import { HeroServer } from "./HeroServer"
 import { MonsterServer } from "./MonsterServer"
 import { ServerContextI } from "./ServerContext"
+import { Math } from "ReplicatedStorage/TS/Math"
 
 
 export enum LevelResultEnum {
@@ -196,8 +197,8 @@ export namespace GameServer {
     export function broadcastRespawnCountdown(player: Player, dungeonPlayerData: DungeonPlayer) {
         const countdownObj = player.FindFirstChild<NumberValue>("HeroRespawnCountdown")
         DebugXL.Assert(countdownObj !== undefined)
-        if (countdownObj) {
-            countdownObj.Value = math.clamp(15 - (time() - dungeonPlayerData.heroKickoffTime), 0, 15)
+        if (countdownObj) { 
+            countdownObj.Value = Math.clamp(15 - (time() - dungeonPlayerData.heroKickoffTime), 0, 15)
         }
     }
 

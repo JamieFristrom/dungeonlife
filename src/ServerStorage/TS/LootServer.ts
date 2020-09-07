@@ -24,6 +24,7 @@ import { HeroesManagerI } from "ServerStorage/Standard/HeroesManagerI"
 
 import { ServerContextI } from "ServerStorage/TS/ServerContext"
 import { MainContext } from "./MainContext"
+import { Math } from "ReplicatedStorage/TS/Math"
 
 
 type Character = Model
@@ -250,10 +251,10 @@ export namespace LootServer {
         // level 15 vs level 1 ( 21 vs 7): 2.09
         // level 1 vs level 2 ( 7 vs 8 ): 0.87
         const potionMulForStockpile = math.pow(1 / (potionsN + 1), BalanceData.potionDropGammaN)
-        const potionDropChanceN = math.clamp(dropChance * potionLikelihoodMulForLoitering * potionMulForStockpile, 0, 0.6)
+        const potionDropChanceN = Math.clamp(dropChance * potionLikelihoodMulForLoitering * potionMulForStockpile, 0, 0.6)
         //	//print( "Potion calc: loitering: "+potionLikelihoodMulForLoitering+"; level "+monsterLevel+"/"+playerLevel+": "+potionLikelihoodForMonsterDifficulty+"; stockpile("+potionsN+"): "+potionMulForStockpile+"; total: "+potionDropChanceN )
         let randomisher = playerPotionRandomishers.get(player)
-        if (!randomisher) {
+        if (!randomisher) { 
             randomisher = new Randomisher(7)
             playerPotionRandomishers.set(player, randomisher)
         }

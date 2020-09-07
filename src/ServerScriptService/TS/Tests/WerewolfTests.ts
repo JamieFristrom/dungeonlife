@@ -4,15 +4,15 @@
 import { DebugXL, LogArea, LogLevel } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import * as Monsters from "ServerStorage/Standard/MonstersModule"
+import { Teams } from "@rbxts/services"
 
-import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
+import Werewolf from "ServerStorage/Standard/WerewolfModule"
+import Monsters from "ServerStorage/Standard/MonstersModule"
+
 import { SuperbossManager } from "ServerStorage/TS/SuperbossManager"
+import { TestContext } from "ServerStorage/TS/TestContext"
 
-import * as Costumes from "ServerStorage/Standard/CostumesServer"
-import * as Werewolf from "ServerStorage/Standard/WerewolfModule"
-
-import { ServerStorage, Teams } from "@rbxts/services"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // test werewolf toggle
 {

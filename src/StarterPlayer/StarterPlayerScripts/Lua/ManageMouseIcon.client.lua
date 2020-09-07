@@ -1,10 +1,10 @@
 print( script:GetFullName().." executed" )
 
 local InputXL       = require( game.ReplicatedStorage.Standard.InputXL )
-local WeaponUtility = require( game.ReplicatedStorage.Standard.WeaponUtility )
 
 local AssetManifest = require( game.ReplicatedFirst.TS.AssetManifest ).AssetManifest
 local GeneralWeaponUtility = require( game.ReplicatedStorage.TS.GeneralWeaponUtility ).GeneralWeaponUtility
+local Math = require( game.ReplicatedStorage.TS.Math ).Math
 
 local UserInputService = game:GetService("UserInputService")
 
@@ -29,7 +29,7 @@ local mouseIconCooldownIdA =
 }
 
 local function SetCooldownMouseIconId( cooldownFractionRemaining )
-	local cooldownIconN = math.clamp( math.ceil( cooldownFractionRemaining * 12 ), 1, 12 )
+	local cooldownIconN = Math.clamp( math.ceil( cooldownFractionRemaining * 12 ), 1, 12 )
 	localPlayer:GetMouse().Icon = mouseIconCooldownIdA[ cooldownIconN ] 
 end
 

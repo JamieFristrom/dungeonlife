@@ -4,7 +4,7 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 DebugXL.logI(LogArea.Executed, script.Name)
 
-import { TestUtility } from "ServerStorage/TS/TestUtility";
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 import { FlexTool } from "ReplicatedStorage/TS/FlexToolTS";
 import { RandomNumberGenerator } from "ReplicatedStorage/TS/RandomNumberGenerator";
 

@@ -27,6 +27,7 @@ local AnalyticsClient = require( game.ReplicatedStorage.TS.AnalyticsClient ).Ana
 local BlueprintUtility = require( game.ReplicatedStorage.TS.BlueprintUtility ).BlueprintUtility
 local GuiXL = require( game.ReplicatedStorage.TS.GuiXLTS ).GuiXL
 local Localize = require( game.ReplicatedStorage.TS.Localize ).Localize
+local Math = require( game.ReplicatedStorage.TS.Math ).Math
 local MessageGui = require( game.ReplicatedStorage.TS.MessageGui ).MessageGui
 local PlayerUtility = require( game.ReplicatedStorage.TS.PlayerUtility ).PlayerUtility
 local StructureClient = require( game.ReplicatedStorage.TS.StructureClient ).StructureClient
@@ -183,7 +184,7 @@ local function GetBlueprintCountInfo( blueprint )
 		return 0, 0, 0, 0, blueprintsN, availableB, forbiddenB
 	end
 	local capN = availableB and blueprint.buildCapN or math.min( blueprintsN, blueprint.buildCapN )
-	local numLeftN = math.clamp( capN - personalBuiltN, 0, math.max( blueprint.levelCapN - totalBuiltN, 0 ) )
+	local numLeftN = Math.clamp( capN - personalBuiltN, 0, math.max( blueprint.levelCapN - totalBuiltN, 0 ) )
 	-- that's right, I copy and pasted code three times
 	-- shame on me
 	-- hackity hack hack
@@ -782,8 +783,8 @@ end
 local function PlaceConfirmFrame()
 	local screenV3, inFrontB = game.Workspace.CurrentCamera:WorldToScreenPoint( InstanceXL:GetCFrame( ghostInstance ).p )
 	if inFrontB then
-		local frameX = math.clamp( screenV3.X, 0, furnishGui.AbsoluteSize.X - currentConfirmFrame.AbsoluteSize.X ) 
-		local frameY = math.clamp( screenV3.Y, 0, furnishGui.AbsoluteSize.Y - currentConfirmFrame.AbsoluteSize.Y )
+		local frameX = Math.clamp( screenV3.X, 0, furnishGui.AbsoluteSize.X - currentConfirmFrame.AbsoluteSize.X ) 
+		local frameY = Math.clamp( screenV3.Y, 0, furnishGui.AbsoluteSize.Y - currentConfirmFrame.AbsoluteSize.Y )
 		currentConfirmFrame.Position = UDim2.new( 0, frameX, 0, frameY + 40 ) 
 	end
 	currentConfirmFrame.Visible = true

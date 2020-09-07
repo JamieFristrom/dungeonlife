@@ -1,7 +1,16 @@
+
+// Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
+
+import { LogLevel, DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
+DebugXL.logI(LogArea.Executed, script.Name)
+
 import PlayerXL from "ServerStorage/Standard/PlayerXL"
-import { TestContext, TestUtility } from "ServerStorage/TS/TestUtility"
+
+import { TestContext } from "ServerStorage/TS/TestContext"
+
 import { DebugI } from "ReplicatedStorage/TS/DebugI"
-import { DebugXL } from "ReplicatedStorage/TS/DebugXLTS"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+
 import MathXL from "ReplicatedStorage/Standard/MathXL"
 
 // test that antiteleport script is engaged; PlayerXL should automatically connect (not the best way to test)

@@ -6,10 +6,10 @@ DebugXL.logI(LogArea.Executed, script.Name)
 
 // because we have tests operating on various global game entities (such as player 0) run them in order
 
-import { TestUtility } from "ServerStorage/TS/TestUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 import { Workspace } from "@rbxts/services"
 
-const runTests = false
+const runTests = true
 
 // undefined means run all the tests
 const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"

@@ -4,9 +4,11 @@
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { TestUtility, TestContext } from "ServerStorage/TS/TestUtility"
 import { InventoryServer } from "ServerStorage/TS/InventoryServer"
 import { InventoryMock } from "ServerStorage/TS/InventoryMock"
+import { TestContext } from "ServerStorage/TS/TestContext"
+
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // test new blooprintz code
 {

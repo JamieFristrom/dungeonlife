@@ -1,21 +1,22 @@
 
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
-import { DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
+import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS"
 DebugXL.logI(LogArea.Executed, script.GetFullName())
 
-import { TestContext, TestUtility } from 'ServerStorage/TS/TestUtility'
-import { Furnisher } from 'ServerStorage/TS/Furnisher'
+import FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+import Dungeon from "ServerStorage/Standard/DungeonModule"
 
-import { FloorInfo } from 'ReplicatedStorage/TS/FloorInfo'
-import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
+import { TestContext } from "ServerStorage/TS/TestContext"
+import { Furnisher } from "ServerStorage/TS/Furnisher"
 
-import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
+import FurnishUtility from "ReplicatedStorage/Standard/FurnishUtility"
+import PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
 
-import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
-import PossessionData from 'ReplicatedStorage/Standard/PossessionDataStd'
-import Dungeon from 'ServerStorage/Standard/DungeonModule'
-import { PlayerUtility } from 'ReplicatedStorage/TS/PlayerUtility'
+import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
+import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
+import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 // unable to place furnishing doesn't crash
 {

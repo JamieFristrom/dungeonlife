@@ -8,7 +8,7 @@ import { DebugI } from "ReplicatedStorage/TS/DebugI"
 type Character = Model
 
 declare class PlayerManagerXL {
-    CharacterAdded( debug: DebugI, player: Player): void
+    CharacterAdded(debug: DebugI, player: Player): void
     LoadCharacterWait(
         playerTracker: PlayerTracker,
         player: Player,

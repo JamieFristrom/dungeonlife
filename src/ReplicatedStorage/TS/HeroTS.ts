@@ -296,7 +296,7 @@ export class Hero extends CharacterRecord implements HeroI {
 
     static getCurrentMaxHeroLevel() {
         let currentMaxHeroLevelNumberValue = Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!
-        return currentMaxHeroLevelNumberValue.Value
+        return math.max(1, currentMaxHeroLevelNumberValue.Value)
     }
 
     static distanceToNearestHeroXZ(v3: Vector3) {

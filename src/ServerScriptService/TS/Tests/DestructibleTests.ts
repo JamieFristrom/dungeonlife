@@ -6,29 +6,30 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 import { CollectionService, Workspace } from "@rbxts/services"
 
+import FurnishServer from "ServerStorage/Standard/FurnishServerModule"
+import Heroes from "ServerStorage/Standard/HeroesModule"
+
+import { DestructibleServer } from "ServerStorage/TS/DestructibleServer"
+import { TestContext } from "ServerStorage/TS/TestContext"
+
 import InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
 import MathXL from "ReplicatedStorage/Standard/MathXL"
 import PossessionData from "ReplicatedStorage/Standard/PossessionDataStd"
-import FurnishUtility from 'ReplicatedStorage/Standard/FurnishUtility'
+import FurnishUtility from "ReplicatedStorage/Standard/FurnishUtility"
 
 import { BalanceData } from "ReplicatedStorage/TS/BalanceDataTS"
-import { MapUtility } from 'ReplicatedStorage/TS/DungeonMap'
-
-import FurnishServer from 'ServerStorage/Standard/FurnishServerModule'
-import Heroes from 'ServerStorage/Standard/HeroesModule'
-
-import { DestructibleServer } from "ServerStorage/TS/DestructibleServer"
-import { TestContext, TestUtility } from "ServerStorage/TS/TestUtility"
+import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
 import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
+import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 
 
 function TestDestructibleCorrectHealth(destructibleName: string, heroAvgLevel: number, numHeroes: number, dungeonDepth: number) {
     const balanceAgainstNumHeroes = PossessionData.dataT[destructibleName].balanceAgainstNumHeroesB
-    let destructible = InstanceXL.CreateInstance('Model', {}, false) as Model
-    InstanceXL.CreateInstance('StringValue', { Parent: destructible, Name: 'PossessionName', Value: destructibleName }, false)
-    let humanoid = InstanceXL.CreateInstance('Humanoid', { Parent: destructible }, false) as Humanoid
-    CollectionService.AddTag(destructible, 'Destructible')
+    let destructible = InstanceXL.CreateInstance("Model", {}, false) as Model
+    InstanceXL.CreateInstance("StringValue", { Parent: destructible, Name: "PossessionName", Value: destructibleName }, false)
+    let humanoid = InstanceXL.CreateInstance("Humanoid", { Parent: destructible }, false) as Humanoid
+    CollectionService.AddTag(destructible, "Destructible")
     destructible.Parent = Workspace
     // tags make things hard to test; this will have side effects on the existing models
     DestructibleServer.calibrateAllDestructiblesHealth(heroAvgLevel, numHeroes, dungeonDepth)
@@ -90,10 +91,10 @@ TestDestructibility("WeaponsRack")
 // be flagged here
 wait(1)
 
-TestDestructibleCorrectHealth('TrapDoors', 0, 0, 0)
-TestDestructibleCorrectHealth('TrapDoors', 7, 2, 3)
-TestDestructibleCorrectHealth('GargoyleFountain', 7, 2, 3)
-TestDestructibleCorrectHealth('Gate', 7, 1, 3)
-TestDestructibleCorrectHealth('Fence', 5, 3, 1)
-TestDestructibleCorrectHealth('Barrel', 5, 3, 4)
+TestDestructibleCorrectHealth("TrapDoors", 0, 0, 0)
+TestDestructibleCorrectHealth("TrapDoors", 7, 2, 3)
+TestDestructibleCorrectHealth("GargoyleFountain", 7, 2, 3)
+TestDestructibleCorrectHealth("Gate", 7, 1, 3)
+TestDestructibleCorrectHealth("Fence", 5, 3, 1)
+TestDestructibleCorrectHealth("Barrel", 5, 3, 4)
 
