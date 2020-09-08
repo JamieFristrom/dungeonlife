@@ -12,7 +12,7 @@ import { Workspace } from "@rbxts/services"
 const runTests = true
 
 // undefined means run all the tests
-const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "GameServerTests" // "SuperbossTests"
+const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {

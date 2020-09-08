@@ -210,7 +210,7 @@ export namespace LootServer {
                 hero.adjustGold(gold, player, "Drop", "Chest")
                 lootDropRE.FireClient(player, "gold", gold)
 
-                heroMgr.SaveHeroesWait(player)
+                heroMgr.SaveHeroesWait(context.getPlayerTracker(), player)
                 //		GameAnalyticsServer.RecordDesignEvent( player, "ChestDrop:Empty" )
             }
         }

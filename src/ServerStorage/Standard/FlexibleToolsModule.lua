@@ -158,35 +158,6 @@ function FlexibleTools:CreateTool( params )
 	return FlexibleToolsServer.createTool( params )
 end
 
-
--- function FlexibleTools:RemoveToolWait( character, tool )
--- 	DebugXL:Assert( character:IsA("Model") )
--- 	local characterRecord = PlayerServer.getCharacterRecordFromCharacter( character )
--- 	characterRecord:removeTool( )
--- 	local toolServerData = FlexibleToolsServer.getFlexToolAccessor( tool )
--- 	DebugXL:Assert( player == toolServerData.player )
-	
--- 	local pcData = CharacterI:GetPCDataWait( player )
--- 	-- possible the player has been killed since we threw a bomb, so check first:
--- 	if pcData then
--- 		DebugXL:Assert( pcData.gearPool:get( toolServerData.possessionsKey ) == toolServerData.flexToolInst )		
--- 		pcData.gearPool:delete( toolServerData.possessionsKey )
--- 	else
--- 		warn( "Couldn't find pcData for "..player.Name )
--- 	end
-	
--- 	tool:Destroy()		
-			
--- 	-- refresh client:			
--- 	if player.Team == game.Teams.Heroes then
--- 		require( game.ServerStorage.Standard.HeroesModule ):SaveHeroesWait( player )		
--- 	else
--- 		DebugXL:Assert( pcData )
--- 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
--- 	end
--- end
-
-
 -- we may want to be more data driven about this where the Roblox world tools in backpacks and
 -- on the ground is just the view to the internal document, but for now...
 function FlexibleTools:GetToolInstanceDatum( toolObject )

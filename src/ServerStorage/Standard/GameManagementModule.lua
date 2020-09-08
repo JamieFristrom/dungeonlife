@@ -846,7 +846,7 @@ local function PlayLevelWait()
 			local emptyTable = {}
 			emptyTable[ nil ] = 'die'
 		end
-		floorResult = GameServer.checkFloorSessionComplete(PlayerServer.getPlayerTracker(), dungeonPlayers, not FloorData:CurrentFloor().exitStaircaseB, reachedExitB)
+		floorResult = GameServer.checkFloorSessionComplete(MainContext.get(), dungeonPlayers, not FloorData:CurrentFloor().exitStaircaseB, reachedExitB)
 	end
 	if floorResult==LevelResultEnum.BeatSuperboss then
 		GameManagement.DoBeatSuperbossStuff()

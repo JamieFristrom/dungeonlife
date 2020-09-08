@@ -107,14 +107,14 @@ function Heroes:GetPCData( player )
 end
 
 
-function Heroes:SaveHeroesWait( player )
+function Heroes:SaveHeroesWait( playerTracker, player )
 	DebugXL:Assert( self == Heroes )
 	DebugXL:Assert( player )
 --	--print( "Saving "..player.Name.."'s heroes" )
 	--Heroes:RecordPackContents( player )
 
 	-- this is a good opportunity to refresh the current hero if there is one
-	local cr = PlayerServer.getCharacterRecordFromPlayer( player )
+	local cr = playerTracker:getCharacterRecordFromPlayer( player )
 	if( cr )then
 		workspace.Signals.HeroesRE:FireClient( player, "RefreshSheet", cr )
 		workspace.Signals.HotbarRE:FireClient( player, "Refresh", cr )
@@ -158,7 +158,7 @@ function Heroes:ChooseClass( player, classNameS )
 	workspace.Signals.HotbarRE:FireClient( player, "Refresh", pcData )
 	workspace.Signals.HeroesRE:FireClient( player, "RefreshSheet", pcData )
 
-	Heroes:SaveHeroesWait( player )		
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 end
 
 
@@ -336,7 +336,7 @@ function Heroes:Died( player )
 	end
 
 	-- good opportunity to record progress, probably not overdoing
-	Heroes:SaveHeroesWait( player )
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 
 	--  this can throw errors because the character is still active for a bit before the player is gone,
 	--  so instead we do a garbage collection step later
@@ -413,7 +413,8 @@ function Heroes:RecordTool( context, player, myPCData, flexToolInst )
 	DebugXL:Assert( TableXL:InstanceOf(myPCData, Hero) )
 	DebugXL:Assert( TableXL:InstanceOf(flexToolInst,FlexTool) )
 	GivePossession( context, player, myPCData, flexToolInst )
-	Heroes:SaveHeroesWait( player )		 	
+	Heroes:SaveHeroesWait( context:getPlayerTracker(), player )		
+
 end
 
 
@@ -473,7 +474,7 @@ function Heroes:DoDirectDamage( context, player, damage, targetHumanoid, critB, 
 				local xpValue = MonsterServer.calculateXPReward( victimCharacterRecord, not victimPlayer )
 				DebugXL:logD( LogArea.Gameplay, targetHumanoid:GetFullName().." kill experience awarded: starting value "..xpValue )
 				HeroServer.awardKillExperienceWait( player, xpValue, targetHumanoid.Parent )
-				Heroes:SaveHeroesWait( player )			
+				Heroes:SaveHeroesWait( context:getPlayerTracker(), player )			
 			else
 				DestructibleServer.doDeathBookkeepingIfDestructible( context, self, victimCharacter, player, forceLootForTest )
 			end
@@ -522,11 +523,11 @@ function Heroes:DoFlexToolDamage( context, attackerRecord, character, flexToolIn
 end
 
 
-function Heroes:NewDungeonLevel( player, hero, newDungeonLevelN )
+-- this function was probably cool when the dungeon was deeper
+function Heroes:SetNewDungeonLevel( player, hero, newDungeonLevelN )
 	DebugXL:Assert( self == Heroes )
 	DebugXL:Assert( TableXL:InstanceOf(hero, Hero))
 	hero.statsT.deepestDungeonLevelN = math.max( hero.statsT.deepestDungeonLevelN, newDungeonLevelN )
-	Heroes:SaveHeroesWait( player )
 end
 
 
@@ -632,7 +633,7 @@ function Heroes:PlayerRemovingWait( player )
 	for i, hero in ipairs( savedPCs.heroesA ) do
 		GameAnalyticsServer.RecordDesignEvent( player, "GoldLeft:Hero"..i, hero.statsT.goldN, 25, "Gold25" )
 	end
-	Heroes:SaveHeroesWait( player )
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 end
 
 game.Players.PlayerRemoving:Connect( function( player ) Heroes:PlayerRemovingWait( player ) end )
@@ -640,7 +641,7 @@ game.Players.PlayerRemoving:Connect( function( player ) Heroes:PlayerRemovingWai
 function Heroes:AdjustGold( player, amount, analyticsItemIdS, analyticsItemTypeS )
 	local pcData = Heroes:GetPCDataWait( player )	
 	HeroServer.adjustGold( player, pcData, amount, analyticsItemIdS, analyticsItemTypeS )
-	Heroes:SaveHeroesWait( player )
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 end
 
 
@@ -659,7 +660,8 @@ function Heroes:BuyGold( player, amount, analyticsItemIdS, analyticsItemTypeS )
 		DebugXL:Assert( heroes.heroesA[ slot ] )
 		if( heroes.heroesA[ slot ])then
 			HeroServer.adjustGold( player, heroes.heroesA[ slot ], amount, analyticsItemIdS, analyticsItemTypeS )
-			Heroes:SaveHeroesWait( player )
+			Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
+
 			buyingGoldForHeroInSlot[ player ] = nil
 			return true
 		end
@@ -725,7 +727,7 @@ function HeroRemote.Wear( player, itemKey, equipB )
 				FlexEquip:ApplyEntireCostumeWait( PlayerServer.getPlayerTracker(), player, pcData, Inventory:GetActiveSkinsWait( player ).hero )
 			end
 		end	
-		Heroes:SaveHeroesWait( player )
+		Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 	end
 end
 
@@ -739,7 +741,7 @@ function HeroRemote.SpendStatPoint( player, stat )
 		--ConfigureCharacter( player )
 		local character = player.Character
 		Heroes:ReconfigureDerivativeStats( character, pcData )
-		Heroes:SaveHeroesWait( player )
+		Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 	else
 		warn( "Overspent stat points. Probably lag." )
 	end
@@ -773,7 +775,7 @@ function HeroRemote.TakeBestHealthPotion( player )
 
 		-- and good-bye potion
 		pcData.gearPool:delete( k )
-		Heroes:SaveHeroesWait( player )
+		Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 
 		ToolCaches.publishPotions( player, pcData )		
 	end
@@ -802,7 +804,8 @@ function HeroRemote.TakeBestManaPotion( player )
 		require( game.ServerStorage.CharacterFX.MagicHealing ):Activate( character, Color3.new( 0, 0, 1 ) )
 		-- and good-bye potion
 		pcData.gearPool:delete( k )
-		Heroes:SaveHeroesWait( player )
+		Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
+
 	end
 end
 
@@ -822,7 +825,8 @@ function HeroRemote.DeleteHero( player, slotN )
 	-- I don't think that this can be used to grief because only the owning player can call for themselves
 	warn("DeleteHero "..slotN.." for "..player:GetFullName())
 	table.remove( savedPlayerCharactersT[ PCKey( player ) ].heroesA, slotN )
-	Heroes:SaveHeroesWait( player )
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
+
 	return savedPlayerCharactersT[ PCKey( player ) ]
 end
 
@@ -830,23 +834,6 @@ end
 function HeroRemote.ChooseHero( ... )
 	Heroes:ChooseHero( ... )
 end 
-
-
--- function HeroRemote.AwardExperienceWait( player )  -- doesn't actually wait anymore but don't feel like renaming right now
--- 	if CheatUtilityXL:PlayerWhitelisted( player ) then
--- 		local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
--- 		HeroServer.awardExperience( player, PlayerServer.getActualLevel( characterKey ) * 500, "Cheat", "Cheat" )
--- 		Heroes:SaveHeroesWait( player )
--- 	end
--- end
-
-
--- function HeroRemote.SaveHeroes( player )
--- 	if not playerOverrideId then
--- 		local heroStore = DataStore2( "Heroes", player )
--- 		heroStore:Save()
--- 	end
--- end
 
 
 function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
@@ -861,7 +848,7 @@ function HeroRemote.AssignItemToSlot( player, itemKey, slotN )
 			local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 			ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, pcData, SkinUtility.getCurrentSkinset(Inventory, player, pcData) )
 			
-			Heroes:SaveHeroesWait( player )
+			Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 		end
 	end
 end
@@ -872,7 +859,7 @@ function HeroRemote.BuyItem( player, shopItemKey )
 	if not pcData then return end
 
 	HeroServer.buyItem( player, pcData, shopItemKey )
-	Heroes:SaveHeroesWait( player )
+	Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 end
 		
 
@@ -911,7 +898,7 @@ function HeroRemote.SellItem( player, itemKey )
 				local characterKey = PlayerServer.getCharacterKeyFromPlayer( player )
 				ToolCaches.updateToolCache( PlayerServer.getPlayerTracker(), characterKey, pcData, SkinUtility.getCurrentSkinset(Inventory, player, pcData) )
 
-				Heroes:SaveHeroesWait( player )
+				Heroes:SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 			end
 		end
 	else

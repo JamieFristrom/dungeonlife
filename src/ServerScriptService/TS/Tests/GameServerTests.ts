@@ -373,7 +373,20 @@ class PlayerFake extends InstanceFake {
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
     // starting as a werewolf
     let testCharacter = testSetup.makeTestPlayerCharacter("Werewolf")
-    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup, dungeonPlayerMap, false, false) === LevelResultEnum.InProgress)
+    testSetup.clean()
+}
+
+// test next level
+{
+    let testSetup = new TestContext()
+    let dungeonPlayerMap = new DungeonPlayerMap()
+    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Warrior")
+    testSetup.makeTestPlayerCharacter("Warrior")
+    let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
+    testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
+    TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup, dungeonPlayerMap, false, true) === LevelResultEnum.ExitReached)
     testSetup.clean()
 }
 
@@ -389,12 +402,13 @@ class PlayerFake extends InstanceFake {
     DebugXL.Assert(testCharacter !== undefined)
     if (testCharacter) {
         testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
-        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup.getPlayerTracker(), dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup, dungeonPlayerMap, false, false) === LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
+        TestUtility.assertTrue(GameServer.checkFloorSessionComplete(testSetup, dungeonPlayerMap, false, false) !== LevelResultEnum.TPK)
     }
     testSetup.clean()
 }
+
 
 {
     let testSetup = new TestContext()
@@ -454,4 +468,3 @@ class PlayerFake extends InstanceFake {
     TestUtility.assertMatching(TeamStyleChoice.Monster, testSetup.getPlayerTracker().getTeamStyleChoice(testSetup.getPlayer()), "Monster choice sticks despite sudden team change")
     testSetup.clean()
 }
-

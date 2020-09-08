@@ -274,13 +274,12 @@ export namespace GameServer {
         return tpk
     }
 
-    export function checkFloorSessionComplete(playerTracker: PlayerTracker, dungeonPlayers: DungeonPlayerMap, bossFloor: boolean, reachedExit: boolean) {
-        DebugXL.Assert(playerTracker instanceof PlayerTracker)
+    export function checkFloorSessionComplete(context: ServerContextI, dungeonPlayers: DungeonPlayerMap, bossFloor: boolean, reachedExit: boolean) {
         DebugXL.Assert(dungeonPlayers instanceof DungeonPlayerMap)
         DebugXL.Assert(typeOf(reachedExit) === "boolean")
 
         let levelResult = LevelResultEnum.InProgress
-        if (isTPK(playerTracker, dungeonPlayers)) {
+        if (isTPK(context.getPlayerTracker(), dungeonPlayers)) {
             DebugXL.logI(LogArea.GameManagement, "TPK detected")
             levelResult = LevelResultEnum.TPK
             //give it some time.the player monitor and this should complete at roughly the same time
@@ -291,14 +290,14 @@ export namespace GameServer {
             const newDungeonDepth = DungeonDeck.goToNextFloor()
             DebugXL.logV(LogArea.GameManagement, "Awarding next level awards")
             for (let player of HeroTeam.GetPlayers()) {
-                let hero = playerTracker.getCharacterRecordFromPlayer(player)
+                let hero = context.getPlayerTracker().getCharacterRecordFromPlayer(player)
                 if( hero instanceof Hero ) {
                     //GameAnalyticsServer.ServerEvent({ ["category"] = "progression", ["event_id"] = "Complete.SubdwellerColony."+tostring(workspace.GameManagement.DungeonFloor.Value) }, player)
-                    Heroes.NewDungeonLevel(player, newDungeonDepth)
-                    HeroServer.awardExperience(player, hero, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor", Inventory.BoostActive(player))
-                    Inventory.AdjustCount(player, "Stars", 10, "Progress", "Floor")
-                    Inventory.EarnRubies(player, 10, "Progress", "Floor")
-                    Heroes.SaveHeroesWait(player)
+                    Heroes.SetNewDungeonLevel(player, hero, newDungeonDepth)
+                    HeroServer.awardExperience(player, hero, HeroServer.getDifficultyLevel() * 100, "Progress", "Floor", context.getInventoryMgr().BoostActive(player))
+                    context.getInventoryMgr().AdjustCount(player, "Stars", 10, "Progress", "Floor")
+                    context.getInventoryMgr().EarnRubies(player, 10, "Progress", "Floor")
+                    Heroes.SaveHeroesWait(context.getPlayerTracker(), player)
                 }
             }
             for (let player of MonsterTeam.GetPlayers()) {

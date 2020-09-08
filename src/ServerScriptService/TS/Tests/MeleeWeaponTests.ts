@@ -106,6 +106,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     }
 }
 
+// test damageable trap doors
 {
     let testSetup = new TestContext()
     Dungeon.BuildWait(testSetup, new FloorInfo(), (player) => { })

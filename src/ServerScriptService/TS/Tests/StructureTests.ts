@@ -17,6 +17,7 @@ import { FloorInfo } from "ReplicatedStorage/TS/FloorInfo"
 import { MapUtility } from "ReplicatedStorage/TS/DungeonMap"
 import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
+import { Workspace } from "@rbxts/services"
 
 // unable to place furnishing doesn't crash
 {
@@ -49,4 +50,3 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     TestUtility.assertTrue(FurnishUtility.CountFurnishings("SpawnCyclopsSuper")[0] === 1, "Client built 1 superboss spawn")
     testSetup.clean()
 }
-

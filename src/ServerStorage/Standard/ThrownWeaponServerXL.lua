@@ -76,7 +76,7 @@ function ThrownWeaponServer.new( tool )
 	--				while thrownObj and thrownObj.Parent == workspace.ActiveServerProjectiles do wait(0.1) end
 				FlexibleToolsServer.removeToolWait(tool, character)
 				if player.Team == game.Teams.Heroes then
-					require( game.ServerStorage.Standard.HeroesModule ):SaveHeroesWait( player )		
+					require( game.ServerStorage.Standard.HeroesModule ):SaveHeroesWait( PlayerServer.getPlayerTracker(), player )		
 				else
 					local pcData = PlayerServer.getCharacterRecordFromPlayer(player)
 					DebugXL:Assert( pcData )
