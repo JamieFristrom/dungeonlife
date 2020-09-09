@@ -35,7 +35,9 @@ function DisplayStats.UpdateStats(playerFolder, customLeaderboard, contentRowTem
 					row.Visible = true
 					row.Parent = customLeaderboard.Contents
 					for _, field in pairs( row:GetChildren() ) do
-						field.TextShadowScript.Disabled = false
+						if field:FindFirstChild("TextShadowScript") then
+							field.TextShadowScript.Disabled = false
+						end
 					end
 				end		
 				foundRows[ row ] = true
