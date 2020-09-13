@@ -41,7 +41,7 @@ export class TestContext extends ServerContext {
     makeTestPlayerCharacter(className: string): Character {
         let testCharacter = Costumes.LoadCharacter(
             this.player,
-            ([ServerStorage.FindFirstChild("Monsters")!.FindFirstChild(className) as Model|undefined)!],
+            [ServerStorage.FindFirstChild("Monsters")!.FindFirstChild(className) as Model],
             {},
             true,
             undefined,

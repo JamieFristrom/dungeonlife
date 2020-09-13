@@ -33,7 +33,7 @@ export class DestructibleStructure extends Structure {
 			const dungeonDepth = DungeonDeck.getCurrentDepth()
 			DestructibleServer.calibrateHealth(destructibleInstance, averageHeroLocalLevel, numHeroes, dungeonDepth)
 			humanoid.Died.Connect(() => {
-				DebugXL.logI(LogArea.Gameplay, destructibleInstance.GetFullName() + ' died')
+				DebugXL.logI(LogArea.Gameplay, destructibleInstance.GetFullName() + ' died');
 				(destructibleInstance.PrimaryPart!.FindFirstChild("Destroyed") as Sound|undefined)!.Play()
 				DestructibleStructure.flyApart(destructibleInstance)
 				wait(flyApartSeconds)

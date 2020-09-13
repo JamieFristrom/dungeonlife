@@ -110,7 +110,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 {
     let testSetup = new TestContext()
     Dungeon.BuildWait(testSetup, new FloorInfo(), (player) => { })
-    let trapDoors = (Workspace.FindFirstChild("Environment") as Folder|undefined)!.FindFirstChild("TrapDoors", true)!
+    let trapDoors = Workspace.FindFirstChild("Environment")!.FindFirstChild("TrapDoors", true) as Model
     let oldHealth = (trapDoors.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Mage"), "Staff", trapDoors, oldHealth)
     let attackerRecord = new Hero("Mage", CharacterClasses.heroStartingStats["Mage"], [])      // can't just put tool in constructor because it gets cloned 

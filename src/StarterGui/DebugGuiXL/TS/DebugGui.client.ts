@@ -36,7 +36,8 @@ if (CheatUtilityXL.PlayerWhitelisted(Players.LocalPlayer)) {
 
 	debugMenuButton.Visible = true
 
-	debugGuiRE.OnClientEvent.Connect((errorMessage) => {
+	debugGuiRE.OnClientEvent.Connect((errorMessageRaw: unknown) => {
+		let errorMessage = tostring(errorMessageRaw)
 		output.Text = "Server Error:\n" + errorMessage
 		errorReport.Visible = true
 	})

@@ -21,8 +21,8 @@ export namespace MainContext {
     export function get() {
         // doing something weird here to bypass circular dependencies (if I used import above they would circle)
         if (!mainContext) {
-            let gameMgr = (require(ServerStorage.FindFirstChild("Standard")!.FindFirstChild("GameManagementModule") as ModuleScript|undefined)!) as GameManagerI
-            let inventoryMgr = (require(ServerStorage.FindFirstChild("Standard")!.FindFirstChild("InventoryModule") as ModuleScript|undefined)!) as InventoryManagerI
+            let gameMgr = require(ServerStorage.FindFirstChild("Standard")!.FindFirstChild("GameManagementModule") as ModuleScript) as GameManagerI
+            let inventoryMgr = require(ServerStorage.FindFirstChild("Standard")!.FindFirstChild("InventoryModule") as ModuleScript) as InventoryManagerI
 
             mainContext = new ServerContext(gameMgr, inventoryMgr, PlayerServer.getPlayerTracker(), new RandomNumberGenerator())
         }

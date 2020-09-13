@@ -137,17 +137,20 @@ export namespace PowerServer {
         let duration = toolBaseData.durationFunc!(toolBaseData, flexToolInst.levelN)
         let range = FlexEquipUtility.GetAdjStat(flexToolInst, "rangeN")
         new AreaEffect(newWisp, range, duration, affectedTeam, effectFunc)
-        newWisp.SetPrimaryPartCFrame(ModelUtility.getPrimaryPartCFrameSafe(character).add(new Vector3(0, 7, 0)))
-        (newWisp.FindFirstChild('Range') as NumberValue|undefined)!.Value = range
+        newWisp.SetPrimaryPartCFrame(ModelUtility.getPrimaryPartCFrameSafe(character).add(new Vector3(0, 7, 0)));
+        (newWisp.FindFirstChild('Range') as NumberValue).Value = range
         newWisp.Parent = Workspace.FindFirstChild('Summons')
         delay(duration - 2, () => {
-            newWisp.GetDescendants().forEach((descendant) => {
-                if (descendant.IsA("ParticleEmitter"))
+            let wispDescendants = newWisp.GetDescendants()
+            for( let descendant of wispDescendants ) {
+                if (descendant.IsA("ParticleEmitter")) {
                     descendant.Enabled = false
-                else if (descendant.IsA("BasePart"))
+                }
+                else if (descendant.IsA("BasePart")) {
                     TweenService.Create(descendant, new TweenInfo(2), { Transparency: 1 }).Play()
-            })
-            (newWisp.PrimaryPart!.FindFirstChild("DisperseSound") as Sound|undefined)!.Play()
+                }
+            }
+            (newWisp.PrimaryPart!.FindFirstChild("DisperseSound") as Sound).Play()
             wait(2)
             newWisp.Destroy()
         })
