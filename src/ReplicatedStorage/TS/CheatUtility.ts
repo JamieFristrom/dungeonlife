@@ -17,7 +17,7 @@ class CheatUtilityClass
     }
 }
 
-let cheatUtilityClass = new CheatUtilityClass()
+const cheatUtilityClass = new CheatUtilityClass()
 
 export = cheatUtilityClass
 

@@ -425,7 +425,8 @@ export class PlayerTracker {
 
     getTeamStyleChoice(player: Player) {
         DebugXL.Assert(player.IsA("Player"))
-        return this.teamStyleChoices.get(player) || TeamStyleChoice.DungeonLord
+        const teamStyleChoice = this.teamStyleChoices.get(player)
+        return teamStyleChoice === undefined ? TeamStyleChoice.DungeonLord : teamStyleChoice
     }
 
     collectGarbage() {
@@ -562,10 +563,10 @@ export namespace PlayerServer {
     }
 
     export function teamMatchesTeamStyleChoice(team: Team, teamStyleChoice: TeamStyleChoice) {
-        if( team === heroTeam) {
+        if (team === heroTeam) {
             return teamStyleChoice === TeamStyleChoice.Hero
         }
-        else if( team === monsterTeam ) {
+        else if (team === monsterTeam) {
             return teamStyleChoice === TeamStyleChoice.DungeonLord || teamStyleChoice === TeamStyleChoice.Monster
         }
         else {

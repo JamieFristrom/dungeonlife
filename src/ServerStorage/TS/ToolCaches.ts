@@ -19,15 +19,14 @@ import { InventoryManagerI } from './InventoryManagerI'
 type Character = Model
 
 export namespace ToolCaches {
-    let mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
+    let mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder | undefined)!
     DebugXL.Assert(mobToolCache !== undefined)
-
 
     export function updateToolCache(
         playerTracker: PlayerTracker,
         characterKey: CharacterKey,
         characterRecord: CharacterRecordI,
-        activeSkins: ActiveSkinSetI = new Map<SkinTypeEnum,string>()) {
+        activeSkins: ActiveSkinSetI = new Map<SkinTypeEnum, string>()) {
 
         DebugXL.logD(LogArea.Items, `Updating ToolCache for characterKey: ${characterKey}`)
         DebugXL.Assert(typeOf(characterKey) === 'number')
@@ -44,10 +43,10 @@ export namespace ToolCaches {
                 let possessionKey = characterRecord.getPossessionKeyFromSlot(i)
                 if (possessionKey) {
                     let flexTool = characterRecord.getFlexTool(possessionKey)!
-                    if (flexTool.getUseType === undefined) {
-                        DebugXL.Error(`flexTool ${flexTool.baseDataS} likely missing metatable`)
-                        continue
-                    }
+                    // if (!flexTool.getUseType) {
+                    //     DebugXL.Error(`flexTool ${flexTool.baseDataS} likely missing metatable`)
+                    //     continue
+                    // }
                     if (flexTool.getUseType() === "held") {
                         let tool = CharacterRecord.getToolInstanceFromPossessionKey(characterModel, characterRecord, possessionKey)
                         if (!tool)
@@ -72,7 +71,7 @@ export namespace ToolCaches {
             }
 
             // garbage collection
-            let toolCache = player ? (player.FindFirstChild('Backpack') as Folder|undefined)! : mobToolCache
+            let toolCache = player ? (player.FindFirstChild('Backpack') as Folder | undefined)! : mobToolCache
             toolCache.GetChildren().forEach(function (inst: Instance) {
                 let tool = inst as Tool
                 let possessionKey = CharacterRecord.getToolPossessionKey(tool)!
@@ -95,7 +94,7 @@ export namespace ToolCaches {
     }
 
     export function getToolCache(player: Player) {
-        const toolCache = (player.FindFirstChild("Backpack") as Folder|undefined)!
+        const toolCache = (player.FindFirstChild("Backpack") as Folder | undefined)!
         return toolCache
     }
 }

@@ -119,7 +119,8 @@ class DebugXLC implements DebugI {
     }
 
     log(logLevel: LogLevel, tag: LogArea, message: string) {
-        const cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') + (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
+        let cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') 
+        cliSrvPrefix += (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
         if (!message) {
             error(`${cliSrvPrefix}-E/${tag}: MISSING MESSAGE`)
         }

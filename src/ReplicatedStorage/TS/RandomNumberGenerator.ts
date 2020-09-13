@@ -11,7 +11,7 @@ export class RandomNumberGenerator implements RandomNumberGeneratorI {
     private random: Random  // tried making it a subclass but there were issues. 
 
     constructor( seed?: number ) {
-        if(seed)
+        if(seed!==undefined)
             this.random = new Random(seed)
         else
             this.random = new Random()
@@ -29,7 +29,7 @@ export class RandomNumberGenerator implements RandomNumberGeneratorI {
     randomBiasedInteger1toNInclusive(weightsA: number[]): number {
         DebugXL.Assert( weightsA.size() >= 1 )
         let totalWeightN = 0
-        for( let weight of weightsA ) {
+        for( const weight of weightsA ) {
             totalWeightN = totalWeightN + weight 
         }
         DebugXL.Assert( totalWeightN > 0 )
