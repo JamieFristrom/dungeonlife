@@ -9,7 +9,7 @@ DebugXL.logI(LogArea.Executed, script.Name)
 import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 import { Workspace } from "@rbxts/services"
 
-const runTests = false
+const runTests = true
 
 // undefined means run all the tests
 const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "SuperbossTests"

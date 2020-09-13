@@ -47,6 +47,6 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     wait(1)
     let leaderstats = (testPlayer.FindFirstChild("leaderstats") as Model|undefined)!
     TestUtility.assertTrue(leaderstats !== undefined);
-    (TestUtility.assertTrue(leaderstats.FindFirstChild("Level") as StringValue|undefined)!.Value === "666 (333)")
+    TestUtility.assertTrue((leaderstats.FindFirstChild("Level") as StringValue).Value === "666 (333)")
     TestUtility.cleanTestPlayer(testPlayer)
 }

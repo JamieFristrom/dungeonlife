@@ -103,7 +103,9 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         { k: "DeepestFloor", args: [666] }
     ]
 
-    TestUtility.assertTrue(Localize.trim("  hoo")[0] === "hoo")
+    const trimmedResult = Localize.trim("  hoo")
+    const trimmedStr = trimmedResult[0]
+    TestUtility.assertTrue(trimmedStr === "hoo")
     TestUtility.assertTrue(Localize.trim("  hoo  ")[0] === "hoo")
     TestUtility.assertTrue(Localize.trim("hoo  ")[0] === "hoo")
     DebugXL.logD(LogArea.Test, Localize.squish("  hoo  ")[0])

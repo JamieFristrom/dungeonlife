@@ -28,8 +28,8 @@ export class PitTrap
                         let disposableFloor = (this.trap.FindFirstChild('DisposableFloor') as ObjectValue|undefined)!.Value!
                         disposableFloor.Destroy()
                         hitBox.Destroy()
-                        openFloor.Parent = script.Parent
-                        (openFloor.FindFirstChild('OpenSound') as Sound|undefined)!.Play()
+                        openFloor.Parent = script.Parent;
+                        (openFloor.FindFirstChild('OpenSound') as Sound).Play()
                     }
                 }
             }

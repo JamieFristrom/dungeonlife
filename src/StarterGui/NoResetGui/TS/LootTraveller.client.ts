@@ -143,8 +143,8 @@ lootDropRE.OnClientEvent.Connect( function( ...args: unknown[] )
     let funcName = rawFuncName as string
     if( LootTravellerRemote[ funcName ] )
     {
-        let typedFunc = LootTravellerRemote[ funcName ] as (...args: unknown[])=>void
-        typedFunc( ...args )
+        let typedFunc = LootTravellerRemote[ funcName ] as (...filteredArgs: unknown[])=>void
+        typedFunc( ...filteredArgs )
     }
 } )
 

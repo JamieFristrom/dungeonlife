@@ -42,9 +42,9 @@ DebugXL.Assert(mobFolder !== undefined)
 const mobToolCacheFolder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
 DebugXL.Assert(mobToolCacheFolder !== undefined)
 
-const mobIdleAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('idle') as StringValue|undefined)!.GetChildren()
-const mobWalkAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('walk') as StringValue|undefined)!.GetChildren()
-const mobRunAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('run') as StringValue|undefined)!.GetChildren()
+const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild('idle')!.GetChildren() as Animation[]
+const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild('walk')!.GetChildren() as Animation[]
+const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild('run')!.GetChildren() as Animation[]
 
 
 class Attackable {
@@ -537,7 +537,7 @@ export namespace MobServer {
                         // the antimagnet trick is O(n^2) with sqrts so I'm a bit leery
                         const zeroVec = new Vector3(0, 0, 0)
                         const myPos = ModelUtility.getPrimaryPartCFrameSafe(this.model).Position
-                        const mobs: Character[] = mobFolder.GetChildren()
+                        const mobs: Character[] = mobFolder.GetChildren() as Character[]
                         const pushForces = mobs.map((mob) => myPos.sub(ModelUtility.getPrimaryPartCFrameSafe(mob).Position))
                         const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
                         const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
