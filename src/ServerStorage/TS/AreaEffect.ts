@@ -3,7 +3,7 @@ import { RunService, Players } from "@rbxts/services";
 // wishlist fix
 interface Activateable
 {
-    Activate( ...args:unknown[] ): void
+    Activate( ...args:Array<unknown> ): void
 }
 
 export class AreaEffect
@@ -14,8 +14,8 @@ export class AreaEffect
         {
             if( player.Team === this.team )
             {
-                let targetCharacter = player.Character as Model
-                let hrp = (targetCharacter.FindFirstChild("HumanoidRootPart") as BasePart|undefined) 
+                const targetCharacter = player.Character as Model
+                const hrp = (targetCharacter.FindFirstChild("HumanoidRootPart") as BasePart|undefined) 
                 if( hrp )
                 {
                     if( hrp.Position.sub( this.myModel.PrimaryPart!.Position ).Magnitude <= this.range )
@@ -42,7 +42,7 @@ export class AreaEffect
             wait(1)
             for(; myModel.Parent!==undefined ;)
             {
-                let thisFrame = time()
+                const thisFrame = time()
                 this.update( thisFrame - lastFrame )  // being accurate because wait() isn't
                 lastFrame = thisFrame
                 wait(1)

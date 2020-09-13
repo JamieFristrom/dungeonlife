@@ -11,11 +11,11 @@ import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
 
 import { Workspace } from "@rbxts/services"
 
-let gameManagement = (Workspace.FindFirstChild('GameManagement') as Folder|undefined)!
-let DungeonDepthValueObj = gameManagement.FindFirstChild('DungeonDepth') as NumberValue
-let DungeonFloorValueObj = gameManagement.FindFirstChild('DungeonFloor') as NumberValue
+const gameManagement = (Workspace.FindFirstChild('GameManagement') as Folder | undefined)!
+const DungeonDepthValueObj = gameManagement.FindFirstChild('DungeonDepth') as NumberValue
+const DungeonFloorValueObj = gameManagement.FindFirstChild('DungeonFloor') as NumberValue
 
-let disableShuffle = PlacesManifest.getCurrentPlace().maxAllowedLevel <= 4
+const disableShuffle = PlacesManifest.getCurrentPlace().maxAllowedLevel <= 4
 
 export class DungeonDeckClass {
     floorForDepth = new Array<number>()
@@ -26,11 +26,11 @@ export class DungeonDeckClass {
 
     shuffle(dungeonName: string) {
         // let numNonbossLevels = 0  // for testing superboss level 
-        let numNonbossLevels = 3
+        const numNonbossLevels = 3
 
         // always put the boss level on the bottom
         // if it's winter's crypt, always put the palace on the top - 
-        let startingDeck = new Array<number>()
+        const startingDeck = new Array<number>()
         let floorIdx = 0
 
         let bossFloorIdx = 6  // safe default in case of bug
@@ -46,9 +46,9 @@ export class DungeonDeckClass {
         }
         this.floorForDepth = []
         for (let i = 0; i < numNonbossLevels; i++) {
-            let cardIdx = disableShuffle ? i : MathXL.RandomInteger(0, startingDeck.size() - 1)
+            const cardIdx = disableShuffle ? i : MathXL.RandomInteger(0, startingDeck.size() - 1)
             this.floorForDepth.push(startingDeck[cardIdx])
-            startingDeck.remove( cardIdx )
+            startingDeck.remove(cardIdx)
         }
 
         // push boss level
@@ -73,4 +73,4 @@ export class DungeonDeckClass {
     }
 }
 
-export let DungeonDeck = new DungeonDeckClass()
+export const DungeonDeck = new DungeonDeckClass()

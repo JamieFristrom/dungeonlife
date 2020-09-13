@@ -26,7 +26,7 @@ export class RandomNumberGenerator implements RandomNumberGeneratorI {
         return this.random.NextNumber(min,max)
     }
 
-    randomBiasedInteger1toNInclusive(weightsA: number[]): number {
+    randomBiasedInteger1toNInclusive(weightsA: Array<number>): number {
         DebugXL.Assert( weightsA.size() >= 1 )
         let totalWeightN = 0
         for( const weight of weightsA ) {
@@ -45,7 +45,4 @@ export class RandomNumberGenerator implements RandomNumberGeneratorI {
         DebugXL.Error( `Problem with RandomBiasedInteger1toN. Total weight ${totalWeightN} dieroll ${dieroll}` )
         return 1
     }
-
-    randomBiasedInteger0toN(weightsA: number[]): number { return 0 }
-
 }

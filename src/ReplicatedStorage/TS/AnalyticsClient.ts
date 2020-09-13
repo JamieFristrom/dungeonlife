@@ -1,6 +1,6 @@
 import { Workspace } from "@rbxts/services";
 
-let analyticsRE = Workspace.WaitForChild('Signals').WaitForChild('AnalyticsRE') as RemoteEvent
+const analyticsRE = Workspace.WaitForChild('Signals').WaitForChild('AnalyticsRE') as RemoteEvent
 
 export namespace AnalyticsClient
 {

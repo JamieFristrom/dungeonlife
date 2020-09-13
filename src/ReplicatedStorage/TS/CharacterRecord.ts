@@ -53,7 +53,7 @@ export class GearPool {
     private gear = new Map<string, FlexTool>()
 
     constructor(gearT: { [k: string]: FlexTool }) {
-        for (let [k, v] of Object.entries(gearT)) {
+        for (const [k, v] of Object.entries(gearT)) {
             this.set(k as string, v)
             FlexTool.objectify(v)
         }
@@ -66,8 +66,8 @@ export class GearPool {
     clear() { this.gear.clear() }
 
     getFromSlot(slot: number): [FlexTool | undefined, string | undefined] {
-        let foundItem: FlexTool | undefined = undefined
-        let foundKey: string | undefined = undefined
+        let foundItem: FlexTool | undefined
+        let foundKey: string | undefined
         this.gear.forEach((item, k) => {
             if (item.slotN === slot) {
                 if (foundItem !== undefined) {
@@ -81,8 +81,8 @@ export class GearPool {
     }
 
     getFromEquipSlot(equipSlot: ToolData.EquipSlotEnum): [FlexTool | undefined, string | undefined] {
-        let foundItem: FlexTool | undefined = undefined
-        let foundKey: string | undefined = undefined
+        let foundItem: FlexTool | undefined
+        let foundKey: string | undefined
         this.gear.forEach((item, k) => {
             if (item.equippedB && item.getEquipSlot() === equipSlot) {
                 if (foundItem !== undefined) {
@@ -97,12 +97,12 @@ export class GearPool {
 
     assignToSlot(possesesionKey: string, slot: HotbarSlot) {
         // clear previous item from slot
-        let currentItemInSlot = this.getFromSlot(slot)[0]
+        const currentItemInSlot = this.getFromSlot(slot)[0]
         if (currentItemInSlot) {
             currentItemInSlot.slotN = undefined
         }
 
-        let item = this.get(possesesionKey)
+        const item = this.get(possesesionKey)
         if (item) {
             item.slotN = slot
         }
@@ -151,7 +151,7 @@ export class GearPool {
     }
 
     findIf(func: (v: FlexTool) => boolean): [ FlexTool|undefined, string|undefined ] {
-        for (let [k, v] of Object.entries(this.gear)) {
+        for (const [k, v] of Object.entries(this.gear)) {
             if (func(v))
                 return [v, k]
         }
@@ -159,18 +159,18 @@ export class GearPool {
     }
 
     findAllWhere(func: (v: FlexTool) => boolean) {
-        let gearMap = new Map<string, FlexTool>()
-        for (let [k, v] of Object.entries(this.gear)) {
+        const gearMap = new Map<string, FlexTool>()
+        for (const [k, v] of Object.entries(this.gear)) {
             if (func(v))
                 gearMap.set(k, v)
         }
         return gearMap
     }
 
-    static sortItemPairs(items: [string, FlexTool][]) {
+    static sortItemPairs(items: Array<[string, FlexTool]>) {
         table.sort(items, function (a: [string, FlexTool], b: [string, FlexTool]) {
-            let toolA = ToolData.dataT[a[1].baseDataS]
-            let toolB = ToolData.dataT[b[1].baseDataS]
+            const toolA = ToolData.dataT[a[1].baseDataS]
+            const toolB = ToolData.dataT[b[1].baseDataS]
             if (toolA.equipType === toolB.equipType) {
                 if (toolA.equipType === ToolData.EquipTypeEnum.Armor) {
                     DebugXL.Assert(toolA.equipSlot !== undefined)
@@ -193,13 +193,13 @@ export class GearPool {
     }
 
     makeSortedList() {
-        let items = this.gear.entries()
+        const items = this.gear.entries()
         return GearPool.sortItemPairs(items)
     }
 
     purgeObsoleteItems() {
         // you may have an obsolete item; a lot of players are rocking HelmetWinged's
-        for (let [k, flexToolInst] of Object.entries(this.gear)) {
+        for (const [k, flexToolInst] of Object.entries(this.gear)) {
             if (ToolData.dataT[flexToolInst.baseDataS] === undefined) {
                 DebugXL.Error(`Nonexistent item ${flexToolInst.baseDataS}. Removing.`)
                 this.gear.delete(k)
@@ -218,15 +218,15 @@ export abstract class CharacterRecord implements CharacterRecordI {
 
     constructor(
         public idS: CharacterClass,
-        _startItems: GearDefinition[],
+        _startItems: Array<GearDefinition>,
         team = (Teams.FindFirstChild("Unassigned") as Team|undefined)!) {
         this.team = team
         this.itemsT = undefined  // just used for persistence in old system
         this.gearPool = new GearPool({})
         for (let i = 0; i < _startItems.size(); i++) {
-            let startItem = _startItems[i]
+            const startItem = _startItems[i]
             const k: string = 'item' + (i + 1)
-            let gearItem = new FlexTool(
+            const gearItem = new FlexTool(
                 startItem.baseDataS,
                 startItem.levelN,
                 startItem.enhancementsA,
@@ -237,9 +237,9 @@ export abstract class CharacterRecord implements CharacterRecordI {
                 startItem.hideAccessoriesB // theoretically always false                                        
             )
             this.gearPool.set(k, gearItem)
-            let idx = tonumber(k.sub(4))
+            const idx = tonumber(k.sub(4))
             DebugXL.Assert(idx !== undefined)
-            if (idx) {
+            if (idx !== undefined) {
                 DebugXL.Assert(idx >= 1)
                 // make sure tool key server starts serving after existing items
                 this.toolKeyServerN = math.max(this.toolKeyServerN, idx + 1)
@@ -248,7 +248,7 @@ export abstract class CharacterRecord implements CharacterRecordI {
     }
 
     static convertFromRemote(rawPCData: CharacterRecordI) {
-        let pc = setmetatable(rawPCData, CharacterRecord as LuaMetatable<CharacterRecordI>) as CharacterRecord
+        const pc = setmetatable(rawPCData, CharacterRecord as LuaMetatable<CharacterRecordI>) as CharacterRecord
         DebugXL.Assert(pc.itemsT === undefined)
         setmetatable(pc.gearPool, GearPool as LuaMetatable<GearPool>)
         pc.gearPool.forEach(item => FlexTool.objectify(item))
@@ -276,7 +276,7 @@ export abstract class CharacterRecord implements CharacterRecordI {
     }
 
     giveFlexTool(flexTool: FlexTool) {
-        let key = 'item' + this.toolKeyServerN
+        const key = 'item' + this.toolKeyServerN
         DebugXL.Assert(!this.gearPool.has(key))
         this.gearPool.set(key, flexTool)
         this.toolKeyServerN++
@@ -285,7 +285,7 @@ export abstract class CharacterRecord implements CharacterRecordI {
 
     removeTool(itemKey: string) {
         DebugXL.Assert(itemKey.sub(0, 3) === 'item')
-        let item = this.gearPool.get(itemKey)
+        const item = this.gearPool.get(itemKey)
         this.gearPool.delete(itemKey)
         return item
     }
@@ -314,14 +314,14 @@ export abstract class CharacterRecord implements CharacterRecordI {
     }
 
     getSlotFromPossessionKey(possessionKey: PossessionKey) {
-        let flexTool = this.gearPool.get(possessionKey)
+        const flexTool = this.gearPool.get(possessionKey)
         if (flexTool) {
             return flexTool.slotN
         }
     }
 
     static getToolPossessionKey(tool: Tool): PossessionKey | undefined {
-        let possessionKeyValue = tool.FindFirstChild('PossessionKey') as StringValue
+        const possessionKeyValue = tool.FindFirstChild('PossessionKey') as StringValue
         DebugXL.Assert(possessionKeyValue !== undefined)
         if (possessionKeyValue) {
             return possessionKeyValue.Value
@@ -337,17 +337,17 @@ export abstract class CharacterRecord implements CharacterRecordI {
     // is more Demeter principle and it means we're not dependent on PlayerServer (which is already dependent on us)
     static getToolInstanceFromPossessionKey(character: Character, characterRecord: CharacterRecordI, possessionKey: PossessionKey) {
         DebugXL.Assert(character !== undefined)
-        let tool: Tool | undefined = undefined
+        let tool: Tool | undefined
         if (character) {
-            let heldTool = character.FindFirstChildWhichIsA('Tool') as Tool
+            const heldTool = character.FindFirstChildWhichIsA('Tool') as Tool
             if (heldTool && CharacterRecord.getToolPossessionKey(heldTool) === possessionKey) {
                 tool = heldTool
             }
             else  // tool not in hand; is it in cache?
             {
-                let player = Players.GetPlayerFromCharacter(character)
+                const player = Players.GetPlayerFromCharacter(character)
                 if (player) {
-                    let correctInstance = player.FindFirstChild('Backpack')!.GetChildren().find((inst) => {
+                    const correctInstance = player.FindFirstChild('Backpack')!.GetChildren().find((inst) => {
                         DebugXL.Assert(inst.IsA('Tool'))
                         return inst.IsA('Tool') && CharacterRecord.getToolPossessionKey(inst) === possessionKey
                     })
@@ -368,20 +368,20 @@ export abstract class CharacterRecord implements CharacterRecordI {
     }
 
     giveRandomArmor(hideAccessoriesB: boolean) {
-        for (let slot of Object.keys(ToolData.EquipSlotEnum)) {
-            let equipPool = ToolData.dataA.filter((tool) => tool.equipSlot === slot)
-            let equipIdx = MathXL.RandomInteger(0, equipPool.size() - 1)
-            let equip = equipPool[equipIdx]
-            let flexTool = new FlexTool(equip.idS, 0, [], undefined, false, false, false, hideAccessoriesB)
+        for (const slot of Object.keys(ToolData.EquipSlotEnum)) {
+            const equipPool = ToolData.dataA.filter((tool) => tool.equipSlot === slot)
+            const equipIdx = MathXL.RandomInteger(0, equipPool.size() - 1)
+            const equip = equipPool[equipIdx]
+            const flexTool = new FlexTool(equip.idS, 0, [], undefined, false, false, false, hideAccessoriesB)
             this.giveFlexTool(flexTool)
         }
     }
 
     equipAvailableArmor() {
-        let slotUsed = { Torso: false, Legs: false, Head: false }
+        const slotUsed = { Torso: false, Legs: false, Head: false }
 
         this.gearPool.forEach(function (item) {
-            let equipSlot = ToolData.dataT[item.baseDataS].equipSlot
+            const equipSlot = ToolData.dataT[item.baseDataS].equipSlot
             if (equipSlot) {
                 item.equippedB = !slotUsed[equipSlot]
             }

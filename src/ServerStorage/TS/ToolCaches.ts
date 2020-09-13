@@ -11,15 +11,13 @@ import { HotbarSlot } from 'ReplicatedStorage/TS/FlexToolTS'
 import { SkinTypeEnum, ActiveSkinSetI } from "ReplicatedStorage/TS/SkinTypes"
 
 import * as InstanceXL from "ReplicatedStorage/Standard/InstanceXL"
-import * as Inventory from "ServerStorage/Standard/InventoryModule"
 import * as FlexibleTools from "ServerStorage/Standard/FlexibleToolsModule"
 import { PlayerTracker } from "./PlayerServer"
-import { InventoryManagerI } from './InventoryManagerI'
 
 type Character = Model
 
 export namespace ToolCaches {
-    let mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder | undefined)!
+    const mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder | undefined)!
     DebugXL.Assert(mobToolCache !== undefined)
 
     export function updateToolCache(
@@ -31,18 +29,18 @@ export namespace ToolCaches {
         DebugXL.logD(LogArea.Items, `Updating ToolCache for characterKey: ${characterKey}`)
         DebugXL.Assert(typeOf(characterKey) === 'number')
         DebugXL.Assert(characterKey !== 0)
-        let player = playerTracker.getPlayer(characterKey)
+        const player = playerTracker.getPlayer(characterKey)
         if (!player) {
             return  // I guess later I decided that mobs don't need to keep tools in a cache because they don't currently switch
         }
 
-        let characterModel = playerTracker.getCharacterModel(characterKey)
+        const characterModel = playerTracker.getCharacterModel(characterKey)
         DebugXL.Assert(characterModel !== undefined) // character should be instantiated if we're building its cache
         if (characterModel) {
             for (let i: HotbarSlot = 1; i <= HotbarSlot.Max; i++) {
-                let possessionKey = characterRecord.getPossessionKeyFromSlot(i)
-                if (possessionKey) {
-                    let flexTool = characterRecord.getFlexTool(possessionKey)!
+                const possessionKey = characterRecord.getPossessionKeyFromSlot(i)
+                if (possessionKey !== undefined) {
+                    const flexTool = characterRecord.getFlexTool(possessionKey)!
                     // if (!flexTool.getUseType) {
                     //     DebugXL.Error(`flexTool ${flexTool.baseDataS} likely missing metatable`)
                     //     continue
@@ -61,22 +59,22 @@ export namespace ToolCaches {
             }
             // remove any items that are no longer in hotbar; I could have just cleared your held tool and backpack first, but this
             // lets you hold things when you change your hotbar
-            let heldTool = characterModel.FindFirstChildWhichIsA("Tool") as Tool
-            if (heldTool) {
-                let possessionKey = CharacterRecord.getToolPossessionKey(heldTool)!
-                let flexTool = characterRecord.getFlexTool(possessionKey)!
-                if (!flexTool || !flexTool.slotN) {
+            const heldTool = characterModel.FindFirstChildWhichIsA("Tool") as Tool
+            if (heldTool !== undefined) {
+                const possessionKey = CharacterRecord.getToolPossessionKey(heldTool)!
+                const flexTool = characterRecord.getFlexTool(possessionKey)!
+                if (!flexTool || flexTool.slotN === undefined) {
                     heldTool.Destroy()
                 }
             }
 
             // garbage collection
-            let toolCache = player ? (player.FindFirstChild('Backpack') as Folder | undefined)! : mobToolCache
+            const toolCache = player ? (player.FindFirstChild('Backpack') as Folder | undefined)! : mobToolCache
             toolCache.GetChildren().forEach(function (inst: Instance) {
-                let tool = inst as Tool
-                let possessionKey = CharacterRecord.getToolPossessionKey(tool)!
-                let flexTool = characterRecord.getFlexTool(possessionKey)
-                if (!flexTool || !flexTool.slotN)  // might have been thrown away
+                const tool = inst as Tool
+                const possessionKey = CharacterRecord.getToolPossessionKey(tool)!
+                const flexTool = characterRecord.getFlexTool(possessionKey)
+                if (!flexTool || flexTool.slotN === undefined)  // might have been thrown away
                 {
                     tool.Destroy()
                 }
@@ -89,7 +87,7 @@ export namespace ToolCaches {
     }
 
     export function publishPotions(player: Player, characterRecord: CharacterRecordI) {
-        let potions = characterRecord.countBaseDataQuantity('Healing')
+        const potions = characterRecord.countBaseDataQuantity('Healing')
         InstanceXL.CreateSingleton("NumberValue", { Name: "NumHealthPotions", Value: potions, Parent: player })
     }
 

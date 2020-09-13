@@ -67,9 +67,9 @@ export namespace RandomGear {
         }
 
         // rather than choosing a stat first, we separate into separate piles so if there are empty piles we can ignore them
-        const statRelatedPiles = new Map<ToolData.ToolDatumI[], number>()
-        for (let stat of ['strN', 'dexN', 'willN', 'conN']) {
-            const statRelatedPile = possibleGearDrops.filter((gearItem) => gearItem.statReqS ? gearItem.statReqS === stat : false)
+        const statRelatedPiles = new Map<Array<ToolData.ToolDatumI>, number>()
+        for (const stat of ['strN', 'dexN', 'willN', 'conN']) {
+            const statRelatedPile = possibleGearDrops.filter((gearItem) => (gearItem.statReqS !== undefined) ? gearItem.statReqS === stat : false)
             if (statRelatedPile.size() > 0)
                 statRelatedPiles.set(statRelatedPile, hero.statsT[stat])
         }
