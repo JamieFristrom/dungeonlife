@@ -42,7 +42,7 @@ class DebugFake implements DebugI {
     let char = testContext.makeTestPlayerCharacter("Warrior");
     (char.FindFirstChild("Head") as Part|undefined)!.Parent = undefined
     PlayerXL.CharacterAdded(debugFake, testContext.getPlayer())
-    wait(0.5)
+    wait(1)
     TestUtility.assertTrue( debugFake.lastError.find("Where's My Head Baby")[0]===0, "Appropriately errored with missing head")
     testContext.clean()
 }

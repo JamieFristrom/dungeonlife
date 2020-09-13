@@ -48,7 +48,7 @@ export class DungeonDeckClass {
         for (let i = 0; i < numNonbossLevels; i++) {
             let cardIdx = disableShuffle ? i : MathXL.RandomInteger(0, startingDeck.size() - 1)
             this.floorForDepth.push(startingDeck[cardIdx])
-            startingDeck.splice(cardIdx, 1)
+            startingDeck.remove( cardIdx )
         }
 
         // push boss level

@@ -1,6 +1,6 @@
 print(script.Name + " executed")
 
-import { HttpService, ScriptContext, Players, Workspace, RunService } from "@rbxts/services";
+import { HttpService, Players, Workspace, RunService } from "@rbxts/services";
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 import { HttpXL } from "ServerStorage/TS/HttpXL"
 
