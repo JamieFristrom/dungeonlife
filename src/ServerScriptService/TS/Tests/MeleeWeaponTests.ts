@@ -48,7 +48,7 @@ class CombatTestHelper {
         this.oldHealth = oldHealth
         this.defender.Parent = Workspace
         this.defender.SetPrimaryPartCFrame(this.attacker.GetPrimaryPartCFrame())
-        this.tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>(weapon)!.Clone()
+        this.tool = (ServerStorage.FindFirstChild("Tools")!.FindFirstChild(weapon) as Tool|undefined)!.Clone()
         this.flexTool = new FlexTool(weapon, 1, [])
         this.tool = FlexibleTools.CreateTool({
             toolInstanceDatumT: this.flexTool,
@@ -69,13 +69,13 @@ class CombatTestHelperPlayerAttacker extends CombatTestHelper {
 
     constructor(attackerClass: CharacterClass, attackerTeam: string, weapon: string, defender: Model) {
         let testSetup = new TestContext()
-        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>(attackerTeam)
+        testSetup.getPlayer().Team = (Teams.FindFirstChild(attackerTeam) as Team|undefined)
         let attacker = testSetup.makeTestPlayerCharacter(attackerClass)
         let attackerRecord = attackerTeam === "Heroes" ?
             new Hero(attackerClass, CharacterClasses.heroStartingStats[attackerClass], []) :
             new Monster(attackerClass, [], 1)
         testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
-        let oldHealth = defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+        let oldHealth = (defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
         super(testSetup, attacker, weapon, defender, oldHealth)
         this.attackerRecord = attackerRecord
     }
@@ -90,13 +90,13 @@ class CombatTestHelperPlayerAttacker extends CombatTestHelper {
 class CombatTestHelperPlayerDefender extends CombatTestHelper {
     constructor(attackerClass: CharacterClass, attackerTeam: string, attacker: Model, weapon: string, defenderClass: CharacterClass, defenderTeam: string) {
         let testSetup = new TestContext()
-        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>(defenderTeam)
+        testSetup.getPlayer().Team = (Teams.FindFirstChild(defenderTeam) as Team|undefined)
         let defender = testSetup.makeTestPlayerCharacter(defenderClass)
         let defenderRecord = defenderTeam === "Heroes" ?
             new Hero(defenderClass, CharacterClasses.heroStartingStats[defenderClass], []) :
             new Monster(defenderClass, [], 1)
         testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), defenderRecord)
-        let oldHealth = defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+        let oldHealth = (defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
         super(testSetup, attacker, weapon, defender, oldHealth)
     }
 
@@ -110,21 +110,21 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 {
     let testSetup = new TestContext()
     Dungeon.BuildWait(testSetup, new FloorInfo(), (player) => { })
-    let trapDoors = Workspace.FindFirstChild<Folder>("Environment")!.FindFirstChild<Model>("TrapDoors", true)!
-    let oldHealth = trapDoors.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let trapDoors = (Workspace.FindFirstChild("Environment") as Folder|undefined)!.FindFirstChild("TrapDoors", true)!
+    let oldHealth = (trapDoors.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Mage"), "Staff", trapDoors, oldHealth)
     let attackerRecord = new Hero("Mage", CharacterClasses.heroStartingStats["Mage"], [])      // can't just put tool in constructor because it gets cloned 
     attackerRecord.giveFlexTool(combatHelper.flexTool)                                           // whereas this just attaches the existing one
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
-    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+    combatHelper.testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined);
+    (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health = 1
     const oldLoot = attackerRecord.gearPool.size()  // testing this in StructureTests
 
     // act
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth <= 0, "Trap doors smashed")
 
     // clean
@@ -140,20 +140,20 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     let map = MapUtility.makeEmptyMap(5)
     let [structureModel] = FurnishServer.Furnish(testSetup, new FloorInfo(), map, testSetup.getPlayer(), "TestDestructibleLoot", new Vector3(0, 0, 0), 0)
     DebugXL.Assert(structureModel !== undefined)
-    let oldHealth = structureModel.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let oldHealth = (structureModel.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     let combatHelper = new CombatTestHelper(testSetup, testSetup.makeTestPlayerCharacter("Rogue"), "Shortsword", structureModel, oldHealth)
     let attackerRecord = new Hero("Rogue", CharacterClasses.heroStartingStats["Rogue"], [])      // can't just put tool in constructor because it gets cloned 
     attackerRecord.giveFlexTool(combatHelper.flexTool)                                           // whereas this just attaches the existing one
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), attackerRecord)
-    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
-    combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+    combatHelper.testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined);
+    (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health = 1
     const oldLoot = attackerRecord.gearPool.size()  // testing this in StructureTests
 
     // act
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth <= 0, "Structure smashed")
     TestUtility.assertTrue(attackerRecord.gearPool.size() > oldLoot, "Structure dropped loot")  // testing this in StructureTests
 
@@ -175,13 +175,13 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let lastHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let lastHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(lastHealth < combatHelper.oldHealth, "Enchanted monster weapon: defender is hurt")
     TestUtility.assertTrue(combatHelper.defender.PrimaryPart!.FindFirstChild("Fire") !== undefined, "Enchanted monster weapon: defender is burning")
 
     // assert it goes down over time
     CharacterXL.ProcessCharacter(combatHelper.testSetup, combatHelper.defender, 0.1)
-    let nextHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let nextHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(nextHealth < lastHealth, "monster fire weapon: defender is continually hurt")
 
     // clean
@@ -202,10 +202,10 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth < combatHelper.oldHealth, "Enchanted monster weapon: defender is hurt")
     TestUtility.assertTrue(CharacterUtility.GetSlowCooldownPct(combatHelper.defender) < 0.9, "Enchanted monster weapon: defender is slowed")
-    TestUtility.assertTrue(combatHelper.defender.FindFirstChild<BasePart>("Head")!.BrickColor === new BrickColor("Toothpaste"),
+    TestUtility.assertTrue((combatHelper.defender.FindFirstChild("Head") as BasePart|undefined)!.BrickColor === new BrickColor("Toothpaste"),
         "Enchanted monster weapon: defender is toothpaste colored")
     TestUtility.assertTrue(combatHelper.defender.PrimaryPart!.FindFirstChild("IceFX") !== undefined, "Enchanted monster weapon: defender is frosted")
 
@@ -222,7 +222,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
 
     // clean
@@ -236,7 +236,7 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 // or we can implement a ServerContext that holds the playerserver, inventory, and other server globals
 // {
 //     let testSetup = new TypicalTestSetup()
-//     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+//     testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined)
 
 //     let character = testSetup.getTestPlayerCharacter("Warrior")
 //     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
@@ -248,16 +248,16 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 
 //     targetCharacter.Parent = Workspace
 //     targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-//     let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
+//     let tool = (ServerStorage.FindFirstChild("Tools")!.FindFirstChild("Axe") as Tool|undefined)!.Clone()
 //     let flexTool = new FlexTool("Axe", 1, [])
 //     FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
 //     let meleeWeaponServer = new MeleeWeaponServerXL(tool)
 //     tool.Parent = character
 //     meleeWeaponServer.OnEquipped()
-//     targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+//     (targetCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health = 1
 //     let oldXP = testRecord.statsT.experienceN
 //     meleeWeaponServer.OnActivated()
-//     let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
+//     let newHealth = (targetCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
 //     TestUtility.assertTrue(newHealth <= 0)
 //     TestUtility.assertTrue(testRecord.statsT.experienceN > oldXP)
 //     FlexibleToolsServer.removeToolWait(tool, character)
@@ -270,11 +270,11 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     let combatHelper = new CombatTestHelperPlayerAttacker("Orc", "Monsters", "Axe", TestUtility.createTestCharacter())
 
     // act
-    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    combatHelper.testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined)
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth === combatHelper.oldHealth)
 
     // clean
@@ -287,11 +287,11 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
     let combatHelper = new CombatTestHelperPlayerAttacker("Warrior", "Heroes", "Axe", TestUtility.createTestCharacter())
 
     // act
-    combatHelper.testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    combatHelper.testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
     combatHelper.meleeWeapon.OnActivated()
 
     // assert
-    let newHealth = combatHelper.defender.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let newHealth = (combatHelper.defender.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
     TestUtility.assertTrue(newHealth < combatHelper.oldHealth)
 
     // clean
@@ -303,22 +303,22 @@ class CombatTestHelperPlayerDefender extends CombatTestHelper {
 // // test destroying weapons rack gives you loot
 // {
 //     let testSetup = new TestContext()
-//     testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+//     testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined)
 //     let character = testSetup.getTestPlayerCharacter("Warrior")
 //     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
 //     let oldLootCount = testRecord.gearPool.size()
 //     PlayerServer.setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
-//     let targetCharacter = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()   
+//     let targetCharacter = (ReplicatedStorage.FindFirstChild("WeaponsRack") as Folder>("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild<Model|undefined)!.Clone()   
 //     targetCharacter.Parent = Workspace
-//     targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health = 1
+//     (targetCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health = 1
 //     targetCharacter.SetPrimaryPartCFrame(character.GetPrimaryPartCFrame())
-//     let tool = ServerStorage.FindFirstChild<Folder>("Tools")!.FindFirstChild<Tool>("Axe")!.Clone()
+//     let tool = (ServerStorage.FindFirstChild("Tools")!.FindFirstChild("Axe") as Tool|undefined)!.Clone()
 //     let flexTool = new FlexTool("Axe", 1, [])
 //     FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: character, possessionsKey: "item1" })
 //     let meleeWeaponServer = new MeleeWeaponServerXL(tool)
 //     tool.Parent = character
 //     meleeWeaponServer.OnActivated()
-//     let newHealth = targetCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health
+//     let newHealth = (targetCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
 //     TestUtility.assertTrue(newHealth <= 0)
 //     TestUtility.assertTrue(testRecord.gearPool.size()>oldLootCount)
 //     FlexibleToolsServer.removeToolWait(tool, character)

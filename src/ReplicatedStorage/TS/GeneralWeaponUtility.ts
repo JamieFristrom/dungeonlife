@@ -14,7 +14,7 @@ import { Character, ModelUtility } from "./ModelUtility"
 
 // because collision happens on the server but clients need to predict whether projectiles will collide we need another way to indicate
 // something is unhittable. A tag is an obvious possibility
-const porousCollisionGroupIdObject = Workspace.WaitForChild<Folder>("GameManagement").WaitForChild<NumberValue>("PorousCollisionGroupId")
+const porousCollisionGroupIdObject = (Workspace.WaitForChild("GameManagement").WaitForChild("PorousCollisionGroupId") as NumberValue)
 
 export namespace GeneralWeaponUtility {
 
@@ -60,7 +60,7 @@ export namespace GeneralWeaponUtility {
         const charactersWithHeads = forcefieldlessCharacters.filter((char) => char.FindFirstChild("Head") !== undefined)
         DebugXL.logV(LogArea.Combat, "Targets with heads: " + DebugXL.stringifyInstanceArray(charactersWithHeads))
         const targetsAndRanges: [Character, number][] = charactersWithHeads.map((char) =>
-            [char, WeaponUtility.GetTargetPoint(char).sub(ModelUtility.getPrimaryPartCFrameSafe(attackingCharacter).p).Magnitude] as [Character, number])
+            [char, WeaponUtility.GetTargetPoint(char).sub(ModelUtility.getPrimaryPartCFrameSafe(attackingCharacter).Position).Magnitude] as [Character, number])
         const filteredTargetsAndRanges = targetsAndRanges.filter((targetAndRange) => targetAndRange[1] < maxRange)
         return filteredTargetsAndRanges
     }
@@ -72,11 +72,11 @@ export namespace GeneralWeaponUtility {
         if (!targetsAndRanges.isEmpty()) {
             // stupid optimization? It does nothing for the worst case ; all heroes are in range but behind walls
             // probably better to sporadically collect los on n*m options
-            targetsAndRanges.sort((a, b) => b[1] - a[1])
-            const attackingCharacterPos = ModelUtility.getPrimaryPartCFrameSafe(attackingCharacter).p
+            targetsAndRanges.sort((a, b) => b[1] > a[1])
+            const attackingCharacterPos = ModelUtility.getPrimaryPartCFrameSafe(attackingCharacter).Position
             for (let i = 0; i < targetsAndRanges.size(); i++) {
                 // use head for target because some destructibles make their primary part something else for positioning purposes. Everyone has a head
-                const targetPart = targetsAndRanges[i][0].FindFirstChild<BasePart>("Head")
+                const targetPart = (targetsAndRanges[i][0].FindFirstChild("Head") as BasePart|undefined)
                 if (!targetPart) {
                     DebugXL.logD(LogArea.Combat, "Target " + targetsAndRanges[i][0].Name + " missing Head")
                 }

@@ -18,7 +18,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 {
     // arrange
     let testSetup = new TestContext()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Werewolf")
 
     // starting as a werewolf

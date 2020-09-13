@@ -15,13 +15,13 @@ import { PlayerServer } from './PlayerServer'
 
 export namespace LobbedBombServer {
     export function explode(thrownObjPart: Part) {
-        let creatorValueObj = thrownObjPart.FindFirstChild<ObjectValue>('creator')
+        let creatorValueObj = (thrownObjPart.FindFirstChild('creator') as ObjectValue|undefined)
         DebugXL.Assert(creatorValueObj !== undefined)
         if (creatorValueObj) {
             let attackingPlayer = creatorValueObj.Value as Player
             DebugXL.Assert(attackingPlayer !== undefined)
             if (attackingPlayer) {
-                let parentToolValueObj = thrownObjPart.FindFirstChild<ObjectValue>('Tool')
+                let parentToolValueObj = (thrownObjPart.FindFirstChild('Tool') as ObjectValue|undefined)
                 DebugXL.Assert(parentToolValueObj !== undefined)
                 if (parentToolValueObj) {
                     let tool = parentToolValueObj.Value as Tool
@@ -33,7 +33,7 @@ export namespace LobbedBombServer {
                         attackingPlayer,
                         false)
                     hitCharacters.forEach((hitCharacter) => {
-                        let humanoid = hitCharacter.FindFirstChild<Humanoid>('Humanoid')
+                        let humanoid = (hitCharacter.FindFirstChild('Humanoid') as Humanoid|undefined)
                         if (humanoid) {
                             const attackerRecord = PlayerServer.getCharacterRecordFromPlayer(attackingPlayer)
                             DebugXL.Assert(attackerRecord!==undefined)

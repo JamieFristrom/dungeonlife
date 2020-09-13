@@ -366,10 +366,10 @@ export class FlexTool {
                 }
             }
 
-            const ToolsFolder = ServerStorage.FindFirstChild<Folder>('Tools')!
+            const ToolsFolder = (ServerStorage.FindFirstChild('Tools') as Folder|undefined)!
             DebugXL.Assert(ToolsFolder !== undefined)
 
-            const toolTemplate = ToolsFolder.FindFirstChild<Tool>(baseToolId)
+            const toolTemplate = (ToolsFolder.FindFirstChild(baseToolId) as Tool|undefined)
             DebugXL.Assert(toolTemplate !== undefined)
             if (toolTemplate) {
                 const newToolInstance = toolTemplate.Clone() as Tool

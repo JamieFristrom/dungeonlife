@@ -19,13 +19,13 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 
     // test getting cframe of a bad model
     let errorMessage = ""
-    const modelNoPrimaryPart = ReplicatedStorage.WaitForChild<Folder>("TestObjects").WaitForChild<Model>("ModelNoPrimaryPart")
+    const modelNoPrimaryPart = (ReplicatedStorage.WaitForChild("TestObjects").WaitForChild("ModelNoPrimaryPart") as Model)
     DebugXL.catchErrors((message) => {
         errorMessage = message
     })
     const cframe = ModelUtility.getPrimaryPartCFrameSafe(modelNoPrimaryPart)
     DebugXL.stopCatchingErrors()
     TestUtility.assertTrue(cframe !== undefined)
-    TestUtility.assertTrue(cframe.p === new Vector3(0, 0, 0))
+    TestUtility.assertTrue(cframe.Position === new Vector3(0, 0, 0))
     TestUtility.assertTrue(errorMessage === "ReplicatedStorage.TestObjects.ModelNoPrimaryPart is missing its PrimaryPart")
 }

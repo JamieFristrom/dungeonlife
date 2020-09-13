@@ -12,21 +12,21 @@ import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 
 const possessionsGui = script.Parent!.Parent!
 const playerGui = possessionsGui.Parent! as PlayerGui
-const hotbarItemsButton = script.Parent!.Parent!.WaitForChild('Hotbar')!.WaitForChild<TextButton>('Items')
-const uiArrow = hotbarItemsButton.WaitForChild<ImageButton>('UIArrow')
+const hotbarItemsButton = (script.Parent!.Parent!.WaitForChild('Hotbar')!.WaitForChild('Items') as TextButton)
+const uiArrow = (hotbarItemsButton.WaitForChild('UIArrow') as ImageButton)
 
 hotbarItemsButton.Visible = false
 
-const skinGui = playerGui.WaitForChild<ScreenGui>('SkinGui')
-const storeGui = playerGui.WaitForChild<ScreenGui>('StoreGui')
+const skinGui = (playerGui.WaitForChild('SkinGui') as ScreenGui)
+const storeGui = (playerGui.WaitForChild('StoreGui') as ScreenGui)
 
-const possessionsFrame = possessionsGui.WaitForChild<Frame>('PossessionsFrame')
+const possessionsFrame = (possessionsGui.WaitForChild('PossessionsFrame') as Frame)
 
 function ToggleInventoryFrame() {
-	skinGui.FindFirstChild<Frame>('Main')!.Visible = false
-	storeGui.FindFirstChild<Frame>('Main')!.Visible = false
+	(skinGui.FindFirstChild('Main') as Frame).Visible = false;
+	(storeGui.FindFirstChild('Main') as Frame).Visible = false
 	possessionsFrame.Visible =
-		!possessionsFrame.Visible && (Players.LocalPlayer.Team === Teams.FindFirstChild<Team>('Heroes'))
+		!possessionsFrame.Visible && (Players.LocalPlayer.Team === (Teams.FindFirstChild('Heroes') as Team|undefined))
 }
 
 
@@ -75,7 +75,7 @@ ContextActionService.BindAction("ToggleInventoryFrame",
 
 while (true) {
 	wait(0.1)
-	hotbarItemsButton.Visible = Players.LocalPlayer.Team === Teams.FindFirstChild<Team>('Heroes')
+	hotbarItemsButton.Visible = Players.LocalPlayer.Team === (Teams.FindFirstChild('Heroes') as Team|undefined)
 	uiArrow.Visible = false
 	if (hotbarItemsButton.Visible) {
 		const pcRecord = PCClient.pc

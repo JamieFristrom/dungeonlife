@@ -12,15 +12,15 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS"
 
 type Character = Model
 
-const manaPotionFrame = Players.LocalPlayer!.WaitForChild<PlayerGui>("PlayerGui").WaitForChild<ScreenGui>("NoResetGui").WaitForChild<Frame>("PotionbarR")
-const manaPotionItemFrame = manaPotionFrame.WaitForChild<Frame>("Item")
+const manaPotionFrame = (Players.LocalPlayer!.WaitForChild("NoResetGui").WaitForChild("PotionbarR") as Frame)
+const manaPotionItemFrame = (manaPotionFrame.WaitForChild("Item") as Frame)
 
 const testManaPotionButton = new PotionButton({
     funcName: "TakeBestManaPotion",
     itemName: "Mana",
     warningFunc: (character: Character) => {
-        const manaValue = character.FindFirstChild<NumberValue>("ManaValue")
-        const maxManaValue = character.FindFirstChild<NumberValue>("MaxManaValue")
+        const manaValue = (character.FindFirstChild("ManaValue") as NumberValue|undefined)
+        const maxManaValue = (character.FindFirstChild("MaxManaValue") as NumberValue|undefined)
         if (manaValue && maxManaValue && manaValue.Value < maxManaValue.Value * 0.33)
             return true
         return false
@@ -28,7 +28,7 @@ const testManaPotionButton = new PotionButton({
     potionFrame: manaPotionFrame
 })
 
-const animationDummy = ReplicatedStorage.WaitForChild<Folder>("TestObjects").WaitForChild<Character>("AnimationDummy")
+const animationDummy = (ReplicatedStorage.WaitForChild("TestObjects").WaitForChild("AnimationDummy") as Character)
 
 const monsterRecord = new Monster("Orc", [], 1)
 

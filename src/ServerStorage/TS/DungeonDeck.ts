@@ -11,7 +11,7 @@ import { PlacesManifest } from "ReplicatedStorage/TS/PlacesManifest"
 
 import { Workspace } from "@rbxts/services"
 
-let gameManagement = Workspace.FindFirstChild<Folder>('GameManagement')!
+let gameManagement = (Workspace.FindFirstChild('GameManagement') as Folder|undefined)!
 let DungeonDepthValueObj = gameManagement.FindFirstChild('DungeonDepth') as NumberValue
 let DungeonFloorValueObj = gameManagement.FindFirstChild('DungeonFloor') as NumberValue
 

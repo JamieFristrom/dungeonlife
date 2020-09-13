@@ -11,7 +11,7 @@ export namespace FixedFloorDecorations {
     export function Setup() {
         FixedFloorDecorations.Clean()
         FloorData.CurrentFloor().fixedFloorDecorations.forEach(function (volFXName) {
-            let volFXInst = ServerStorage.FindFirstChild('FixedFloorDecorations')!.FindFirstChild<Instance>(volFXName)!.Clone()
+            let volFXInst = (ServerStorage.FindFirstChild('FixedFloorDecorations')!.FindFirstChild(volFXName) as Instance|undefined)!.Clone()
             volFXInst.Parent = Workspace.FindFirstChild('FixedFloorDecorations')
         })
     }

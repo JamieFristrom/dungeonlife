@@ -35,16 +35,16 @@ import { ServerContextI } from './ServerContext'
 
 type Character = Model
 
-const mobAnimationsFolder = ServerStorage.FindFirstChild<Folder>('MobAnimations')!
+const mobAnimationsFolder = (ServerStorage.FindFirstChild('MobAnimations') as Folder|undefined)!
 DebugXL.Assert(mobAnimationsFolder !== undefined)
-const mobFolder = Workspace.FindFirstChild<Folder>('Mobs')!
+const mobFolder = (Workspace.FindFirstChild('Mobs') as Folder|undefined)!
 DebugXL.Assert(mobFolder !== undefined)
-const mobToolCacheFolder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+const mobToolCacheFolder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
 DebugXL.Assert(mobToolCacheFolder !== undefined)
 
-const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('idle')!.GetChildren()
-const mobWalkAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('walk')!.GetChildren()
-const mobRunAnimations: Animation[] = mobAnimationsFolder.FindFirstChild<StringValue>('run')!.GetChildren()
+const mobIdleAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('idle') as StringValue|undefined)!.GetChildren()
+const mobWalkAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('walk') as StringValue|undefined)!.GetChildren()
+const mobRunAnimations: Animation[] = (mobAnimationsFolder.FindFirstChild('run') as StringValue|undefined)!.GetChildren()
 
 
 class Attackable {
@@ -59,7 +59,7 @@ class Attackable {
     }
 
     updateLastAttacker() {
-        const lastAttackerObject = this.humanoid.FindFirstChild<ObjectValue>("LastAttacker")
+        const lastAttackerObject = (this.humanoid.FindFirstChild("LastAttacker") as ObjectValue|undefined)
         if (lastAttackerObject) {
             if (!lastAttackerObject.Value) {
                 DebugXL.logE(LogArea.Spawner, this.model.Name + " has invalid lastAttackerObject")
@@ -71,7 +71,7 @@ class Attackable {
             }
             if (lastAttackerObject.Value !== this.lastAttacker) {
                 this.lastAttacker = lastAttackerObject.Value as Character
-                this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(this.lastAttacker).p
+                this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(this.lastAttacker).Position
                 this._updateLastAttacker()
             }
         }
@@ -114,7 +114,7 @@ export namespace MobServer {
     let mobPushApart = 10
 
 
-    const monsterTeam = Teams.WaitForChild<Team>('Monsters')
+    const monsterTeam = (Teams.WaitForChild('Monsters') as Team)
 
     let spawnersMap = new Map<SpawnPart, Spawner>()
 
@@ -130,7 +130,7 @@ export namespace MobServer {
         if (mySpawnerModel) {
             DebugXL.Assert(mySpawnerModel.IsA("Model"))
             if (mySpawnerModel.IsA("Model")) {
-                let myHumanoid = mySpawnerModel.FindFirstChild<Humanoid>("Humanoid")
+                let myHumanoid = (mySpawnerModel.FindFirstChild("Humanoid") as Humanoid|undefined)
                 const mySpawner = new Spawner(mySpawnerModel, myHumanoid)
                 spawnersMap.set(spawnPart, mySpawner)
             }
@@ -156,16 +156,16 @@ export namespace MobServer {
             }
         }
 
-        const monsterFolder = ServerStorage.FindFirstChild<Folder>('Monsters')!
+        const monsterFolder = (ServerStorage.FindFirstChild('Monsters') as Folder|undefined)!
         const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
         const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
-        const mobTemplate = monsterFolder.FindFirstChild<Model>(modelName)
+        const mobTemplate = (monsterFolder.FindFirstChild(modelName) as Model|undefined)
         if (!mobTemplate) {
             DebugXL.logW(LogArea.Mobs, 'No model for ' + modelName)
         }
         else {
             const mobModel = mobTemplate.Clone()
-            const humanoid = mobModel.FindFirstChild<Humanoid>('Humanoid')
+            const humanoid = (mobModel.FindFirstChild('Humanoid') as Humanoid|undefined)
             DebugXL.Assert(humanoid !== undefined)
             if (humanoid) {
                 mobs.add(new Mob(context, mobModel, humanoid, characterClass, superbossManager, currentLevelSession, position, spawnPart))
@@ -207,13 +207,13 @@ export namespace MobServer {
     }
 
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
-        if (spawnPart.FindFirstChild<BoolValue>('OneUse')!.Value) {
+        if ((spawnPart.FindFirstChild('OneUse') as BoolValue|undefined)!.Value) {
             // boss spawnPart; only use if no monster players
             if (monsterTeam.GetPlayers().size() === 0) {
                 const spawner = spawnersMap.get(spawnPart)
                 if (!spawnersMap.get(spawnPart)) {
                     DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
-                    const charClassStr = spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass
+                    const charClassStr = (spawnPart.FindFirstChild('CharacterClass') as StringValue|undefined)!.Value as CharacterClass
                     spawnMob(
                         MainContext.get(),
                         charClassStr,
@@ -235,7 +235,7 @@ export namespace MobServer {
                     DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from " + spawnPart.GetFullName())
                     spawnMob(
                         MainContext.get(),
-                        spawnPart.FindFirstChild<StringValue>('CharacterClass')!.Value as CharacterClass,
+                        (spawnPart.FindFirstChild('CharacterClass') as StringValue|undefined)!.Value as CharacterClass,
                         GameServer.getSuperbossManager(),
                         GameServer.levelSession,
                         undefined,
@@ -329,7 +329,7 @@ export namespace MobServer {
             // position mob
             let spawnPosition: Vector3 = new Vector3(8, 0, 0)
             if (spawnPart) {
-                const exclusionPart = spawnPart.Parent!.FindFirstChild<Part>("MobExclusion")
+                const exclusionPart = (spawnPart.Parent!.FindFirstChild("MobExclusion") as Part|undefined)
                 const exclusionPosition = exclusionPart ? exclusionPart.Position : spawnPosition
                 const exclusionRadius = exclusionPart ? exclusionPart.Size.Z : 0
                 spawnPosition = this.findSpawnPos(spawnPart.Position, spawnPart.Size, exclusionPosition, exclusionRadius)
@@ -406,15 +406,15 @@ export namespace MobServer {
                         DebugXL.Assert(flexTool !== undefined)
                         if (flexTool) {
                             FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: this.model, possessionsKey: possessionKey })
-                            if (tool.FindFirstChild<Script>("MeleeClientScript")) {
+                            if ((tool.FindFirstChild("MeleeClientScript") as Script|undefined)) {
                                 this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
                                 break
                             }
-                            else if (tool.FindFirstChild<Script>('BoltClient')) {
+                            else if ((tool.FindFirstChild('BoltClient') as Script|undefined)) {
                                 this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "DisplayBolt")
                                 break
                             }
-                            else if (tool.FindFirstChild<Script>('ThrownWeaponClientScript')) {
+                            else if ((tool.FindFirstChild('ThrownWeaponClientScript') as Script|undefined)) {
                                 this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "Handle")
                                 break
                             }
@@ -512,7 +512,7 @@ export namespace MobServer {
                     const [closestTarget, bestFit] = GeneralWeaponUtility.findClosestVisibleTarget(this.model, this.getCharacterRecord().getTeam(), 80)
                     if (closestTarget) {
                         // if enemy in aggro range approach that spot (even if they go out of sight)
-                        this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(closestTarget).p
+                        this.lastSpottedEnemyPosition = ModelUtility.getPrimaryPartCFrameSafe(closestTarget).Position
                         // if enemy in range attack
                         if (bestFit <= this.weaponUtility.getRange()) {
                             // unless already attacking
@@ -536,17 +536,17 @@ export namespace MobServer {
                         // the antimagnet trick: poll your friends and push away from them
                         // the antimagnet trick is O(n^2) with sqrts so I'm a bit leery
                         const zeroVec = new Vector3(0, 0, 0)
-                        const myPos = ModelUtility.getPrimaryPartCFrameSafe(this.model).p
+                        const myPos = ModelUtility.getPrimaryPartCFrameSafe(this.model).Position
                         const mobs: Character[] = mobFolder.GetChildren()
-                        const pushForces = mobs.map((mob) => myPos.sub(ModelUtility.getPrimaryPartCFrameSafe(mob).p))
+                        const pushForces = mobs.map((mob) => myPos.sub(ModelUtility.getPrimaryPartCFrameSafe(mob).Position))
                         const scaledForces = pushForces.map((pushForce) => pushForce.Magnitude > 0.001 ? pushForce.Unit.div(pushForce.Magnitude) : zeroVec)
                         const totalPush = scaledForces.reduce((forceA, forceB) => forceA.add(forceB))
 
-                        const destinationVec = lastSpottedEnemyPosition.sub(ModelUtility.getPrimaryPartCFrameSafe(this.model).p)
+                        const destinationVec = lastSpottedEnemyPosition.sub(ModelUtility.getPrimaryPartCFrameSafe(this.model).Position)
                         const totalVec = totalPush.mul(mobPushApart).add(destinationVec)
                         if (totalVec.Magnitude > 4) {  // don't do the cha-cha once you're stable
                             const shortenedVec = destinationVec.mul(destinationVec.Magnitude - this.weaponUtility.getRange())  // why stop out of range? because it has a tendency to overshoot
-                            this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).p.add(shortenedVec))
+                            this.humanoid.MoveTo(ModelUtility.getPrimaryPartCFrameSafe(this.model).Position.add(shortenedVec))
                             //this.humanoid.Move(totalVec.Unit)
                             this.humanoid.WalkSpeed = totalVec.Magnitude > 16 ? 16 : totalVec.Magnitude
                         }

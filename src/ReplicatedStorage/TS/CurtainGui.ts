@@ -16,9 +16,9 @@ export class Curtain {
     }
 }
 
-const playerGui = Players.LocalPlayer.WaitForChild<PlayerGui>("PlayerGui")
-const curtainGui = playerGui.WaitForChild<ScreenGui>("CurtainGui")
-const curtainFrame = curtainGui.WaitForChild<Frame>("Curtain")
+const playerGui = (Players.LocalPlayer.WaitForChild("PlayerGui") as PlayerGui)
+const curtainGui = (playerGui.WaitForChild("CurtainGui") as ScreenGui)
+const curtainFrame = (curtainGui.WaitForChild("Curtain") as Frame)
 let curtain = new Curtain(curtainFrame)
 
 export function getRuntimeCurtain() {

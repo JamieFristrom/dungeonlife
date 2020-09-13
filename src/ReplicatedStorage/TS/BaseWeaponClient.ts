@@ -32,7 +32,7 @@ export abstract class BaseWeaponClient {
 
         DebugXL.logD(LogArea.Combat, character.Name + ' not uncool')
 
-        const manaValueObj = character.FindFirstChild<NumberValue>('ManaValue')
+        const manaValueObj = (character.FindFirstChild('ManaValue') as NumberValue|undefined)
         if (!manaValueObj) {
             DebugXL.logE(LogArea.Combat, character.GetFullName() + ' missing ManaValue')
             return

@@ -16,17 +16,17 @@ import { Teams } from "@rbxts/services"
 {
     // arrange
     let testContext = new TestContext()
-    testContext.getPlayer().Team = Teams.FindFirstChild("Heroes")
+    testContext.getPlayer().Team = Teams.FindFirstChild("Heroes") as Team
     let pc = testContext.makeTestPlayerCharacter("Warrior")   // need to do this or it'll lose track of team when switching from player to charater and back
     let testMonster = TestUtility.createTestCharacter()
-    let oldHealth = testMonster.FindFirstChild<Humanoid>("Humanoid")!.Health
+    let oldHealth = (testMonster.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health
 
     // act
     CharacterXL.DamageOverTimeFor(testMonster, 2.5, 5, testContext.getPlayer())
     CharacterXL.ProcessCharacter(testContext, testMonster, 0.1)
 
     // assert
-    TestUtility.assertTrue(testMonster.FindFirstChild<Humanoid>("Humanoid")!.Health < oldHealth, "Took damage over time")
+    TestUtility.assertTrue((testMonster.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health < oldHealth, "Took damage over time")
 
     // clean
     testContext.clean()

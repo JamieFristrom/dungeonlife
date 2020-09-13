@@ -30,10 +30,10 @@ interface Activateable {
 
 export namespace PowerServer {
 
-    let magicHealingModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('MagicHealing')!
-    let healthChangeModule = ServerStorage.FindFirstChild('Standard')!.FindFirstChild<ModuleScript>('HealthChange')!
-    let auraGlowModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('AuraGlow')!
-    let magicSprintModule = ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild<ModuleScript>('MagicSprint')!
+    let magicHealingModule = (ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild('MagicHealing') as ModuleScript|undefined)!
+    let healthChangeModule = (ServerStorage.FindFirstChild('Standard')!.FindFirstChild('HealthChange') as ModuleScript|undefined)!
+    let auraGlowModule = (ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild('AuraGlow') as ModuleScript|undefined)!
+    let magicSprintModule = (ServerStorage.FindFirstChild('CharacterFX')!.FindFirstChild('MagicSprint') as ModuleScript|undefined)!
 
 
     export function activatePower(player: Player, flexToolInst: FlexTool) {
@@ -61,7 +61,7 @@ export namespace PowerServer {
                             if (team) {
                                 let newWisp = createWisp(toolBaseData, flexToolInst, player, character, Color3.fromRGB(236, 0, 15), Color3.fromRGB(150, 0, 0), team,
                                     (targetCharacter, deltaT) => {
-                                        let humanoid = targetCharacter.FindFirstChild<Humanoid>("Humanoid");
+                                        let humanoid = (targetCharacter.FindFirstChild("Humanoid") as Humanoid|undefined);
                                         if (humanoid)
                                             if (humanoid.Health < humanoid.MaxHealth) {
                                                 humanoid.Health = math.min(humanoid.Health + effectStrength * deltaT, humanoid.MaxHealth);
@@ -83,7 +83,7 @@ export namespace PowerServer {
                                     })
                                 newWisp.Name = "HasteWisp"
                                 let effectStrength = flexToolInst.getEffectStrength(levelNerfFactor);
-                                newWisp.FindFirstChild<NumberValue>("EffectStrength")!.Value = effectStrength
+                                (newWisp.FindFirstChild("EffectStrength") as NumberValue|undefined)!.Value = effectStrength
                             }
                         }
                         else if (toolBaseData.idS === "CurseWisp") {
@@ -93,7 +93,7 @@ export namespace PowerServer {
                                 })
                             newWisp.Name = "CurseWisp"
                             let effectStrength = flexToolInst.getEffectStrength(levelNerfFactor);
-                            newWisp.FindFirstChild<NumberValue>("EffectStrength")!.Value = effectStrength
+                            (newWisp.FindFirstChild("EffectStrength") as NumberValue|undefined)!.Value = effectStrength
                         }
                         else if (toolBaseData.idS === "MagicSprint" || toolBaseData.idS === "MonsterSprint") {
                             let duration = toolBaseData.durationFunc!(toolBaseData, flexToolInst.levelN)
@@ -138,7 +138,7 @@ export namespace PowerServer {
         let range = FlexEquipUtility.GetAdjStat(flexToolInst, "rangeN")
         new AreaEffect(newWisp, range, duration, affectedTeam, effectFunc)
         newWisp.SetPrimaryPartCFrame(ModelUtility.getPrimaryPartCFrameSafe(character).add(new Vector3(0, 7, 0)))
-        newWisp.FindFirstChild<NumberValue>('Range')!.Value = range
+        (newWisp.FindFirstChild('Range') as NumberValue|undefined)!.Value = range
         newWisp.Parent = Workspace.FindFirstChild('Summons')
         delay(duration - 2, () => {
             newWisp.GetDescendants().forEach((descendant) => {
@@ -147,7 +147,7 @@ export namespace PowerServer {
                 else if (descendant.IsA("BasePart"))
                     TweenService.Create(descendant, new TweenInfo(2), { Transparency: 1 }).Play()
             })
-            newWisp.PrimaryPart!.FindFirstChild<Sound>("DisperseSound")!.Play()
+            (newWisp.PrimaryPart!.FindFirstChild("DisperseSound") as Sound|undefined)!.Play()
             wait(2)
             newWisp.Destroy()
         })

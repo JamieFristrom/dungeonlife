@@ -15,7 +15,7 @@ export class AreaEffect
             if( player.Team === this.team )
             {
                 let targetCharacter = player.Character as Model
-                let hrp = targetCharacter.FindFirstChild<BasePart>("HumanoidRootPart") 
+                let hrp = (targetCharacter.FindFirstChild("HumanoidRootPart") as BasePart|undefined) 
                 if( hrp )
                 {
                     if( hrp.Position.sub( this.myModel.PrimaryPart!.Position ).Magnitude <= this.range )

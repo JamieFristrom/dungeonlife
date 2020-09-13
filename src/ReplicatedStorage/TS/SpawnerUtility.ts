@@ -8,7 +8,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 export namespace SpawnerUtility {
     export function getClassToSpawn(spawnerPart: BasePart) {
-        const valueObj = spawnerPart.FindFirstChild<StringValue>("CharacterClass")
+        const valueObj = (spawnerPart.FindFirstChild("CharacterClass") as StringValue|undefined)
         DebugXL.Assert(valueObj !== undefined)
         if (valueObj) {
             const charClass = valueObj.Value as CharacterClass

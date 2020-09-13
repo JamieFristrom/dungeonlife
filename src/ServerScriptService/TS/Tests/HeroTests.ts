@@ -43,7 +43,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 }
 
 {
-    let heroes = Teams.WaitForChild<Team>("Heroes")
+    let heroes = (Teams.WaitForChild("Heroes") as Team)
 
     // test associating a hero with player
     let heroPlayer = TestUtility.createTestPlayer()
@@ -59,6 +59,6 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
         [],
         1))
     TestUtility.assertTrue(fakePlayerMap.get(heroPlayer)!.getTeam() === heroes)
-    TestUtility.assertTrue(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === Teams.WaitForChild<Team>("Monsters"))
+    TestUtility.assertTrue(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === (Teams.WaitForChild("Monsters") as Team))
     TestUtility.cleanTestPlayer(heroPlayer)
 }

@@ -9,44 +9,44 @@ import { GuiService, Workspace, Teams, Players } from "@rbxts/services";
 
 const chooseClassFrame = script.Parent!.Parent!.WaitForChild("HeroGui").WaitForChild("ChooseClass") as Frame
 
-const heroGuiFrame = script.Parent!.Parent!.WaitForChild<Frame>("HeroGui")
+const heroGuiFrame = (script.Parent!.Parent!.WaitForChild("HeroGui") as Frame)
 //print( "ChooseHeroScript: HeroGui available" )
-const chooseHeroFrame = heroGuiFrame.WaitForChild<Frame>("ChooseHero")
+const chooseHeroFrame = (heroGuiFrame.WaitForChild("ChooseHero") as Frame)
 //print( "ChooseHeroScript: ChooseHero available" )
-const playerGui = Players.LocalPlayer.WaitForChild<PlayerGui>("PlayerGui")
+const playerGui = (Players.LocalPlayer.WaitForChild("PlayerGui") as PlayerGui)
 //print( "ChooseHeroScript: PlayerGui available" )
-const characterSheetGui = playerGui.WaitForChild<ScreenGui>("CharacterSheetGui")
-const characterSheet = characterSheetGui.WaitForChild<Frame>("CharacterSheet")
-const possessionsGui = playerGui.WaitForChild<ScreenGui>("PossessionsGui")
-const possessionsFrame = possessionsGui.WaitForChild<Frame>("PossessionsFrame")
+const characterSheetGui = (playerGui.WaitForChild("CharacterSheetGui") as ScreenGui)
+const characterSheet = (characterSheetGui.WaitForChild("CharacterSheet") as Frame)
+const possessionsGui = (playerGui.WaitForChild("PossessionsGui") as ScreenGui)
+const possessionsFrame = (possessionsGui.WaitForChild("PossessionsFrame") as Frame)
 
-const readyButton = script.Parent!.Parent!.WaitForChild<TextButton>("Ready")
+const readyButton = (script.Parent!.Parent!.WaitForChild("Ready") as TextButton)
 
-const mainRE = Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("MainRE")
-const heroPrepCountdownObj = Players.LocalPlayer.WaitForChild<NumberValue>("HeroRespawnCountdown")
+const mainRE = (Workspace.WaitForChild("Signals").WaitForChild("MainRE") as RemoteEvent)
+const heroPrepCountdownObj = (Players.LocalPlayer.WaitForChild("HeroRespawnCountdown") as NumberValue)
 
 chooseClassFrame.GetPropertyChangedSignal("Visible").Connect(() => {
     if (InputXL.UsingGamepad()) {
-        GuiService.SelectedObject = chooseClassFrame.WaitForChild("Grid").WaitForChild("Hero1").WaitForChild<GuiObject>("Choose")
+        GuiService.SelectedObject = (chooseClassFrame.WaitForChild("Grid").WaitForChild("Hero1").WaitForChild("Choose") as GuiObject)
     }
 })
 
-const gameManagementFolder = Workspace.WaitForChild<Folder>("GameManagement")
-const gameState = gameManagementFolder.WaitForChild<StringValue>("GameState")
-const preperationCountdownObj = gameManagementFolder.WaitForChild<NumberValue>("PreparationCountdown")
+const gameManagementFolder = (Workspace.WaitForChild("GameManagement") as Folder)
+const gameState = (gameManagementFolder.WaitForChild("GameState") as StringValue)
+const preperationCountdownObj = (gameManagementFolder.WaitForChild("PreparationCountdown") as NumberValue)
 
-const heroTeam = Teams.WaitForChild<Team>("Heroes")
+const heroTeam = (Teams.WaitForChild("Heroes") as Team)
 
 DebugXL.logI(LogArea.GameManagement, 'HeroGui wait complete')
 
 gameState.Changed.Connect((newValue) => {
     if (newValue === "Lobby") {
-        if (Players.LocalPlayer.Team === Teams.FindFirstChild<Team>("Heroes")) {
+        if (Players.LocalPlayer.Team === (Teams.FindFirstChild("Heroes") as Team|undefined)) {
             // if I had a character survive from the previous level go to the prepare screen
             const character = Players.LocalPlayer.Character
             if (character) {
                 if (character.Parent) {
-                    const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
+                    const humanoid = (character.FindFirstChild("Humanoid") as Humanoid|undefined)
                     if (humanoid) {
                         if (humanoid.Health > 0) {
                             DebugXL.logI(LogArea.GameManagement, "Lobby, time to re-prepare")

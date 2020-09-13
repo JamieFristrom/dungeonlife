@@ -42,7 +42,7 @@ function WhatSlotCurrentlyEquipped() {
     if (character) {
         let heldTool = character.FindFirstChildWhichIsA("Tool") as Tool
         if (heldTool) {
-            let inventorySlotValueObj = heldTool.FindFirstChild<StringValue>("PossessionKey")
+            let inventorySlotValueObj = (heldTool.FindFirstChild("PossessionKey") as StringValue|undefined)
             if (inventorySlotValueObj) {
                 let possessionKey = inventorySlotValueObj.Value
                 if (PCClient.pc) {
@@ -76,7 +76,7 @@ function Equip(slotN: HotbarSlot) {
 
                         // play effect now?
                         if (flexToolInst.canLogicallyActivate(localCharacter)) {
-                            let manaValueObj = localCharacter.FindFirstChild<NumberValue>("ManaValue")
+                            let manaValueObj = (localCharacter.FindFirstChild("ManaValue") as NumberValue|undefined)
                             if (manaValueObj) {
                                 let mana = manaValueObj.Value
                                 if (mana >= flexToolInst.getManaCost()) {

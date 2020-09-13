@@ -19,7 +19,7 @@ let playerGui = localPlayer.WaitForChild('PlayerGui') as PlayerGui
 
 let noResetGui = playerGui.WaitForChild('NoResetGui') as ScreenGui
 
-let serverButton = noResetGui.WaitForChild('LeftButtonColumn').WaitForChild<GuiButton>('Server')
+let serverButton = (noResetGui.WaitForChild('LeftButtonColumn').WaitForChild('Server') as GuiButton)
 serverButton.Visible = false
 
 let heroesRF = Workspace.WaitForChild('Signals').WaitForChild('HeroesRF') as RemoteFunction

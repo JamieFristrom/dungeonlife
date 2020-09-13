@@ -24,7 +24,7 @@ DebugXL.logD(LogArea.Requires, 'FlexibleToolServer: imports succesful')
 // currently, players hold weapons
 // what about the shop? how does that work?
 // heroes have shops
-const ToolsFolder = ServerStorage.WaitForChild<Folder>("Tools")
+const ToolsFolder = (ServerStorage.WaitForChild("Tools") as Folder)
 
 type Character = Model
 
@@ -36,7 +36,7 @@ export interface FlexToolAccessor {
 
 
 export namespace FlexibleToolsServer {
-    let mobToolCache: Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+    let mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
     DebugXL.Assert(mobToolCache !== undefined)
 
     export let serverToolDataT = new Map<Tool, FlexToolAccessor>()
@@ -91,7 +91,7 @@ export namespace FlexibleToolsServer {
         if (destinationPlayer) {
             // we're using Roblox's backpack as a holding space for tools to combat lag; if we equip a weapon that exists on
             // the server
-            toolInstance.Parent = destinationPlayer.FindFirstChild<Backpack>('Backpack')
+            toolInstance.Parent = (destinationPlayer.FindFirstChild('Backpack') as Backpack|undefined)
         }
 
         return toolInstance
@@ -132,7 +132,7 @@ export namespace FlexibleToolsServer {
         }
 
         // can't use gear
-        const humanoid = player.Character!.FindFirstChild<Humanoid>("Humanoid")
+        const humanoid = (player.Character!.FindFirstChild("Humanoid") as Humanoid|undefined)
 
         // not sure we need this now that we have custom inventory, but seems like it might stop hax0rs
         delay(0.1, () => { if (humanoid) { humanoid.UnequipTools() } })

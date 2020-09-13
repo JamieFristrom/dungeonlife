@@ -31,9 +31,9 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
         testTracker.publishCharacterClass(testPlayer, "Necromancer")
     })
     wait(1)
-    let leaderstats = testPlayer.FindFirstChild<Model>("leaderstats")!
-    TestUtility.assertTrue(leaderstats !== undefined)
-    TestUtility.assertTrue(leaderstats.FindFirstChild<StringValue>("Class")!.Value === "Necromancer")
+    let leaderstats = (testPlayer.FindFirstChild("leaderstats") as Model|undefined)!
+    TestUtility.assertTrue(leaderstats !== undefined);
+    TestUtility.assertTrue((leaderstats.FindFirstChild("Class") as StringValue).Value === "Necromancer")
     TestUtility.cleanTestPlayer(testPlayer)
 }
 
@@ -45,8 +45,8 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
         testTracker.publishLevel(testPlayer, 666, 333)
     })
     wait(1)
-    let leaderstats = testPlayer.FindFirstChild<Model>("leaderstats")!
-    TestUtility.assertTrue(leaderstats !== undefined)
-    TestUtility.assertTrue(leaderstats.FindFirstChild<StringValue>("Level")!.Value === "666 (333)")
+    let leaderstats = (testPlayer.FindFirstChild("leaderstats") as Model|undefined)!
+    TestUtility.assertTrue(leaderstats !== undefined);
+    (TestUtility.assertTrue(leaderstats.FindFirstChild("Level") as StringValue|undefined)!.Value === "666 (333)")
     TestUtility.cleanTestPlayer(testPlayer)
 }

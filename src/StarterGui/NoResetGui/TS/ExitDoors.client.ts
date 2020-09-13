@@ -9,23 +9,23 @@ import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility";
 
 let localPlayer = Players.LocalPlayer!
 
-let exitGuiTemplate = script.Parent!.Parent!.WaitForChild<BillboardGui>("ExitGui")
+let exitGuiTemplate = (script.Parent!.Parent!.WaitForChild("ExitGui") as BillboardGui)
 
 for (; ;) {
     wait(0.25)
     if (localPlayer.Team === Teams.WaitForChild('Heroes')) {
         if (localPlayer.Character && localPlayer.Character.PrimaryPart) {
-            let downStaircase = Workspace.WaitForChild('Environment').FindFirstChild<Model>("DownStaircase")
+            let downStaircase = (Workspace.WaitForChild('Environment').FindFirstChild("DownStaircase") as Model|undefined)
             if (downStaircase) {
                 let primaryPart = downStaircase.PrimaryPart
                 if (primaryPart) {
-                    let exitGui = primaryPart.FindFirstChild<BillboardGui>("ExitGui")
+                    let exitGui = (primaryPart.FindFirstChild("ExitGui") as BillboardGui|undefined)
                     if (!exitGui) {
                         exitGui = exitGuiTemplate.Clone()
                         exitGui.Parent = primaryPart
                         exitGui.Enabled = true
                     }
-                    let distance = ModelUtility.getPrimaryPartCFrameSafe(localPlayer.Character).p.sub(primaryPart.Position).Magnitude
+                    let distance = ModelUtility.getPrimaryPartCFrameSafe(localPlayer.Character).Position.sub(primaryPart.Position).Magnitude
                     exitGui.Enabled = distance < 30
                 }
             }

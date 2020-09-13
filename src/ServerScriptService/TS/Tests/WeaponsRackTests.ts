@@ -21,11 +21,11 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 // weapons rack weapon goes in tool cache
 function TestWeaponsRackGivesMonsterWeapon(seed: number) {
     let testSetup = new TestContext(seed)
-    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+    let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild("WeaponsRack") as Model).Clone()
+    clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
     let rack = new WeaponsRack(testSetup, clickable)
     testSetup.makeTestPlayerCharacter("Orc")
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
     let testRecord = new Monster("Orc", [], 1);
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
     DebugXL.Assert(testRecord.gearPool.size() === 0)
@@ -45,10 +45,10 @@ for (let seed = 0; seed < 20; seed++) {
 // weapons racks don't give weapons to Dungeon Lords
 {
     let testSetup = new TestContext()
-    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+    let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild("WeaponsRack") as Model).Clone()
+    clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
     let rack = new WeaponsRack(testSetup, clickable)
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
     let testRecord = new Monster("DungeonLord", [], 1);
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
     DebugXL.Assert(testRecord.gearPool.size() === 0)
@@ -62,11 +62,11 @@ for (let seed = 0; seed < 20; seed++) {
     let flexTool1: FlexTool | undefined
     {
         let testSetup = new TestContext(1)
-        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-        clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+        let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild("WeaponsRack") as Model).Clone()
+        clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
         let rack = new WeaponsRack(testSetup, clickable)
         testSetup.makeTestPlayerCharacter("Orc")
-        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+        testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
         let testRecord = new Monster("Orc", [], 1);
         testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
         DebugXL.Assert(testRecord.gearPool.size() === 0)
@@ -78,11 +78,11 @@ for (let seed = 0; seed < 20; seed++) {
     }
     {
         let testSetup = new TestContext(1)
-        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-        clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+        let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild("WeaponsRack") as Model).Clone()
+        clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
         let rack = new WeaponsRack(testSetup, clickable)
         testSetup.makeTestPlayerCharacter("Orc")
-        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+        testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
         let testRecord = new Monster("Orc", [], 1);
         testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);
         DebugXL.Assert(testRecord.gearPool.size() === 0)
@@ -118,11 +118,11 @@ for (let seed = 0; seed < 20; seed++) {
 
 {
     let testSetup = new TestContext()
-    let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>("WeaponsRack")!.Clone()
-    clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
+    let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild("WeaponsRack") as Model).Clone()
+    clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
     let rack = new WeaponsRack(testSetup, clickable)
     for (let i = 0; i < 10; i++) {
-        testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+        testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
         let testRecord = new Monster("Orc", [], 1);
         testSetup.makeTestPlayerCharacter("Orc")
         testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord);

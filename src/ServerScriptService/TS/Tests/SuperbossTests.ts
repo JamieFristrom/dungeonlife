@@ -33,8 +33,8 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     // assert that superboss is defeated when their health <= 0
     let superbossMgr = new SuperbossManager()
     let character = TestUtility.createTestCharacter()
-    superbossMgr.noteSuperbossSpawned(character, 2)
-    character.FindFirstChild<Humanoid>("Humanoid")!.Health = 0
+    superbossMgr.noteSuperbossSpawned(character, 2);
+    (character.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health = 0
     TestUtility.assertTrue(superbossMgr.superbossDefeated(2), "Health 0 superboss defeated")
 }
 
@@ -69,7 +69,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 {
     let testSetup = new TestContext()
     let superbossMgr = new SuperbossManager()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Monsters")
+    testSetup.getPlayer().Team = (Teams.FindFirstChild("Monsters") as Team|undefined)
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "CyclopsSuper")
     let testCharacter = testSetup.makeTestPlayerCharacter("CyclopsSuper")
     DebugXL.Assert(testCharacter !== undefined)  // this would be a malfunction in the test system, not a test assert
@@ -100,7 +100,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
     let dungeonPlayerMap = new DungeonPlayerMap()
     let superbossMgr = GameServer.getSuperbossManager()
     let playerTracker = new PlayerTracker()
-    testSetup.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    testSetup.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined)
     testSetup.getPlayerTracker().setClassChoice(testSetup.getPlayer(), "Warrior")
     let testRecord = new Hero("Warrior", CharacterClasses.heroStartingStats.Warrior, [])
     testSetup.getPlayerTracker().setCharacterRecordForPlayer(testSetup.getPlayer(), testRecord)
@@ -138,7 +138,7 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 // make sure bookkeeping doesn't crash
 {
     let testContext = new TestContext()
-    testContext.getPlayer().Team = Teams.FindFirstChild<Team>("Heroes")
+    testContext.getPlayer().Team = (Teams.FindFirstChild("Heroes") as Team|undefined)
     GameManagement.DoBeatSuperbossStuff(testContext)
     TestUtility.assertTrue(true, "DoBeatSuperbossStuff doesn't crash")
     testContext.clean()

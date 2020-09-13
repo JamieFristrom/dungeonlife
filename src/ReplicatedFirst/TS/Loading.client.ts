@@ -5,8 +5,8 @@ import { Workspace, RunService } from "@rbxts/services"
 warn("DUNGEON LIFE 9/7/2020 6:30PM PST")
 warn("Various polish and fixes++")
 
-let loadingStructure = script.Parent!.Parent!.WaitForChild<Part>("LoadingStructure")
-let waitingImage = loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild<ImageLabel>("WaitingImage")
+let loadingStructure = (script.Parent!.Parent!.WaitForChild("LoadingStructure") as Part)
+let waitingImage = (loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild("WaitingImage") as ImageLabel)
 loadingStructure.Parent = Workspace
 RunService.RenderStepped.Connect(() => {
 	let currentCamera = Workspace.CurrentCamera!
@@ -15,6 +15,6 @@ RunService.RenderStepped.Connect(() => {
 })
 
 
-let starterGui = game.WaitForChild<StarterGui>("StarterGui")
+let starterGui = (game.WaitForChild("StarterGui") as StarterGui)
 starterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 starterGui.SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)

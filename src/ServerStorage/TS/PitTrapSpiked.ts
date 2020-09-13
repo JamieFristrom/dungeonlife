@@ -14,7 +14,7 @@ export class PitTrapSpiked extends PitTrap
 		super( _script )
 		
 		let trapDatum = PossessionData.dataT[ this.trap.Name ]
-		let ouchZone = this.trap.FindFirstChild<BasePart>('OuchZone')!
+		let ouchZone = (this.trap.FindFirstChild('OuchZone') as BasePart|undefined)!
         let heroesTeam = Teams.FindFirstChild('Heroes')!
 
 		ouchZone.Transparency = 1
@@ -31,7 +31,7 @@ export class PitTrapSpiked extends PitTrap
 				if( player ) {
 					if( player.Team === heroesTeam ) {
 						if( ! whoAmIHurting.has( player ) ) {
-							let creator = this.trap.FindFirstChild<ObjectValue>('creator')! 
+							let creator = (this.trap.FindFirstChild('creator') as ObjectValue|undefined)! 
 							let damagePerLevel = 1.5 // GameplayTestService.getServerTestGroup('ChestTrapDamage') * 0.5 + 1  // 0-4 => 1-3
 							const lastAttackingPlayer = creator.Value as Player
 							const lastAttackingCharacter = lastAttackingPlayer.Character

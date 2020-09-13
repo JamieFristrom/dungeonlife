@@ -40,7 +40,7 @@ export namespace AuraServer
             {
                 if( instance.IsA("BasePart"))
                 {
-                    let existingFX = instance.FindFirstChild<ParticleEmitter>(auraId)
+                    let existingFX = (instance.FindFirstChild(auraId) as ParticleEmitter|undefined)
                     if( existingFX )
                     {
                         existingFX.Destroy()
@@ -55,7 +55,7 @@ export namespace AuraServer
         //   certain types of monsters
         //   being affected by a CharacterXL effect
         //   being near a wisp
-        let auraOfCourage = character.FindFirstChild<Vector3Value>("AuraOfCourage")
+        let auraOfCourage = (character.FindFirstChild("AuraOfCourage") as Vector3Value|undefined)
         if( auraOfCourage )
             activate( character, new Color3(1,1,0), "AuraOfCourageFX" )
         else
@@ -73,7 +73,7 @@ export namespace AuraServer
                 {
                     if( child.IsA("Model") )
                     {
-                        let humanoid = child.FindFirstChild<Humanoid>("Humanoid")
+                        let humanoid = (child.FindFirstChild("Humanoid") as Humanoid|undefined)
                         if( humanoid )
                         {
                             maintainAuras( child )

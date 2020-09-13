@@ -148,8 +148,8 @@ export namespace FlexToolClient
                 suffixS = Localize.formatByKey( "ToolSuffixFormat1", { noun1 : descriptor[1] } )
             
             baseNameS = Localize.formatByKey( "ToolNameFormat", { tooltype: baseNameS, level: flexTool.levelN, adjective1: descriptor[0], adjective2: descriptor[2], suffix: suffixS } ) 
-            baseNameS = Localize.squish( baseNameS )
-            baseNameS = Localize.trim( baseNameS )
+            baseNameS = Localize.squish( baseNameS )[0]
+            baseNameS = Localize.trim( baseNameS )[0]
         }
         return baseNameS
     }

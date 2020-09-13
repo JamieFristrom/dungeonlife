@@ -11,10 +11,10 @@ export class WeaponsRackClient
     constructor( inst: Instance )
     {
         let chestInstance = inst as Model
-        let origin = chestInstance.WaitForChild<BasePart>("Origin")  // .PrimaryPart  // dunno why PrimaryPart doesn't work
-        let clientUsedObj = chestInstance.WaitForChild<BoolValue>("ClientUsed")
-        let clickDetector = chestInstance.WaitForChild("ClickBox").WaitForChild<ClickDetector>("ClickDetector")
-        let clickRE = chestInstance.WaitForChild<RemoteEvent>("ClickRE")
+        let origin = (chestInstance.WaitForChild("Origin") as BasePart)  // .PrimaryPart  // dunno why PrimaryPart doesn't work
+        let clientUsedObj = (chestInstance.WaitForChild("ClientUsed") as BoolValue)
+        let clickDetector = (chestInstance.WaitForChild("ClickBox").WaitForChild("ClickDetector") as ClickDetector)
+        let clickRE = (chestInstance.WaitForChild("ClickRE") as RemoteEvent)
         
         function OnClick( player: Player )
         {

@@ -28,7 +28,7 @@ export class ThrownWeaponClient extends BaseWeaponClient {
         let flexTool = FlexToolClient.getFlexTool( tool )
         super(tool, new RangedWeaponUtility(tool, flexTool, "Handle"))
 		tool.Equipped.Connect(this.onEquippedLocal)
-		this.projectileTemplate = tool.WaitForChild<BasePart>("Handle")
+		this.projectileTemplate = (tool.WaitForChild("Handle") as BasePart)
 	}
 
 	onButton1Down(mouse: Mouse) {
@@ -44,7 +44,7 @@ export class ThrownWeaponClient extends BaseWeaponClient {
 			DebugXL.Assert(player !== undefined)
 			if (player) {
 				const [_, clickHit] = RangedWeaponHelpers.MouseHitNontransparent(mouse, [character])
-				const bombRemoteEvent = this.tool.WaitForChild<RemoteEvent>("BombRemoteEvent")
+				const bombRemoteEvent = (this.tool.WaitForChild("BombRemoteEvent") as RemoteEvent)
 				bombRemoteEvent.FireServer("Activate", clickHit)								
 				if (showMissileOnClient) {
 					const missile = ThrownWeaponHelpers.lob(player, this.projectileTemplate, clickHit)

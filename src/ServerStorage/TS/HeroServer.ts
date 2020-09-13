@@ -24,13 +24,13 @@ import { MessageServer } from "./MessageServer"
 import { PlayerServer } from "./PlayerServer"
 import { ServerContextI } from "./ServerContext";
 DebugXL.logD(LogArea.Requires, 'HeroServer imports finished')
-let heroTeam = Teams.FindFirstChild<Team>('Heroes')!
+let heroTeam = (Teams.FindFirstChild('Heroes') as Team|undefined)!
 DebugXL.Assert(heroTeam !== undefined)
 
-let hotbarRE = Workspace.FindFirstChild('Signals')!.FindFirstChild<RemoteEvent>('HotbarRE')!
+let hotbarRE = (Workspace.FindFirstChild('Signals')!.FindFirstChild('HotbarRE') as RemoteEvent|undefined)!
 DebugXL.Assert(hotbarRE !== undefined)
 
-let heroesRE = Workspace.FindFirstChild('Signals')!.FindFirstChild<RemoteEvent>('HeroesRE')!
+let heroesRE = (Workspace.FindFirstChild('Signals')!.FindFirstChild('HeroesRE') as RemoteEvent|undefined)!
 DebugXL.Assert(hotbarRE !== undefined)
 
 let levelSpreadK = 8
@@ -161,17 +161,17 @@ export namespace HeroServer {
                 }
 
                 MessageServer.PostMessageByKey(player, "LevelUpHero", false, 0, false)
-                const humanoid = player.Character!.FindFirstChild<Humanoid>("Humanoid")
+                const humanoid = (player.Character!.FindFirstChild("Humanoid") as Humanoid|undefined)
                 if (humanoid) {
                     humanoid.Health = humanoid.MaxHealth
-                    const manaValue = player.Character!.FindFirstChild<NumberValue>("ManaValue")
+                    const manaValue = (player.Character!.FindFirstChild("ManaValue") as NumberValue|undefined)
                     if (manaValue) {
-                        manaValue.Value = player.Character!.FindFirstChild<NumberValue>("MaxManaValue")!.Value
+                        manaValue.Value = (player.Character!.FindFirstChild("MaxManaValue") as NumberValue|undefined)!.Value
                     }
                 }
-                const leaderstats = player.FindFirstChild<Folder>("leaderstats")
+                const leaderstats = (player.FindFirstChild("leaderstats") as Folder|undefined)
                 if (leaderstats) {
-                    const levelValue = leaderstats.FindFirstChild<NumberValue>("Level")
+                    const levelValue = (leaderstats.FindFirstChild("Level") as NumberValue|undefined)
                     if (levelValue) {
                         levelValue.Value = newLevel
                     }
@@ -221,8 +221,8 @@ export namespace HeroServer {
                 }
             })
             minLevel += levelSpreadK
-            warn('Setting hero level cap to ' + minLevel)
-            Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!.Value = minLevel
+            warn('Setting hero level cap to ' + minLevel);
+            (Workspace.FindFirstChild('GameManagement')!.FindFirstChild('CurrentMaxHeroLevel') as NumberValue).Value = minLevel
         }
     }
 
@@ -293,12 +293,12 @@ export namespace HeroServer {
         let anyNerfing = false
         for (let i = 0; i < players.size(); i++) {
             // not going to be careful with this diagnostic function
-            let myLeaderstats = players[i].FindFirstChild<Folder>('leaderstats')
+            let myLeaderstats = (players[i].FindFirstChild('leaderstats') as Folder|undefined)
             if (myLeaderstats) {
-                let classObj = myLeaderstats.FindFirstChild<StringValue>('Class')
+                let classObj = (myLeaderstats.FindFirstChild('Class') as StringValue|undefined)
                 if (classObj !== undefined)  // might not have loaded in yet
                 {
-                    let levelObj = myLeaderstats.FindFirstChild<StringValue>('Level')
+                    let levelObj = (myLeaderstats.FindFirstChild('Level') as StringValue|undefined)
                     if (levelObj !== undefined) {
                         let classStr = classObj.Value
                         let levelStr = levelObj.Value
@@ -316,7 +316,7 @@ export namespace HeroServer {
             }
         }
         if (maxHeroLevel > minHeroLevel + levelSpreadK) {
-            let officialMaxLevel = Workspace.FindFirstChild<Folder>('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!.Value
+            let officialMaxLevel = (Workspace.FindFirstChild('GameManagement')!.FindFirstChild('CurrentMaxHeroLevel') as NumberValue|undefined)!.Value
             DebugXL.Error(`Nerfing failure: minLevel: ${minHeroLevel}, maxLevel: ${maxHeroLevel}, officialMaxLevel: ${officialMaxLevel}, anyNerfing: ${anyNerfing}`)
             // wait ten minutes before reporting again
             wait(600)

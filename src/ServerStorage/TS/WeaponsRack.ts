@@ -15,7 +15,7 @@ import { ToolCaches } from "./ToolCaches"
 import { DestructibleStructure } from "./DestructibleStructure"
 
 // wishlist - only works on players so can"t work on mobs if we one decide to be able to allow the players to place chests
-const lootDropRE = Workspace.FindFirstChild<Folder>("Signals")!.FindFirstChild<RemoteEvent>("LootDropRE")!
+const lootDropRE = (Workspace.FindFirstChild("Signals")!.FindFirstChild("LootDropRE") as RemoteEvent|undefined)!
 
 let hotbarRE = Workspace.WaitForChild("Signals")!.WaitForChild("HotbarRE") as RemoteEvent
 

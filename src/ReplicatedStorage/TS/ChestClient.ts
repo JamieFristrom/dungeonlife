@@ -9,13 +9,13 @@ export class ChestClient
     constructor( inst: Instance )
     {
         let chestInstance = inst as Model
-        let origin = chestInstance.WaitForChild<BasePart>("Origin")  // .PrimaryPart  // dunno why PrimaryPart doesn't work
-        let lid = chestInstance.WaitForChild<Model>("Lid")
+        let origin = (chestInstance.WaitForChild("Origin") as BasePart)  // .PrimaryPart  // dunno why PrimaryPart doesn't work
+        let lid = (chestInstance.WaitForChild("Lid") as Model)
         let hinge = lid.PrimaryPart!
         let lidStartCFrame = hinge.CFrame
-        let lidOpenValueObj = chestInstance.WaitForChild<BoolValue>("LidOpen")
-        let clickDetector = chestInstance.WaitForChild("ClickBox").WaitForChild<ClickDetector>("ClickDetector")
-        let chestRE = chestInstance.WaitForChild<RemoteEvent>("ChestRE")
+        let lidOpenValueObj = (chestInstance.WaitForChild("LidOpen") as BoolValue)
+        let clickDetector = (chestInstance.WaitForChild("ClickBox").WaitForChild("ClickDetector") as ClickDetector)
+        let chestRE = (chestInstance.WaitForChild("ChestRE") as RemoteEvent)
 
         let chestHitBox = new Instance("Part")
         chestHitBox.Size = new Vector3(5,3,4)

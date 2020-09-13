@@ -108,12 +108,12 @@ export namespace Analytics {
             if (team) {
                 Analytics.ReportEvent(player,
                     "SessionLength",
-                    Workspace.FindFirstChild("GameManagement")!.FindFirstChild<StringValue>("GameState")!.Value,
+                    (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameState") as StringValue|undefined)!.Value,
                     team.Name,
                     sessionLength,
                     {
                         "numPlayers": Players.GetPlayers().size(),
-                        "stateLength": Workspace.FindFirstChild("GameManagement")!.FindFirstChild<NumberValue>("GameStateTime")!.Value
+                        "stateLength": (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameStateTime") as NumberValue|undefined)!.Value
                     })
             }
             playerAnalyticInfos.delete(player)

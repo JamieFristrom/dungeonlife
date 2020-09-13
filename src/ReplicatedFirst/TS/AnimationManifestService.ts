@@ -12,7 +12,7 @@ export namespace AnimationManifestService {
     DebugXL.Assert(animationFolder !== undefined)
 
     export function getAnimInstance(animName: string): Animation {
-        let animInstance = animationFolder!.FindFirstChild<Animation>(animName)
+        let animInstance = (animationFolder!.FindFirstChild(animName) as Animation|undefined)
         if (!animInstance) {
             const animId = AnimationManifest[animName]
             if (!animId) {

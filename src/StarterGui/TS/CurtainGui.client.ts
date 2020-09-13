@@ -29,8 +29,8 @@ const playerGui = script.Parent!.Parent! as PlayerGui
 playerGui.SetTopbarTransparency(0)
 // we want to show our cool ReplicatedFirst logo first
 
-const curtainGui = playerGui.WaitForChild<ScreenGui>("CurtainGui")
-const curtain = curtainGui.WaitForChild<Frame>("Curtain")
+const curtainGui = (playerGui.WaitForChild("CurtainGui") as ScreenGui)
+const curtain = (curtainGui.WaitForChild("Curtain") as Frame)
 
 curtain.BackgroundTransparency = 0
 
@@ -40,10 +40,10 @@ let firstFadeInDone = false
 let deltaFrames = 0
 
 const localPlayer = Players.LocalPlayer
-const gameManagement = Workspace.WaitForChild<Folder>("GameManagement")
-const unassignedTeam = Teams.WaitForChild<Team>("Unassigned")
-const monstersTeam = Teams.WaitForChild<Team>("Monsters")
-const preparationCountdownObj = gameManagement.WaitForChild<NumberValue>("PreparationCountdown")
+const gameManagement = (Workspace.WaitForChild("GameManagement") as Folder)
+const unassignedTeam = (Teams.WaitForChild("Unassigned") as Team)
+const monstersTeam = (Teams.WaitForChild("Monsters") as Team)
+const preparationCountdownObj = (gameManagement.WaitForChild("PreparationCountdown") as NumberValue)
 
 RunService.RenderStepped.Connect(() => {
     deltaFrames = deltaFrames + 1
@@ -55,7 +55,7 @@ RunService.RenderStepped.Connect(() => {
         localPlayer.Character.Parent &&
         !localPlayer.Character.FindFirstChild("HideCharacter") &&
         localPlayer.Character.FindFirstChild("Humanoid") &&
-        localPlayer.Character.FindFirstChild<Humanoid>("Humanoid")!.Health > 0 &&
+        (localPlayer.Character.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health > 0 &&
         PCClient.pc &&
         PCClient.pc.getClass() !== "NullClass") {
             
@@ -65,7 +65,7 @@ RunService.RenderStepped.Connect(() => {
         curtain.BackgroundTransparency = MathXL.Lerp(curtain.BackgroundTransparency, 0, 0.02)
     }
 
-    Lighting.FindFirstChild<BlurEffect>("Blur")!.Size = (1-curtain.BackgroundTransparency)*25
+    (Lighting.FindFirstChild("Blur") as BlurEffect|undefined)!.Size = (1-curtain.BackgroundTransparency)*25
 
     if (curtain.BackgroundTransparency >= 0.99) {
         playerGui.SetTopbarTransparency(0.5)

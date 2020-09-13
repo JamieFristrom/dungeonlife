@@ -12,11 +12,11 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 
 let testWorkspace = InstanceUtility.findOrCreateChild<Folder>(ServerStorage, "TestWorkspace", "Folder")
 PlayerUtility.publishClientValues( testWorkspace as unknown as Player, 666, 665, "Godly", true  )
-let leaderstats = testWorkspace.FindFirstChild<Model>("leaderstats")!
+let leaderstats = (testWorkspace.FindFirstChild("leaderstats") as Model|undefined)!
 TestUtility.assertTrue( leaderstats !== undefined )
-TestUtility.assertTrue( testWorkspace.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value === 666)
-TestUtility.assertTrue( leaderstats.FindFirstChild<StringValue>("Rank")!.Value==="Godly")
-TestUtility.assertTrue( leaderstats.FindFirstChild<StringValue>("VIP")!.Value==="VIP")
-TestUtility.assertTrue( testWorkspace.FindFirstChild<NumberValue>("HeroRespawnCountdown")!.Value===665)
+TestUtility.assertTrue( (testWorkspace.FindFirstChild("BuildPointsTotal") as NumberValue|undefined)!.Value === 666)
+TestUtility.assertTrue( (leaderstats.FindFirstChild("Rank") as StringValue|undefined)!.Value==="Godly")
+TestUtility.assertTrue( (leaderstats.FindFirstChild("VIP") as StringValue|undefined)!.Value==="VIP")
+TestUtility.assertTrue( (testWorkspace.FindFirstChild("HeroRespawnCountdown") as NumberValue|undefined)!.Value===665)
 // cleanup
 testWorkspace.Destroy()
