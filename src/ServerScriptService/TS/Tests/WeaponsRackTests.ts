@@ -105,8 +105,8 @@ for (let seed = 0; seed < 20; seed++) {
     DebugXL.Assert(structure instanceof WeaponsRack)
     let weaponsRack = structure as WeaponsRack
     let startTime = tick()
-    // wait the minimum amount of time possible, or 30 seconds
-    while (tick() < startTime + 10) {
+    // wait the minimum amount of time possible, or below seconds
+    while (tick() < startTime + 20) {
         if (weaponsRack.hasClientAcknowledged()) {
             break
         }

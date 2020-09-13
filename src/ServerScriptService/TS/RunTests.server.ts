@@ -11,15 +11,15 @@ import { Workspace } from "@rbxts/services"
 
 const runTests = true
 
-// undefined means run all the tests
-const currentTest: string | undefined = undefined // = "CharacterEffectsTests" // "WeaponsRackTests" //"MeleeWeaponTests" // "SuperbossTests"
+// "" means run all the tests
+const currentTest = "" // "WeaponsRackTests" // "" //"MeleeWeaponTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {
     warn("Running Tests")
-    for (let moduleScript of (script.Parent!.Parent!.FindFirstChild("TS")!.FindFirstChild("Tests") as Folder|undefined)!.GetChildren()) {
+    for (const moduleScript of (script.Parent!.Parent!.FindFirstChild("TS")!.FindFirstChild("Tests") as Folder | undefined)!.GetChildren()) {
         if (moduleScript.IsA("ModuleScript")) {
-            if (!currentTest || (currentTest as string).upper() === moduleScript.Name.upper()) {
+            if (currentTest === "" || (currentTest as string).upper() === moduleScript.Name.upper()) {
                 warn("Running " + moduleScript.Name)
                 TestUtility.setCurrentModuleName(moduleScript.Name)
                 require(moduleScript)
@@ -29,4 +29,4 @@ if (runTests && game.GetService("RunService").IsStudio()) {
     warn("All tests run")
 }
 
-(Workspace.FindFirstChild("GameManagement")!.FindFirstChild("TestsFinished") as BoolValue|undefined)!.Value = true
+(Workspace.FindFirstChild("GameManagement")!.FindFirstChild("TestsFinished") as BoolValue | undefined)!.Value = true

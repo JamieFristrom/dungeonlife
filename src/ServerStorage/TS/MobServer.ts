@@ -8,7 +8,7 @@ import { ServerStorage, Workspace, CollectionService, RunService, Teams, Physics
 
 import * as Monsters from 'ServerStorage/Standard/MonstersModule'
 
-import { PlayerServer, PlayerTracker } from 'ServerStorage/TS/PlayerServer'
+import { PlayerServer } from 'ServerStorage/TS/PlayerServer'
 import { ToolCaches } from 'ServerStorage/TS/ToolCaches'
 
 import { CharacterRecord, CharacterRecordNull } from 'ReplicatedStorage/TS/CharacterRecord'
@@ -34,12 +34,13 @@ import { MainContext } from './MainContext'
 import { ServerContextI } from './ServerContext'
 
 type Character = Model
+type SpawnPart = BasePart
 
-const mobAnimationsFolder = (ServerStorage.FindFirstChild('MobAnimations') as Folder|undefined)!
+const mobAnimationsFolder = (ServerStorage.FindFirstChild('MobAnimations') as Folder | undefined)!
 DebugXL.Assert(mobAnimationsFolder !== undefined)
-const mobFolder = (Workspace.FindFirstChild('Mobs') as Folder|undefined)!
+const mobFolder = (Workspace.FindFirstChild('Mobs') as Folder | undefined)!
 DebugXL.Assert(mobFolder !== undefined)
-const mobToolCacheFolder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
+const mobToolCacheFolder = (ServerStorage.FindFirstChild('MobToolCache') as Folder | undefined)!
 DebugXL.Assert(mobToolCacheFolder !== undefined)
 
 const mobIdleAnimations: Animation[] = mobAnimationsFolder.FindFirstChild('idle')!.GetChildren() as Animation[]
@@ -59,7 +60,7 @@ class Attackable {
     }
 
     updateLastAttacker() {
-        const lastAttackerObject = (this.humanoid.FindFirstChild("LastAttacker") as ObjectValue|undefined)
+        const lastAttackerObject = (this.humanoid.FindFirstChild("LastAttacker") as ObjectValue | undefined)
         if (lastAttackerObject) {
             if (!lastAttackerObject.Value) {
                 DebugXL.logE(LogArea.Spawner, this.model.Name + " has invalid lastAttackerObject")
@@ -104,8 +105,6 @@ class Spawner {
         }
     }
 }
-
-type SpawnPart = BasePart
 
 class Mob extends Attackable {
     weaponUtility?: BaseWeaponUtility
@@ -163,7 +162,7 @@ class Mob extends Attackable {
         // position mob
         let spawnPosition: Vector3 = new Vector3(8, 0, 0)
         if (spawnPart) {
-            const exclusionPart = (spawnPart.Parent!.FindFirstChild("MobExclusion") as Part|undefined)
+            const exclusionPart = (spawnPart.Parent!.FindFirstChild("MobExclusion") as Part | undefined)
             const exclusionPosition = exclusionPart ? exclusionPart.Position : spawnPosition
             const exclusionRadius = exclusionPart ? exclusionPart.Size.Z : 0
             spawnPosition = this.findSpawnPos(spawnPart.Position, spawnPart.Size, exclusionPosition, exclusionRadius)
@@ -185,7 +184,7 @@ class Mob extends Attackable {
         const numHeroes = HeroServer.getNumHeroes()
         const mobLevel = (monsterDatum.tagsT.Superboss || monsterDatum.tagsT.Boss) ?
             MonsterServer.determineBossSpawnLevel(monsterDatum) :
-            MonsterServer.determineMobSpawnLevel( MobServer.mobSpawnerCap * (numHeroes + 3) / 2)
+            MonsterServer.determineMobSpawnLevel(MobServer.mobSpawnerCap * (numHeroes + 3) / 2)
 
         let characterRecord = new Monster(characterClass,
             [],
@@ -240,15 +239,15 @@ class Mob extends Attackable {
                     DebugXL.Assert(flexTool !== undefined)
                     if (flexTool) {
                         FlexibleToolsServer.setFlexToolInst(tool, { flexToolInst: flexTool, character: this.model, possessionsKey: possessionKey })
-                        if ((tool.FindFirstChild("MeleeClientScript") as Script|undefined)) {
+                        if ((tool.FindFirstChild("MeleeClientScript") as Script | undefined)) {
                             this.weaponUtility = new MeleeWeaponUtility(tool, flexTool)    // do 'client' stuff
                             break
                         }
-                        else if ((tool.FindFirstChild('BoltClient') as Script|undefined)) {
+                        else if ((tool.FindFirstChild('BoltClient') as Script | undefined)) {
                             this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "DisplayBolt")
                             break
                         }
-                        else if ((tool.FindFirstChild('ThrownWeaponClientScript') as Script|undefined)) {
+                        else if ((tool.FindFirstChild('ThrownWeaponClientScript') as Script | undefined)) {
                             this.weaponUtility = new RangedWeaponUtility(tool, flexTool, "Handle")
                             break
                         }
@@ -421,7 +420,7 @@ export namespace MobServer {
         if (mySpawnerModel) {
             DebugXL.Assert(mySpawnerModel.IsA("Model"))
             if (mySpawnerModel.IsA("Model")) {
-                let myHumanoid = (mySpawnerModel.FindFirstChild("Humanoid") as Humanoid|undefined)
+                let myHumanoid = (mySpawnerModel.FindFirstChild("Humanoid") as Humanoid | undefined)
                 const mySpawner = new Spawner(mySpawnerModel, myHumanoid)
                 spawnersMap.set(spawnPart, mySpawner)
             }
@@ -447,16 +446,16 @@ export namespace MobServer {
             }
         }
 
-        const monsterFolder = (ServerStorage.FindFirstChild('Monsters') as Folder|undefined)!
+        const monsterFolder = (ServerStorage.FindFirstChild('Monsters') as Folder | undefined)!
         const prototypeObj = CharacterClasses.monsterStats[characterClass].prototypeObj
         const modelName = prototypeObj ? prototypeObj : characterClass  // mobs have fallback prototypes in cases where the monster would use an avatar
-        const mobTemplate = (monsterFolder.FindFirstChild(modelName) as Model|undefined)
+        const mobTemplate = (monsterFolder.FindFirstChild(modelName) as Model | undefined)
         if (!mobTemplate) {
             DebugXL.logW(LogArea.Mobs, 'No model for ' + modelName)
         }
         else {
             const mobModel = mobTemplate.Clone()
-            const humanoid = (mobModel.FindFirstChild('Humanoid') as Humanoid|undefined)
+            const humanoid = (mobModel.FindFirstChild('Humanoid') as Humanoid | undefined)
             DebugXL.Assert(humanoid !== undefined)
             if (humanoid) {
                 mobs.add(new Mob(context, mobModel, humanoid, characterClass, superbossManager, currentLevelSession, position, spawnPart))
@@ -498,13 +497,13 @@ export namespace MobServer {
     }
 
     export function spawnerCheckForSpawn(spawnPart: SpawnPart, curTick: number) {
-        if ((spawnPart.FindFirstChild('OneUse') as BoolValue|undefined)!.Value) {
+        if ((spawnPart.FindFirstChild('OneUse') as BoolValue | undefined)!.Value) {
             // boss spawnPart; only use if no monster players
             if (monsterTeam.GetPlayers().size() === 0) {
                 const spawner = spawnersMap.get(spawnPart)
                 if (!spawnersMap.get(spawnPart)) {
                     DebugXL.logI(LogArea.MobSpawn, "Spawning one use spawner " + spawnPart.GetFullName())
-                    const charClassStr = (spawnPart.FindFirstChild('CharacterClass') as StringValue|undefined)!.Value as CharacterClass
+                    const charClassStr = (spawnPart.FindFirstChild('CharacterClass') as StringValue | undefined)!.Value as CharacterClass
                     spawnMob(
                         MainContext.get(),
                         charClassStr,
@@ -526,7 +525,7 @@ export namespace MobServer {
                     DebugXL.logD(LogArea.MobSpawn, "Sufficient time has passed to spawn from " + spawnPart.GetFullName())
                     spawnMob(
                         MainContext.get(),
-                        (spawnPart.FindFirstChild('CharacterClass') as StringValue|undefined)!.Value as CharacterClass,
+                        (spawnPart.FindFirstChild('CharacterClass') as StringValue | undefined)!.Value as CharacterClass,
                         GameServer.getSuperbossManager(),
                         GameServer.levelSession,
                         undefined,

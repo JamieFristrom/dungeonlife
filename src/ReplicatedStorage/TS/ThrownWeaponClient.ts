@@ -25,7 +25,7 @@ export class ThrownWeaponClient extends BaseWeaponClient {
 
 
 	constructor(tool: Tool) {
-        let flexTool = FlexToolClient.getFlexTool( tool )
+        const flexTool = FlexToolClient.getFlexTool( tool )
         super(tool, new RangedWeaponUtility(tool, flexTool, "Handle"))
 		tool.Equipped.Connect((mouse) => this.onEquippedLocal(mouse))
 		this.projectileTemplate = (tool.WaitForChild("Handle") as BasePart)

@@ -1,6 +1,7 @@
 # Fixing
-* make between levels look good
 * Upgrade typescript
+* make between levels look good
+* superbosses too easy in co-op
 * ghosts are immune to being directly targeted with longbow (recorded movie)
 * Bring back print money command
 * Hero is respawning during preparation phase in 2 player game: mash ready button after changing level
@@ -19,6 +20,8 @@
 * PlayerTracker should be called CharacterTracker
 * Refactor: rename LevelSession -> FloorSession
 * getCharacterRecordFromPlayer should return nullrecord instead of null
+* when smashing through the exit activate whole level. that would require pathfinding
+
 
 # Not fixing
 * Using collection service Tag for characters is duplication of data. Instead do Mobs + workspace characters + destructibles?

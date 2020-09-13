@@ -9,7 +9,7 @@ import { PlayerAnalyticInfoI } from "ReplicatedStorage/TS/AnalyticTypes"
 let analyticsRF = Workspace.FindFirstChild("Signals")!.FindFirstChild("AnalyticsRF") as RemoteFunction
 let analyticsRE = Workspace.FindFirstChild("Signals")!.FindFirstChild("AnalyticsRE") as RemoteEvent
 
-let myServerKey = HttpService.GenerateGUID()
+const myServerKey = HttpService.GenerateGUID()
 
 export namespace Analytics {
     let playerAnalyticInfos = new Map<Player, PlayerAnalyticInfoI>()
@@ -108,12 +108,12 @@ export namespace Analytics {
             if (team) {
                 Analytics.ReportEvent(player,
                     "SessionLength",
-                    (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameState") as StringValue|undefined)!.Value,
+                    (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameState") as StringValue | undefined)!.Value,
                     team.Name,
                     sessionLength,
                     {
                         "numPlayers": Players.GetPlayers().size(),
-                        "stateLength": (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameStateTime") as NumberValue|undefined)!.Value
+                        "stateLength": (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("GameStateTime") as NumberValue | undefined)!.Value
                     })
             }
             playerAnalyticInfos.delete(player)
