@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Dungeon Life, the action RPG where the monsters are you! ",
   "dependencies": {
-    "@rbxts/types": "1.0.235",
-    "@rbxts/services": "1.0.23"
+    "@rbxts/services": "1.0.23",
+    "@rbxts/types": "^1.0.393"
   },
   "devDependencies": {},
   "repository": {
