@@ -16,9 +16,9 @@ import { PlayerServer } from 'ServerStorage/TS/PlayerServer';
 
 
 
-const SignalsFolder = Workspace.WaitForChild<Folder>("Signals")
-const InventoryRE = SignalsFolder.WaitForChild<RemoteEvent>("InventoryRE")
-const GearRE = SignalsFolder.WaitForChild<RemoteEvent>("GearRE")
+const SignalsFolder = (Workspace.WaitForChild("Signals") as Folder)
+const InventoryRE = (SignalsFolder.WaitForChild("InventoryRE") as RemoteEvent)
+const GearRE = (SignalsFolder.WaitForChild("GearRE") as RemoteEvent)
 
 
 namespace GearRemote {

@@ -89,17 +89,17 @@ numHeroesNeededPerPlayer[12] = 5;  // 5v7  // and let's cap it here.
 //	numHeroesNeededPerPlayer[17] = 5;  // 5v12
 //	numHeroesNeededPerPlayer[18] = 5;  // 5v13
 
-const gameManagementFolder = Workspace.WaitForChild<Folder>("GameManagement")
-const preparationCountdownValue = gameManagementFolder.WaitForChild<NumberValue>("PreparationCountdown")
+const gameManagementFolder = (Workspace.WaitForChild("GameManagement") as Folder)
+const preparationCountdownValue = (gameManagementFolder.WaitForChild("PreparationCountdown") as NumberValue)
 
-const heroRespawnDuration = gameManagementFolder.WaitForChild<BoolValue>("FastStart").Value ? 5 : 15
+const heroRespawnDuration = (gameManagementFolder.WaitForChild("FastStart") as BoolValue).Value ? 5 : 15
 
-const HeroTeam = Teams.WaitForChild<Team>("Heroes")
-const MonsterTeam = Teams.WaitForChild<Team>("Monsters")
+const HeroTeam = (Teams.WaitForChild("Heroes") as Team)
+const MonsterTeam = (Teams.WaitForChild("Monsters") as Team)
 
-const signals = Workspace.WaitForChild<Folder>("Signals")
+const signals = (Workspace.WaitForChild("Signals") as Folder)
 
-const chooseHeroRE = signals.WaitForChild<RemoteEvent>("ChooseHeroRE")
+const chooseHeroRE = (signals.WaitForChild("ChooseHeroRE") as RemoteEvent)
 
 export namespace GameServer {
     let superbossManager = new SuperbossManager()
@@ -133,7 +133,7 @@ export namespace GameServer {
         const customSpawns = CollectionService.GetTagged("CustomSpawn")
         const monsterSpawnN = monsterSpawns.size()
         if (player.Team === HeroTeam || monsterSpawnN === 0) {
-            spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+            spawnPart = customSpawns.find((x) => (x.FindFirstChild("Team") as ObjectValue|undefined)!.Value === HeroTeam)
             if (player.Team !== HeroTeam) {
                 PlayerServer.setClassChoice(player, "DungeonLord")
             }
@@ -152,9 +152,9 @@ export namespace GameServer {
                 const distantSpawns: BasePart[] = []
                 for (let i = 0; i < monsterSpawnN; i++) {
                     const spawner = monsterSpawns[i]
-                    if (spawner.FindFirstChild<BoolValue>("OneUse")!.Value) {
+                    if ((spawner.FindFirstChild("OneUse") as BoolValue|undefined)!.Value) {
                         DebugXL.logV(LogArea.GameManagement, "Found a boss spawn for " + player.Name)
-                        if (spawner.FindFirstChild<ObjectValue>("LastPlayer")!.Value === undefined) {
+                        if ((spawner.FindFirstChild("LastPlayer") as ObjectValue|undefined)!.Value === undefined) {
                             DebugXL.logV(LogArea.GameManagement, "Unoccupied")
                             spawnPart = spawner
                             break
@@ -184,7 +184,7 @@ export namespace GameServer {
                     }
                     else {
                         // apparently there"s only one already used boss spawn on this level; fall back to hero spawner
-                        spawnPart = customSpawns.find((x) => x.FindFirstChild<ObjectValue>("Team")!.Value === HeroTeam)
+                        spawnPart = customSpawns.find((x) => (x.FindFirstChild("Team") as ObjectValue|undefined)!.Value === HeroTeam)
                         if (player.Team !== HeroTeam) {
                             PlayerServer.setClassChoice(player, "DungeonLord")
                         }
@@ -195,7 +195,7 @@ export namespace GameServer {
     }
 
     export function broadcastRespawnCountdown(player: Player, dungeonPlayerData: DungeonPlayer) {
-        const countdownObj = player.FindFirstChild<NumberValue>("HeroRespawnCountdown")
+        const countdownObj = (player.FindFirstChild("HeroRespawnCountdown") as NumberValue|undefined)
         DebugXL.Assert(countdownObj !== undefined)
         if (countdownObj) { 
             countdownObj.Value = Math.clamp(15 - (time() - dungeonPlayerData.heroKickoffTime), 0, 15)
@@ -235,7 +235,7 @@ export namespace GameServer {
         let allHeroesDeadB = true
         for (let player of HeroTeam.GetPlayers()) {
             if (player.Character) {
-                const humanoid = player.Character.FindFirstChild<Humanoid>("Humanoid")
+                const humanoid = (player.Character.FindFirstChild("Humanoid") as Humanoid|undefined)
                 if (humanoid) {
                     if (humanoid.Health > 0) {
                         const pcrecord = playerTracker.getCharacterRecordFromPlayer(player)

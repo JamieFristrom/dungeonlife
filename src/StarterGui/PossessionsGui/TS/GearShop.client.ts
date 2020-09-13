@@ -49,9 +49,9 @@ function RefreshGearShop( pc: CharacterRecordI )
 
     goldCount.Text = tostring( hero.statsT.goldN )
 
-    GearUI.PopulateGearFrame( gearShopFrame.WaitForChild('Inlay'),
-        gearShopFrame.WaitForChild('ItemTemplate'),
-        gearShopFrame.WaitForChild('ItemInfoFrame'),
+    GearUI.PopulateGearFrame( gearShopFrame.WaitForChild('Inlay') as Frame,
+        gearShopFrame.WaitForChild('ItemTemplate') as Frame,
+        gearShopFrame.WaitForChild('ItemInfoFrame') as Frame,
         hero.getShopItems(),
         new Map<SkinTypeEnum, string>(),
         30,

@@ -41,7 +41,7 @@ export class TestContext extends ServerContext {
     makeTestPlayerCharacter(className: string): Character {
         let testCharacter = Costumes.LoadCharacter(
             this.player,
-            [ServerStorage.FindFirstChild<Folder>("Monsters")!.FindFirstChild<Model>(className)!],
+            ([ServerStorage.FindFirstChild("Monsters")!.FindFirstChild(className) as Model|undefined)!],
             {},
             true,
             undefined,
@@ -60,16 +60,16 @@ export class TestContext extends ServerContext {
     
     saveCostumeStub(player: Player) {
         // we didn't forget to clean did we?
-        let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
+        let costumeStub = ServerStorage.FindFirstChild("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
         DebugXL.Assert(costumeStub === undefined)  // if there's a lingering costume probably someone forgot to clean their test context
 
-        let costumeCopy = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
+        let costumeCopy = (ReplicatedStorage.FindFirstChild("TestObjects")!.FindFirstChild("TestDummy") as Model|undefined)!.Clone()
         costumeCopy.Name = Costumes.CostumeKey(player)
-        costumeCopy.Parent = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")
+        costumeCopy.Parent = (ServerStorage.FindFirstChild("PlayerCostumes") as Folder|undefined)
     }
 
     cleanCostumeStub(player: Player) {
-        let costumeStub = ServerStorage.FindFirstChild<Folder>("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
+        let costumeStub = ServerStorage.FindFirstChild("PlayerCostumes")!.FindFirstChild(Costumes.CostumeKey(player))
         if (costumeStub) {
             costumeStub.Parent = undefined
         }

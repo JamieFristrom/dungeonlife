@@ -23,24 +23,24 @@ export namespace StructureClient {
         furnishRF: SocketI) {
 
 
-        const playerGui = Players.LocalPlayer.WaitForChild<PlayerGui>("PlayerGui")
-        const audio = playerGui.WaitForChild<ScreenGui>("Audio")
-        const furnishSuccessSound = audio.WaitForChild<Sound>("FurnishSuccess")
+        const playerGui = (Players.LocalPlayer.WaitForChild("PlayerGui") as PlayerGui)
+        const audio = (playerGui.WaitForChild("Audio") as ScreenGui)
+        const furnishSuccessSound = (audio.WaitForChild("FurnishSuccess") as Sound)
 
         let remainingBuildPoints = buildPoints
         // make cost snappy ;  earning Dungeon Points will send a pretty traveller
-        const currenciesBuildPointsFrame = furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints")
+        const currenciesBuildPointsFrame = (furnishGui.WaitForChild("Currencies").WaitForChild("BuildPoints") as Frame)
         if (possessionDatum.buildCostN > 0) {
-            remainingBuildPoints = buildPoints - possessionDatum.buildCostN
+            remainingBuildPoints = buildPoints - possessionDatum.buildCostN;
             // fixme: do these need localizing?
             // think of these as predicting the final values
-            currenciesBuildPointsFrame.WaitForChild<TextLabel>("CurrencyNameAndCount").Text = "Dungeon Points: " + remainingBuildPoints
-            furnishGui.WaitForChild<Frame>("ActiveFurnishingListFrame").WaitForChild<TextLabel>("BuildPoints").Text = "Dungeon Points: " + remainingBuildPoints
-            furnishGui.WaitForChild<Frame>("ActiveCategoryListFrame").WaitForChild<TextLabel>("BuildPoints").Text = "Dungeon Points: " + remainingBuildPoints
+            (currenciesBuildPointsFrame.WaitForChild("CurrencyNameAndCount") as TextLabel).Text = "Dungeon Points: " + remainingBuildPoints;
+            (furnishGui.WaitForChild("ActiveFurnishingListFrame").WaitForChild("BuildPoints") as TextLabel).Text = "Dungeon Points: " + remainingBuildPoints;
+            (furnishGui.WaitForChild("ActiveCategoryListFrame").WaitForChild("BuildPoints") as TextLabel).Text = "Dungeon Points: " + remainingBuildPoints;
         }
         furnishSuccessSound.Play()
         const name = BlueprintUtility.getPossessionName(ghostInstance)
-        const cf = ghostInstance.GetPrimaryPartCFrame().p
+        const cf = ghostInstance.GetPrimaryPartCFrame().Position
         // but then it's hard to place a bunch in a row. At least we have the audio!
         // this is a delaying function.
         DebugXL.logD(LogArea.UI, "currenciesBuildPointsFrame is " + currenciesBuildPointsFrame.GetFullName() + " before server invoke")
@@ -55,15 +55,15 @@ export namespace StructureClient {
             // don't know why, though, when we get here theres often no BuildPoints; maybe it happens when the player builds
             // and immediately quits?
             DebugXL.logD(LogArea.UI, "currenciesBuildPointsFrame is " + currenciesBuildPointsFrame.GetFullName() + " after server invoke")
-            const currencyNameAndCount = currenciesBuildPointsFrame.FindFirstChild<TextLabel>("CurrencyNameAndCount")
+            const currencyNameAndCount = (currenciesBuildPointsFrame.FindFirstChild("CurrencyNameAndCount") as TextLabel|undefined)
             if (currencyNameAndCount) {
                 currencyNameAndCount.Text = "Dungeon Points: " + serverAuthBuildPoints
             }
             else {
                 DebugXL.logW(LogArea.UI, "currencyNameAndCount is misssing")
             }
-            furnishGui.WaitForChild<Frame>("ActiveFurnishingListFrame").WaitForChild<TextLabel>("BuildPoints").Text = "Dungeon Points: " + serverAuthBuildPoints
-            furnishGui.WaitForChild<Frame>("ActiveCategoryListFrame").WaitForChild<TextLabel>("BuildPoints").Text = "Dungeon Points: " + serverAuthBuildPoints
+            (furnishGui.WaitForChild("ActiveFurnishingListFrame").WaitForChild("BuildPoints") as TextLabel).Text = "Dungeon Points: " + serverAuthBuildPoints;
+            (furnishGui.WaitForChild("ActiveCategoryListFrame").WaitForChild("BuildPoints") as TextLabel).Text = "Dungeon Points: " + serverAuthBuildPoints;
         }
         return success ? remainingBuildPoints : buildPoints
     }

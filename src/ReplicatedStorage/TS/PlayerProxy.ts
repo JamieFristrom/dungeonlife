@@ -32,15 +32,15 @@ export class PlayerWrapper implements PlayerProxy {
     }
 
     awaitStarterGear(): Folder {
-        return this._player.WaitForChild<Folder>("StarterGear")
+        return (this._player.WaitForChild("StarterGear") as Folder)
     }
 
     awaitBackpack(): Folder {
-        return this._player.WaitForChild<Folder>("Backpack")
+        return (this._player.WaitForChild("Backpack") as Folder)
     }
 
     awaitLeaderstatsFolder(): Folder {
-        return this._player.WaitForChild<Folder>("leaderstats")
+        return (this._player.WaitForChild("leaderstats") as Folder)
     }
 
     getTeam(): Team | undefined {

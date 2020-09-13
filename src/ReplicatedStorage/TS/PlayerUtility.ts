@@ -14,8 +14,8 @@ import { Monster } from "./Monster"
 
 export namespace PlayerUtility {
     //    return (((Character and Character.Parent and Humanoid and Humanoid.Parent and Humanoid.Health > 0 and Player and Player.Parent) and true) or false)
-    let heroTeam = Teams.WaitForChild<Team>("Heroes")
-    let monsterTeam = Teams.WaitForChild<Team>("Monsters")
+    let heroTeam = (Teams.WaitForChild("Heroes") as Team)
+    let monsterTeam = (Teams.WaitForChild("Monsters") as Team)
 
     export function getHeroTeam() {
         return heroTeam

@@ -18,11 +18,11 @@ export class RangedWeaponUtility extends BaseWeaponUtility {
     constructor(tool: Tool, public flexTool: FlexTool, private readonly projectileName: string) {
         super(tool, flexTool)
         DebugXL.logI(LogArea.Items, 'RangedWeaponUtility constructor for ' + tool.GetFullName())
-        this.weaponBE = tool.WaitForChild<BindableEvent>('RangedWeaponBE')
+        this.weaponBE = (tool.WaitForChild('RangedWeaponBE') as BindableEvent)
     }
 
     _aimAtTarget(character: Character, target?: Character) {
-        const projectileDisplay = this.tool.FindFirstChild<BasePart>(this.projectileName)
+        const projectileDisplay = this.tool.FindFirstChild(this.projectileName) as BasePart
 
         this.tool.Enabled = false
         if (projectileDisplay) {    // display projectile when nocked or held, disappears when fired
@@ -40,7 +40,7 @@ export class RangedWeaponUtility extends BaseWeaponUtility {
     }
 
     _afterEffects() {
-        const projectileDisplay = this.tool.FindFirstChild<BasePart>(this.projectileName)
+        const projectileDisplay = this.tool.FindFirstChild(this.projectileName) as BasePart
         if (projectileDisplay) {
             projectileDisplay.Transparency = 0
         }
@@ -49,7 +49,7 @@ export class RangedWeaponUtility extends BaseWeaponUtility {
     static projectileCounter = 0
 
     _mobActivate(target: Character) {
-        const targetV3 = ModelUtility.getPrimaryPartCFrameSafe(target).p
+        const targetV3 = ModelUtility.getPrimaryPartCFrameSafe(target).Position
         // bindable rather than a direct function call seems the most consistent way to communicate -
         // with players it's a client-server remote event, so this dovetails
         this.weaponBE.Fire('OnActivated', targetV3, 'MobProjectile' + RangedWeaponUtility.projectileCounter)

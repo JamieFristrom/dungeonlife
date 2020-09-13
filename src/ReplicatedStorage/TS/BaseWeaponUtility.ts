@@ -56,9 +56,9 @@ export abstract class BaseWeaponUtility {
     {
         this.tool = tool
         this.flexTool = flexTool
-        this.handle = tool.WaitForChild<BasePart>("Handle")
-        this.attackSound = this.handle.WaitForChild<Sound>("Attack")
-        const baseDataObject = tool.WaitForChild<StringValue>("BaseData")
+        this.handle = (tool.WaitForChild("Handle") as BasePart)
+        this.attackSound = (this.handle.WaitForChild("Attack") as Sound)
+        const baseDataObject = (tool.WaitForChild("BaseData") as StringValue)
         const baseDataName = baseDataObject.Value
         this.baseData = ToolData.dataT[baseDataName]
         if (!this.baseData) {
@@ -120,7 +120,7 @@ export abstract class BaseWeaponUtility {
 
     drawWeapon(character: Character) {
         // unsheath sound gets played on server
-        const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
+        const humanoid = (character.FindFirstChild("Humanoid") as Humanoid|undefined)
         if (humanoid) {
             if (this.windUpAnim) {
                 // we don"t need to save this; we play the pose once and we"re done. the attack animations also segue to the pose
@@ -161,7 +161,8 @@ export abstract class BaseWeaponUtility {
     protected _mobAimAtTarget(character: Character, target: Character) {
         const humanoid = character.FindFirstChildOfClass("Humanoid")
         if (humanoid) {
-            const targetVec = ModelUtility.getPrimaryPartCFrameSafe(target).p.sub(ModelUtility.getPrimaryPartCFrameSafe(character).p)
+            let cf = new CFrame()
+            const targetVec = ModelUtility.getPrimaryPartCFrameSafe(target).Position.sub(ModelUtility.getPrimaryPartCFrameSafe(character).Position)
             const moveVec = new Vector3(targetVec.X, 0, targetVec.Z)
             humanoid.Move(moveVec.Unit)
             wait()

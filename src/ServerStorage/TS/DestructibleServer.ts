@@ -16,7 +16,7 @@ import { ServerContext, ServerContextI } from "./ServerContext";
 
 export namespace DestructibleServer {
 	export function calibrateHealth(destructibleInstance: Model, averageHeroLocalLevel: number, numHeroes: number, dungeonDepth: number): void {
-		const humanoid = destructibleInstance.FindFirstChild<Humanoid>('Humanoid')
+		const humanoid = (destructibleInstance.FindFirstChild('Humanoid') as Humanoid|undefined)
 		DebugXL.Assert(humanoid !== undefined)
 		if (humanoid) {
 			const furnishingDatum = PossessionData.dataT[BlueprintUtility.getPossessionName(destructibleInstance)]
@@ -53,7 +53,7 @@ export namespace DestructibleServer {
 		// can't verify heroMgr without requiring Heroes which would be a circular dependency
 		DebugXL.Assert(structure.IsA("Model"))
 		DebugXL.Assert(attacker.IsA("Player"))
-		let structureNameObj = structure.FindFirstChild<StringValue>("PossessionName")
+		let structureNameObj = (structure.FindFirstChild("PossessionName") as StringValue|undefined)
 		if (structureNameObj) {
 			let structureRecord = PossessionData.dataT[structureNameObj.Value]
 			DebugXL.Assert(structureRecord !== undefined)

@@ -29,12 +29,12 @@ import { Math } from "ReplicatedStorage/TS/Math"
 
 type Character = Model
 
-const lootDropRE = Workspace.FindFirstChild<Folder>("Signals")!.FindFirstChild<RemoteEvent>("LootDropRE")!
+const lootDropRE = (Workspace.FindFirstChild("Signals")!.FindFirstChild("LootDropRE") as RemoteEvent|undefined)!
 
 const playerLootRandomishers = new Map<Readonly<Player>, Randomisher>()
 const playerPotionRandomishers = new Map<Readonly<Player>, Randomisher>()
 
-const HeroTeam = Teams.FindFirstChild<Team>("Heroes")!
+const HeroTeam = (Teams.FindFirstChild("Heroes") as Team|undefined)!
 DebugXL.Assert(HeroTeam !== undefined)
 
 export namespace LootServer {
@@ -240,7 +240,7 @@ export namespace LootServer {
         // want a function that drops off sharply as monsters get too easy for you (you don't deserve potion for that) but is ! extreme as 
         // monsters get harder, asymptote out.
 
-        const timeSinceLevelStart = Workspace.FindFirstChild<Folder>("GameManagement")!.FindFirstChild<NumberValue>("LevelTimeElapsed")!.Value
+        const timeSinceLevelStart = (Workspace.FindFirstChild("GameManagement")!.FindFirstChild("LevelTimeElapsed") as NumberValue|undefined)!.Value
         const potionLikelihoodMulForLoitering = (BalanceData.potionLoiteringHalfLifeN) / (BalanceData.potionLoiteringHalfLifeN + timeSinceLevelStart)
 
         // same level vs same level: 1

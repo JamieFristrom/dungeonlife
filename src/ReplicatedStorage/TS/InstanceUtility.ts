@@ -6,7 +6,7 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 
 export namespace InstanceUtility {
     export function findOrCreateChild<T extends Instance>( root: Instance, childName: string, childType: string ) {
-        let child = root.FindFirstChild<T>(childName)
+        let child = (root.FindFirstChild(childName) as T|undefined)
         if( !child ) {
             child = new Instance(childType) as T
             child.Parent = root

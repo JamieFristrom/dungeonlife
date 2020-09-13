@@ -138,7 +138,9 @@ let lootDropRE = Workspace.WaitForChild('Signals').WaitForChild('LootDropRE') as
 
 lootDropRE.OnClientEvent.Connect( function( ...args: unknown[] ) 
 {
-    let funcName = args.shift() as string
+    let filteredArgs = args.filterUndefined()
+    let rawFuncName = filteredArgs.shift()
+    let funcName = rawFuncName as string
     if( LootTravellerRemote[ funcName ] )
     {
         let typedFunc = LootTravellerRemote[ funcName ] as (...args: unknown[])=>void

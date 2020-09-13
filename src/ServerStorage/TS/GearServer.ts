@@ -21,7 +21,7 @@ import { FlexibleToolsServer } from './FlexibleToolsServer'
 export namespace GearServer {
     export function recreateTool(tool: Tool, toolParams: CreateToolParamsI) {
         if (tool.Parent && tool.Parent.IsA("Model")) {
-            const humanoid = tool.Parent.FindFirstChild<Humanoid>("Humanoid")
+            const humanoid = (tool.Parent.FindFirstChild("Humanoid") as Humanoid|undefined)
             if (humanoid) {
                 humanoid.UnequipTools()
             }
@@ -53,7 +53,7 @@ export namespace GearServer {
     export function reskinTools(player: Player) {
         // check if any of player's weapons need reskinning
         const allActiveSkins = Inventory.GetActiveSkinsWait(player)
-        const skinOwner = player.Team === Teams.FindFirstChild<Team>("Heroes") ? "hero" : "monster"
+        const skinOwner = player.Team === (Teams.FindFirstChild("Heroes") as Team|undefined) ? "hero" : "monster"
         const activeSkins = allActiveSkins[skinOwner]
         const character = player.Character
         if (character) {
@@ -62,7 +62,7 @@ export namespace GearServer {
                 recreateToolIfNecessary(heldTool, player, activeSkins)
             }
 
-            for (let cachedTool of player.FindFirstChild<Folder>("Backpack")!.GetChildren()) {
+            for (let cachedTool of (player.FindFirstChild("Backpack") as Folder|undefined)!.GetChildren()) {
                 if (cachedTool.IsA("Tool")) {
                     recreateToolIfNecessary(cachedTool, player, activeSkins)
                 }

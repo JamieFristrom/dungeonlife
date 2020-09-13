@@ -7,11 +7,11 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { Workspace, Players } from '@rbxts/services'
 
 const playerGui = script.Parent!.Parent! as PlayerGui
-const topGui = playerGui.WaitForChild<ScreenGui>("TopGui")
-const preparationCountdownLabel = topGui.WaitForChild<TextLabel>("PreparationCountdown")
-const preparationCountdownValueObj = Workspace.WaitForChild<Folder>("GameManagement").WaitForChild<NumberValue>("PreparationCountdown")
+const topGui = (playerGui.WaitForChild("TopGui") as ScreenGui)
+const preparationCountdownLabel = (topGui.WaitForChild("PreparationCountdown") as TextLabel)
+const preparationCountdownValueObj = (Workspace.WaitForChild("GameManagement").WaitForChild("PreparationCountdown") as NumberValue)
 
-const localHeroPreparationCountdownObj = Players.LocalPlayer.WaitForChild<NumberValue>("HeroRespawnCountdown")
+const localHeroPreparationCountdownObj = (Players.LocalPlayer.WaitForChild("HeroRespawnCountdown") as NumberValue)
 
 for (; ;) {
     wait(0.1)

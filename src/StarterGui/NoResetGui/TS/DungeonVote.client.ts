@@ -2,13 +2,13 @@ import { Workspace } from "@rbxts/services";
 
 import { DungeonVoteUtility } from "ReplicatedStorage/TS/DungeonVoteUtility"
 
-let dungeonVoteFrame = script.Parent!.Parent!.WaitForChild<Frame>("DungeonVoteFrame")
+let dungeonVoteFrame = (script.Parent!.Parent!.WaitForChild("DungeonVoteFrame") as Frame)
 
 let voteCountdownValueObj = Workspace.WaitForChild('GameManagement')!.WaitForChild('VoteCountdown') as NumberValue
 
 let dungeonFrames = [
-    dungeonVoteFrame.WaitForChild("Grid").WaitForChild<Frame>("Dungeon0"),
-    dungeonVoteFrame.WaitForChild("Grid").WaitForChild<Frame>("Dungeon1"),
+    dungeonVoteFrame.WaitForChild("Grid").WaitForChild("Dungeon0") as Frame,
+    dungeonVoteFrame.WaitForChild("Grid").WaitForChild("Dungeon1") as Frame,
 ]
 
 let mainRE = Workspace.WaitForChild('Signals')!.WaitForChild('MainRE') as RemoteEvent
@@ -16,8 +16,8 @@ let voteRE = Workspace.WaitForChild('Signals')!.WaitForChild('VoteRE') as Remote
 
 function Vote( dungeonFrame: Frame )
 {
-    dungeonFrames.forEach( ( dungeonFrame ) => dungeonFrame.WaitForChild("Image")!.WaitForChild<GuiObject>("Checkbox").Visible = false )
-    dungeonFrame.WaitForChild("Image")!.WaitForChild<GuiObject>("Checkbox").Visible = true
+    dungeonFrames.forEach( ( dungeonFrame ) => { (dungeonFrame.WaitForChild("Image")!.WaitForChild("Checkbox") as GuiObject).Visible = false } );
+    (dungeonFrame.WaitForChild("Image")!.WaitForChild("Checkbox") as GuiObject).Visible = true
     // warning: this was rewritten without testing:
     mainRE.FireServer( "DungeonVote", dungeonFrame.Name.sub( dungeonFrame.Name.size()-1 ) )
 }
@@ -25,16 +25,16 @@ function Vote( dungeonFrame: Frame )
 function Reset()
 {
     dungeonVoteFrame.Visible = true
-    dungeonFrames.forEach( ( dungeonFrame ) =>
+    dungeonFrames.forEach( ( dungeonFrame: Frame ) =>
     {
-        let image = dungeonFrame.WaitForChild<ImageButton>("Image")
-        image.MouseButton1Click.Connect( () => Vote( dungeonFrame ) )
-        image.WaitForChild<GuiObject>("Checkbox").Visible = false
+        let image = (dungeonFrame.WaitForChild("Image") as ImageButton)
+        image.MouseButton1Click.Connect( () => Vote( dungeonFrame ) );
+        (image.WaitForChild("Checkbox") as GuiObject).Visible = false
 
-        let chooseButton = dungeonFrame.WaitForChild<TextButton>("Choose")
-        chooseButton.MouseButton1Click.Connect( () => Vote( dungeonFrame ) )
+        let chooseButton = (dungeonFrame.WaitForChild("Choose") as TextButton);
+        chooseButton.MouseButton1Click.Connect( () => Vote( dungeonFrame ) );
 
-        dungeonFrame.WaitForChild("Image")!.WaitForChild<TextLabel>("NumVotes").Text = ""
+        (dungeonFrame.WaitForChild("Image")!.WaitForChild("NumVotes") as TextLabel).Text = ""
     })
 }
 
@@ -47,13 +47,17 @@ function TweenPosition( guiObject: GuiObject, startPos: UDim2, endPos: UDim2, ea
     guiObject.Position = startPos  // this will be ignored if mid-tween
     return new Promise( (resolve, reject) => {
         let willPlay = guiObject.TweenPosition( endPos, easeDirection, easeStyle, time, true, ( tweenStatus: Enum.TweenStatus ) => {
-            if( tweenStatus === Enum.TweenStatus.Completed ) 
-                resolve()
-            else 
-                reject()
+                if( tweenStatus === Enum.TweenStatus.Completed ) {
+                    resolve([])
+                }
+                else {
+                    reject()
+                }
             } )
-        if( !willPlay ) reject()
-        } )
+        if( !willPlay ) { 
+            reject() 
+        }
+    } )
 }
 
 
@@ -78,7 +82,7 @@ gameStateValueObj.Changed.Connect( function( newValue )
 
 voteCountdownValueObj.Changed.Connect( ( newValue )=>
 {
-    dungeonVoteFrame.WaitForChild<TextLabel>("CountdownLabel").Text = gameStateValueObj.Value==="DungeonVote" ? tostring( newValue ) : ""
+    (dungeonVoteFrame.WaitForChild("CountdownLabel") as TextLabel).Text = gameStateValueObj.Value==="DungeonVote" ? tostring( newValue ) : ""
 } )
 
 voteRE.OnClientEvent.Connect( ( funcName: string, pollResults: number[] )=>
@@ -87,7 +91,7 @@ voteRE.OnClientEvent.Connect( ( funcName: string, pollResults: number[] )=>
     {
         for( let i=0; i<dungeonFrames.size(); i++ )
         {
-            dungeonFrames[i].WaitForChild("Image")!.WaitForChild<TextLabel>("NumVotes").Text = tostring( pollResults[i] )
+            (dungeonFrames[i].WaitForChild("Image")!.WaitForChild("NumVotes") as TextLabel).Text = tostring( pollResults[i] )
         }
         wait(3)
         TweenPosition( dungeonVoteFrame, dungeonVoteFrame.Position, new UDim2( 0.5, 0, -0.5, 0 ), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 0.3 )

@@ -14,8 +14,8 @@ let audio = playerGui.WaitForChild("Audio") as ScreenGui
 let noResetGui = playerGui.WaitForChild("NoResetGui") as ScreenGui
 noResetGui.Enabled = false
 
-let storeButton = noResetGui.WaitForChild("RightButtonColumn").WaitForChild<GuiButton>("Store")
-let skinsButton = noResetGui.WaitForChild("RightButtonColumn").WaitForChild<GuiButton>("Skins")
+let storeButton = (noResetGui.WaitForChild("RightButtonColumn").WaitForChild("Store") as GuiButton)
+let skinsButton = (noResetGui.WaitForChild("RightButtonColumn").WaitForChild("Skins") as GuiButton)
 
 
 // don't distract new players with server button; have to have been hero at least

@@ -37,7 +37,7 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
 
     constructor(tool: Tool, flexTool: FlexTool) {
         super(tool, flexTool)
-        this.hitSound = this.handle.WaitForChild<Sound>("Hit")
+        this.hitSound = (this.handle.WaitForChild("Hit") as Sound)
         this.hitVol = this.hitSound.Volume
         this.hitSoundSpeed = this.hitSound.PlaybackSpeed
     }
@@ -47,11 +47,11 @@ export class MeleeWeaponUtility extends BaseWeaponUtility {
             DebugXL.logD(LogArea.Combat, target.Name + " in range")
             const primaryPart = target.PrimaryPart
             if (primaryPart) {
-                const targetV3 = primaryPart.CFrame.p
+                const targetV3 = primaryPart.CFrame.Position
                 const player = Players.GetPlayerFromCharacter(character)
                 if (player) {
-                    const targetV3InMyPlane = new Vector3(targetV3.X, ModelUtility.getPrimaryPartCFrameSafe(character).p.Y, targetV3.Z)
-                    const facingTargetCF = new CFrame(ModelUtility.getPrimaryPartCFrameSafe(character).p, targetV3InMyPlane)
+                    const targetV3InMyPlane = new Vector3(targetV3.X, ModelUtility.getPrimaryPartCFrameSafe(character).Position.Y, targetV3.Z)
+                    const facingTargetCF = new CFrame(ModelUtility.getPrimaryPartCFrameSafe(character).Position, targetV3InMyPlane)
                     character.SetPrimaryPartCFrame(facingTargetCF)
                 }
                 else {

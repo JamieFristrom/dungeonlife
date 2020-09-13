@@ -6,8 +6,8 @@ import { ReplicatedStorage } from "@rbxts/services"
 const runTests = true
 
 const folders = [
-    ReplicatedStorage.WaitForChild<Folder>("Standard"),
-    ReplicatedStorage.WaitForChild<Folder>("TS")]
+    (ReplicatedStorage.WaitForChild("Standard") as Folder),
+    (ReplicatedStorage.WaitForChild("TS") as Folder)]
 
 // to prevent flakiness, cross-pollution of contending threads
 if (runTests && game.GetService("RunService").IsStudio()) {

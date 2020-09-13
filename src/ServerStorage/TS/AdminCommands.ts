@@ -98,8 +98,8 @@ let CommandList: { [k: string]: unknown } =
           }
           const characterKey = PlayerServer.getCharacterKeyFromPlayer(sender)
           const characterRecord = PlayerServer.getCharacterRecord(characterKey)
-          ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, myPC, SkinUtility.getCurrentSkinset(Inventory, sender, characterRecord))
-          Workspace.WaitForChild<Folder>("Signals").WaitForChild<RemoteEvent>("HotbarRE").FireClient(sender, "Refresh", myPC)
+          ToolCaches.updateToolCache(PlayerServer.getPlayerTracker(), characterKey, myPC, SkinUtility.getCurrentSkinset(Inventory, sender, characterRecord));
+          (Workspace.WaitForChild("Signals").WaitForChild("HotbarRE") as RemoteEvent).FireClient(sender, "Refresh", myPC)
         }
       }
       else {
@@ -295,7 +295,7 @@ function playerAdded(player: Player) {
   // kind of want this at a lower rank than full on cheats so I could deputize mods, but rn there's not enough
   // work for mods to do anyway, so I'll just use the cheat whitelist here for now
   if (CheatUtility.PlayerWhitelisted(player)) {
-    player.Chatted.Connect(function (message: string, recipientI: Instance) {
+    player.Chatted.Connect( (message, recipientI) => {
       print("Chatted " + player.Name)
       let recipient = recipientI as Player
       if (!recipient) {

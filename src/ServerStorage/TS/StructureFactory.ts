@@ -14,7 +14,7 @@ import { DestructibleStructure } from "./DestructibleStructure";
 // because it's easier to get tests around
 export namespace StructureFactory {
     export function createStructure(serverContext: ServerContextI, structureInstance: Model) {
-        let structureId = structureInstance.FindFirstChild<StringValue>("PossessionName")!.Value
+        let structureId = (structureInstance.FindFirstChild("PossessionName") as StringValue|undefined)!.Value
         if (structureId === "WeaponsRack") {
             return new WeaponsRack(serverContext, structureInstance)
         }

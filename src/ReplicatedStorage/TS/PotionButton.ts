@@ -10,8 +10,8 @@ import { Workspace, Players, Teams } from "@rbxts/services"
 
 type Character = Model
 
-const signals = Workspace.WaitForChild<Folder>('Signals')
-const heroREvent = signals.WaitForChild<RemoteEvent>('HeroesRE')
+const signals = (Workspace.WaitForChild('Signals') as Folder)
+const heroREvent = (signals.WaitForChild('HeroesRE') as RemoteEvent)
 
 export interface PotionButtonConfigurationI {
     funcName: string,
@@ -28,15 +28,15 @@ export class PotionButton {
     uiArrow: ImageLabel
 
     constructor(public potionButtonConfiguration: PotionButtonConfigurationI) {
-        const playerGui = Players.LocalPlayer!.WaitForChild<PlayerGui>('PlayerGui')
-        const uiAudio = playerGui.WaitForChild<ScreenGui>('Audio')
-        const uiClick = uiAudio.WaitForChild<Sound>('UIClick')
+        const playerGui = (Players.LocalPlayer!.WaitForChild('PlayerGui') as PlayerGui)
+        const uiAudio = (playerGui.WaitForChild('Audio') as ScreenGui)
+        const uiClick = (uiAudio.WaitForChild('UIClick') as Sound)
 
-        this.guiFrame = potionButtonConfiguration.potionFrame.WaitForChild<Frame>('Item')
-        this.guiButton = this.guiFrame.WaitForChild<TextButton>('Button')
-        this.imageLabel = this.guiFrame.WaitForChild<ImageLabel>('ImageLabel')
-        this.title = this.guiFrame.WaitForChild<TextLabel>('Title')
-        this.uiArrow = this.guiFrame.WaitForChild<ImageLabel>('UIArrow')
+        this.guiFrame = (potionButtonConfiguration.potionFrame.WaitForChild('Item') as Frame)
+        this.guiButton = (this.guiFrame.WaitForChild('Button') as TextButton)
+        this.imageLabel = (this.guiFrame.WaitForChild('ImageLabel') as ImageLabel)
+        this.title = (this.guiFrame.WaitForChild('Title') as TextLabel)
+        this.uiArrow = (this.guiFrame.WaitForChild('UIArrow') as ImageLabel)
         this.guiButton.MouseButton1Click.Connect(() => {
             uiClick.Play()
             heroREvent.FireServer(potionButtonConfiguration.funcName)

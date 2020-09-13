@@ -15,10 +15,10 @@ type Character = Model
 
 export namespace ClickableUI {
     export function updateClickableUIs(localPlayerTeam: Team, localCharacter: Character) {
-        let chestGuiTemplate = Players.LocalPlayer.WaitForChild<PlayerGui>("PlayerGui").WaitForChild<ScreenGui>("HUDGui").WaitForChild<BillboardGui>("ChestGui")
-        let buildingFolder = Workspace.WaitForChild<Folder>("Building")
+        let chestGuiTemplate = (Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("HUDGui").WaitForChild("ChestGui") as BillboardGui)
+        let buildingFolder = (Workspace.WaitForChild("Building") as Folder)
         for (let furnishing of buildingFolder.GetChildren()) {
-            if (furnishing.FindFirstChild<BasePart>("ClickBox")) {
+            if ((furnishing.FindFirstChild("ClickBox") as BasePart|undefined)) {
                 DebugXL.Assert(furnishing.IsA("Model"))
                 if (furnishing.IsA("Model")) {
                     const whatTeams = BlueprintUtility.getBlueprintDatum(furnishing as Model).clickableByTeam
@@ -31,10 +31,10 @@ export namespace ClickableUI {
     }
 
     export function handleClickableTooltip(clickable: Model, localCharacter: Character, chestGuiTemplate: BillboardGui ) {
-        let origin = clickable.FindFirstChild<Part>("Origin")
+        let origin = (clickable.FindFirstChild("Origin") as Part|undefined)
         // no reason to assume it hasn't been destroyed or hasn't been created yet
         if (origin) {
-            let chestGui = origin.FindFirstChild<BillboardGui>("ChestGui")
+            let chestGui = (origin.FindFirstChild("ChestGui") as BillboardGui|undefined)
             let lidOpen = clickable.FindFirstChild("LidOpen") as BoolValue
             if (lidOpen && lidOpen.Value === true) {
                 if (chestGui) {
@@ -46,11 +46,11 @@ export namespace ClickableUI {
                     chestGui = chestGuiTemplate.Clone() as BillboardGui
                     chestGui.Parent = origin
                 }
-                chestGui.FindFirstChild<GuiObject>("ButtonIcon")!.Visible = false
+                (chestGui.FindFirstChild("ButtonIcon") as GuiObject|undefined)!.Visible = false
                 let holdingTool = localCharacter.FindFirstChildWhichIsA("Tool")
-                let distance = (ModelUtility.getPrimaryPartCFrameSafe(localCharacter!).p.sub(origin.Position)).Magnitude
+                let distance = (ModelUtility.getPrimaryPartCFrameSafe(localCharacter!).Position.sub(origin.Position)).Magnitude
                 if (distance < 20) {
-                    let instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
+                    let instructions = (chestGui.FindFirstChild("Instructions") as TextLabel|undefined)
                     DebugXL.Assert(instructions !== undefined)
                     if (instructions) {
                         chestGui.Enabled = true
@@ -63,8 +63,8 @@ export namespace ClickableUI {
                             }
                             else {
                                 if (InputXL.UsingGamepad()) {
-                                    instructions.Text = ""
-                                    chestGui.FindFirstChild<GuiObject>("ButtonIcon")!.Visible = true
+                                    instructions.Text = "";
+                                    (chestGui.FindFirstChild("ButtonIcon") as GuiObject|undefined)!.Visible = true
                                 }
                                 else {
                                     instructions.Text = "Click to open"

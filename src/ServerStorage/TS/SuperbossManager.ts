@@ -32,7 +32,7 @@ export class SuperbossManager {
                 DebugXL.logV(LogArea.GameManagement, "superboss no parent")
                 return true
             }
-            let humanoid = this.superbossCharacter.FindFirstChild<Humanoid>("Humanoid")
+            let humanoid = (this.superbossCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)
             if (humanoid) {
                 if (humanoid.Health > 0) {
                     DebugXL.logV(LogArea.GameManagement, "superboss healthy")

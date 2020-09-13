@@ -23,8 +23,8 @@ import { Analytics } from "ServerStorage/TS/Analytics"
 import { InstanceUtility } from "ReplicatedStorage/TS/InstanceUtility"
 import { FlexTool } from 'ReplicatedStorage/TS/FlexToolTS'
 
-const heroTeam = Teams.WaitForChild<Team>("Heroes")
-const monsterTeam = Teams.WaitForChild<Team>("Monsters")
+const heroTeam = (Teams.WaitForChild("Heroes") as Team)
+const monsterTeam = (Teams.WaitForChild("Monsters") as Team)
 
 DebugXL.logD(LogArea.Requires, 'PlayerServer: Analytics imports succesful')
 

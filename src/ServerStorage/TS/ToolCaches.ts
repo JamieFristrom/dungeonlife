@@ -19,7 +19,7 @@ import { InventoryManagerI } from './InventoryManagerI'
 type Character = Model
 
 export namespace ToolCaches {
-    let mobToolCache: Folder = ServerStorage.FindFirstChild<Folder>('MobToolCache')!
+    let mobToolCache: Folder = (ServerStorage.FindFirstChild('MobToolCache') as Folder|undefined)!
     DebugXL.Assert(mobToolCache !== undefined)
 
 
@@ -72,7 +72,7 @@ export namespace ToolCaches {
             }
 
             // garbage collection
-            let toolCache = player ? player.FindFirstChild<Folder>('Backpack')! : mobToolCache
+            let toolCache = player ? (player.FindFirstChild('Backpack') as Folder|undefined)! : mobToolCache
             toolCache.GetChildren().forEach(function (inst: Instance) {
                 let tool = inst as Tool
                 let possessionKey = CharacterRecord.getToolPossessionKey(tool)!
@@ -95,7 +95,7 @@ export namespace ToolCaches {
     }
 
     export function getToolCache(player: Player) {
-        const toolCache = player.FindFirstChild<Folder>("Backpack")!
+        const toolCache = (player.FindFirstChild("Backpack") as Folder|undefined)!
         return toolCache
     }
 }

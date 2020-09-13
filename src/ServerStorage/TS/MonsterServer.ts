@@ -36,16 +36,16 @@ interface MonsterPlayerInfo {
     xpLevel: number   // no real reason to have separate variables except legacy
 }
 
-const HeroTeam = Teams.WaitForChild<Team>("Heroes")
+const HeroTeam = (Teams.WaitForChild("Heroes") as Team)
 
-const messageRE = Workspace.WaitForChild<Folder>("Standard").WaitForChild<Folder>("MessageGuiXL").WaitForChild<RemoteEvent>("MessageRE")
+const messageRE = (Workspace.WaitForChild("Standard").WaitForChild("MessageGuiXL").WaitForChild("MessageRE") as RemoteEvent)
 
 export namespace MonsterServer {
     const monsterInfos = new Map<Player, MonsterPlayerInfo>()
     let lastTick = tick()
 
-    const Heroes = Teams.FindFirstChild<Team>('Heroes')!
-    const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
+    const Heroes = (Teams.FindFirstChild('Heroes') as Team|undefined)!
+    const monsterTeam = (Teams.FindFirstChild("Monsters") as Team|undefined)!
 
 
     function getMonsterInfo(player: Player) {
@@ -77,7 +77,7 @@ export namespace MonsterServer {
         const startingLevel = underwhelmedHero.getLocalLevel()
         DebugXL.logI(LogArea.Gameplay, "Hero level: " + startingLevel)
 
-        const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
+        const monsterTeam = (Teams.FindFirstChild("Monsters") as Team|undefined)!
         const numHeroes = Heroes.GetPlayers().size()
         DebugXL.logI(LogArea.Gameplay, "Hero level: " + startingLevel)
 
@@ -203,13 +203,13 @@ export namespace MonsterServer {
     export function awardTeamXPForMonsterKill(monsterPlayer: Player) {
         const monsterInfo = getMonsterInfo(monsterPlayer)
         // we're ignoring potions here but that should more or less factor out
-        const monsterTeam = Teams.FindFirstChild<Team>("Monsters")!
+        const monsterTeam = (Teams.FindFirstChild("Monsters") as Team|undefined)!
         let heroHealthSum = 0
         let heroLevelSum = 0
         Heroes.GetPlayers().forEach(heroPlayer => {
             const pc = heroPlayer.Character
             if (pc) {
-                const humanoid = pc.FindFirstChild<Humanoid>("Humanoid")
+                const humanoid = (pc.FindFirstChild("Humanoid") as Humanoid|undefined)
                 if (humanoid) {
                     heroHealthSum += humanoid.MaxHealth
                     const heroLevel = PlayerServer.getLocalLevel(PlayerServer.getCharacterKeyFromPlayer(heroPlayer))
@@ -401,7 +401,7 @@ export namespace MonsterServer {
     export function checkFolderForSuperboss(folder: Instance) {
         for (let character of folder.GetChildren()) {
             if (character.IsA("Model")) {
-                const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
+                const humanoid = (character.FindFirstChild("Humanoid") as Humanoid|undefined)
                 if (humanoid) {
                     if (humanoid.Health > 0) {
                         const characterRecord = PlayerServer.getCharacterRecordFromCharacter(character)

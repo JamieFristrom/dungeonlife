@@ -22,12 +22,12 @@ import { PlayerUtility } from "ReplicatedStorage/TS/PlayerUtility"
 import { PlayerServer } from "./PlayerServer"
 import CharacterI from "ServerStorage/Standard/CharacterI"
 
-const buildingFolder = Workspace.WaitForChild<Folder>("Building")
+const buildingFolder = (Workspace.WaitForChild("Building") as Folder)
 
 export namespace Furnisher {
     export function countFurnishingsOfType(furnishingType: PossessionData.FurnishingEnum) {
         return buildingFolder.GetChildren().filter((furnishing) => {
-            const possessionNameObj = furnishing.FindFirstChild<StringValue>("PossessionName")
+            const possessionNameObj = (furnishing.FindFirstChild("PossessionName") as StringValue|undefined)
             DebugXL.Assert(possessionNameObj !== undefined)
             if (possessionNameObj) {
                 if (!PossessionData.dataT[possessionNameObj.Value]) {
@@ -97,10 +97,10 @@ export namespace Furnisher {
                             // kludge to prevent superboss player from ruining last level
                         const monsterInfo = CharacterClasses.monsterStats[PlayerServer.getCharacterClass(player)]
                         if (! monsterInfo || ! monsterInfo.tagsT["Superboss"] ) {   // letting heroes build for debug purposes
-                            player.Team = Teams.FindFirstChild<Team>("Monsters") // necessery in Underhaven
+                            player.Team = (Teams.FindFirstChild("Monsters") as Team|undefined) // necessery in Underhaven
                             // wishlist: pull from data file instead of object
-                            const monsterSpawn = instance.FindFirstChild<BasePart>("MonsterSpawn")!
-                            const className = monsterSpawn.FindFirstChild<StringValue>("CharacterClass")!.Value
+                            const monsterSpawn = (instance.FindFirstChild("MonsterSpawn") as BasePart|undefined)!
+                            const className = (monsterSpawn.FindFirstChild("CharacterClass") as StringValue|undefined)!.Value
                             CharacterI.SetCharacterClass(player, className)
                             context.getGameMgr().MarkPlayersCharacterForRespawn(player, monsterSpawn)
                         }
@@ -112,9 +112,9 @@ export namespace Furnisher {
         return undefined
     }
 
-    ReplicatedStorage.WaitForChild<Folder>("Shared Instances")
-        .WaitForChild<Folder>("Remotes")
-        .WaitForChild<RemoteFunction>("PlaceInstanceRF")
+    (ReplicatedStorage.WaitForChild("Shared Instances")
+        .WaitForChild("Remotes")
+        .WaitForChild("PlaceInstanceRF") as RemoteFunction)
         .OnServerInvoke = (player: Player, ...args) => {
             return clientInitiatedFurnish(MainContext.get(), Dungeon.GetMap(), player, args[0] as string, args[1] as Vector3, args[2] as number)
         }

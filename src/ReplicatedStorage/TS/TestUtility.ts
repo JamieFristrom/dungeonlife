@@ -26,9 +26,9 @@ export namespace TestUtility {
     }
 
     export function createTestCharacter() {
-        let testCharacter = ReplicatedStorage.FindFirstChild<Folder>("TestObjects")!.FindFirstChild<Model>("TestDummy")!.Clone()
+        let testCharacter = (ReplicatedStorage.FindFirstChild("TestObjects")!.FindFirstChild("TestDummy") as Model|undefined)!.Clone()
         // deliberately not putting them in Mobs so they won't get processed by non-test systems
-        testCharacter.Parent = Workspace.FindFirstChild<Folder>("TestArea")
+        testCharacter.Parent = (Workspace.FindFirstChild("TestArea") as Folder|undefined)
         CollectionService.AddTag(testCharacter, "CharacterTag")  // wishlist fix; duplication of data problem
         return testCharacter
     }
@@ -53,7 +53,7 @@ export namespace TestUtility {
 
     export function cleanTestCharacters() {
         for (; ;) {
-            let testCharacter = Workspace.FindFirstChild<Model>("TestDummy", true)
+            let testCharacter = Workspace.FindFirstChild("TestDummy", true)
             if (testCharacter) {
                 testCharacter.Parent = undefined
             }

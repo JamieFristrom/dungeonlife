@@ -16,7 +16,7 @@ import { Structure } from './Structure'
 
 const flyApartSeconds = 1.0
 
-const heroesTeam = Teams.WaitForChild<Team>("Heroes")
+const heroesTeam = (Teams.WaitForChild("Heroes") as Team)
 
 export class DestructibleStructure extends Structure {
 	constructor(serverContext: ServerContextI, destructibleInstance: Model) {
@@ -24,7 +24,7 @@ export class DestructibleStructure extends Structure {
 		DebugXL.logD(LogArea.Gameplay, "Destructible.new called for " + destructibleInstance.GetFullName())
 		CollectionService.AddTag(destructibleInstance, "CharacterTag")
 		CollectionService.AddTag(destructibleInstance, "Destructible")  // do we still need this?
-		const humanoid = destructibleInstance.FindFirstChild<Humanoid>("Humanoid")
+		const humanoid = (destructibleInstance.FindFirstChild("Humanoid") as Humanoid|undefined)
 		DebugXL.Assert(humanoid !== undefined)
 		if (humanoid) {
 			// this should get recalibrated once level starts properly but just in case...
@@ -34,13 +34,13 @@ export class DestructibleStructure extends Structure {
 			DestructibleServer.calibrateHealth(destructibleInstance, averageHeroLocalLevel, numHeroes, dungeonDepth)
 			humanoid.Died.Connect(() => {
 				DebugXL.logI(LogArea.Gameplay, destructibleInstance.GetFullName() + ' died')
-				destructibleInstance.PrimaryPart!.FindFirstChild<Sound>("Destroyed")!.Play()
+				(destructibleInstance.PrimaryPart!.FindFirstChild("Destroyed") as Sound|undefined)!.Play()
 				DestructibleStructure.flyApart(destructibleInstance)
 				wait(flyApartSeconds)
 				destructibleInstance.Parent = undefined
 			})
 			DebugXL.logD(LogArea.Gameplay, humanoid.GetFullName() + " died connected")
-			const hitSoundEmitter = destructibleInstance.PrimaryPart!.FindFirstChild<Sound>("Hit")
+			const hitSoundEmitter = (destructibleInstance.PrimaryPart!.FindFirstChild("Hit") as Sound|undefined)
 			let lastHealth = humanoid.Health
 			humanoid.HealthChanged.Connect((newHealth: number) => {
 				if (newHealth < lastHealth) {

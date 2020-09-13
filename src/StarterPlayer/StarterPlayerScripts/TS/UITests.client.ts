@@ -53,10 +53,10 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         werewolfHead.Name = "Werewolf Head"  // what would happen if somebody has a roblox avatar accessory named werewolf head?
 
         DisplayStats.UpdateStats( playerFolder, customLeaderboard, contentRowTemplate )
-        let contents = customLeaderboard.FindFirstChild<Frame>("Contents")!
-        let targetRow = contents.FindFirstChild<Frame>("UserPlayer1")!
-        TestUtility.assertMatching( "Werewolf", targetRow.FindFirstChild<TextLabel>("Class")!.Text )
-        TestUtility.assertNotMatching( "", targetRow.FindFirstChild<TextLabel>("Level")!.Text )
+        let contents = (customLeaderboard.FindFirstChild("Contents") as Frame|undefined)!
+        let targetRow = contents.FindFirstChild("UserPlayer1")!
+        TestUtility.assertMatching( "Werewolf", (targetRow.FindFirstChild("Class") as TextLabel|undefined)!.Text )
+        TestUtility.assertNotMatching( "", (targetRow.FindFirstChild("Level") as TextLabel|undefined)!.Text )
     }
 
     // make sure stealth werewolf on leaderboard doesn't
@@ -85,10 +85,10 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         // doesn't have a werewolf head; must not be a werewolf
 
         DisplayStats.UpdateStats( playerFolder, customLeaderboard, contentRowTemplate )
-        let contents = customLeaderboard.FindFirstChild<Frame>("Contents")!
-        let targetRow = contents.FindFirstChild<Frame>("UserPlayer1")!
-        let resultClass = targetRow.FindFirstChild<TextLabel>("Class")!.Text
-        let resultLevel = targetRow.FindFirstChild<TextLabel>("Level")!.Text
+        let contents = (customLeaderboard.FindFirstChild("Contents") as Frame|undefined)!
+        let targetRow = contents.FindFirstChild("UserPlayer1")!
+        let resultClass = (targetRow.FindFirstChild("Class") as TextLabel|undefined)!.Text
+        let resultLevel = (targetRow.FindFirstChild("Level") as TextLabel|undefined)!.Text
         let numericLevel = tonumber(resultLevel)
         TestUtility.assertTrue( resultClass==="Mage"||resultClass==="Rogue"||resultClass==="Warrior"||resultClass==="Barbarian"||resultClass==="Priest", "Stealth werewolf valid class")
         TestUtility.assertNotMatching( numericLevel && numericLevel>=1, "Stealth werewolf level at least 1" )
@@ -103,13 +103,13 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         { k: "DeepestFloor", args: [666] }
     ]
 
-    TestUtility.assertTrue(Localize.trim("  hoo") === "hoo")
-    TestUtility.assertTrue(Localize.trim("  hoo  ") === "hoo")
-    TestUtility.assertTrue(Localize.trim("hoo  ") === "hoo")
-    DebugXL.logD(LogArea.Test, Localize.squish("  hoo  "))
-    DebugXL.logD(LogArea.Test, Localize.squish("and   nae  nae"))
-    TestUtility.assertTrue(Localize.squish("  hoo  ") === " hoo ")
-    TestUtility.assertTrue(Localize.squish("and   nae  nae") === "and nae nae")
+    TestUtility.assertTrue(Localize.trim("  hoo")[0] === "hoo")
+    TestUtility.assertTrue(Localize.trim("  hoo  ")[0] === "hoo")
+    TestUtility.assertTrue(Localize.trim("hoo  ")[0] === "hoo")
+    DebugXL.logD(LogArea.Test, Localize.squish("  hoo  ")[0])
+    DebugXL.logD(LogArea.Test, Localize.squish("and   nae  nae")[0])
+    TestUtility.assertTrue(Localize.squish("  hoo  ")[0] === " hoo ")
+    TestUtility.assertTrue(Localize.squish("and   nae  nae")[0] === "and nae nae")
 
     DebugXL.logI(LogArea.Test, "Test translations")
     testKeys.forEach(function (key) {
@@ -188,9 +188,9 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
 
     // test whether chest shows hint
     function testThatTeamCanClick(clickableName: string, team: Team) {
-        let clickable = ReplicatedStorage.FindFirstChild<Folder>("Shared Instances")!.FindFirstChild<Folder>("Placement Storage")!.FindFirstChild<Model>(clickableName)!.Clone()
-        clickable.Parent = Workspace.FindFirstChild<Folder>("Building")
-        const clickableOrigin = clickable.FindFirstChild<BasePart>("Origin")
+        let clickable = (ReplicatedStorage.FindFirstChild("Shared Instances")!.FindFirstChild("Placement Storage")!.FindFirstChild(clickableName) as Model).Clone()
+        clickable.Parent = (Workspace.FindFirstChild("Building") as Folder|undefined)
+        const clickableOrigin = (clickable.FindFirstChild("Origin") as BasePart|undefined)
         for (; Players.LocalPlayer.Character === undefined;) {
             wait()
         }
@@ -199,18 +199,18 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         }
         clickable.SetPrimaryPartCFrame(Players.LocalPlayer.Character!.GetPrimaryPartCFrame())
         ClickableUI.updateClickableUIs(team, Players.LocalPlayer.Character)
-        const chestGui = clickableOrigin!.FindFirstChild<BillboardGui>("ChestGui")
+        const chestGui = (clickableOrigin!.FindFirstChild("ChestGui") as BillboardGui|undefined)
         TestUtility.assertTrue(chestGui !== undefined)
         if (chestGui) {
             TestUtility.assertTrue(chestGui.Enabled)
-            const instructions = chestGui.FindFirstChild<TextLabel>("Instructions")
+            const instructions = (chestGui.FindFirstChild("Instructions") as TextLabel|undefined)
             TestUtility.assertTrue(instructions !== undefined)
             // won"t actually check text since it should be magically localized
         }
     }
 
-    testThatTeamCanClick("Chest", Teams.FindFirstChild<Team>("Heroes")!)
-    testThatTeamCanClick("WeaponsRack", Teams.FindFirstChild<Team>("Monsters")!)
+    testThatTeamCanClick("Chest", (Teams.FindFirstChild("Heroes") as Team|undefined)!)
+    testThatTeamCanClick("WeaponsRack", (Teams.FindFirstChild("Monsters") as Team|undefined)!)
 
     class FakeSocket implements SocketI {
         sendMessage(player: Player, ...args: unknown[]): unknown {
@@ -223,13 +223,13 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
 
     // only reupdate currency on build failure because those fields get destroyed by GUI reset when you build a spawn
     {
-        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        let furnishGui = (Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("FurnishGui") as ScreenGui).Clone()
         const result = StructureClient.tellServerToBuildAndUpdateUI(
             500,
             PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
             0,
             furnishGui,
-            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf") as Model,
             new FakeSocket(() => { 
                 let buildPointsObject = InstanceUtility.findOrCreateChild<NumberValue>(Players.LocalPlayer, "BuildPointsTotal", "NumberValue")
                 buildPointsObject.Value = 333
@@ -238,40 +238,40 @@ if (runClientTests && game.GetService("RunService").IsStudio()) {
         )
         // success: reupdate shouldn't have happened, so build points should read calculated value
         TestUtility.assertTrue(result === 150)
-        TestUtility.assertTrue(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 150")
+        TestUtility.assertTrue((furnishGui.WaitForChild("Currencies").WaitForChild("BuildPoints").WaitForChild("CurrencyNameAndCount") as TextLabel).Text === "Dungeon Points: 150")
     }
 
     {
-        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        let furnishGui = (Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("FurnishGui") as ScreenGui).Clone()
         furnishGui.Parent = Players.LocalPlayer.WaitForChild("PlayerGui")
         const result = StructureClient.tellServerToBuildAndUpdateUI(
             500,
             PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
             0,
             furnishGui,
-            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf") as Model,
             new FakeSocket(() => {
-                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+                (Players.LocalPlayer.FindFirstChild("BuildPointsTotal") as NumberValue|undefined)!.Value = 333
                 return undefined
             })
         )
         // failure: reupdate should have happened, so build points should read the value we set it to in the fake 
         TestUtility.assertTrue(result === 500)  // this should be original build points - result build points
         // this should be the possibly unrelated build points value the server tells us:
-        TestUtility.assertTrue(furnishGui.WaitForChild<Frame>("Currencies").WaitForChild<Frame>("BuildPoints").WaitForChild<TextLabel>("CurrencyNameAndCount").Text === "Dungeon Points: 333")
+        TestUtility.assertTrue((furnishGui.WaitForChild("Currencies").WaitForChild("BuildPoints").WaitForChild("CurrencyNameAndCount") as TextLabel).Text === "Dungeon Points: 333")
     }
 
     // if respawn, furnishGui will be unparented - don't modify
     {
-        let furnishGui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild<ScreenGui>("FurnishGui").Clone()
+        let furnishGui = (Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("FurnishGui") as ScreenGui).Clone()
         const result = StructureClient.tellServerToBuildAndUpdateUI(
             500,
             PossessionData.dataT["SpawnWerewolf"] as PossessionData.BlueprintDatumI,
             0,
             furnishGui,
-            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf"),
+            ReplicatedStorage.WaitForChild("Shared Instances").WaitForChild("Placement Storage").WaitForChild("SpawnWerewolf") as Model,
             new FakeSocket(() => {
-                Players.LocalPlayer.FindFirstChild<NumberValue>("BuildPointsTotal")!.Value = 333
+                (Players.LocalPlayer.FindFirstChild("BuildPointsTotal") as NumberValue|undefined)!.Value = 333
                 return undefined
             })
         )

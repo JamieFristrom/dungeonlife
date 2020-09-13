@@ -15,20 +15,20 @@ let playerGui = localPlayer.WaitForChild("PlayerGui") as PlayerGui
 
 let noResetGui = playerGui.WaitForChild("NoResetGui") as ScreenGui
 
-let serverButton = noResetGui.WaitForChild("LeftButtonColumn").WaitForChild<GuiButton>("Server")
+let serverButton = (noResetGui.WaitForChild("LeftButtonColumn").WaitForChild("Server") as GuiButton)
 serverButton.Visible = false
 
 // code for choosing team
-const chooseTeamFrame = noResetGui.WaitForChild<Frame>("ChooseTeam")
-const chooseTeamGrid = chooseTeamFrame.WaitForChild<Frame>("Grid")
-const closeButton = chooseTeamFrame.WaitForChild<ImageButton>("CloseButton")
+const chooseTeamFrame = (noResetGui.WaitForChild("ChooseTeam") as Frame)
+const chooseTeamGrid = (chooseTeamFrame.WaitForChild("Grid") as Frame)
+const closeButton = (chooseTeamFrame.WaitForChild("CloseButton") as ImageButton)
 
-const chooseTeamButton = script.Parent!.Parent!.WaitForChild("LeftButtonColumn").WaitForChild<TextButton>("ChooseTeam")
+const chooseTeamButton = (script.Parent!.Parent!.WaitForChild("LeftButtonColumn").WaitForChild("ChooseTeam") as TextButton)
 
 const choiceKeys = ["HeroChoice", "MonsterChoice", "DungeonLordChoice"]
-const choiceFrames = choiceKeys.map((key) => chooseTeamGrid.WaitForChild<Frame>(key))
-const choiceImageButtons = choiceFrames.map((frame) => frame.WaitForChild<ImageButton>("Image"))
-const choiceTextButtons = choiceFrames.map((frame) => frame.WaitForChild<TextButton>("Choose"))
+const choiceFrames = choiceKeys.map((key) => (chooseTeamGrid.WaitForChild(key) as Frame))
+const choiceImageButtons = choiceFrames.map((frame) => (frame.WaitForChild("Image") as ImageButton))
+const choiceTextButtons = choiceFrames.map((frame) => (frame.WaitForChild("Choose") as TextButton))
 
 function makeTeamChoice(keyName: string) {
     mainRE.FireServer(keyName)

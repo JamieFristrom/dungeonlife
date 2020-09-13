@@ -61,13 +61,13 @@ function TestDestructibility(structureName: string) {
     let [model, structure] = FurnishServer.Furnish(testSetup, new FloorInfo(), map, testSetup.getPlayer(), structureName, new Vector3(0, 0, 0), 0)
     TestUtility.assertTrue(FurnishUtility.CountFurnishings(structureName, testSetup.getPlayer())[1] === 1, "Client built 1 orc spawn")
     TestUtility.assertTrue(model !== undefined)
-    let humanoid = model.FindFirstChild<Humanoid>("Humanoid")
+    let humanoid = (model.FindFirstChild("Humanoid") as Humanoid|undefined)
     TestUtility.assertTrue(humanoid !== undefined, "Destructible structure has humanoid")
     if (humanoid) {
         Heroes.DoDirectDamage(testSetup, testSetup.getPlayer(), 10000, humanoid, false)
         TestUtility.assertTrue(humanoid.Health <= 0)
     }
-    Workspace.FindFirstChild<Folder>("Building")!.ClearAllChildren()
+    (Workspace.FindFirstChild("Building") as Folder|undefined)!.ClearAllChildren()
     testSetup.clean()
 }
 // are destructible thing destructible

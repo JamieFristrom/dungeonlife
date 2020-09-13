@@ -7,11 +7,11 @@ DebugXL.logI(LogArea.Executed, script.GetFullName())
 import { RunService, Workspace } from "@rbxts/services";
 import { ModelUtility } from "ReplicatedStorage/TS/ModelUtility";
 
-let buildingFolder = Workspace.WaitForChild<Folder>("Building")
+let buildingFolder = (Workspace.WaitForChild("Building") as Folder)
 
 buildingFolder.ChildAdded.Connect((thing) => {
     if (thing.Name === "SpawnNecromancer" || thing.Name === "SpawnDaemonSuper") {
-        let rotatingBit = thing.WaitForChild<Model>("RotatingBit")
+        let rotatingBit = (thing.WaitForChild("RotatingBit") as Model)
         while (!rotatingBit.PrimaryPart) wait()
         let startCFrame = ModelUtility.getPrimaryPartCFrameSafe(rotatingBit)
         let connection = RunService.RenderStepped.Connect(() => {

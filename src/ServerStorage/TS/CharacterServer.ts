@@ -8,8 +8,8 @@ import { PlayerServer } from "./PlayerServer";
 
 type Character = Model
 
-// const heroTeam = Teams.WaitForChild<Team>("Heroes")
-// const monsterTeam = Teams.WaitForChild<Team>("Monsters")
+// const heroTeam = (Teams.WaitForChild("Heroes") as Team)
+// const monsterTeam = (Teams.WaitForChild("Monsters") as Team)
 
 export namespace CharacterServer {
     //
@@ -54,7 +54,7 @@ export namespace CharacterServer {
 
     export function setLastAttackingPlayer(target: Character, attackingPlayer: Player | undefined) {
         DebugXL.Assert(target.IsA("Model"))
-        const targetHumanoid = target.FindFirstChild<Humanoid>("Humanoid")
+        const targetHumanoid = (target.FindFirstChild("Humanoid") as Humanoid|undefined)
         if (targetHumanoid) {
             InstanceXL.CreateSingleton("ObjectValue", { Name: "creator", Parent: targetHumanoid, Value: attackingPlayer })
         }
@@ -63,7 +63,7 @@ export namespace CharacterServer {
     export function setLastAttacker(target: Character, attacker: Character) {
         DebugXL.Assert(target.IsA("Model"))
         DebugXL.Assert(attacker.IsA("Model"))
-        const targetHumanoid = target.FindFirstChild<Humanoid>("Humanoid")
+        const targetHumanoid = (target.FindFirstChild("Humanoid") as Humanoid|undefined)
         if (targetHumanoid) {
             InstanceXL.CreateSingleton("ObjectValue", { Name: "LastAttacker", Parent: targetHumanoid, Value: attacker })
             const attackingPlayer = Players.GetPlayerFromCharacter(attacker)

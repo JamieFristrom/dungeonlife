@@ -18,12 +18,12 @@ import MathXL from "ReplicatedStorage/Standard/MathXL"
     let testContext = new TestContext()
     let char = testContext.makeTestPlayerCharacter("Warrior")
     PlayerXL.CharacterAdded(DebugXL, testContext.getPlayer())
-    let p = char.GetPrimaryPartCFrame().p
+    let p = char.GetPrimaryPartCFrame().Position
     wait(0.1)
     char.SetPrimaryPartCFrame(new CFrame(p.add(new Vector3(0, 0, 30))))
-    DebugXL.Assert(char.GetPrimaryPartCFrame().p.Z === p.Z + 30)
+    DebugXL.Assert(char.GetPrimaryPartCFrame().Position.Z === p.Z + 30)
     wait(0.4)
-    TestUtility.assertTrue(MathXL.ApproxEqual(p.Z, char.GetPrimaryPartCFrame().p.Z, 0.5), "Antiteleport happened")
+    TestUtility.assertTrue(MathXL.ApproxEqual(p.Z, char.GetPrimaryPartCFrame().Position.Z, 0.5), "Antiteleport happened")
     testContext.clean()
 }
 
@@ -39,8 +39,8 @@ class DebugFake implements DebugI {
 {
     let debugFake = new DebugFake()
     let testContext = new TestContext()
-    let char = testContext.makeTestPlayerCharacter("Warrior")
-    char.FindFirstChild<Part>("Head")!.Parent = undefined
+    let char = testContext.makeTestPlayerCharacter("Warrior");
+    (char.FindFirstChild("Head") as Part|undefined)!.Parent = undefined
     PlayerXL.CharacterAdded(debugFake, testContext.getPlayer())
     wait(0.5)
     TestUtility.assertTrue( debugFake.lastError.find("Where's My Head Baby")[0]===0, "Appropriately errored with missing head")

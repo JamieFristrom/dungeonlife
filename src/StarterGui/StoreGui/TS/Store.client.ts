@@ -9,25 +9,25 @@ import { QuestStatus, QuestUtility } from "ReplicatedStorage/TS/QuestUtility"
 import { Players, GuiService, Teams, Workspace, StarterGui } from "@rbxts/services";
 import { DebugXL, LogArea } from "ReplicatedStorage/TS/DebugXLTS";
 
-let main = script.Parent!.Parent!.WaitForChild<Frame>("Main")
-let mainHeader = main.WaitForChild<Frame>("MainHeader")
-let tabs = main.WaitForChild<Frame>("Tabs")
-let goldTab = tabs.WaitForChild<Frame>("Gold")
-let goldFrame = mainHeader.WaitForChild<Frame>("Gold")
-let blueprintTutorialArrow = mainHeader.WaitForChild<Frame>("Crates").WaitForChild<Frame>("Blueprints").WaitForChild<ImageLabel>("UIArrow")
-let codes = mainHeader.WaitForChild<Frame>("Codes")
-let codesInnerFrame = codes.WaitForChild<Frame>("InnerFrame")
-let codeTextBox = codesInnerFrame.WaitForChild<TextBox>("Code")
-let signals = Workspace.WaitForChild<Folder>("Signals")
-let inventoryRE = signals.WaitForChild<RemoteEvent>("InventoryRE")
+let main = (script.Parent!.Parent!.WaitForChild("Main") as Frame)
+let mainHeader = (main.WaitForChild("MainHeader") as Frame)
+let tabs = (main.WaitForChild("Tabs") as Frame)
+let goldTab = (tabs.WaitForChild("Gold") as Frame)
+let goldFrame = (mainHeader.WaitForChild("Gold") as Frame)
+let blueprintTutorialArrow = (mainHeader.WaitForChild("Crates").WaitForChild("Blueprints").WaitForChild("UIArrow") as ImageLabel)
+let codes = (mainHeader.WaitForChild("Codes") as Frame)
+let codesInnerFrame = (codes.WaitForChild("InnerFrame") as Frame)
+let codeTextBox = (codesInnerFrame.WaitForChild("Code") as TextBox)
+let signals = (Workspace.WaitForChild("Signals") as Folder)
+let inventoryRE = (signals.WaitForChild("InventoryRE") as RemoteEvent)
 
 let localPlayer = Players.LocalPlayer! as Player
 
 wait()  // it takes a frame for absolutesize of mainheader to be calculated
 
-let playerGui = localPlayer.WaitForChild<PlayerGui>("PlayerGui")
-let audio = playerGui.WaitForChild<Folder>("Audio")
-let uiClick = audio.WaitForChild<Sound>("UIClick")
+let playerGui = (localPlayer.WaitForChild("PlayerGui") as PlayerGui)
+let audio = (playerGui.WaitForChild("Audio") as Folder)
+let uiClick = (audio.WaitForChild("UIClick") as Sound)
 
 let gridPixelSize = ( mainHeader.AbsoluteSize.Y < 200 && !GuiService.IsTenFootInterface()) ? mainHeader.AbsoluteSize.Y / 2.1 : mainHeader.AbsoluteSize.X / 8.3
 gridPixelSize = math.max( 80, gridPixelSize )

@@ -147,18 +147,18 @@ class MessageGuiC {
         }
         else {
             let newMessage = message.needsAckB ?
-                messageGuiConfiguration.WaitForChild<Frame>('MessageFrameTemplate').Clone() :
-                messageGuiConfiguration.WaitForChild<Frame>('MessageFrameNoAckTemplate').Clone()
+                (messageGuiConfiguration.WaitForChild('MessageFrameTemplate') as Frame).Clone() :
+                (messageGuiConfiguration.WaitForChild('MessageFrameNoAckTemplate') as Frame).Clone()
 
             newMessage.Name = 'MessageFrame';
 
             //print( 'ShowMessage '+message.messageS );
 
-            newMessage.FindFirstChild<Script>('MainScript')!.Disabled = false
-            let messageMainObj = newMessage.WaitForChild<Frame>('Main').WaitForChild<TextLabel>('Message')
-            messageMainObj.Text = message.messageS
-            newMessage.FindFirstChild<NumberValue>('DisplayDelay')!.Value = message.displayDelay
-            newMessage.FindFirstChild<BoolValue>('Modal')!.Value = message.modalB
+            (newMessage.FindFirstChild('MainScript') as Script|undefined)!.Disabled = false
+            let messageMainObj = (newMessage.WaitForChild('Main').WaitForChild('Message') as TextLabel)
+            messageMainObj.Text = message.messageS;
+            (newMessage.FindFirstChild('DisplayDelay') as NumberValue|undefined)!.Value = message.displayDelay;
+            (newMessage.FindFirstChild('Modal') as BoolValue|undefined)!.Value = message.modalB
 
             if (message.needsAckB) {
                 let done = newMessage.FindFirstChild('Main')!.FindFirstChild('Done') as TextButton

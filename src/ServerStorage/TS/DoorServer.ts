@@ -42,7 +42,7 @@ export namespace DoorServer
                     {
                         if( character.PrimaryPart && doorModel.PrimaryPart )
                         {
-                            if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 16 ) {
+                            if( ModelUtility.getPrimaryPartCFrameSafe(character).Position.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).Position ).Magnitude < 16 ) {
                                 nonopenerClose = true
                             }
                         }
@@ -67,12 +67,12 @@ export namespace DoorServer
                 {
                     if( canBeOpenedBy( doorModel, player ))
                     {
-                        if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 8 )
+                        if( ModelUtility.getPrimaryPartCFrameSafe(character).Position.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).Position ).Magnitude < 8 )
                             openerClose = true
                     }
                     else
                     {
-                       if( ModelUtility.getPrimaryPartCFrameSafe(character).p.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).p ).Magnitude < 16 )
+                       if( ModelUtility.getPrimaryPartCFrameSafe(character).Position.sub( ModelUtility.getPrimaryPartCFrameSafe(doorModel).Position ).Magnitude < 16 )
                             nonopenerClose = true
                     }
                 }

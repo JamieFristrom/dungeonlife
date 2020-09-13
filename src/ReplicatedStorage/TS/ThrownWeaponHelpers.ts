@@ -19,10 +19,10 @@ export namespace ThrownWeaponHelpers {
 			}
 		}
 
-		InstanceXL.CreateSingleton("ObjectValue", { Name: "creator", Parent: thrownObj, Value: player })
+		InstanceXL.CreateSingleton("ObjectValue", { Name: "creator", Parent: thrownObj, Value: player });
 
-		thrownObj.WaitForChild<Script>("LobbedServer").Disabled = false
-		thrownObj.WaitForChild<Script>("LobbedClient").Disabled = false
+		(thrownObj.WaitForChild("LobbedServer") as Script).Disabled = false;
+		(thrownObj.WaitForChild("LobbedClient") as Script).Disabled = false;
 
 		// wishlist; make it look like the bomb disappears from your hand
 		return thrownObj
@@ -47,7 +47,7 @@ export namespace ThrownWeaponHelpers {
     export function lob(player: Player, projectileTemplate: BasePart, mouseHit: Vector3) {
 		const character = player.Character
 		if (character) {
-			const rightHand = character.FindFirstChild<BasePart>("RightHand")
+			const rightHand = (character.FindFirstChild("RightHand") as BasePart|undefined)
 			if (rightHand) {
 				const startPos = rightHand.Position
 				const delta = mouseHit.sub(startPos)

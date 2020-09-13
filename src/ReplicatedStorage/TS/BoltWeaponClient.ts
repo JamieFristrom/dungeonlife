@@ -26,7 +26,7 @@ export class BoltWeaponClient extends BaseWeaponClient
     {
         let flexTool = FlexToolClient.getFlexTool( tool )
         super( tool, new RangedWeaponUtility( tool, flexTool, "DisplayBolt" ) )      
-        const templateTemplate = this.tool.WaitForChild<BasePart>('Bolt')
+        const templateTemplate = (this.tool.WaitForChild('Bolt') as BasePart)
         this.boltTemplate = templateTemplate.Clone()
         templateTemplate.Parent = undefined        
     }
@@ -39,7 +39,7 @@ export class BoltWeaponClient extends BaseWeaponClient
         const serverBoltCodeName = 'Bolt'+tostring(MathXL.RandomInteger(1,100000))
         DebugXL.logV(LogArea.Combat, 'BoltWeaponRE.FireServer')
 
-        const boltWeaponRemoteEvent = this.tool.FindFirstChild<RemoteEvent>('BoltWeaponRE')
+        const boltWeaponRemoteEvent = (this.tool.FindFirstChild('BoltWeaponRE') as RemoteEvent|undefined)
         DebugXL.Assert( boltWeaponRemoteEvent !== undefined )
         if( !boltWeaponRemoteEvent ) { return }
         boltWeaponRemoteEvent.FireServer( 'OnActivated', clickHitV3, serverBoltCodeName )
@@ -56,7 +56,7 @@ export class BoltWeaponClient extends BaseWeaponClient
             DebugXL.logD(LogArea.Combat, 'Spawning boltwatch function for '+serverBoltCodeName )
             spawn(()=>{
                 DebugXL.logV(LogArea.Combat, 'Waiting for '+serverBoltCodeName+'...' )   
-                const serverBolt = Workspace.FindFirstChild<Folder>('ActiveServerProjectiles')!.WaitForChild( serverBoltCodeName )
+                const serverBolt = (Workspace.FindFirstChild('ActiveServerProjectiles') as Folder|undefined)!.WaitForChild( serverBoltCodeName )
                 serverBolt.Parent = undefined  // hides the real server bolt
                 DebugXL.logD(LogArea.Combat, 'Destroyed '+serverBoltCodeName)
             })

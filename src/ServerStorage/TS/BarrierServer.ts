@@ -15,9 +15,9 @@ type Character = Model
 
 export namespace BarrierServer {
 
-    const barrierFolder = ServerStorage.WaitForChild<Folder>("CharacterFX").WaitForChild<Folder>("Barrier")
+    const barrierFolder = (ServerStorage.WaitForChild("CharacterFX").WaitForChild("Barrier") as Folder)
 
-    const fire = barrierFolder.WaitForChild<BasePart>("BarrierSegment").Clone()
+    const fire = (barrierFolder.WaitForChild("BarrierSegment") as BasePart).Clone()
 
     export function onTouched(context: ServerContextI, part: BasePart, attackingCharacter: Character, flexTool: FlexTool, burntStuff: Map<Instance, boolean>) {
         const partParent = part.Parent as Character
@@ -51,7 +51,7 @@ export namespace BarrierServer {
             fiery.Parent = game.Workspace
             if (i === 1) {
                 // play just one of the sounds
-                fiery.WaitForChild<Sound>("FireSound").Play()
+                (fiery.WaitForChild("FireSound") as Sound).Play()
             }
             fiery.Touched.Connect((part) => { onTouched(MainContext.get(), part, attackingCharacter, flexTool, burntStuff) })
 
@@ -65,17 +65,17 @@ export namespace BarrierServer {
     }
 
     export function ActivateWait(character: Character, duration: number, flexTool: FlexTool) {
-        const humanoid = character.FindFirstChild<Humanoid>("Humanoid")
+        const humanoid = (character.FindFirstChild("Humanoid") as Humanoid|undefined)
         if (!humanoid) {
             return
         }
 
-        const torso = character.FindFirstChild<BasePart>("HumanoidRootPart")
+        const torso = (character.FindFirstChild("HumanoidRootPart") as BasePart|undefined)
         if (!torso) {
             return
         }
 
-        const fireRingAnim = humanoid.LoadAnimation(barrierFolder.WaitForChild<Animation>("firering"))
+        const fireRingAnim = (humanoid.LoadAnimation(barrierFolder.WaitForChild("firering") as Animation))
         fireRingAnim.Play()
 
         const spin = new Instance("BodyAngularVelocity")

@@ -242,8 +242,9 @@ export namespace InventoryServer
                 myInventory.itemsT[element.item] = currentCount + element.count;
                 myInventory.redeemedCodesT[codeInfo.name] = 1
                // redeemedmsg = redeemedmsg + myInventory.itemsT[element.item] + " " + element.item + ". ";
-                if (PossessionData.dataT[element.item].publishValueB)
-                    player.FindFirstChild<NumberValue>(element.item)!.Value = myInventory.itemsT[element.item];
+                if (PossessionData.dataT[element.item].publishValueB) {
+                    (player.FindFirstChild(element.item) as NumberValue)!.Value = myInventory.itemsT[element.item];
+                }
             });
             if (codeInfo.rewards.size() === 1 && codeInfo.rewards[0].count === 1) {
                 let inventoryRE = Workspace.FindFirstChild('Signals')!.FindFirstChild('InventoryRE') as RemoteEvent;

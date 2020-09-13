@@ -10,7 +10,7 @@ import { CharacterClass } from "ReplicatedStorage/TS/CharacterClasses"
 // PCClient is just for the local player"s pc
 export namespace PCMonitor {
     export function getNumHealthPotions(player: Player) {
-        let numPotionsObject = player.FindFirstChild<NumberValue>("NumHealthPotions")
+        let numPotionsObject = (player.FindFirstChild("NumHealthPotions") as NumberValue|undefined)
         return numPotionsObject ? numPotionsObject.Value : 0
     }
 
@@ -18,7 +18,7 @@ export namespace PCMonitor {
     export function getPublishedLevel(player: Player) {
         let leaderstatsObj = player.FindFirstChild("leaderstats")
         if (leaderstatsObj) {
-            let levelValueObj = player.FindFirstChild("leaderstats")!.FindFirstChild<StringValue>("Level")
+            let levelValueObj = (player.FindFirstChild("leaderstats")!.FindFirstChild("Level") as StringValue|undefined)
             if (levelValueObj)  // we start reading this before the value gets published
             {
                 return levelValueObj.Value
@@ -30,9 +30,9 @@ export namespace PCMonitor {
 
     // show what character class we've published in leaderstats; returns 
     export function getPublishedClass(player: Player): CharacterClass {
-        const leaderstats = player.FindFirstChild<Folder>("leaderstats")
+        const leaderstats = (player.FindFirstChild("leaderstats") as Folder|undefined)
         if (leaderstats !== undefined) {
-            const classObj = leaderstats.FindFirstChild<StringValue>("Class")
+            const classObj = (leaderstats.FindFirstChild("Class") as StringValue|undefined)
             if (classObj !== undefined) {
                 return classObj.Value === "" ? "NullClass" : classObj.Value as CharacterClass
             }

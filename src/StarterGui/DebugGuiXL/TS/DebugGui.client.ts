@@ -13,14 +13,14 @@ import { LogService } from '@rbxts/services'
 
 
 const debugGui = script.Parent!.Parent!
-const debugMenuButton = debugGui.WaitForChild<TextButton>("DebugMenuButton")
-const standardFolder = Workspace.WaitForChild<Folder>("Standard")
-const debugGuiRE = standardFolder.WaitForChild<RemoteEvent>("DebugGuiRE")
-const errorReport = debugGui.WaitForChild<Frame>("ErrorReport")
-const output = errorReport.WaitForChild<TextLabel>("Output")
+const debugMenuButton = (debugGui.WaitForChild("DebugMenuButton") as TextButton)
+const standardFolder = (Workspace.WaitForChild("Standard") as Folder)
+const debugGuiRE = (standardFolder.WaitForChild("DebugGuiRE") as RemoteEvent)
+const errorReport = (debugGui.WaitForChild("ErrorReport") as Frame)
+const output = (errorReport.WaitForChild("Output") as TextLabel)
 
-const debugMenu = script.Parent!.Parent!.WaitForChild<Frame>("DebugMenu")
-const testMobTPExploit = debugMenu.WaitForChild<TextButton>("TestMobTPExploit")
+const debugMenu = (script.Parent!.Parent!.WaitForChild("DebugMenu") as Frame)
+const testMobTPExploit = (debugMenu.WaitForChild("TestMobTPExploit") as TextButton)
 
 while (!Players.LocalPlayer) {
 	wait(1)
@@ -53,7 +53,7 @@ else {
 }
 
 testMobTPExploit.MouseButton1Click.Connect(() => {
-	const mobsFolder = Workspace.WaitForChild<Folder>("Mobs")
+	const mobsFolder = (Workspace.WaitForChild("Mobs") as Folder)
 	for (let mob of mobsFolder.GetChildren()) {
 		if (mob.IsA("Model")) {
 			mob.SetPrimaryPartCFrame(new CFrame())

@@ -12,12 +12,12 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 {
     let testContext = new TestContext()
     PlayerUtility.publishClientValues(testContext.getPlayer(), 666, 665, "Godly", true)
-    let leaderstats = testContext.getPlayer().FindFirstChild<Model>("leaderstats")!
+    let leaderstats = (testContext.getPlayer().FindFirstChild("leaderstats") as Model|undefined)!
     TestUtility.assertTrue(leaderstats !== undefined)
     TestUtility.assertMatching(666, PlayerUtility.getBuildPoints(testContext.getPlayer()), "Build points set properly")
-    TestUtility.assertTrue(leaderstats.FindFirstChild<StringValue>("Rank")!.Value === "Godly")
-    TestUtility.assertTrue(leaderstats.FindFirstChild<StringValue>("VIP")!.Value === "VIP")
-    TestUtility.assertTrue(testContext.getPlayer().FindFirstChild<NumberValue>("HeroRespawnCountdown")!.Value === 665)
+    TestUtility.assertTrue((leaderstats.FindFirstChild("Rank") as StringValue|undefined)!.Value === "Godly")
+    TestUtility.assertTrue((leaderstats.FindFirstChild("VIP") as StringValue|undefined)!.Value === "VIP")
+    TestUtility.assertTrue((testContext.getPlayer().FindFirstChild("HeroRespawnCountdown") as NumberValue|undefined)!.Value === 665)
 
     // cleanup
     testContext.clean()

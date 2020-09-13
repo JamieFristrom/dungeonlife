@@ -19,8 +19,8 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility"
 {
     let testSetup = new TestContext()
     let testCharacter = TestUtility.createTestCharacter()
-    Monsters.DoDirectDamage(testSetup, testSetup.getPlayer(), 1000, testCharacter.FindFirstChild<Humanoid>("Humanoid")!, {}, true)
-    TestUtility.assertTrue(testCharacter.FindFirstChild<Humanoid>("Humanoid")!.Health <= 0, "They dead")
+    Monsters.DoDirectDamage(testSetup, testSetup.getPlayer(), 1000, (testCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!, {}, true)
+    TestUtility.assertTrue((testCharacter.FindFirstChild("Humanoid") as Humanoid|undefined)!.Health <= 0, "They dead")
     testSetup.clean()
 }
 

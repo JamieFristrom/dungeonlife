@@ -16,8 +16,8 @@ let potionTemplate = nameTagTemplate.WaitForChild("PotionIconTemplate")
 
 let showLocalPlayerBar = false
 
-let heroesTeam = Teams.WaitForChild<Team>('Heroes')
-let monstersTeam = Teams.WaitForChild<Team>('Monsters')
+let heroesTeam = (Teams.WaitForChild('Heroes') as Team)
+let monstersTeam = (Teams.WaitForChild('Monsters') as Team)
 
 while( true ) 
 {
@@ -31,7 +31,7 @@ while( true )
 				let head = player.Character.FindFirstChild("Head")
 				if( head ) 
 				{
-					let tag = head.FindFirstChild<BillboardGui>("NameTag")
+					let tag = (head.FindFirstChild("NameTag") as BillboardGui|undefined)
 					if( !tag ) 
 					{
 						tag = nameTagTemplate.Clone() as BillboardGui
@@ -67,8 +67,8 @@ while( true )
 						}
 					}
 		
-					let frame = tag.FindFirstChild<Frame>('Frame')!
-					let frameTextLabel = frame.FindFirstChild<TextLabel>('Text')!
+					let frame = (tag.FindFirstChild('Frame') as Frame|undefined)!
+					let frameTextLabel = (frame.FindFirstChild('Text') as TextLabel|undefined)!
 					frameTextLabel.Text = name
 					frameTextLabel.TextColor3 = player.Team === heroesTeam ? player.Team.TeamColor.Color : new Color3(1,1,1)
 					if( player.Team === monstersTeam ) 

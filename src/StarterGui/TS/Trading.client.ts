@@ -4,16 +4,16 @@
 import { LogLevel, DebugXL, LogArea } from 'ReplicatedStorage/TS/DebugXLTS'
 DebugXL.logI(LogArea.Executed, script.Name)
 
-let playerListGui = script.Parent!.Parent!.WaitForChild<Frame>("PlayerListGui")
-let playerListContentsFrame = playerListGui.WaitForChild<Frame>("CustomLeaderboard").WaitForChild<Frame>("Contents")
+let playerListGui = (script.Parent!.Parent!.WaitForChild("PlayerListGui") as Frame)
+let playerListContentsFrame = (playerListGui.WaitForChild("CustomLeaderboard").WaitForChild("Contents") as Frame)
 
-let interactFrame = playerListGui.WaitForChild<Frame>("InteractWithPlayerFrame")
+let interactFrame = (playerListGui.WaitForChild("InteractWithPlayerFrame") as Frame)
 
 const tradingEnabledK = false
 
 function showInteractFrame(playerName: string) {
-    interactFrame.Visible = true
-    interactFrame.WaitForChild<TextLabel>("Name").Text = playerName
+    interactFrame.Visible = true;
+    (interactFrame.WaitForChild("Name") as TextLabel).Text = playerName
 }
 
 let playerListRows = new Set<Frame>()
@@ -24,10 +24,10 @@ function updatePlayerListButtons() {
             if (child.Name !== "HeaderRow") {
                 if( !playerListRows.has(child)) {
                     playerListRows.add(child)
-                    let interactButton = child.WaitForChild<TextButton>("InteractButton")
+                    let interactButton = (child.WaitForChild("InteractButton") as TextButton)
                     if( tradingEnabledK ) {
                         interactButton.Visible = true
-                        interactButton.MouseButton1Click.Connect(() => { showInteractFrame(child.WaitForChild<TextLabel>("Names").Text) })
+                        interactButton.MouseButton1Click.Connect(() => { showInteractFrame((child.WaitForChild("Names") as TextLabel).Text) })
                     }
                     else {
                         interactButton.Visible = false

@@ -44,12 +44,12 @@ export class Chest {
         let hero = PlayerServer.getCharacterRecordFromPlayer(player)
         DebugXL.Assert(hero instanceof Hero)
         if (hero && hero instanceof Hero) {
-            let chestDamagePerLevel = 1.5 // GameplayTestService.getServerTestGroup('ChestTrapDamage') * 0.5 + 1  // 0-4 => 1-3
-            this.chestInstance.FindFirstChild('Origin')!.FindFirstChild<Sound>('DetonateSound')!.Play()
+            let chestDamagePerLevel = 1.5; // GameplayTestService.getServerTestGroup('ChestTrapDamage') * 0.5 + 1  // 0-4 => 1-3
+            (this.chestInstance.FindFirstChild('Origin')!.FindFirstChild('DetonateSound') as Sound|undefined)!.Play()
             MechanicalEffects.Explosion(this.chestInstance.PrimaryPart!.Position,
                 chestDatum.baseDamageN! + chestDamagePerLevel * hero.getActualLevel(),
                 15,
-                this.chestInstance.FindFirstChild<ObjectValue>('creator')!.Value as Player,
+                (this.chestInstance.FindFirstChild('creator') as ObjectValue|undefined)!.Value as Player,
                 true)
             DestructibleStructure.flyApart(this.chestInstance)
             wait(1)

@@ -219,7 +219,7 @@ export abstract class CharacterRecord implements CharacterRecordI {
     constructor(
         public idS: CharacterClass,
         _startItems: GearDefinition[],
-        team = Teams.FindFirstChild<Team>("Unassigned")!) {
+        team = (Teams.FindFirstChild("Unassigned") as Team|undefined)!) {
         this.team = team
         this.itemsT = undefined  // just used for persistence in old system
         this.gearPool = new GearPool({})

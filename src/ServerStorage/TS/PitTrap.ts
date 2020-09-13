@@ -12,7 +12,7 @@ export class PitTrap
     {        
         this.trap = _script.Parent as Model
         let openFloor = this.trap.FindFirstChild('OpenFloor')!
-        let hitBox = this.trap.FindFirstChild<BasePart>('Hitbox')!
+        let hitBox = (this.trap.FindFirstChild('Hitbox') as BasePart|undefined)!
         let heroesTeam = Teams.FindFirstChild('Heroes')!
 
         openFloor.Parent = undefined  
@@ -25,11 +25,11 @@ export class PitTrap
                 let player = Players.GetPlayerFromCharacter( character )
                 if( player ) {
                     if( player.Team === heroesTeam ) {
-                        let disposableFloor = this.trap.FindFirstChild<ObjectValue>('DisposableFloor')!.Value!
+                        let disposableFloor = (this.trap.FindFirstChild('DisposableFloor') as ObjectValue|undefined)!.Value!
                         disposableFloor.Destroy()
                         hitBox.Destroy()
                         openFloor.Parent = script.Parent
-                        openFloor.FindFirstChild<Sound>('OpenSound')!.Play()
+                        (openFloor.FindFirstChild('OpenSound') as Sound|undefined)!.Play()
                     }
                 }
             }

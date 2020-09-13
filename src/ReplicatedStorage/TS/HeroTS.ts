@@ -19,7 +19,7 @@ let nerfTest = 100000  // test nerfing to this level
 type Character = Model
 
 export class Hero extends CharacterRecord implements HeroI {
-    static readonly Heroes: Team = Teams.WaitForChild('Heroes')
+    static readonly Heroes: Team = Teams.WaitForChild('Heroes') as Team
     static readonly globalHeroLevelCap = 70
 
     static readonly xpForLevelMultiplier = 1.5
@@ -44,7 +44,7 @@ export class Hero extends CharacterRecord implements HeroI {
     constructor(heroId: CharacterClass, stats: HeroStatBlockI, startingItems: FlexTool[]) {
         super(heroId,
             startingItems,
-            Teams.FindFirstChild<Team>("Heroes")!)
+            (Teams.FindFirstChild("Heroes") as Team|undefined)!)
         DebugXL.Assert(stats !== undefined)
         this.statsT = ObjectXL.clone(stats)
     }
@@ -159,7 +159,7 @@ export class Hero extends CharacterRecord implements HeroI {
     }
 
     getTeam() {
-        return Teams.FindFirstChild<Team>('Heroes')!
+        return (Teams.FindFirstChild('Heroes') as Team|undefined)!
     }
 
     updateStoredData(oldVersion: number, newVersion: number, player: Player) {
@@ -295,7 +295,7 @@ export class Hero extends CharacterRecord implements HeroI {
     }
 
     static getCurrentMaxHeroLevel() {
-        let currentMaxHeroLevelNumberValue = Workspace.FindFirstChild('GameManagement')!.FindFirstChild<NumberValue>('CurrentMaxHeroLevel')!
+        let currentMaxHeroLevelNumberValue = (Workspace.FindFirstChild('GameManagement')!.FindFirstChild('CurrentMaxHeroLevel') as NumberValue|undefined)!
         return math.max(1, currentMaxHeroLevelNumberValue.Value)
     }
 
