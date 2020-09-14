@@ -162,7 +162,7 @@ export class FlexTool {
     getMonsterDefense(attackType: string) {
         let toolBaseDatum = ToolData.dataT[this.baseDataS]
         let defense = toolBaseDatum.baseDefensesT![attackType]
-        if (!defense) {
+        if (defense === undefined) {
             DebugXL.Error(this.baseDataS + " unknown attack type " + attackType)
         }
 
@@ -170,13 +170,14 @@ export class FlexTool {
         return defense
     }
 
+
     // wishlist; split armor / weapons / potions into separate child classes
     // wishlist: make attackType enum
     getHeroDefense(attackType: string, heroActualLevel: number, currentMaxHeroLevel: number) {
         let toolBaseDatum = ToolData.dataT[this.baseDataS]
         let defense = toolBaseDatum.baseDefensesT![attackType]
-        if (!defense) {
-            DebugXL.Error(this.baseDataS + " unknown attack type " + attackType)
+        if (defense === undefined) {
+            DebugXL.Error(`${this.baseDataS} unknown attack type ${attackType}`)
         }
 
         defense = math.floor(defense + defense * BalanceData.armorDefensePerLevelN * (this.getLocalLevel(heroActualLevel, currentMaxHeroLevel) - 1))
@@ -366,10 +367,10 @@ export class FlexTool {
                 }
             }
 
-            const ToolsFolder = (ServerStorage.FindFirstChild('Tools') as Folder|undefined)!
+            const ToolsFolder = (ServerStorage.FindFirstChild('Tools') as Folder | undefined)!
             DebugXL.Assert(ToolsFolder !== undefined)
 
-            const toolTemplate = (ToolsFolder.FindFirstChild(baseToolId) as Tool|undefined)
+            const toolTemplate = (ToolsFolder.FindFirstChild(baseToolId) as Tool | undefined)
             DebugXL.Assert(toolTemplate !== undefined)
             if (toolTemplate) {
                 const newToolInstance = toolTemplate.Clone() as Tool
