@@ -4,13 +4,13 @@ Here's everything you need to build and run your own shard of Dungeon Life (http
 
 Let me get this out of the way: I'm embarrassed to let people look at this code. My main excuse for the state it's in is that building up tech debt is a good idea for indies who don't know how long they're going to stick with a project, because it's a debt you probably never have to pay back. For me, the *most* embarrassing part are the Hero and Monster classes themselves; there is a lot of duplicate code in there. :scream:
 
-The second most embarrassing part is that I switched to typescript partway through, learning typescript as I went, and the project is part lua, part n00b typescript.
+The second most embarrassing part is that I switched to typescript partway through but it is still half in Lua.
 
 But! I want to give back to the community, I want people to be able to do what they want with Dungeon Life, and I'm hoping that just maybe someone will make some cool stuff that they'll share back. So here goes.
 
-And that said, there's more here I'm proud of than embarrassed of--for the most part it is data driven, and it doesn't do stateful things when not necessary, and those are usually my two priorities when architecting--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
+And that said, there's more here I'm proud of than embarrassed of--at least half of it *is* in Typescript, it has a nice suite of automated tests that have saved my bacon multiple times, for the most part it is data driven, and it generally avoids stateful things when not necessary (the mob AI for example)--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
 
-And this is the first time I've released open soure in this manner - if there are common practices it would be nice for me to do let me know! A good place to ask would be on the Discord (https://discord.gg/7BQNSu which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
+A good place to ask would be on the Discord (https://discord.gg/7BQNSu which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
 
 # don't download, clone
 
@@ -26,22 +26,19 @@ You'll need NodeJS if you don't already have it. https://nodejs.org/en/
 
 You'll want to use VS Code for your text editor. https://code.visualstudio.com/
 
-And you'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
+You'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
+
+And you'll need the _refactor_ branch of roblox-ts. (https://github.com/roblox-ts/roblox-ts/tree/refactor) You shouldn't just use the default npm package from https://roblox-ts.com/ - I only test with the refactor branch. Besides, the refactor branch builds nearly 10x faster. You'll have to set it up using their instructions with the proper `npm install`, `npx tsc`, and `npm link` commands.
 
 Once you've got those things, you're ready to start. From a dos command line clone dungeon life:
 ```
   >git clone https://github.com/JamieFristrom/dungeonlife.git
 ```
-Now to setup the compiler you can either run the batch file I've made that _should_ set things up properly for you, or you can do thing step-by-step (which I've spelled out below.) If you use the batch file:
-```
-  >cd dungeonlife
-  >setup.bat
-```
+
 And now you should be able to build Dungeon Life:
 ```
-  >rbxtsc 
+  >rbxtsc --verbose
 ```
-(As long as there are no error messages you should be in good shape, but I can understand being leery. I actually usually use `>rbxtsc -w` to see that 'success' message and then hit ctrl-break to get out.)
 
 Now you need the Roblox place to actually put this code! Open the rbxl/DungeonLifeOpenTemplate.rbxlx in Roblox and publish it. Go to Game Settings and enable Studio API Access. 
 
@@ -86,36 +83,3 @@ Sorry it's so much work! That's honestly the easiest way I've found for getting 
 Known problem: the in-app purchases are still wired to the original Game; you'll have to create your own in-app purchases and change the ids in order to let people buy things in yours.
 
 If you spot other problems, it's probably because there are other issues running the code in a standalone place. You can check my test place https://www.roblox.com/games/4476008779: if the bug happens there too, it's not you, it's me. :) Let me know! 
-
-# setting up the roblox-ts compiler step-by-step:
-To get the version of roblox-ts that I use, which is an old version with a fix of my own. (If anybody wanted to update Dungeon Life to use the latest I'd be graeful!):
-```
-  >cd dungeonlife
-  >git submodule update --init --recursive
-```
-Now install some packages that Dungeon Life uses:
-```
-  >npm install
-```
-And install some packages that roblox-ts (typescript for Roblox) uses:
-```
-  >cd roblox-ts
-  >npm install
-```
-Now install the version of typescript that will work with our older roblox-ts. (We're installing locally--without the -g option, so we can use the latest version of typescript elsewhere on our PCs.):
-```
-  >npm install typescript@3.3.4000
-```
-Now build roblox-ts using typescript:
-```
-  >npx tsc
-```
-Now we need to be able to access roblox-ts from the command line. This should link it up:
-```
-  >npm link
-```
-Return back to the top directory and you should be good to go.
-```
-  >cd ..
-```
-Note: on some accounts I've seen node.js fail to put `yourname/Roaming/npm` in your path. If that happens you won't be able to compile using the `rbxtsc` alias; you'll have to either add it to the path yourself or spell it out: `node roblox-ts\out\cli.js` (which means run the command-line interface for the compiler using node.)

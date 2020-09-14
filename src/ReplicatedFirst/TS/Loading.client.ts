@@ -2,8 +2,8 @@
 // Copyright (c) Happion Laboratories - see license at https://github.com/JamieFristrom/dungeonlife/blob/master/LICENSE.md
 
 import { Workspace, RunService } from "@rbxts/services"
-warn("DUNGEON LIFE 9/7/2020 6:30PM PST")
-warn("Various polish and fixes++")
+warn("DUNGEON LIFE 9/13/2020 7PM PST")
+warn("Updated typescript")
 
 let loadingStructure = (script.Parent!.Parent!.WaitForChild("LoadingStructure") as Part)
 let waitingImage = (loadingStructure.WaitForChild("BillboardGui").WaitForChild("LogoFrame").WaitForChild("WaitingImage") as ImageLabel)
