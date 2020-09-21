@@ -13,7 +13,8 @@
 		"strict": true,
 		"target": "ESNext",
 		"typeRoots": ["node_modules/@rbxts"],
-
+		"tsBuildInfoFile": "out/tsconfig.tsbuildinfo",
+		
 		// configurable
 		"rootDir": "src",
 		"outDir": "out",
