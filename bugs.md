@@ -1,5 +1,4 @@
 # Fixing
-* Upgrade typescript
 * make between levels look good
 * superbosses too easy in co-op
 * ghosts are immune to being directly targeted with longbow (recorded movie)
