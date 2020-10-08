@@ -150,7 +150,7 @@ export class GearPool {
         return this.gear.values().filter(func).size()
     }
 
-    findIf(func: (v: FlexTool) => boolean): [ FlexTool|undefined, string|undefined ] {
+    findIf(func: (v: FlexTool) => boolean): [FlexTool | undefined, string | undefined] {
         for (const [k, v] of Object.entries(this.gear)) {
             if (func(v))
                 return [v, k]
@@ -208,19 +208,16 @@ export class GearPool {
     }
 }
 
+// this data is persisted and therefore can't contain Roblox instances
 export abstract class CharacterRecord implements CharacterRecordI {
     gearPool: GearPool
-
-    private team: Team;
 
     protected itemsT: { [k: string]: FlexTool } | undefined  // retained to accesss persistent data using old system
     private toolKeyServerN = 1
 
     constructor(
         public idS: CharacterClass,
-        _startItems: Array<GearDefinition>,
-        team = (Teams.FindFirstChild("Unassigned") as Team|undefined)!) {
-        this.team = team
+        _startItems: Array<GearDefinition>) {
         this.itemsT = undefined  // just used for persistence in old system
         this.gearPool = new GearPool({})
         for (let i = 0; i < _startItems.size(); i++) {
@@ -414,9 +411,9 @@ export abstract class CharacterRecord implements CharacterRecordI {
 
     abstract getActualLevel(): number
 
-    // not data-driving this so we aren't duplicating data
+    // not data-driving this so we aren't duplicating data and so we aren't trying to save Roblox instances
     getTeam() {
-        return this.team
+        return (Teams.FindFirstChild('Unassigned') as Team | undefined)!
     }
 
     getBaseDamageBonus() { return 0 }

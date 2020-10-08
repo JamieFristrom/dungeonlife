@@ -11,6 +11,22 @@ import { Hero } from "ReplicatedStorage/TS/HeroTS";
 import { Monster } from "ReplicatedStorage/TS/Monster"
 import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
 
+import Heroes from "ServerStorage/Standard/HeroesModule"
+import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
+
+// test load/save; unfortunately will bash my existing records but whatev
+{
+    let heroPlayer = TestUtility.createTestPlayer()
+    let playerTracker = new PlayerTracker()
+    Heroes.PlayerAdded(heroPlayer)
+    let heroStable = Heroes.GetSavedPlayerCharactersWait(heroPlayer)
+    heroStable.heroesA[0] = new Hero("Warrior",
+        { strN: 10, dexN: 10, conN: 10, willN: 10, experienceN: 666, goldN: 0, deepestDungeonLevelN: 0, totalTimeN: 0 },
+        [])
+    Heroes.SaveHeroesWait(playerTracker, heroPlayer)
+    Heroes.ForceSave(heroPlayer)
+}
+
 {
     let errorMessage = ""
     // test updating an obsolete broken hero
@@ -62,3 +78,4 @@ import { TestUtility } from "ReplicatedStorage/TS/TestUtility";
     TestUtility.assertTrue(fakePlayerMap.get(fakeMonsterPlayer)!.getTeam() === (Teams.WaitForChild("Monsters") as Team))
     TestUtility.cleanTestPlayer(heroPlayer)
 }
+

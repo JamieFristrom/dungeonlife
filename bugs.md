@@ -1,4 +1,5 @@
 # Fixing
+* You don't turn back into a monster when you choose mosnter - have to manually respawn
 * make between levels look good
 * superbosses too easy in co-op
 * ghosts are immune to being directly targeted with longbow (recorded movie)

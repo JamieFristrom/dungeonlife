@@ -166,7 +166,7 @@ function PlayerAddedWait( player )
 
 end 
 
-
+-- wishlist fix; this can return nil now but most functions dont' know that
 function Inventory:GetInventoryStoreWait( player )
 	if not player.Parent then
 		-- this probably means the player left

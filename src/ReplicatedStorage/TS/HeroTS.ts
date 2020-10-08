@@ -43,8 +43,7 @@ export class Hero extends CharacterRecord implements HeroI {
 
     constructor(heroId: CharacterClass, stats: HeroStatBlockI, startingItems: FlexTool[]) {
         super(heroId,
-            startingItems,
-            (Teams.FindFirstChild("Heroes") as Team|undefined)!)
+            startingItems)
         DebugXL.Assert(stats !== undefined)
         this.statsT = ObjectXL.clone(stats)
     }
@@ -159,7 +158,7 @@ export class Hero extends CharacterRecord implements HeroI {
     }
 
     getTeam() {
-        return (Teams.FindFirstChild('Heroes') as Team|undefined)!
+        return (Teams.FindFirstChild('Heroes') as Team | undefined)!
     }
 
     updateStoredData(oldVersion: number, newVersion: number, player: Player) {
@@ -295,7 +294,7 @@ export class Hero extends CharacterRecord implements HeroI {
     }
 
     static getCurrentMaxHeroLevel() {
-        let currentMaxHeroLevelNumberValue = (Workspace.FindFirstChild('GameManagement')!.FindFirstChild('CurrentMaxHeroLevel') as NumberValue|undefined)!
+        let currentMaxHeroLevelNumberValue = (Workspace.FindFirstChild('GameManagement')!.FindFirstChild('CurrentMaxHeroLevel') as NumberValue | undefined)!
         return math.max(1, currentMaxHeroLevelNumberValue.Value)
     }
 

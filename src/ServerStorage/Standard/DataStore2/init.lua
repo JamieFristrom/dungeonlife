@@ -43,6 +43,8 @@
 	edit: while there's no official comment on this, many developers including myself have noticed really bad cache times and issues with using the same datastore keys to save data across multiple places in the same game. With this method, data is almost always instantly accessible immediately after a player teleports, making it useful for multi-place games.
 --]]
 
+local DebugXL = require( game.ReplicatedStorage.TS.DebugXLTS ).DebugXL
+
 --Required components
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
@@ -123,9 +125,9 @@ function Verifier.warnIfInvalid(input)
 	local isValid, keyPath, reason, extra = Verifier.scanValidity(input)
 	if not isValid then
 		if extra then
-			warn('Invalid at '..Verifier.getStringPath(keyPath)..' because: '..reason..' ('..tostring(extra)..')')
+			DebugXL:Error('Invalid at '..Verifier.getStringPath(keyPath)..' because: '..reason..' ('..tostring(extra)..')')
 		else
-			warn('Invalid at '..Verifier.getStringPath(keyPath)..' because: '..reason)
+			DebugXL:Error('Invalid at '..Verifier.getStringPath(keyPath)..' because: '..reason)
 		end
 	end
 	
@@ -426,7 +428,7 @@ function DataStore:Save()
 	end
 	
 	if game:GetService("RunService"):IsServer() and game:GetService("RunService"):IsClient() and not SaveInStudio then
-		warn(("Data store %s attempted to save in studio while SaveInStudio is false."):format(self.name))
+		DebugXL:Error(("Data store %s attempted to save in studio while SaveInStudio is false."):format(self.name))
 		if not SaveInStudioObject then
 			warn("You can set the value of this by creating a BoolValue named SaveInStudio in ServerStorage.")
 		end
@@ -434,7 +436,7 @@ function DataStore:Save()
 	end
 	
 	if self.backup then
-		warn("This data store is a backup store, and thus will not be saved.")
+		DebugXL:Error("This data store is a backup store, and thus will not be saved.")
 		return
 	end
 	
@@ -447,12 +449,14 @@ function DataStore:Save()
 			if success then
 				save = newSave
 			else
-				warn("Error on BeforeSave: "..newSave)
+				DebugXL:Error("Error on BeforeSave: "..newSave)
 				return
 			end
 		end
 		
-		if not Verifier.warnIfInvalid(save) then return warn("Invalid data while saving") end
+		if not Verifier.warnIfInvalid(save) then 
+			return warn("Invalid data while saving")   -- this doesn't need to be error because warnIfInvalid reports it
+		end
 		
 		local key = os.time()
 		self.dataStore:SetAsync(key, save)
@@ -462,7 +466,7 @@ function DataStore:Save()
 			local success, err = pcall(afterSave, save, self)
 			
 			if not success then
-				warn("Error on AfterSave: "..err)
+				DebugXL:Error("Error on AfterSave: "..err)
 			end
 		end
 		

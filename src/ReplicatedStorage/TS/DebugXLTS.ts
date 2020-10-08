@@ -31,6 +31,7 @@ export enum LogArea {
     Characters,
     Config,
     Combat,           // los, damage, weapons, armor
+    Datastore,
     Gameplay,         // levelling, xp
     GameManagement,   // game flow, overall game state
     Error,            // for untagged errors
@@ -119,7 +120,7 @@ class DebugXLC implements DebugI {
     }
 
     log(logLevel: LogLevel, tag: LogArea, message: string) {
-        let cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '') 
+        let cliSrvPrefix = (RunService.IsServer() ? 'Srv' : '')
         cliSrvPrefix += (RunService.IsClient() ? 'Cli' : '')  // in run mode they can both be true
         if (!message) {
             error(`${cliSrvPrefix}-E/${tag}: MISSING MESSAGE`)

@@ -14,7 +14,6 @@ DebugXL:logI(LogArea.Executed, script:GetFullName())
 	
 --]]
 
-local CheatUtilityXL    = require( game.ReplicatedStorage.TS.CheatUtility )
 local MathXL			= require( game.ReplicatedStorage.Standard.MathXL )
 local InstanceXL    	= require( game.ReplicatedStorage.Standard.InstanceXL )
 local TableXL           = require( game.ReplicatedStorage.Standard.TableXL )
@@ -74,7 +73,7 @@ local function PCKey( player ) return player end
 
 local birthTickT = {}
 
-function GetSavedPlayerCharactersWait( player )
+function Heroes:GetSavedPlayerCharactersWait( player )
 	local startTick = tick()
 	while not savedPlayerCharactersT[ PCKey( player ) ] do 
 		wait()
@@ -546,10 +545,11 @@ end
 -- no longer used to discard tool, but
 -- used by bomb to destroy itself
 
-
-
-local function PlayerAdded( player )
+function Heroes:PlayerAdded( player )
 	local heroStore = DataStore2( "Heroes", player, playerOverrideId )
+	heroStore:AfterSave(function ()
+		DebugXL:logI( LogArea.Datastore, player.Name.." after saved heroes" )
+	end)
 	local savedPlayerCharacters = heroStore:Get( HeroStable.new() )
 
 	-- this has to be fixed here before objectify objectifies your items
@@ -615,20 +615,25 @@ local function PlayerAdded( player )
 	end
 
 	savedPlayerCharactersT[ PCKey( player ) ] = savedPlayerCharacters
+	return savedPlayerCharacters
 end
 
 
-for _, player in pairs( game.Players:GetPlayers()) do spawn( function() PlayerAdded( player ) end ) end
-game.Players.PlayerAdded:Connect( PlayerAdded )
+for _, player in pairs( game.Players:GetPlayers()) do spawn( function() Heroes:PlayerAdded( player ) end ) end
+game.Players.PlayerAdded:Connect( function(player) Heroes:PlayerAdded(player) end )
 
 
 function Heroes:PlayerAddedWait( player )
 	-- moved back into player added connectino
 end
 
+function Heroes:ForceSave( player )
+	local heroStore = DataStore2( "Heroes", player )
+	heroStore:Save()
+end
 
 function Heroes:PlayerRemovingWait( player )
-	local savedPCs = GetSavedPlayerCharactersWait( player )
+	local savedPCs = Heroes:GetSavedPlayerCharactersWait( player )
 	if not savedPCs then return end  -- should be fine, currently this is only used for recommending characters
 	for i, hero in ipairs( savedPCs.heroesA ) do
 		GameAnalyticsServer.RecordDesignEvent( player, "GoldLeft:Hero"..i, hero.statsT.goldN, 25, "Gold25" )
@@ -656,7 +661,7 @@ function Heroes:BuyGold( player, amount, analyticsItemIdS, analyticsItemTypeS )
 	local slot = buyingGoldForHeroInSlot[ player ]
 	DebugXL:Assert( slot )
 	if slot then	
-		local heroes = GetSavedPlayerCharactersWait( player )
+		local heroes = Heroes:GetSavedPlayerCharactersWait( player )
 		DebugXL:Assert( heroes.heroesA[ slot ] )
 		if( heroes.heroesA[ slot ])then
 			HeroServer.adjustGold( player, heroes.heroesA[ slot ], amount, analyticsItemIdS, analyticsItemTypeS )
@@ -816,7 +821,7 @@ end
 
 
 function HeroRemote.GetSavedPlayerCharactersWait( player )
-	return GetSavedPlayerCharactersWait( player )
+	return Heroes:GetSavedPlayerCharactersWait( player )
 end
 
 
@@ -954,7 +959,7 @@ end
 
 
 function HeroRemote.ServerSideTeleport( player, whereTo )
-    PlacesServer:serverSideTeleport( player, whereTo, GetSavedPlayerCharactersWait( player ) )
+    PlacesServer:serverSideTeleport( player, whereTo, Heroes:GetSavedPlayerCharactersWait( player ) )
 end
 
 
