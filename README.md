@@ -28,16 +28,24 @@ You'll want to use VS Code for your text editor. https://code.visualstudio.com/
 
 You'll need Rojo. https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo
 
-And you'll need the _refactor_ branch of roblox-ts. (https://github.com/roblox-ts/roblox-ts/tree/refactor) You shouldn't just use the default npm package from https://roblox-ts.com/ - I only test with the refactor branch. Besides, the refactor branch builds nearly 10x faster. You'll have to set it up using their instructions with the proper `npm install`, `npx tsc`, and `npm link` commands.
-
 Once you've got those things, you're ready to start. From a dos command line clone dungeon life:
 ```
   >git clone https://github.com/JamieFristrom/dungeonlife.git
 ```
-
+I keep the version of roblox-ts I use in a submodule. To update the submodule (this command is overkill but habit for me)
+```
+>git update submodule --init --recursive
+```
+Then you can do the stuff from the roblox-ts github installation page:
+```
+>cd roblox-ts
+>npm install
+>tsc
+>npm link
+```
 And now you should be able to build Dungeon Life:
 ```
-  >cd gamesrc
+  >cd ..\gamesrc
   >rbxtsc --verbose
 ```
 
@@ -50,6 +58,12 @@ The place won't do anything by itself; you still need to build the source and su
 Run the game from within Roblox! If you did everything exactly right and there are no unforseen problems with your setup it should work!
 
 If you have problems let me know (join the Discord or message @happionlabs on twitter) but I can't promise speedy answers!
+
+# turning off the automated tests
+
+I usually leave quick-and-dirty suite of automated tests enabled that will run automatically in studio and take a couple of minutes. To turn those tests off, go to RunTests.server.ts and set
+
+`const runTests = false`
 
 # adding the localization table
 
