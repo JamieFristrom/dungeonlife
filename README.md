@@ -37,6 +37,7 @@ Once you've got those things, you're ready to start. From a dos command line clo
 
 And now you should be able to build Dungeon Life:
 ```
+  >cd gamesrc
   >rbxtsc --verbose
 ```
 

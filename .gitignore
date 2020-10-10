@@ -1,9 +1,14 @@
 # ignore the out directory
 /out/*
+/gamesrc/out/*
 include/RuntimeLib.lua
+/gamesrc/include/RuntimeLib.lua
 backend/node_modules/*
+/gamesrc/backend/node_modules/*
 backend/out/*
+/gamesrc/backend/out/*
 node_modules/*
+/gamesrc/node_modules/*
 start_ssh.sh
 *.map
 *.lock
