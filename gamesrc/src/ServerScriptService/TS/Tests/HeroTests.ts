@@ -79,3 +79,13 @@ import { PlayerTracker } from "ServerStorage/TS/PlayerServer";
     TestUtility.cleanTestPlayer(heroPlayer)
 }
 
+// test choosing permadeath sets permadeath
+{
+    let heroPlayer = TestUtility.createTestPlayer()
+    let heroesManager = new Heroes()
+    let newHero = heroesManager.ChooseClass( heroPlayer, "Warrior", true )
+    TestUtility.assertTrue( newHero.isPermadeath(), "Permadeath set succesfully" )
+}
+// test permadeath hero dies permanently
+
+// test permadeath hero enters leaderboards on death

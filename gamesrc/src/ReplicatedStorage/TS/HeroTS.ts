@@ -161,6 +161,10 @@ export class Hero extends CharacterRecord implements HeroI {
         return (Teams.FindFirstChild('Heroes') as Team | undefined)!
     }
 
+    isPermadeath() {
+        return this.statsT.permadeath
+    }
+
     updateStoredData(oldVersion: number, newVersion: number, player: Player) {
         // this was an adjustment from 11/7
         // so that players who had been playing past max level would still have something to do once we added the level 20 server

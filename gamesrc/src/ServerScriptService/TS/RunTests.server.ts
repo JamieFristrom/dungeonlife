@@ -11,7 +11,7 @@ import { Workspace } from "@rbxts/services"
 
 const runTests = true
 
-const runJustOneTestSuite = false
+const runJustOneTestSuite = true
 const currentTest = "HeroTests" // "WeaponsRackTests" // "" //"MeleeWeaponTests" // "SuperbossTests"
 
 // to prevent flakiness, cross-pollution of contending threads

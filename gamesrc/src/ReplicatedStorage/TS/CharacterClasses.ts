@@ -13,6 +13,7 @@ export interface HeroStatBlockI {
     goldN: number
     deepestDungeonLevelN: number
     totalTimeN: number
+    permadeath: boolean
 }
 
 export interface CharacterClassI {
