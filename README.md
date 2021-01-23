@@ -34,7 +34,7 @@ Once you've got those things, you're ready to start. From a dos command line clo
 ```
 I keep the version of roblox-ts I use in a submodule. To update the submodule (this command is overkill but habit for me)
 ```
->git update submodule --init --recursive
+>git submodule update --init --recursive
 ```
 Then you can do the stuff from the roblox-ts github installation page:
 ```
