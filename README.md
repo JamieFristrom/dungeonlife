@@ -40,6 +40,7 @@ Then you can do the stuff from the roblox-ts github installation page:
 ```
 >cd roblox-ts
 >npm install
+>npm install -g typescript 
 >tsc
 >npm link
 ```
