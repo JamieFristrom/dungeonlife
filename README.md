@@ -10,7 +10,7 @@ But! I want to give back to the community, I want people to be able to do what t
 
 And that said, there's more here I'm proud of than embarrassed of--at least half of it *is* in Typescript, it has a nice suite of automated tests that have saved my bacon multiple times, for the most part it is data driven, and it generally avoids stateful things when not necessary (the mob AI for example)--so if you see something you don't like chances are I did it that way for a reason. Feel free to ask why!
 
-A good place to ask would be on the Discord (https://discord.gg/7BQNSu which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
+A good place to ask would be on the Discord (https://discord.gg/3HvvQxnKgE which requires a Roblox username) or Twitter (https://twitter.com/happionlabs.)
 
 # don't download, clone
 
